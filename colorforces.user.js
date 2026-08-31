@@ -2,7 +2,7 @@
 // @name         Colorforces
 // @name:zh-CN   幻彩 Codeforces
 // @namespace    https://github.com/GodExious/Colorforces
-// @version      1.5.5
+// @version      1.5.6
 // @description  Reimagining the Codeforces UI. A next-generation userscript that breathes life into your competitive programming experience with dynamic rating colors, modern badges, and a premium, highly customizable interface.
 // @description:zh-CN 重塑 Codeforces 视觉体验的新一代增强插件。通过动态的评分色彩、现代化的标签引擎和极高自由度的定制面板，为你的算法竞赛之旅注入全新的生命力。
 // @author       GodExious & Antigravity
@@ -41,6 +41,7 @@
     const SETTINGS_KEY = 'cf_submissions_settings';
     const DEFAULT_SETTINGS = {
         acBgColor: '#d4edc9',
+        colorRatings: true,
         show: {
             submissions: true,
             status: true,
@@ -52,7 +53,7 @@
             userAvatar: true,
             formatTeams: true,
             langIcon: true,
-            shortVerdict: false
+            shortVerdict: true
         },
         avatarSize: 1.4,
         langIconSize: 1.0,
@@ -61,7 +62,8 @@
             format: 'YYYY/MM/DD HH:mm'
         },
         displayStyle: 'block',
-        lang: 'zh'
+        hideTags: false,
+        lang: 'en'
     };
 
     function hexToRgba(hex, alpha) {
@@ -98,6 +100,8 @@
                     settings.langIconSize = parseFloat((settings.langIconSize / 14).toFixed(1));
                 }
                 if (parsed.timeFormat) Object.assign(settings.timeFormat, parsed.timeFormat);
+                settings.hideTags = parsed.hideTags !== undefined ? !!parsed.hideTags : settings.hideTags;
+                settings.colorRatings = parsed.colorRatings !== undefined ? !!parsed.colorRatings : settings.colorRatings;
                 settings.lang = parsed.lang || settings.lang;
                 settings.displayStyle = parsed.displayStyle || settings.displayStyle;
 
@@ -204,13 +208,14 @@
                 display: none !important;
             }
         `;
+        const isRatingsActive = appSettings.colorRatings !== false;
         const classMap = {
-            'cf-hide-submissions': !appSettings.show.submissions,
-            'cf-hide-status': !appSettings.show.status,
-            'cf-hide-hacks': !appSettings.show.hacks,
-            'cf-hide-problemset': !appSettings.show.problemset,
-            'cf-hide-contestProblems': !appSettings.show.contestProblems,
-            'cf-hide-standings': !appSettings.show.standings,
+            'cf-hide-submissions': !isRatingsActive || !appSettings.show.submissions,
+            'cf-hide-status': !isRatingsActive || !appSettings.show.status,
+            'cf-hide-hacks': !isRatingsActive || !appSettings.show.hacks,
+            'cf-hide-problemset': !isRatingsActive || !appSettings.show.problemset,
+            'cf-hide-contestProblems': !isRatingsActive || !appSettings.show.contestProblems,
+            'cf-hide-standings': !isRatingsActive || !appSettings.show.standings,
             'cf-hide-userAvatar': !appSettings.show.userAvatar,
             'cf-hide-langIcon': !appSettings.show.langIcon,
             'cf-hide-timeFormat': !appSettings.timeFormat.enabled
@@ -224,15 +229,20 @@
     // Inject Global Custom CSS
     const customStyle = document.createElement('style');
     customStyle.innerHTML = `
+        @import url('https://cdn.jsdelivr.net/npm/@fontsource/kaushan-script@5.0.18/index.css');
+        @import url('https://cdn.jsdelivr.net/npm/@fontsource/outfit@5.0.18/index.css');
+        @import url('https://fonts.loli.net/css2?family=Kaushan+Script&family=Outfit:wght@600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Outfit:wght@600;700;800&display=swap');
+
         .cf-version-tag {
             background-color: #e6f7ff;
             color: #1890ff;
             border: 1px solid #91d5ff;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 8px;
-            margin-left: 10px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-left: 8px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -270,7 +280,6 @@
             display: inline-block;
             width: 34px;
             height: 18px;
-            margin-right: 8px;
             flex-shrink: 0;
             vertical-align: middle;
         }
@@ -303,6 +312,382 @@
         }
         .cf-toggle-switch input:checked + .cf-toggle-slider:before {
             transform: translateX(16px);
+        }
+
+        /* Colorforces Settings Modal Styles */
+        .cf-settings-modal {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            width: 550px;
+            height: 50vh;
+            max-height: 50vh;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.14), 0 2px 6px rgba(0,0,0,0.04);
+            display: none;
+            flex-direction: column;
+            color: #1e293b;
+            box-sizing: border-box;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            animation: cf-fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes cf-fadeIn {
+            from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .cf-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 16px 20px 14px 20px;
+            border-bottom: 1px solid #edf2f7;
+            background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+        }
+        .cf-header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+        }
+        @keyframes cf-title-rainbow-roll {
+            0% {
+                background-position: 0% center;
+            }
+            100% {
+                background-position: 200% center;
+            }
+        }
+        .cf-header-title {
+            font-family: 'Kaushan Script', 'Satisfy', 'Segoe Script', 'Brush Script MT', cursive, sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            background: linear-gradient(
+                90deg,
+                #ff8e9e 0%,
+                #ffd166 16.6%,
+                #69db7c 33.3%,
+                #48cae4 50%,
+                #91a7ff 66.6%,
+                #f783ac 83.3%,
+                #ff8e9e 100%,
+                #ffd166 116.6%,
+                #69db7c 133.3%,
+                #48cae4 150%,
+                #91a7ff 166.6%,
+                #f783ac 183.3%,
+                #ff8e9e 200%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            animation: cf-title-rainbow-roll 4s linear infinite;
+            display: inline-flex;
+            align-items: baseline;
+            gap: 8px;
+            line-height: 1.2;
+            user-select: none;
+            margin: 0;
+            padding: 0 8px 0 0;
+        }
+        .cf-title-version {
+            font-family: inherit;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            opacity: 0.95;
+            padding-right: 6px;
+            display: inline-block;
+        }
+        .cf-header-subtitle {
+            margin-top: 10px;
+            font-size: 15px;
+            color: #334155;
+            font-weight: 600;
+            line-height: 1.2;
+            user-select: none;
+            align-self: flex-start;
+        }
+        .cf-close-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 22px;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+            padding: 0;
+            line-height: 1;
+            box-shadow: none;
+        }
+        .cf-close-btn:hover {
+            background: transparent;
+            color: #475569;
+            transform: scale(1.15);
+        }
+        .cf-modal-body {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            background: #ffffff;
+        }
+        .cf-sidebar-nav {
+            width: 170px;
+            min-width: 170px;
+            max-width: 170px;
+            flex-shrink: 0;
+            background: #f8fafc;
+            border-right: 1px solid #edf2f7;
+            padding: 10px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-sizing: border-box;
+        }
+        .cf-nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .cf-nav-tab:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .cf-nav-tab.active {
+            background: #e6f4ff;
+            color: #1677ff;
+            font-weight: 600;
+        }
+        .cf-tab-icon {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .cf-tab-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+        .cf-content-area {
+            flex: 1;
+            min-width: 0;
+            padding: 14px 18px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .cf-content-area::-webkit-scrollbar {
+            width: 5px;
+        }
+        .cf-content-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .cf-content-area::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+        .cf-content-area::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
+        .cf-tab-panel {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .cf-tab-panel.active {
+            display: flex;
+        }
+        .cf-setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 32px;
+        }
+        .cf-setting-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            user-select: none;
+        }
+        .cf-setting-sublabel {
+            font-size: 12px;
+            color: #64748b;
+            user-select: none;
+        }
+        .roundbox.cf-tags-hidden-notice,
+        span.tag-box.cf-tags-hidden-notice {
+            background: linear-gradient(135deg, rgba(255, 222, 238, 0.75) 0%, rgba(255, 245, 215, 0.75) 25%, rgba(220, 255, 230, 0.75) 50%, rgba(210, 245, 255, 0.75) 75%, rgba(235, 220, 255, 0.75) 100%) padding-box,
+                        linear-gradient(135deg, #ff78cb 0%, #ffa502 25%, #2ed573 50%, #70a1ff 75%, #a55eea 100%) border-box !important;
+            border: 1px solid transparent !important;
+            user-select: none;
+            cursor: default;
+        }
+        .roundbox.cf-tags-hidden-notice .tag-box,
+        span.tag-box.cf-tags-hidden-notice {
+            background: linear-gradient(90deg, #c0392b 0%, #d35400 24%, #1b8a5a 52%, #1b62b3 78%, #5f27cd 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            color: transparent !important;
+            font-weight: 600;
+            user-select: none;
+            cursor: default;
+        }
+        #cf-ratings-settings-btn {
+            width: 44px !important;
+            height: 44px !important;
+            background: conic-gradient(
+                from -45deg,
+                #ffb3ba 0deg,
+                #ffd1b3 51.4deg,
+                #ffe8a1 102.8deg,
+                #baffc9 154.3deg,
+                #a3e8e4 205.7deg,
+                #b5d2ff 257.1deg,
+                #d8bbff 308.6deg,
+                #ffb3ba 360deg
+            ) padding-box,
+            conic-gradient(
+                from -45deg,
+                #ff78cb 0deg,
+                #ffa502 51.4deg,
+                #ffdd59 102.8deg,
+                #2ed573 154.3deg,
+                #00d2d3 205.7deg,
+                #54a0ff 257.1deg,
+                #9b59b6 308.6deg,
+                #ff78cb 360deg
+            ) border-box !important;
+            border: 2px solid transparent !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 16px rgba(216, 187, 255, 0.45), 0 2px 8px rgba(163, 232, 228, 0.4) !important;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+            user-select: none !important;
+            box-sizing: border-box !important;
+        }
+        #cf-ratings-settings-btn:hover {
+            transform: scale(1.12) rotate(45deg) !important;
+            box-shadow: 0 6px 22px rgba(255, 179, 186, 0.6), 0 0 20px rgba(181, 210, 255, 0.55) !important;
+        }
+        #cf-ratings-settings-btn:active {
+            transform: scale(0.95) rotate(45deg) !important;
+        }
+        #cf-ratings-settings-btn svg {
+            width: 26px !important;
+            height: 26px !important;
+            display: block !important;
+            fill: #ffffff !important;
+            filter: drop-shadow(0 1px 3px rgba(80, 70, 110, 0.35)) !important;
+        }
+        .cf-modal-footer {
+            border-top: 1px solid #edf2f7;
+            padding: 10px 18px 8px 18px;
+            background: #fafbfc;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .cf-footer-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+        .cf-footer-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+            font-size: 12px;
+            user-select: none;
+        }
+        .cf-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+            display: inline-block;
+        }
+        .cf-footer-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cf-footer-link {
+            color: #64748b;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            transition: color 0.15s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        .cf-footer-link:hover {
+            color: #1677ff;
+        }
+        .cf-footer-divider {
+            color: #cbd5e1;
+            font-size: 12px;
+            user-select: none;
+        }
+        .cf-footer-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed #edf2f7;
+            padding-top: 5px;
+            font-size: 11px;
+            color: #94a3b8;
+            user-select: none;
+        }
+        .cf-footer-motto {
+            color: #94a3b8;
+        }
+        .cf-footer-author {
+            color: #94a3b8;
+        }
+        .cf-footer-author a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.15s ease;
+        }
+        .cf-footer-author a:hover {
+            color: #1677ff;
         }
     `;
     safeAppendStyle(customStyle);
@@ -470,18 +855,40 @@
                 const span = cell.querySelector('span[title="Ghost participant"]');
                 if (span) {
                     cell.classList.add('cf-team-formatted');
-                    const text = span.textContent;
-                    const parts = text.split(' - ');
+                    const text = span.textContent.trim();
                     let school = '', team = '', members = '';
-                    if (parts.length >= 3) {
-                        school = parts[0];
-                        team = parts[1];
-                        members = parts.slice(2).join(' - ');
-                    } else if (parts.length === 2) {
-                        team = parts[0];
-                        members = parts[1];
+
+                    if (text.includes(': ')) {
+                        // Pattern: School: Team (Members) or School: Team
+                        const parts = text.split(': ');
+                        school = parts[0].trim();
+                        let rest = parts.slice(1).join(': ').trim();
+                        const parenMatch = rest.match(/^(.*?)\s*\((.*?)\)$/);
+                        if (parenMatch) {
+                            team = parenMatch[1].trim();
+                            members = parenMatch[2].trim();
+                        } else {
+                            team = rest;
+                        }
+                    } else if (text.includes(' - ') && text.split(' - ').length >= 3) {
+                        // Pattern: School - Team - Members
+                        const parts = text.split(' - ');
+                        school = parts[0].trim();
+                        team = parts[1].trim();
+                        members = parts.slice(2).join(' - ').trim();
+                    } else if (text.includes(' - ') && text.split(' - ').length === 2) {
+                        // Pattern: School - Team
+                        const parts = text.split(' - ');
+                        school = parts[0].trim();
+                        team = parts[1].trim();
+                    } else if (text.match(/^(.*?)\s*\((.*?)\)$/)) {
+                        // Pattern: Team (School)
+                        const match = text.match(/^(.*?)\s*\((.*?)\)$/);
+                        team = match[1].trim();
+                        school = match[2].trim();
                     } else {
-                        members = text;
+                        // Fallback
+                        team = text;
                     }
 
                     cell.innerHTML = '';
@@ -602,6 +1009,14 @@
         cell.style.textAlign = 'center';
         cell.style.verticalAlign = 'middle';
 
+        if (!appSettings.colorRatings) {
+            cell.textContent = rating;
+            cell.style.setProperty('background-color', 'transparent', 'important');
+            cell.style.setProperty('color', isDarkTheme() ? '#EEEEEE' : 'inherit', 'important');
+            cell.style.setProperty('font-weight', 'normal', 'important');
+            return;
+        }
+
         if (appSettings.displayStyle === 'tag') {
             cell.textContent = '';
             cell.style.setProperty('background-color', 'transparent', 'important');
@@ -628,9 +1043,18 @@
     }
 
     function applyProblemTagStyle(box, tag, rating) {
-        if (!appSettings.show.problemTags) {
+        if (!appSettings.show.problemTags || !appSettings.colorRatings) {
             if (box && box.hasAttribute('data-original-css')) box.style.cssText = box.dataset.originalCss;
+            else if (box) {
+                box.style.removeProperty('background-color');
+                box.style.removeProperty('border-color');
+                box.style.removeProperty('color');
+            }
             if (tag.hasAttribute('data-original-css')) tag.style.cssText = tag.dataset.originalCss;
+            else {
+                tag.style.removeProperty('background-color');
+                tag.style.removeProperty('color');
+            }
             return;
         }
 
@@ -657,6 +1081,122 @@
             tag.style.setProperty('color', isWhite ? 'white' : '#000', 'important');
         }
     }
+
+    function applyProblemTagsVisibility() {
+        const isHide = !!appSettings.hideTags;
+
+        // 1. Locate the single problem tags container
+        let container = null;
+
+        // Strategy A: Find the sidebar box with caption "Problem tags" or "问题标签"
+        const tagSidebox = Array.from(document.querySelectorAll('.roundbox.sidebox, #sidebar .roundbox')).find(box => {
+            if (box.closest('.cf-settings-modal')) return false;
+            const caption = box.querySelector('.caption');
+            return caption && /tags|标签/i.test(caption.textContent);
+        });
+
+        if (tagSidebox) {
+            container = tagSidebox.querySelector('div[style*="padding"]') || tagSidebox.querySelector('.caption')?.nextElementSibling || tagSidebox;
+        } else {
+            // Strategy B: Fallback - find common ancestor containing all tag-box spans
+            const allSpans = Array.from(document.querySelectorAll('span.tag-box')).filter(t => !t.closest('.cf-settings-modal'));
+            if (allSpans.length > 0) {
+                let p = allSpans[0].parentElement;
+                while (p && p !== document.body) {
+                    if (allSpans.every(span => p.contains(span))) {
+                        container = p;
+                        break;
+                    }
+                    p = p.parentElement;
+                }
+            }
+        }
+
+        if (!container) return;
+        if (isHide) {
+            // Find all tag spans in this container (strictly excluding any hidden notice or child of notice)
+            const tagSpans = Array.from(container.querySelectorAll('span.tag-box')).filter(t => !t.closest('.cf-tags-hidden-notice'));
+            if (tagSpans.length === 0 && !container.querySelector('.cf-tags-hidden-notice')) return;
+
+            let isWrapped = false;
+            let sampleFontSize = '1.2rem';
+
+            // Hide all non-score tags using display: none, leave score tags untouched
+            tagSpans.forEach(span => {
+                const text = span.textContent.trim();
+                const title = span.getAttribute('title') || '';
+                const isScore = /^\*\s*\d+/.test(text) || span.dataset.rating || /difficulty|难度/i.test(title);
+
+                if (span.style.fontSize) sampleFontSize = span.style.fontSize;
+
+                const item = (span.parentElement && span.parentElement !== container && span.parentElement.classList.contains('roundbox'))
+                    ? span.parentElement
+                    : span;
+
+                if (item.tagName === 'DIV') isWrapped = true;
+
+                if (!isScore) {
+                    item.style.display = 'none';
+                    item.setAttribute('data-cf-tag-hidden', 'true');
+                }
+            });
+
+            // Add ONE hidden tag as the first item if not already present, or ensure it's visible
+            const existingNotice = container.querySelector('.cf-tags-hidden-notice');
+            if (existingNotice) {
+                existingNotice.style.display = '';
+                existingNotice.removeAttribute('data-cf-tag-hidden');
+            } else {
+                let hiddenItem;
+                if (isWrapped) {
+                    hiddenItem = document.createElement('div');
+                    hiddenItem.className = 'roundbox borderTopRound borderBottomRound cf-tags-hidden-notice';
+                    hiddenItem.style.cssText = 'margin:2px; padding:0 3px 2px 3px; float:left;';
+                    const hiddenSpan = document.createElement('span');
+                    hiddenSpan.className = 'tag-box cf-tags-hidden-notice';
+                    hiddenSpan.style.fontSize = sampleFontSize;
+                    hiddenSpan.textContent = 'tags hidden';
+                    hiddenSpan.title = 'Tags hidden';
+                    hiddenItem.appendChild(hiddenSpan);
+                } else {
+                    hiddenItem = document.createElement('span');
+                    hiddenItem.className = 'tag-box cf-tags-hidden-notice';
+                    hiddenItem.style.fontSize = sampleFontSize;
+                    hiddenItem.textContent = 'tags hidden';
+                    hiddenItem.title = 'Tags hidden';
+                }
+
+                container.insertBefore(hiddenItem, container.firstElementChild);
+            }
+        } else {
+            // 1. Remove the hidden notice
+            container.querySelectorAll('.cf-tags-hidden-notice').forEach(n => n.remove());
+
+            // 2. Restore all previously hidden tag items
+            container.querySelectorAll('[data-cf-tag-hidden="true"]').forEach(item => {
+                item.style.display = '';
+                item.removeAttribute('data-cf-tag-hidden');
+            });
+        }
+    }
+
+    // Hotkey: Alt + T to toggle hide problem tags
+    document.addEventListener('keydown', (e) => {
+        if (e.altKey && (e.key === 't' || e.key === 'T' || e.code === 'KeyT')) {
+            const activeEl = document.activeElement;
+            if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable)) {
+                return;
+            }
+            e.preventDefault();
+            appSettings.hideTags = !appSettings.hideTags;
+            saveSettings(appSettings);
+            applyProblemTagsVisibility();
+            const cb = document.querySelector('.cf-toggle-hide-tags');
+            if (cb) {
+                cb.checked = !!appSettings.hideTags;
+            }
+        }
+    });
 
     // Apply ratings to tables and standalone links
     function applyRatings(ratingsMap) {
@@ -938,7 +1478,6 @@
         // 1.5 Handle Standings tables specifically (adding a whole new row under the header)
         const standingsTables = document.querySelectorAll('table.standings:not([data-cf-rating-standings-processed])');
         standingsTables.forEach(table => {
-            if (!appSettings.show.standings) return;
             table.setAttribute('data-cf-rating-standings-processed', 'true');
 
             const headerRow = table.querySelector('tr');
@@ -1059,7 +1598,7 @@
                     if (!tag.hasAttribute('data-original-css')) {
                         tag.dataset.originalCss = tag.style.cssText;
                     }
-                    const parentBox = tag.closest('.roundbox');
+                    const parentBox = (tag.parentElement && tag.parentElement.classList.contains('roundbox') && !tag.parentElement.classList.contains('sidebox')) ? tag.parentElement : null;
                     if (parentBox) {
                         parentBox.setAttribute('data-cf-rating-added', 'true');
                         parentBox.dataset.rating = rating;
@@ -1179,21 +1718,39 @@
     }
 
     // Observe DOM changes to apply ratings to newly loaded elements (e.g. via AJAX/PJAX)
+    let isMutationProcessing = false;
+    let observerDebounceTimer = null;
     function setupObserver(ratingsMap) {
         const observer = new MutationObserver((mutations) => {
+            if (isMutationProcessing) return;
             let shouldApply = false;
             for (const mutation of mutations) {
-                if (mutation.addedNodes.length > 0) {
-                    shouldApply = true;
-                    break;
+                if (mutation.target && (mutation.target.closest?.('.cf-settings-modal, #cf-ratings-settings-btn, .pcr-app, .roundbox.sidebox, #sidebar') || mutation.target.id?.startsWith('cf-'))) {
+                    continue;
                 }
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType === 1 && !node.classList?.contains('cf-tags-hidden-notice') && !node.id?.startsWith('cf-') && !node.classList?.contains('cf-settings-modal') && !node.classList?.contains('pcr-app') && !node.closest?.('.cf-settings-modal, #cf-ratings-settings-btn, .pcr-app, .roundbox.sidebox, #sidebar')) {
+                        shouldApply = true;
+                        break;
+                    }
+                }
+                if (shouldApply) break;
             }
             if (shouldApply) {
-                formatStandingsCells();
-                applyRatings(ratingsMap);
-                applyUserAvatars();
-                wrapVirtualParticipationTime();
-                setTimeout(applyTimeFormatting, 500);
+                clearTimeout(observerDebounceTimer);
+                observerDebounceTimer = setTimeout(() => {
+                    if (isMutationProcessing) return;
+                    isMutationProcessing = true;
+                    try {
+                        formatStandingsCells();
+                        applyRatings(ratingsMap);
+                        applyUserAvatars();
+                        wrapVirtualParticipationTime();
+                        setTimeout(applyTimeFormatting, 300);
+                    } finally {
+                        setTimeout(() => { isMutationProcessing = false; }, 200);
+                    }
+                }, 100);
             }
         });
 
@@ -1358,6 +1915,7 @@
         formatStandingsCells();
         applyRatings(ratingsMap);
         applyUserAvatars();
+        applyProblemTagsVisibility();
         wrapVirtualParticipationTime();
         setTimeout(applyTimeFormatting, 500);
         setupObserver(ratingsMap);
@@ -1366,21 +1924,32 @@
     function createSettingsUI() {
         if (document.getElementById('cf-ratings-settings-btn')) return;
 
+        let selectedColor = appSettings.acBgColor;
         let applySettingsRealTime = () => {
             appSettings.acBgColor = selectedColor;
+            if (typeof cbHideTags !== 'undefined') {
+                appSettings.hideTags = cbHideTags.checked;
+            }
             localStorage.setItem('cf_ratings_settings', JSON.stringify(appSettings));
+            applyProblemTagsVisibility();
         };
         let checkIfChanged = () => { applySettingsRealTime(); };
 
         const i18n = {
             zh: {
                 title: '插件设置',
+                tabGeneral: '通用',
+                tabAppearance: '界面',
+                tabRatings: '难度分',
+                tabUser: '用户',
                 langLabel: '菜单语言',
-                displayStyleTitle: 'Ratings 展示形式',
+                locHideTags: '隐藏算法标签 (Alt+T)',
+                masterColorRatings: '色彩展示难度分',
+                displayStyleTitle: '难度分展示形式',
                 styleBlock: '色块',
                 styleTag: '标签',
                 acColor: 'AC 背景色',
-                locationsTitle: '色彩展示难度分的区域',
+                locationsTitle: '难度分展示区域',
                 locSubmissions: '提交',
                 locStatus: '状态',
                 locHacks: 'Hack',
@@ -1398,17 +1967,25 @@
                 timeFormatPreview: '预览: ',
                 timeFormatDisabled: '格式化已关闭',
                 saveBtn: '保存并刷新',
-                footerGithub: 'GitHub 项目主页',
-                footerIssue: '反馈/报告问题'
+                footerRatingStatus: (timeStr) => `上次Ratings更新时间（${timeStr}）`,
+                footerMotto: 'Colorforces · 算法竞赛视觉增强',
+                footerGithub: 'GitHub',
+                footerIssue: '问题反馈'
             },
             en: {
                 title: 'Plugin Settings',
+                tabGeneral: 'General',
+                tabAppearance: 'Appearance',
+                tabRatings: 'Ratings',
+                tabUser: 'Users',
                 langLabel: 'Menu Language',
+                locHideTags: 'Hide Algorithm Tags (Alt+T)',
+                masterColorRatings: 'Colored Ratings',
                 displayStyleTitle: 'Ratings Display Format',
                 styleBlock: 'Block',
                 styleTag: 'Tag',
                 acColor: 'AC Background',
-                locationsTitle: 'Colorized Rating Display Locations',
+                locationsTitle: 'Ratings Display Locations',
                 locSubmissions: 'Submissions',
                 locStatus: 'Status',
                 locHacks: 'Hacks',
@@ -1426,11 +2003,13 @@
                 timeFormatPreview: 'Preview: ',
                 timeFormatDisabled: 'Disabled',
                 saveBtn: 'Save & Reload',
-                footerGithub: 'GitHub Repository',
-                footerIssue: 'Report Bug / Issue'
+                footerRatingStatus: (timeStr) => `Ratings Last Updated (${timeStr})`,
+                footerMotto: 'Colorforces · Reimagining Codeforces',
+                footerGithub: 'GitHub',
+                footerIssue: 'Feedback'
             }
         };
-        let currentLang = appSettings.lang || 'zh';
+        let currentLang = appSettings.lang || 'en';
         const t = () => i18n[currentLang];
 
         const container = document.createElement('div');
@@ -1439,92 +2018,124 @@
             top: 70px;
             right: 20px;
             z-index: 999999;
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         `;
 
         const btn = document.createElement('div');
-        btn.innerHTML = '⚙️';
-        btn.title = 'CF Submissions Ratings Settings';
-        btn.style.cssText = `
-            width: 44px;
-            height: 44px;
-            background: #ffffff;
-            border: 1px solid #dcdcdc;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
-            user-select: none;
+        btn.id = 'cf-ratings-settings-btn';
+        btn.title = 'Colorforces Settings';
+        btn.innerHTML = `
+            <svg viewBox="0 0 1024 1024" width="26" height="26" fill="#ffffff">
+                <path d="M967.1 426.6l50.9-67.5c-10.6-35.6-24.7-69.6-42.2-101.7l-83.7-11.8C831 237.1 782.9 189 774.3 127.8l-11.8-83.7c-32-17.4-66.1-31.6-101.7-42.2l-67.5 50.9c-24.7 18.6-54 27.9-83.4 27.9s-58.7-9.3-83.4-27.9L359.1 2c-35.6 10.6-69.6 24.7-101.7 42.2l-11.8 83.7C237.1 189 189 237.1 127.8 245.7l-83.7 11.8c-17.4 32-31.6 66.1-42.2 101.7l50.9 67.5C90 476 90 544 52.9 593.4L2 660.9c10.6 35.6 24.7 69.6 42.2 101.7l83.7 11.8c61.2 8.6 109.3 56.7 117.9 117.9l11.8 83.7c32 17.4 66.1 31.6 101.7 42.2l67.5-50.9c24.7-18.6 54-27.9 83.4-27.9s58.7 9.3 83.4 27.9l67.5 50.9c35.6-10.6 69.6-24.7 101.7-42.2l11.8-83.7c8.6-61.2 56.7-109.3 117.9-117.9l83.7-11.8c17.4-32 31.6-66.1 42.2-101.7l-50.9-67.5C930 544 930 476 967.1 426.6zM511.5 710C401.9 710 313 621.1 313 511.5S401.9 313 511.5 313 710 401.9 710 511.5 621.1 710 511.5 710z"></path>
+            </svg>
         `;
-        btn.onmouseover = () => { btn.style.transform = 'scale(1.1)'; btn.style.boxShadow = '0 4px 15px rgba(0,0,0,0.15)'; };
-        btn.onmouseout = () => { btn.style.transform = 'scale(1)'; btn.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)'; };
 
         const modal = document.createElement('div');
-        modal.style.cssText = `
-            position: absolute;
-            top: 55px;
-            right: 0;
-            width: 320px;
-            max-height: 85vh;
-            overflow-y: auto;
-            background: #ffffff;
-            border: 1px solid #e1e1e1;
-            border-radius: 8px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
-            padding: 16px;
-            display: none;
-            flex-direction: column;
-            gap: 15px;
-            color: #333;
-        `;
+        modal.className = 'cf-settings-modal';
+        modal.style.display = 'none';
 
+        // 1. Top Header
         const header = document.createElement('div');
-        header.style.cssText = `
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 5px;
-        `;
+        header.className = 'cf-modal-header';
 
-        const headerTitleWrapper = document.createElement('div');
-        headerTitleWrapper.style.cssText = 'display: flex; flex-direction: column; width: 100%;';
-
-        const headerTitleTop = document.createElement('div');
-        headerTitleTop.style.cssText = 'display: flex; align-items: center; justify-content: space-between; width: 100%;';
+        const headerLeft = document.createElement('div');
+        headerLeft.className = 'cf-header-left';
 
         const headerTitle = document.createElement('div');
-        headerTitle.style.cssText = 'font-size: 18px; font-weight: 800;';
-        headerTitle.textContent = 'Colorforces';
-
-        const versionTag = document.createElement('div');
-        versionTag.className = 'cf-version-tag';
-        versionTag.textContent = 'v1.5.5';
-
-        headerTitleTop.appendChild(headerTitle);
-        headerTitleTop.appendChild(versionTag);
+        headerTitle.className = 'cf-header-title';
+        headerTitle.innerHTML = `Colorforces <span class="cf-title-version">v1.5.6</span>`;
 
         const pluginSubtitle = document.createElement('div');
-        pluginSubtitle.id = 'cf-plugin-subtitle';
-        pluginSubtitle.style.cssText = 'font-size: 15px; color: #666; margin-top: 8px;';
+        pluginSubtitle.className = 'cf-header-subtitle';
 
-        headerTitleWrapper.appendChild(headerTitleTop);
-        headerTitleWrapper.appendChild(pluginSubtitle);
+        headerLeft.appendChild(headerTitle);
+        headerLeft.appendChild(pluginSubtitle);
 
-        header.appendChild(headerTitleWrapper);
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'cf-close-btn';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.title = 'Close';
+        closeBtn.onclick = () => { modal.style.display = 'none'; };
+
+        header.appendChild(headerLeft);
+        header.appendChild(closeBtn);
         modal.appendChild(header);
 
-        // Language Switch Setting
+        // 2. Modal Body (Two columns: Sidebar + Content Area)
+        const modalBody = document.createElement('div');
+        modalBody.className = 'cf-modal-body';
+
+        const sidebar = document.createElement('div');
+        sidebar.className = 'cf-sidebar-nav';
+
+        const contentArea = document.createElement('div');
+        contentArea.className = 'cf-content-area';
+
+        modalBody.appendChild(sidebar);
+        modalBody.appendChild(contentArea);
+        modal.appendChild(modalBody);
+
+        // Sidebar Navigation Tabs Setup
+        const tabDefs = [
+            { id: 'general', icon: '⚙️', labelKey: 'tabGeneral' },
+            { id: 'appearance', icon: '🎨', labelKey: 'tabAppearance' },
+            { id: 'ratings', icon: '📊', labelKey: 'tabRatings' },
+            { id: 'user', icon: '👤', labelKey: 'tabUser' }
+        ];
+
+        const tabButtons = {};
+        const tabPanels = {};
+        let activeTab = 'general';
+
+        const switchTab = (tabId) => {
+            activeTab = tabId;
+            tabDefs.forEach(def => {
+                const isActive = def.id === tabId;
+                if (tabButtons[def.id]) {
+                    tabButtons[def.id].classList.toggle('active', isActive);
+                }
+                if (tabPanels[def.id]) {
+                    tabPanels[def.id].classList.toggle('active', isActive);
+                }
+            });
+        };
+
+        tabDefs.forEach(def => {
+            const tabBtn = document.createElement('button');
+            tabBtn.type = 'button';
+            tabBtn.className = `cf-nav-tab ${def.id === activeTab ? 'active' : ''}`;
+
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'cf-tab-icon';
+            iconSpan.textContent = def.icon;
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'cf-tab-text';
+            def.textSpan = textSpan;
+
+            tabBtn.appendChild(iconSpan);
+            tabBtn.appendChild(textSpan);
+
+            tabBtn.onclick = () => switchTab(def.id);
+
+            sidebar.appendChild(tabBtn);
+            tabButtons[def.id] = tabBtn;
+
+            const panel = document.createElement('div');
+            panel.className = `cf-tab-panel ${def.id === activeTab ? 'active' : ''}`;
+            contentArea.appendChild(panel);
+            tabPanels[def.id] = panel;
+        });
+
+        // -------------------------------------------------------------
+        // PANEL 1: 通用 (General)
+        // -------------------------------------------------------------
         const rowLang = document.createElement('div');
-        rowLang.style.cssText = `display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;`;
+        rowLang.className = 'cf-setting-item';
 
         const labelLang = document.createElement('span');
-        labelLang.style.cssText = 'font-size: 14px; font-weight: bold;';
+        labelLang.className = 'cf-setting-label';
 
         const langSwitch = document.createElement('div');
         langSwitch.style.cssText = `
@@ -1557,15 +2168,15 @@
         const langEnBtn = document.createElement('div');
 
         const updateLangSwitchUI = () => {
-            const btnBase = 'flex: 1; text-align: center; padding: 2px 0; font-size: 12px; z-index: 1; transition: color 0.25s; box-sizing: border-box; margin: 1px;';
+            const btnBase = 'flex: 1; text-align: center; padding: 3px 0; font-size: 12px; z-index: 1; transition: color 0.25s; box-sizing: border-box; margin: 1px;';
             if (currentLang === 'zh') {
                 langSlider.style.left = '2px';
-                langZhBtn.style.cssText = `${btnBase} color: #1890ff;`;
+                langZhBtn.style.cssText = `${btnBase} color: #1890ff; font-weight: bold;`;
                 langEnBtn.style.cssText = `${btnBase} color: #888;`;
             } else {
                 langSlider.style.left = '50%';
                 langZhBtn.style.cssText = `${btnBase} color: #888;`;
-                langEnBtn.style.cssText = `${btnBase} color: #1890ff;`;
+                langEnBtn.style.cssText = `${btnBase} color: #1890ff; font-weight: bold;`;
             }
         };
         updateLangSwitchUI();
@@ -1579,14 +2190,263 @@
 
         rowLang.appendChild(labelLang);
         rowLang.appendChild(langSwitch);
-        modal.appendChild(rowLang);
+        tabPanels.general.appendChild(rowLang);
 
-        // Display Style Setting
+        // 2) Hide Problem Tags (Keep Rating)
+        const rowHideTags = document.createElement('label');
+        rowHideTags.className = 'cf-setting-item';
+        rowHideTags.style.cssText = 'cursor: pointer; user-select: none; margin: 0;';
+
+        const labelHideTags = document.createElement('span');
+        labelHideTags.className = 'cf-setting-label';
+
+        const toggleContainerHideTags = document.createElement('div');
+        toggleContainerHideTags.className = 'cf-toggle-switch';
+        const cbHideTags = document.createElement('input');
+        cbHideTags.type = 'checkbox';
+        cbHideTags.className = 'cf-toggle-hide-tags';
+        cbHideTags.checked = !!appSettings.hideTags;
+        const sliderHideTags = document.createElement('span');
+        sliderHideTags.className = 'cf-toggle-slider';
+        toggleContainerHideTags.appendChild(cbHideTags);
+        toggleContainerHideTags.appendChild(sliderHideTags);
+
+        rowHideTags.appendChild(labelHideTags);
+        rowHideTags.appendChild(toggleContainerHideTags);
+        tabPanels.general.appendChild(rowHideTags);
+
+        cbHideTags.onchange = () => {
+            checkIfChanged();
+        };
+
+        // -------------------------------------------------------------
+        // PANEL 2: 界面 (Appearance)
+        // -------------------------------------------------------------
+        // 1) AC Background Color
+        const rowAcColor = document.createElement('div');
+        rowAcColor.className = 'cf-setting-item';
+
+        const labelAcColor = document.createElement('span');
+        labelAcColor.className = 'cf-setting-label';
+
+        const colorPickerContainer = document.createElement('div');
+
+        rowAcColor.appendChild(labelAcColor);
+        rowAcColor.appendChild(colorPickerContainer);
+        tabPanels.appearance.appendChild(rowAcColor);
+
+        if (window.Pickr) {
+            const pickr = Pickr.create({
+                el: colorPickerContainer,
+                theme: 'nano',
+                default: appSettings.acBgColor,
+                position: 'bottom-end',
+                components: {
+                    preview: true,
+                    opacity: true,
+                    hue: true,
+                    interaction: {
+                        hex: true,
+                        rgba: true,
+                        input: true,
+                        clear: false,
+                        save: false
+                    }
+                }
+            });
+
+            pickr.on('change', (color) => {
+                selectedColor = color.toRGBA().toString(0);
+                pickr.applyColor(true);
+                checkIfChanged();
+            }).on('save', () => {
+                checkIfChanged();
+            });
+        }
+
+        // 2) Show Language Icon
+        const rowLangIcon = document.createElement('label');
+        rowLangIcon.className = 'cf-setting-item';
+        rowLangIcon.style.cssText = 'cursor: pointer; user-select: none; margin: 0;';
+
+        const labelLangIcon = document.createElement('span');
+        labelLangIcon.className = 'cf-setting-label';
+
+        const toggleContainerLangIcon = document.createElement('div');
+        toggleContainerLangIcon.className = 'cf-toggle-switch';
+        const cbLangIcon = document.createElement('input');
+        cbLangIcon.type = 'checkbox';
+        cbLangIcon.checked = appSettings.show.langIcon !== false;
+        const sliderLangIcon = document.createElement('span');
+        sliderLangIcon.className = 'cf-toggle-slider';
+        toggleContainerLangIcon.appendChild(cbLangIcon);
+        toggleContainerLangIcon.appendChild(sliderLangIcon);
+
+        rowLangIcon.appendChild(labelLangIcon);
+        rowLangIcon.appendChild(toggleContainerLangIcon);
+        tabPanels.appearance.appendChild(rowLangIcon);
+
+        // 2b) Language Icon Size
+        const rowLangIconSize = document.createElement('div');
+        rowLangIconSize.className = 'cf-setting-item';
+        rowLangIconSize.style.paddingLeft = '12px';
+
+        const labelLangIconSize = document.createElement('span');
+        labelLangIconSize.className = 'cf-setting-sublabel';
+
+        const langIconSizeInput = document.createElement('input');
+        langIconSizeInput.type = 'range';
+        langIconSizeInput.min = '0.5';
+        langIconSizeInput.max = '2.0';
+        langIconSizeInput.step = '0.1';
+        langIconSizeInput.value = appSettings.langIconSize || 1.0;
+        langIconSizeInput.style.cssText = 'width: 100px; cursor: pointer;';
+
+        const langIconSizeVal = document.createElement('span');
+        langIconSizeVal.style.cssText = 'font-size: 12px; width: 28px; text-align: right; display: inline-block; color: #64748b; font-weight: 500;';
+        langIconSizeVal.textContent = parseFloat(langIconSizeInput.value).toFixed(1) + 'x';
+
+        langIconSizeInput.oninput = () => {
+            langIconSizeVal.textContent = parseFloat(langIconSizeInput.value).toFixed(1) + 'x';
+            checkIfChanged();
+        };
+
+        const sizeWrapperLang = document.createElement('div');
+        sizeWrapperLang.style.display = 'flex';
+        sizeWrapperLang.style.alignItems = 'center';
+        sizeWrapperLang.style.gap = '5px';
+        sizeWrapperLang.appendChild(langIconSizeInput);
+        sizeWrapperLang.appendChild(langIconSizeVal);
+
+        rowLangIconSize.appendChild(labelLangIconSize);
+        rowLangIconSize.appendChild(sizeWrapperLang);
+        tabPanels.appearance.appendChild(rowLangIconSize);
+
+        cbLangIcon.onchange = () => {
+            rowLangIconSize.style.display = cbLangIcon.checked ? 'flex' : 'none';
+            checkIfChanged();
+        };
+        rowLangIconSize.style.display = cbLangIcon.checked ? 'flex' : 'none';
+
+        // 3) Show Short Verdicts (AC/WA)
+        const rowShortVerdict = document.createElement('label');
+        rowShortVerdict.className = 'cf-setting-item';
+        rowShortVerdict.style.cssText = 'cursor: pointer; user-select: none; margin: 0;';
+
+        const labelShortVerdict = document.createElement('span');
+        labelShortVerdict.className = 'cf-setting-label';
+
+        const toggleContainerShortVerdict = document.createElement('div');
+        toggleContainerShortVerdict.className = 'cf-toggle-switch';
+        const cbShortVerdict = document.createElement('input');
+        cbShortVerdict.type = 'checkbox';
+        cbShortVerdict.checked = !!appSettings.show.shortVerdict;
+        const sliderShortVerdict = document.createElement('span');
+        sliderShortVerdict.className = 'cf-toggle-slider';
+        toggleContainerShortVerdict.appendChild(cbShortVerdict);
+        toggleContainerShortVerdict.appendChild(sliderShortVerdict);
+
+        rowShortVerdict.appendChild(labelShortVerdict);
+        rowShortVerdict.appendChild(toggleContainerShortVerdict);
+        tabPanels.appearance.appendChild(rowShortVerdict);
+
+        cbShortVerdict.onchange = () => {
+            checkIfChanged();
+        };
+
+        // 4) Custom Time Format
+        const timeGroup = document.createElement('div');
+        timeGroup.style.cssText = 'display: flex; flex-direction: column; gap: 8px;';
+
+        const timeTitleRow = document.createElement('div');
+        timeTitleRow.style.cssText = 'display: flex; justify-content: space-between; align-items: center;';
+
+        const timeTitle = document.createElement('label');
+        timeTitle.className = 'cf-setting-label';
+        timeTitle.style.cssText = 'display: flex; align-items: center; justify-content: space-between; width: 100%; cursor: pointer; user-select: none; margin: 0;';
+        const timeTitleTextNode = document.createTextNode('');
+
+        const timeToggleContainer = document.createElement('div');
+        timeToggleContainer.className = 'cf-toggle-switch';
+        const timeToggle = document.createElement('input');
+        timeToggle.type = 'checkbox';
+        timeToggle.checked = appSettings.timeFormat.enabled;
+        const timeSlider = document.createElement('span');
+        timeSlider.className = 'cf-toggle-slider';
+        timeToggleContainer.appendChild(timeToggle);
+        timeToggleContainer.appendChild(timeSlider);
+
+        timeTitle.appendChild(timeTitleTextNode);
+        timeTitle.appendChild(timeToggleContainer);
+
+        timeTitleRow.appendChild(timeTitle);
+        timeGroup.appendChild(timeTitleRow);
+
+        const timeInput = document.createElement('input');
+        timeInput.type = 'text';
+        timeInput.value = appSettings.timeFormat.format;
+        timeInput.placeholder = 'YYYY/MM/DD HH:mm';
+        timeInput.style.cssText = 'width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; box-sizing: border-box; outline: none; transition: border-color 0.2s;';
+        timeInput.onfocus = () => { timeInput.style.borderColor = '#1890ff'; };
+        timeInput.onblur = () => { timeInput.style.borderColor = '#e2e8f0'; };
+
+        const timePreview = document.createElement('div');
+        timePreview.style.cssText = 'font-size: 12px; color: #64748b; font-family: monospace; text-align: right;';
+
+        const updatePreview = () => {
+            if (timeToggle.checked) {
+                const d = new Date();
+                timePreview.textContent = t().timeFormatPreview + customFormatTime(d, timeInput.value || 'YYYY/MM/DD HH:mm');
+                timeInput.disabled = false;
+                timeInput.style.opacity = '1';
+            } else {
+                timePreview.textContent = t().timeFormatDisabled;
+                timeInput.disabled = true;
+                timeInput.style.opacity = '0.5';
+            }
+        };
+
+        timeInput.addEventListener('input', () => { updatePreview(); checkIfChanged(); });
+        timeToggle.addEventListener('change', () => { updatePreview(); checkIfChanged(); });
+
+        timeGroup.appendChild(timeInput);
+        timeGroup.appendChild(timePreview);
+        updatePreview();
+
+        tabPanels.appearance.appendChild(timeGroup);
+
+        // -------------------------------------------------------------
+        // PANEL 3: 难度分 (Ratings)
+        // -------------------------------------------------------------
+        // 1) Master Switch: 色彩展示难度分 (总开关)
+        const rowMasterColorRatings = document.createElement('label');
+        rowMasterColorRatings.className = 'cf-setting-item';
+        rowMasterColorRatings.style.cssText = 'cursor: pointer; user-select: none; margin: 0;';
+
+        const labelMasterColorRatings = document.createElement('span');
+        labelMasterColorRatings.className = 'cf-setting-label';
+
+        const toggleContainerMasterColorRatings = document.createElement('div');
+        toggleContainerMasterColorRatings.className = 'cf-toggle-switch';
+        const cbColorRatings = document.createElement('input');
+        cbColorRatings.type = 'checkbox';
+        cbColorRatings.checked = appSettings.colorRatings !== false;
+        const sliderMasterColorRatings = document.createElement('span');
+        sliderMasterColorRatings.className = 'cf-toggle-slider';
+        toggleContainerMasterColorRatings.appendChild(cbColorRatings);
+        toggleContainerMasterColorRatings.appendChild(sliderMasterColorRatings);
+
+        rowMasterColorRatings.appendChild(labelMasterColorRatings);
+        rowMasterColorRatings.appendChild(toggleContainerMasterColorRatings);
+        tabPanels.ratings.appendChild(rowMasterColorRatings);
+
+        // 2) Ratings Display Style (Sub-item)
         const rowStyle = document.createElement('div');
-        rowStyle.style.cssText = `display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;`;
+        rowStyle.className = 'cf-setting-item';
+        rowStyle.style.paddingLeft = '12px';
 
         const labelStyle = document.createElement('span');
-        labelStyle.style.cssText = 'font-size: 14px; font-weight: bold;';
+        labelStyle.className = 'cf-setting-sublabel';
 
         const styleSwitch = document.createElement('div');
         styleSwitch.style.cssText = `
@@ -1619,13 +2479,13 @@
         let currentDisplayStyle = appSettings.displayStyle || 'block';
 
         const updateStyleUI = () => {
-            const btnBase = 'flex: 1; text-align: center; padding: 2px 0; font-size: 12px; z-index: 1; transition: color 0.25s; box-sizing: border-box; margin: 1px;';
+            const btnBase = 'flex: 1; text-align: center; padding: 3px 0; font-size: 12px; z-index: 1; transition: color 0.25s; box-sizing: border-box; margin: 1px;';
 
             if (currentDisplayStyle === 'block') {
                 slider.style.left = '2px';
                 slider.style.background = getRatingBgColor(2400);
                 slider.style.border = `1px solid ${getRatingBgColor(2400)}`;
-                styleBlockBtn.style.cssText = `${btnBase} color: white;`;
+                styleBlockBtn.style.cssText = `${btnBase} color: white; font-weight: bold;`;
                 styleTagBtn.style.cssText = `${btnBase} color: #888;`;
             } else {
                 slider.style.left = '50%';
@@ -1633,7 +2493,7 @@
                 slider.style.background = ts.bg;
                 slider.style.border = `1px solid ${ts.border}`;
                 styleBlockBtn.style.cssText = `${btnBase} color: #888;`;
-                styleTagBtn.style.cssText = `${btnBase} color: ${ts.text};`;
+                styleTagBtn.style.cssText = `${btnBase} color: ${ts.text}; font-weight: bold;`;
             }
         };
         updateStyleUI();
@@ -1647,57 +2507,77 @@
 
         rowStyle.appendChild(labelStyle);
         rowStyle.appendChild(styleSwitch);
-        modal.appendChild(rowStyle);
+        tabPanels.ratings.appendChild(rowStyle);
 
-        // AC Bg Color Setting
-        const row1 = document.createElement('div');
-        row1.style.cssText = `display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;`;
+        // 3) Colorized Rating Display Locations (Sub-item group)
+        const showGroup = document.createElement('div');
+        showGroup.style.cssText = 'display: flex; flex-direction: column; gap: 8px; padding-left: 12px;';
+        const showTitle = document.createElement('div');
+        showTitle.className = 'cf-setting-sublabel';
+        showTitle.style.marginBottom = '2px';
+        showGroup.appendChild(showTitle);
 
-        const label1 = document.createElement('span');
-        label1.style.cssText = 'font-size: 14px; font-weight: bold;';
+        const showSettingsMap = [
+            { key: 'submissions', labelKey: 'locSubmissions' },
+            { key: 'status', labelKey: 'locStatus' },
+            { key: 'hacks', labelKey: 'locHacks' },
+            { key: 'problemset', labelKey: 'locProblemset' },
+            { key: 'contestProblems', labelKey: 'locContestProblems' },
+            { key: 'standings', labelKey: 'locStandings' },
+            { key: 'problemTags', labelKey: 'locProblemTags' }
+        ];
 
-        const colorPickerContainer = document.createElement('div');
+        const checkBoxes = {};
+        showSettingsMap.forEach(item => {
+            const label = document.createElement('label');
+            label.className = 'cf-setting-item';
+            label.style.cssText = 'display: flex; align-items: center; justify-content: space-between; font-size: 12px; cursor: pointer; user-select: none; min-height: 28px; margin: 0; padding-left: 12px;';
 
-        row1.appendChild(label1);
-        row1.appendChild(colorPickerContainer);
-        modal.appendChild(row1);
+            const itemText = document.createElement('span');
+            itemText.className = 'cf-setting-sublabel';
+            item.textNode = document.createTextNode('');
+            itemText.appendChild(item.textNode);
 
-        // Initialize Pickr unified RGBA picker
-        let selectedColor = appSettings.acBgColor;
-        if (window.Pickr) {
-            const pickr = Pickr.create({
-                el: colorPickerContainer,
-                theme: 'nano', // Mimics Chrome devtools
-                default: appSettings.acBgColor,
-                position: 'top-end',
-                components: {
-                    preview: true,
-                    opacity: true,
-                    hue: true,
-                    interaction: {
-                        hex: true,
-                        rgba: true,
-                        input: true,
-                        clear: false,
-                        save: false
-                    }
-                }
-            });
+            const toggleContainer = document.createElement('div');
+            toggleContainer.className = 'cf-toggle-switch';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = appSettings.show[item.key];
+            const sliderEl = document.createElement('span');
+            sliderEl.className = 'cf-toggle-slider';
+            toggleContainer.appendChild(cb);
+            toggleContainer.appendChild(sliderEl);
 
-            pickr.on('change', (color) => {
-                selectedColor = color.toRGBA().toString(0);
-                pickr.applyColor(true);
+            cb.onchange = () => {
                 checkIfChanged();
-            }).on('save', () => {
-                checkIfChanged();
-            });
-        }
+            };
 
-        // User Avatar Setting
+            checkBoxes[item.key] = cb;
+            label.appendChild(itemText);
+            label.appendChild(toggleContainer);
+            showGroup.appendChild(label);
+        });
+        tabPanels.ratings.appendChild(showGroup);
+
+        cbColorRatings.onchange = () => {
+            rowStyle.style.display = cbColorRatings.checked ? 'flex' : 'none';
+            showGroup.style.display = cbColorRatings.checked ? 'flex' : 'none';
+            checkIfChanged();
+        };
+        rowStyle.style.display = cbColorRatings.checked ? 'flex' : 'none';
+        showGroup.style.display = cbColorRatings.checked ? 'flex' : 'none';
+
+        // -------------------------------------------------------------
+        // PANEL 4: 用户 (Users)
+        // -------------------------------------------------------------
+        // 1) Show User Avatar
         const rowAvatar = document.createElement('label');
-        rowAvatar.style.cssText = `display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; margin-top: 5px; cursor: pointer; user-select: none;`;
+        rowAvatar.className = 'cf-setting-item';
+        rowAvatar.style.cssText = 'cursor: pointer; user-select: none; margin: 0;';
+
         const labelAvatar = document.createElement('span');
-        labelAvatar.style.cssText = 'font-size: 14px; font-weight: bold;';
+        labelAvatar.className = 'cf-setting-label';
+
         const toggleContainerAvatar = document.createElement('div');
         toggleContainerAvatar.className = 'cf-toggle-switch';
         const cbAvatar = document.createElement('input');
@@ -1707,15 +2587,18 @@
         sliderAvatar.className = 'cf-toggle-slider';
         toggleContainerAvatar.appendChild(cbAvatar);
         toggleContainerAvatar.appendChild(sliderAvatar);
+
         rowAvatar.appendChild(labelAvatar);
         rowAvatar.appendChild(toggleContainerAvatar);
-        modal.appendChild(rowAvatar);
+        tabPanels.user.appendChild(rowAvatar);
 
-        // Avatar Size Setting
+        // 2) Avatar Size
         const rowAvatarSize = document.createElement('div');
-        rowAvatarSize.style.cssText = `display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;`;
+        rowAvatarSize.className = 'cf-setting-item';
+        rowAvatarSize.style.paddingLeft = '12px';
+
         const labelAvatarSize = document.createElement('span');
-        labelAvatarSize.style.cssText = 'font-size: 13px; color: #555;';
+        labelAvatarSize.className = 'cf-setting-sublabel';
 
         const avatarSizeInput = document.createElement('input');
         avatarSizeInput.type = 'range';
@@ -1726,7 +2609,7 @@
         avatarSizeInput.style.cssText = 'width: 100px; cursor: pointer;';
 
         const avatarSizeVal = document.createElement('span');
-        avatarSizeVal.style.cssText = 'font-size: 12px; width: 28px; text-align: right; display: inline-block;';
+        avatarSizeVal.style.cssText = 'font-size: 12px; width: 28px; text-align: right; display: inline-block; color: #64748b; font-weight: 500;';
         avatarSizeVal.textContent = parseFloat(avatarSizeInput.value).toFixed(1) + 'x';
 
         avatarSizeInput.oninput = () => {
@@ -1743,13 +2626,16 @@
 
         rowAvatarSize.appendChild(labelAvatarSize);
         rowAvatarSize.appendChild(sizeWrapper);
-        modal.appendChild(rowAvatarSize);
+        tabPanels.user.appendChild(rowAvatarSize);
 
-        // Format Teams Setting
+        // 3) Format Teams Setting
         const rowFormatTeams = document.createElement('label');
-        rowFormatTeams.style.cssText = `display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; cursor: pointer; user-select: none;`;
+        rowFormatTeams.className = 'cf-setting-item';
+        rowFormatTeams.style.cssText = 'padding-left: 12px; cursor: pointer; user-select: none; margin: 0;';
+
         const labelFormatTeams = document.createElement('span');
-        labelFormatTeams.style.cssText = 'font-size: 13px; color: #555;';
+        labelFormatTeams.className = 'cf-setting-sublabel';
+
         const toggleContainerFormatTeams = document.createElement('div');
         toggleContainerFormatTeams.className = 'cf-toggle-switch';
         const cbFormatTeams = document.createElement('input');
@@ -1759,9 +2645,10 @@
         sliderFormatTeams.className = 'cf-toggle-slider';
         toggleContainerFormatTeams.appendChild(cbFormatTeams);
         toggleContainerFormatTeams.appendChild(sliderFormatTeams);
+
         rowFormatTeams.appendChild(labelFormatTeams);
         rowFormatTeams.appendChild(toggleContainerFormatTeams);
-        modal.appendChild(rowFormatTeams);
+        tabPanels.user.appendChild(rowFormatTeams);
 
         cbFormatTeams.onchange = () => {
             checkIfChanged();
@@ -1775,229 +2662,78 @@
         rowAvatarSize.style.display = cbAvatar.checked ? 'flex' : 'none';
         rowFormatTeams.style.display = cbAvatar.checked ? 'flex' : 'none';
 
-        // Lang Icon Setting
-        const rowLangIcon = document.createElement('label');
-        rowLangIcon.style.cssText = `display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; margin-top: 5px; cursor: pointer; user-select: none;`;
-        const labelLangIcon = document.createElement('span');
-        labelLangIcon.style.cssText = 'font-size: 14px; font-weight: bold;';
-        const toggleContainerLangIcon = document.createElement('div');
-        toggleContainerLangIcon.className = 'cf-toggle-switch';
-        const cbLangIcon = document.createElement('input');
-        cbLangIcon.type = 'checkbox';
-        cbLangIcon.checked = appSettings.show.langIcon !== false;
-        const sliderLangIcon = document.createElement('span');
-        sliderLangIcon.className = 'cf-toggle-slider';
-        toggleContainerLangIcon.appendChild(cbLangIcon);
-        toggleContainerLangIcon.appendChild(sliderLangIcon);
-        rowLangIcon.appendChild(labelLangIcon);
-        rowLangIcon.appendChild(toggleContainerLangIcon);
-        modal.appendChild(rowLangIcon);
-
-        cbLangIcon.onchange = () => {
-            rowLangIconSize.style.display = cbLangIcon.checked ? 'flex' : 'none';
-            checkIfChanged();
-        };
-
-        // Lang Icon Size Setting
-        const rowLangIconSize = document.createElement('div');
-        rowLangIconSize.style.cssText = `display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;`;
-        const labelLangIconSize = document.createElement('span');
-        labelLangIconSize.style.cssText = 'font-size: 13px; color: #555;';
-
-        const langIconSizeInput = document.createElement('input');
-        langIconSizeInput.type = 'range';
-        langIconSizeInput.min = '0.5';
-        langIconSizeInput.max = '2.0';
-        langIconSizeInput.step = '0.1';
-        langIconSizeInput.value = appSettings.langIconSize || 1.0;
-        langIconSizeInput.style.cssText = 'width: 100px; cursor: pointer;';
-
-        const langIconSizeVal = document.createElement('span');
-        langIconSizeVal.style.cssText = 'font-size: 12px; width: 28px; text-align: right; display: inline-block;';
-        langIconSizeVal.textContent = parseFloat(langIconSizeInput.value).toFixed(1) + 'x';
-
-        langIconSizeInput.oninput = () => {
-            langIconSizeVal.textContent = parseFloat(langIconSizeInput.value).toFixed(1) + 'x';
-            checkIfChanged();
-        };
-
-        const sizeWrapperLang = document.createElement('div');
-        sizeWrapperLang.style.display = 'flex';
-        sizeWrapperLang.style.alignItems = 'center';
-        sizeWrapperLang.style.gap = '5px';
-        sizeWrapperLang.appendChild(langIconSizeInput);
-        sizeWrapperLang.appendChild(langIconSizeVal);
-
-        rowLangIconSize.appendChild(labelLangIconSize);
-        rowLangIconSize.appendChild(sizeWrapperLang);
-        modal.appendChild(rowLangIconSize);
-
-        rowLangIconSize.style.display = cbLangIcon.checked ? 'flex' : 'none';
-
-        // Short Verdict Setting
-        const rowShortVerdict = document.createElement('label');
-        rowShortVerdict.style.cssText = `display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; margin-top: 5px; cursor: pointer; user-select: none;`;
-        const labelShortVerdict = document.createElement('span');
-        labelShortVerdict.style.cssText = 'font-size: 14px; font-weight: bold;';
-        const toggleContainerShortVerdict = document.createElement('div');
-        toggleContainerShortVerdict.className = 'cf-toggle-switch';
-        const cbShortVerdict = document.createElement('input');
-        cbShortVerdict.type = 'checkbox';
-        cbShortVerdict.checked = !!appSettings.show.shortVerdict;
-        const sliderShortVerdict = document.createElement('span');
-        sliderShortVerdict.className = 'cf-toggle-slider';
-        toggleContainerShortVerdict.appendChild(cbShortVerdict);
-        toggleContainerShortVerdict.appendChild(sliderShortVerdict);
-        rowShortVerdict.appendChild(labelShortVerdict);
-        rowShortVerdict.appendChild(toggleContainerShortVerdict);
-        modal.appendChild(rowShortVerdict);
-
-        cbShortVerdict.onchange = () => {
-            checkIfChanged();
-        };
-
-        // Toggles Section
-        const showSettingsMap = [
-            { key: 'submissions', labelKey: 'locSubmissions' },
-            { key: 'status', labelKey: 'locStatus' },
-            { key: 'hacks', labelKey: 'locHacks' },
-            { key: 'problemset', labelKey: 'locProblemset' },
-            { key: 'contestProblems', labelKey: 'locContestProblems' },
-            { key: 'standings', labelKey: 'locStandings' },
-            { key: 'problemTags', labelKey: 'locProblemTags' }
-        ];
-
-        const showGroup = document.createElement('div');
-        showGroup.style.cssText = 'border-top: 1px solid #eee; padding-top: 10px; margin-top: 5px;';
-        const showTitle = document.createElement('div');
-        showTitle.style.cssText = 'font-size: 14px; font-weight: bold; margin-bottom: 8px;';
-        showGroup.appendChild(showTitle);
-
-        const checkBoxes = {};
-        showSettingsMap.forEach(item => {
-            const label = document.createElement('label');
-            label.style.cssText = 'display: flex; align-items: center; margin-bottom: 6px; font-size: 13px; cursor: pointer; user-select: none;';
-
-            const toggleContainer = document.createElement('div');
-            toggleContainer.className = 'cf-toggle-switch';
-            const cb = document.createElement('input');
-            cb.type = 'checkbox';
-            cb.checked = appSettings.show[item.key];
-            const slider = document.createElement('span');
-            slider.className = 'cf-toggle-slider';
-            toggleContainer.appendChild(cb);
-            toggleContainer.appendChild(slider);
-
-            cb.onchange = () => {
-                checkIfChanged();
-            };
-
-            checkBoxes[item.key] = cb;
-            label.appendChild(toggleContainer);
-            item.textNode = document.createTextNode('');
-            label.appendChild(item.textNode);
-            showGroup.appendChild(label);
-        });
-        modal.appendChild(showGroup);
-
-        // Time Format Section
-        const timeGroup = document.createElement('div');
-        timeGroup.style.cssText = 'border-top: 1px solid #eee; padding-top: 10px; margin-top: 5px;';
-
-        const timeTitleRow = document.createElement('div');
-        timeTitleRow.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;';
-
-        const timeTitle = document.createElement('label');
-        timeTitle.style.cssText = 'font-size: 14px; font-weight: bold; cursor: pointer; user-select: none;';
-        const timeTitleTextNode = document.createTextNode('');
-        timeTitle.appendChild(timeTitleTextNode);
-
-        const timeToggleContainer = document.createElement('div');
-        timeToggleContainer.className = 'cf-toggle-switch';
-        const timeToggle = document.createElement('input');
-        timeToggle.type = 'checkbox';
-        timeToggle.checked = appSettings.timeFormat.enabled;
-        const timeSlider = document.createElement('span');
-        timeSlider.className = 'cf-toggle-slider';
-        timeToggleContainer.appendChild(timeToggle);
-        timeToggleContainer.appendChild(timeSlider);
-
-        timeTitle.appendChild(timeToggleContainer);
-        timeTitle.insertBefore(timeToggleContainer, timeTitle.firstChild);
-
-        timeTitleRow.appendChild(timeTitle);
-        timeGroup.appendChild(timeTitleRow);
-
-        const timeInput = document.createElement('input');
-        timeInput.type = 'text';
-        timeInput.value = appSettings.timeFormat.format;
-        timeInput.placeholder = 'YYYY/MM/DD HH:mm';
-        timeInput.style.cssText = 'width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; box-sizing: border-box;';
-
-        const timePreview = document.createElement('div');
-        timePreview.style.cssText = 'margin-top: 6px; font-size: 12px; color: #666; font-family: monospace; text-align: right;';
-
-        const updatePreview = () => {
-            if (timeToggle.checked) {
-                const d = new Date();
-                timePreview.textContent = t().timeFormatPreview + customFormatTime(d, timeInput.value || 'YYYY/MM/DD HH:mm');
-                timeInput.disabled = false;
-                timeInput.style.opacity = '1';
-            } else {
-                timePreview.textContent = t().timeFormatDisabled;
-                timeInput.disabled = true;
-                timeInput.style.opacity = '0.5';
-            }
-        };
-
-        timeInput.addEventListener('input', () => { updatePreview(); checkIfChanged(); });
-        timeToggle.addEventListener('change', () => { updatePreview(); checkIfChanged(); });
-
-        timeGroup.appendChild(timeInput);
-        timeGroup.appendChild(timePreview);
-        updatePreview();
-
-        modal.appendChild(timeGroup);
-
-        // Footer Section
+        // -------------------------------------------------------------
+        // 3. Bottom Footer
+        // -------------------------------------------------------------
         const footerContainer = document.createElement('div');
-        footerContainer.style.cssText = 'border-top: 1px solid #eee; padding-top: 12px; margin-top: 5px; display: flex; flex-direction: column; gap: 8px;';
+        footerContainer.className = 'cf-modal-footer';
+
+        // Top Row: Status info + Quick text links
+        const footerTopRow = document.createElement('div');
+        footerTopRow.className = 'cf-footer-top-row';
+
+        const footerStatus = document.createElement('div');
+        footerStatus.className = 'cf-footer-status';
+        const statusDot = document.createElement('span');
+        statusDot.className = 'cf-status-dot';
+        const statusText = document.createElement('span');
+        footerStatus.appendChild(statusDot);
+        footerStatus.appendChild(statusText);
 
         const footerLinks = document.createElement('div');
-        footerLinks.style.cssText = 'display: flex; justify-content: space-evenly; align-items: center; font-size: 13px;';
+        footerLinks.className = 'cf-footer-links';
 
         const createFooterLink = (iconSvg, url) => {
             const a = document.createElement('a');
             a.href = url;
             a.target = '_blank';
-            a.style.cssText = 'color: #666; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; cursor: pointer;';
+            a.className = 'cf-footer-link';
             const iconSpan = document.createElement('span');
             iconSpan.style.cssText = 'display: flex; align-items: center; justify-content: center;';
             iconSpan.innerHTML = iconSvg;
             const textSpan = document.createElement('span');
             a.appendChild(iconSpan);
             a.appendChild(textSpan);
-            a.onmouseover = () => { a.style.color = '#1890ff'; };
-            a.onmouseout = () => { a.style.color = '#666'; };
             return { a, textSpan };
         };
 
-        const githubIcon = '<svg viewBox="0 0 1024 1024" width="16" height="16" fill="currentColor"><path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9 23.5 23.2 38.1 55.4 38.1 91v112.5c0.8 9 0 27.9 15 27.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z"></path></svg>';
-        const issueIconSvg = '<svg viewBox="0 0 1024 1024" width="16" height="16" fill="currentColor"><path d="M578.56 752.64c-25.6 5.12-61.44 10.24-61.44-25.6 0-30.72 10.24-66.56 20.48-97.28 5.12-10.24 10.24-25.6 10.24-35.84 15.36-56.32-5.12-107.52-66.56-107.52-25.6 0-81.92 10.24-92.16 40.96 0 5.12 5.12 10.24 10.24 5.12 51.2-15.36 61.44 20.48 51.2 66.56 0 10.24-5.12 20.48-10.24 30.72-15.36 46.08-40.96 112.64 0 148.48 35.84 30.72 92.16 15.36 128 0 10.24-5.12 15.36-10.24 15.36-20.48 5.12-5.12 0-10.24-5.12-5.12z"></path><path d="M588.8 56.32c-46.08-35.84-107.52-35.84-153.6 0C317.44 148.48 102.4 358.4 102.4 614.4c0 225.28 184.32 409.6 409.6 409.6s409.6-184.32 409.6-409.6c0-256-215.04-465.92-332.8-558.08zM512 947.2c-184.32 0-332.8-148.48-332.8-332.8 0-107.52 46.08-209.92 107.52-296.96 61.44-87.04 138.24-158.72 194.56-199.68 20.48-15.36 40.96-15.36 61.44 0 56.32 46.08 133.12 112.64 194.56 199.68 61.44 87.04 107.52 189.44 107.52 296.96 0 184.32-148.48 332.8-332.8 332.8z"></path><path d="M537.6 327.68c-30.72 0-56.32 25.6-56.32 56.32 0 30.72 30.72 56.32 56.32 56.32 30.72 0 56.32-25.6 56.32-56.32 5.12-30.72-25.6-56.32-56.32-56.32z"></path></svg>';
+        const githubIcon = '<svg viewBox="0 0 1024 1024" width="13" height="13" fill="currentColor"><path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9 23.5 23.2 38.1 55.4 38.1 91v112.5c0.8 9 0 27.9 15 27.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z"></path></svg>';
+        const issueIconSvg = '<svg viewBox="0 0 1024 1024" width="13" height="13" fill="currentColor"><path d="M578.56 752.64c-25.6 5.12-61.44 10.24-61.44-25.6 0-30.72 10.24-66.56 20.48-97.28 5.12-10.24 10.24-25.6 10.24-35.84 15.36-56.32-5.12-107.52-66.56-107.52-25.6 0-81.92 10.24-92.16 40.96 0 5.12 5.12 10.24 10.24 5.12 51.2-15.36 61.44 20.48 51.2 66.56 0 10.24-5.12 20.48-10.24 30.72-15.36 46.08-40.96 112.64 0 148.48 35.84 30.72 92.16 15.36 128 0 10.24-5.12 15.36-10.24 15.36-20.48 5.12-5.12 0-10.24-5.12-5.12z"></path><path d="M588.8 56.32c-46.08-35.84-107.52-35.84-153.6 0C317.44 148.48 102.4 358.4 102.4 614.4c0 225.28 184.32 409.6 409.6 409.6s409.6-184.32 409.6-409.6c0-256-215.04-465.92-332.8-558.08zM512 947.2c-184.32 0-332.8-148.48-332.8-332.8 0-107.52 46.08-209.92 107.52-296.96 61.44-87.04 138.24-158.72 194.56-199.68 20.48-15.36 40.96-15.36 61.44 0 56.32 46.08 133.12 112.64 194.56 199.68 61.44 87.04 107.52 189.44 107.52 296.96 0 184.32-148.48 332.8-332.8 332.8z"></path><path d="M537.6 327.68c-30.72 0-56.32 25.6-56.32 56.32 0 30.72 30.72 56.32 56.32 56.32 30.72 0 56.32-25.6 56.32-56.32 5.12-30.72-25.6-56.32-56.32-56.32z"></path></svg>';
 
         const githubLink = createFooterLink(githubIcon, 'https://github.com/GodExious/Colorforces');
         const issueLink = createFooterLink(issueIconSvg, 'https://github.com/GodExious/Colorforces/issues');
 
+        const divider = document.createElement('span');
+        divider.className = 'cf-footer-divider';
+        divider.textContent = '·';
+
         footerLinks.appendChild(githubLink.a);
+        footerLinks.appendChild(divider);
         footerLinks.appendChild(issueLink.a);
 
-        const author = document.createElement('div');
-        author.style.cssText = 'font-size: 12px; color: #aaa; text-align: center;';
+        footerTopRow.appendChild(footerStatus);
+        footerTopRow.appendChild(footerLinks);
 
-        footerContainer.appendChild(footerLinks);
-        footerContainer.appendChild(author);
+        // Bottom Row: Motto + Author Attribution
+        const footerBottomRow = document.createElement('div');
+        footerBottomRow.className = 'cf-footer-bottom-row';
+
+        const footerMotto = document.createElement('span');
+        footerMotto.className = 'cf-footer-motto';
+
+        const author = document.createElement('div');
+        author.className = 'cf-footer-author';
+
+        footerBottomRow.appendChild(footerMotto);
+        footerBottomRow.appendChild(author);
+
+        footerContainer.appendChild(footerTopRow);
+        footerContainer.appendChild(footerBottomRow);
         modal.appendChild(footerContainer);
 
+        // -------------------------------------------------------------
+        // Live Settings Application & Event Handlers
+        // -------------------------------------------------------------
         applySettingsRealTime = () => {
             appSettings.acBgColor = selectedColor;
             if (!appSettings.show || typeof appSettings.show !== 'object') {
@@ -2022,10 +2758,11 @@
 
             appSettings.lang = currentLang;
             appSettings.displayStyle = currentDisplayStyle;
+            appSettings.hideTags = cbHideTags.checked;
+            appSettings.colorRatings = cbColorRatings.checked;
 
             saveSettings(appSettings);
             updateDynamicStyle();
-
             document.querySelectorAll('.cf-rating-col, .cf-rating-standings-row th').forEach(cell => {
                 const rating = cell.dataset.rating;
                 if (rating) {
@@ -2036,10 +2773,12 @@
             document.querySelectorAll('span.tag-box[data-cf-rating-added]').forEach(tag => {
                 const rating = parseInt(tag.dataset.rating, 10);
                 if (!isNaN(rating)) {
-                    const parentBox = tag.closest('.roundbox');
+                    const parentBox = (tag.parentElement && tag.parentElement.classList.contains('roundbox') && !tag.parentElement.classList.contains('sidebox')) ? tag.parentElement : null;
                     applyProblemTagStyle(parentBox, tag, rating);
                 }
             });
+
+            applyProblemTagsVisibility();
 
             document.querySelectorAll('.cf-verdict-text').forEach(span => {
                 span.innerHTML = appSettings.show.shortVerdict ? span.dataset.short : span.dataset.original;
@@ -2067,10 +2806,15 @@
 
         const updateTexts = () => {
             pluginSubtitle.textContent = t().title;
+            tabDefs.forEach(def => {
+                if (def.textSpan) def.textSpan.textContent = t()[def.labelKey];
+            });
             labelLang.textContent = t().langLabel;
+            labelHideTags.textContent = t().locHideTags;
+            labelMasterColorRatings.textContent = t().masterColorRatings;
             langZhBtn.textContent = '简体中文';
             langEnBtn.textContent = 'English';
-            label1.textContent = t().acColor;
+            labelAcColor.textContent = t().acColor;
             labelAvatar.textContent = t().locUserAvatar;
             labelAvatarSize.textContent = t().locAvatarSize;
             labelFormatTeams.textContent = t().locFormatTeams;
@@ -2085,11 +2829,37 @@
             labelStyle.textContent = t().displayStyleTitle;
             styleBlockBtn.textContent = t().styleBlock;
             styleTagBtn.textContent = t().styleTag;
+            const getRatingsUpdateTimeString = () => {
+                const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+                let d;
+                if (cachedTime) {
+                    const parsed = parseInt(cachedTime, 10);
+                    if (!isNaN(parsed) && parsed > 0) {
+                        d = new Date(parsed);
+                    }
+                }
+                if (!d || isNaN(d.getTime())) {
+                    d = new Date();
+                }
+                const pad = (n) => String(n).padStart(2, '0');
+                const YYYY = d.getFullYear();
+                const MM = pad(d.getMonth() + 1);
+                const DD = pad(d.getDate());
+                const HH = pad(d.getHours());
+                const mm = pad(d.getMinutes());
+                return `${YYYY}-${MM}-${DD} ${HH}:${mm}`;
+            };
+
+            const updateTimeStr = getRatingsUpdateTimeString();
+            statusText.textContent = typeof t().footerRatingStatus === 'function'
+                ? t().footerRatingStatus(updateTimeStr)
+                : t().footerRatingStatus;
+            footerMotto.textContent = t().footerMotto;
             githubLink.textSpan.textContent = t().footerGithub;
             issueLink.textSpan.textContent = t().footerIssue;
 
-            const exiousLink = '<a href="https://github.com/GodExious" target="_blank" style="color: #888; text-decoration: none; font-weight: bold; transition: color 0.2s;">GodExious</a>';
-            const antigravityLink = '<a href="https://antigravity.google/" target="_blank" style="color: #888; text-decoration: none; font-weight: bold; transition: color 0.2s;">Antigravity</a>';
+            const exiousLink = '<a href="https://github.com/GodExious" target="_blank">GodExious</a>';
+            const antigravityLink = '<a href="https://antigravity.google/" target="_blank">Antigravity</a>';
 
             if (currentLang === 'zh') {
                 author.innerHTML = `由 ${exiousLink} & ${antigravityLink} 为❤️发电`;
@@ -2099,7 +2869,7 @@
 
             author.querySelectorAll('a').forEach(a => {
                 a.onmouseover = function () { this.style.color = '#1890ff'; };
-                a.onmouseout = function () { this.style.color = '#888'; };
+                a.onmouseout = function () { this.style.color = '#64748b'; };
             });
 
             updatePreview();
@@ -2107,7 +2877,8 @@
         updateTexts();
 
         btn.onclick = () => {
-            modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+            const isVisible = modal.style.display === 'flex';
+            modal.style.display = isVisible ? 'none' : 'flex';
         };
 
         container.appendChild(modal);

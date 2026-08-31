@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="CHANGELOG_zh.md">
-    <img src="https://img.shields.io/badge/更新日志-v1.5.5-orange?style=flat-square" alt="Changelog">
+    <img src="https://img.shields.io/badge/更新日志-v1.5.6-orange?style=flat-square" alt="Changelog">
   </a>
   <a href="https://github.com/GodExious/Colorforces/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/GodExious/Colorforces?style=flat-square&color=blue" alt="License">
