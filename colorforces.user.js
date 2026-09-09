@@ -2,7 +2,7 @@
 // @name         Colorforces
 // @name:zh-CN   Colorforces 算法竞赛视觉增强
 // @namespace    https://github.com/GodExious/Colorforces
-// @version      1.5.7
+// @version      1.5.8
 // @description  Reimagining the Codeforces UI. A next-generation userscript that breathes life into your competitive programming experience with dynamic rating colors, modern badges, and a premium, highly customizable interface.
 // @description:zh-CN 重塑 Codeforces 视觉体验的新一代增强插件。通过动态的评分色彩、现代化的标签引擎和极高自由度的定制面板，为你的算法竞赛之旅注入全新的生命力。
 // @author       GodExious & Antigravity
@@ -115,6 +115,8 @@
         },
         displayStyle: 'tag',
         hideTags: false,
+        hideRatingTag: false,
+        notHideAcTags: false,
         lang: 'en',
         clist: {
             enabled: false,
@@ -171,6 +173,8 @@
                 if (settings.langIconSize > 3.0) settings.langIconSize = 3.0;
                 if (parsed.timeFormat) Object.assign(settings.timeFormat, parsed.timeFormat);
                 settings.hideTags = parsed.hideTags !== undefined ? !!parsed.hideTags : settings.hideTags;
+                settings.hideRatingTag = parsed.hideRatingTag !== undefined ? !!parsed.hideRatingTag : settings.hideRatingTag;
+                settings.notHideAcTags = parsed.notHideAcTags !== undefined ? !!parsed.notHideAcTags : settings.notHideAcTags;
                 settings.colorRatings = parsed.colorRatings !== undefined ? !!parsed.colorRatings : settings.colorRatings;
                 settings.tagFillCell = parsed.tagFillCell !== undefined ? !!parsed.tagFillCell : settings.tagFillCell;
                 settings.lang = parsed.lang || settings.lang;
@@ -560,7 +564,7 @@
             line-height: 1.25;
             margin: 0;
             border: 1.5px solid transparent;
-            background: 
+            background:
                 linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)) padding-box,
                 linear-gradient(
                     110deg,
@@ -1243,6 +1247,7 @@
         .cf-storage-bar-seg.seg-clist { background: #0284c7; }
         .cf-storage-bar-seg.seg-cf { background: #10b981; }
         .cf-storage-bar-seg.seg-avatar { background: #8b5cf6; }
+        .cf-storage-bar-seg.seg-solved { background: #06b6d4; }
         .cf-storage-bar-seg.seg-settings { background: #f59e0b; }
         .cf-storage-bar-seg.seg-legacy { background: #94a3b8; }
         .cf-storage-legend {
@@ -1265,6 +1270,7 @@
         .cf-storage-legend-dot.seg-clist { background: #0284c7; }
         .cf-storage-legend-dot.seg-cf { background: #10b981; }
         .cf-storage-legend-dot.seg-avatar { background: #8b5cf6; }
+        .cf-storage-legend-dot.seg-solved { background: #06b6d4; }
         .cf-storage-legend-dot.seg-settings { background: #f59e0b; }
         .cf-storage-legend-dot.seg-legacy { background: #94a3b8; }
         .cf-storage-list {
@@ -1304,10 +1310,19 @@
             font-size: 16px;
             flex-shrink: 0;
         }
+        .cf-storage-icon-box svg,
+        .cf-storage-icon-box img {
+            width: 17px;
+            height: 17px;
+            display: block;
+            flex-shrink: 0;
+            object-fit: contain;
+        }
         .cf-storage-icon-box.icon-settings { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
         .cf-storage-icon-box.icon-cf { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
         .cf-storage-icon-box.icon-clist { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
         .cf-storage-icon-box.icon-avatar { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+        .cf-storage-icon-box.icon-solved { background: #ecfeff; color: #0891b2; border: 1px solid #a5f3fc; }
         .cf-storage-icon-box.icon-legacy { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
         .cf-storage-item-body {
             display: flex;
@@ -1597,10 +1612,12 @@
             margin-left: auto;
         }
         .cf-changelog-version {
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 700;
             color: #0f172a;
-            font-family: ui-monospace, SFMono-Regular, monospace;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
         }
         .cf-changelog-badge-latest {
             font-size: 11px;
@@ -1615,8 +1632,9 @@
         .cf-changelog-date {
             font-size: 11.5px;
             color: #94a3b8;
-            font-family: ui-monospace, SFMono-Regular, monospace;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             white-space: nowrap;
+            font-feature-settings: 'tnum';
         }
         .cf-changelog-chevron {
             color: #94a3b8;
@@ -1700,7 +1718,8 @@
             flex-shrink: 0;
             user-select: none;
             line-height: 1.6;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-feature-settings: 'tnum';
         }
         .cf-changelog-item-content {
             flex: 1;
@@ -3000,10 +3019,10 @@
             if (rating < 1600) return '#1A4D4D'; // Cyan
             if (rating < 1900) return '#1A1A4D'; // Blue
             if (rating < 2100) return '#4D1A4D'; // Violet
-            if (rating < 2300) return '#4D331A'; // Light Orange
-            if (rating < 2400) return '#66331A'; // Orange
-            if (rating < 2600) return '#4D1A1A'; // Light Red
-            if (rating < 3000) return '#661A1A'; // Red
+            if (rating < 2300) return '#705300'; // Yellow (Master)
+            if (rating < 2400) return '#804000'; // Orange (International Master)
+            if (rating < 2600) return '#661414'; // Light Red (Grandmaster)
+            if (rating < 3000) return '#851515'; // Red (International Grandmaster)
             return '#800000'; // Dark Red
         }
         if (rating < 1200) return '#CCCCCC'; // Gray (Newbie)
@@ -3041,8 +3060,8 @@
         if (rating < 2100) return '#AA00AA';
         if (rating < 2300) return '#FF8C00';
         if (rating < 2400) return '#FF8C00';
-        if (rating < 2600) return '#FF0000';
-        if (rating < 3000) return '#FF0000';
+        if (rating < 2600) return '#FF5555'; // Light Red (Grandmaster)
+        if (rating < 3000) return '#FF0000'; // Red (International Grandmaster)
         return '#AA0000';
     }
 
@@ -3050,14 +3069,16 @@
     function getRatingTagStyle(rating) {
         let bg, border, text;
         const isDark = isDarkTheme();
-        if (rating < 1200) { bg = isDark ? '#262626' : '#f7f7f7'; border = isDark ? '#545454' : '#cccccc'; text = isDark ? '#bfbfbf' : '#808080'; } // Gray
+        if (rating < 1200) { bg = isDark ? '#444444' : '#f7f7f7'; border = isDark ? '#666666' : '#cccccc'; text = isDark ? '#e6e6e6' : '#808080'; } // Gray
         else if (rating < 1400) { bg = isDark ? '#135200' : '#f6ffed'; border = isDark ? '#237804' : '#a8e67a'; text = isDark ? '#73d13d' : '#389e0d'; } // Green
         else if (rating < 1600) { bg = isDark ? '#00474f' : '#e6fffb'; border = isDark ? '#006d75' : '#76ded3'; text = isDark ? '#36cfc9' : '#08979c'; } // Cyan
         else if (rating < 1900) { bg = isDark ? '#002c8c' : '#e6f7ff'; border = isDark ? '#003eb3' : '#80c8f8'; text = isDark ? '#40a9ff' : '#096dd9'; } // Blue
         else if (rating < 2100) { bg = isDark ? '#531dab' : '#f9f0ff'; border = isDark ? '#722ed1' : '#c79cf0'; text = isDark ? '#b37feb' : '#531dab'; } // Violet
-        else if (rating < 2400) { bg = isDark ? '#873800' : '#fff2e8'; border = isDark ? '#c44900' : '#ffaa7a'; text = isDark ? '#ff7a45' : '#d4380d'; } // Orange
-        else if (rating < 3000) { bg = isDark ? '#a8071a' : '#fff1f0'; border = isDark ? '#cf1322' : '#ff8f8a'; text = isDark ? '#ff4d4f' : '#cf1322'; } // Red
-        else { bg = isDark ? '#434343' : '#fff0f6'; border = isDark ? '#8c8c8c' : '#ff9ec7'; text = isDark ? '#eb2f96' : '#c41d7f'; } // Dark Red (Legendary)
+        else if (rating < 2300) { bg = isDark ? '#8c6900' : '#feffe6'; border = isDark ? '#d4b106' : '#fffb8f'; text = isDark ? '#fffb8f' : '#d4b106'; } // Yellow (Master)
+        else if (rating < 2400) { bg = isDark ? '#994d00' : '#fffbe6'; border = isDark ? '#fa8c16' : '#ffe58f'; text = isDark ? '#ffe58f' : '#d48806'; } // Orange (International Master)
+        else if (rating < 2600) { bg = isDark ? '#a8071a' : '#fff7f7'; border = isDark ? '#ff4d4f' : '#ffccc7'; text = isDark ? '#ffd8d6' : '#db2734'; } // Light Red (Grandmaster)
+        else if (rating < 3000) { bg = isDark ? '#820014' : '#fff1f0'; border = isDark ? '#cf1322' : '#ffa39e'; text = isDark ? '#ff7875' : '#cf1322'; } // Deep Red (International Grandmaster)
+        else { bg = isDark ? '#780650' : '#fff0f6'; border = isDark ? '#c41d7f' : '#ff9ec7'; text = isDark ? '#ffadd2' : '#c41d7f'; } // Dark Red / Magenta (Legendary)
         return { bg, border, text };
     }
 
@@ -3075,6 +3096,11 @@
             sorted[k] = obj[k];
         }
         return sorted;
+    }
+
+    function sortProblemIds(arr) {
+        if (!Array.isArray(arr)) return [];
+        return arr.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
     }
 
     function getClistProblems() {
@@ -3237,6 +3263,8 @@
             langZhName: '简体中文',
             langEnName: 'English',
             locHideTags: '隐藏算法标签',
+            locHideRatingTag: '隐藏难度分标签',
+            locNotHideAcTags: '不隐藏已AC题目标签',
             shortcutsSectionTitle: '快捷键设置',
             shortcutsSectionSubtitle: '自定义常用操作的快捷热键，点击按键徽标后直接按下新按键即可修改。',
             shortcutsSectionTip: '默认快捷键为 Shift 加上对应功能英文单词的首字母（如 Hidden、Status、Time、Format 等）。',
@@ -3428,6 +3456,7 @@
             storageBarClist: 'CList 题库',
             storageBarCf: 'CF 官方',
             storageBarAvatar: '头像缓存',
+            storageBarSolved: '已AC题库',
             storageBarSettings: '插件配置',
             storageBarLegacy: '已弃用的缓存',
             storageClearAllBtn: '清空全部并重置',
@@ -3452,6 +3481,13 @@
             storageAvatarClearBtn: '清空缓存',
             storageAvatarClearConfirm: '确定要清空已缓存的用户头像数据吗？清空后再次浏览比赛榜单将重新解析头像。',
             storageAvatarClearSuccess: '用户头像缓存已清空',
+            storageSolvedTitle: '用户已通过题目缓存',
+            storageSolvedDesc: '缓存当前登录用户已解决 (AC) 的题目记录，用于题目详情页和题库列表中不隐藏已 AC 题目标签。',
+            storageSolvedClearBtn: '清空缓存',
+            storageSolvedClearConfirm: '确定要清空用户已解决 (AC) 题目的本地缓存吗？清空后若开启了不隐藏已 AC 标签功能，将自动重新向官方拉取。',
+            storageSolvedClearSuccess: '已通过题目缓存已清空',
+            storageSolvedNoneTip: '暂无已通过题目的本地缓存记录。',
+            storageSolvedCount: (count) => `${count.toLocaleString()} 道`,
             storageLegacyTitle: '已弃用的缓存',
             storageLegacyDesc: '包含旧版头像缓存 (v1)、已弃用的别名映射及早期遗留的历史键值，可放心清理释放空间。',
             storageLegacyClearBtn: '清空缓存',
@@ -3522,6 +3558,8 @@
             langZhName: '简体中文',
             langEnName: 'English',
             locHideTags: 'Hide Algorithm Tags',
+            locHideRatingTag: 'Hide Difficulty Rating Tag',
+            locNotHideAcTags: 'Keep Tags for Solved Problems',
             shortcutsSectionTitle: 'Keyboard Shortcuts',
             shortcutsSectionSubtitle: 'Customize hotkeys for frequent actions. Click a shortcut badge and press the new key combination to record.',
             shortcutsSectionTip: 'Default shortcuts follow Shift + the feature\'s initial letter (e.g. Hidden, Status, Time, Format, etc.).',
@@ -3713,6 +3751,7 @@
             storageBarClist: 'CList Problems',
             storageBarCf: 'CF Official',
             storageBarAvatar: 'Avatars',
+            storageBarSolved: 'Solved',
             storageBarSettings: 'Settings',
             storageBarLegacy: 'Deprecated Cache',
             storageClearAllBtn: 'Clear All & Reset',
@@ -3737,6 +3776,13 @@
             storageAvatarClearBtn: 'Clear Cache',
             storageAvatarClearConfirm: 'Clear cached user avatar data? Avatars will be re-resolved when viewing standings.',
             storageAvatarClearSuccess: 'User avatar cache cleared',
+            storageSolvedTitle: 'User Solved Problems Cache',
+            storageSolvedDesc: 'Cached list of solved problem records for logged-in users, used for status matching and keeping tags on solved problems.',
+            storageSolvedClearBtn: 'Clear Cache',
+            storageSolvedClearConfirm: 'Clear local cache of user solved problems? It will be re-fetched from Codeforces when needed.',
+            storageSolvedClearSuccess: 'User solved problems cache cleared',
+            storageSolvedNoneTip: 'No solved problem cache records found.',
+            storageSolvedCount: (count) => `${count.toLocaleString()} solved`,
             storageLegacyTitle: 'Deprecated Cache',
             storageLegacyDesc: 'Includes legacy avatar cache (v1), deprecated alias mappings, and leftover keys from older versions. Safe to clean up.',
             storageLegacyClearBtn: 'Clear Cache',
@@ -5189,7 +5235,19 @@
         }
     }
 
+    function getCleanCssText(el) {
+        if (!el || !el.style) return '';
+        return (el.style.cssText || '')
+            .replace(/display\s*:\s*none\s*!important\s*;?/gi, '')
+            .replace(/display\s*:\s*none\s*;?/gi, '')
+            .trim();
+    }
+
     function applyProblemTagStyle(box, tag, rating) {
+        const isBoxHidden = box && (box.getAttribute('data-cf-tag-hidden') === 'true' || box.style.display === 'none');
+        const isTagHidden = tag && (tag.getAttribute('data-cf-tag-hidden') === 'true' || tag.style.display === 'none');
+        const shouldHideScoreTag = !!appSettings.hideTags && !!appSettings.hideRatingTag && !(appSettings.notHideAcTags && isCurrentPageProblemAccepted());
+
         if (!appSettings.show.problemTags || !appSettings.colorRatings) {
             if (box && box.hasAttribute('data-original-css')) box.style.cssText = box.dataset.originalCss;
             else if (box) {
@@ -5201,6 +5259,18 @@
             else {
                 tag.style.removeProperty('background-color');
                 tag.style.removeProperty('color');
+            }
+            if (shouldHideScoreTag || isBoxHidden) {
+                if (box) {
+                    box.style.setProperty('display', 'none', 'important');
+                    box.setAttribute('data-cf-tag-hidden', 'true');
+                }
+            }
+            if (shouldHideScoreTag || isTagHidden) {
+                if (tag) {
+                    tag.style.setProperty('display', 'none', 'important');
+                    tag.setAttribute('data-cf-tag-hidden', 'true');
+                }
             }
             return;
         }
@@ -5227,26 +5297,184 @@
             }
             tag.style.setProperty('color', isWhite ? 'white' : '#000', 'important');
         }
+
+        if (shouldHideScoreTag || isBoxHidden) {
+            if (box) {
+                box.style.setProperty('display', 'none', 'important');
+                box.setAttribute('data-cf-tag-hidden', 'true');
+            }
+        }
+        if (shouldHideScoreTag || isTagHidden) {
+            if (tag) {
+                tag.style.setProperty('display', 'none', 'important');
+                tag.setAttribute('data-cf-tag-hidden', 'true');
+            }
+        }
+    }
+
+    // -------------------------------------------------------------
+    // Problem Solved Status & Tags Visibility Module
+    // -------------------------------------------------------------
+    let userSolvedCache = null;
+    let isFetchingUserSolved = false;
+
+    function getCurrentUserHandle() {
+        const userLink = document.querySelector('#header .lang-chooser a[href^="/profile/"], #header a[href^="/profile/"]');
+        return userLink ? userLink.textContent.trim() : null;
+    }
+
+    function extractProblemKey(url) {
+        if (!url) return null;
+        const match = url.match(/\/contest\/(\d+)\/problem\/([A-Za-z0-9_]+)/i) ||
+            url.match(/\/problemset\/problem\/(\d+)\/([A-Za-z0-9_]+)/i) ||
+            url.match(/\/gym\/(\d+)\/problem\/([A-Za-z0-9_]+)/i);
+        if (match) {
+            return `${match[1]}${match[2]}`.toUpperCase();
+        }
+        return null;
+    }
+
+    function getUserSolvedProblems() {
+        const handle = getCurrentUserHandle();
+        if (!handle) return new Set();
+        if (userSolvedCache && userSolvedCache.handle === handle.toLowerCase()) {
+            return userSolvedCache.set;
+        }
+        const storageKey = 'cf_user_solved_' + handle.toLowerCase();
+        const cached = appStorage.getJSON(storageKey, null);
+        if (cached && Array.isArray(cached.solved)) {
+            userSolvedCache = {
+                handle: handle.toLowerCase(),
+                time: cached.time || 0,
+                set: new Set(cached.solved)
+            };
+            return userSolvedCache.set;
+        }
+        return new Set();
+    }
+
+    function saveUserSolvedProblems(handle, solvedSet) {
+        if (!handle) return;
+        const storageKey = 'cf_user_solved_' + handle.toLowerCase();
+        const solvedArr = sortProblemIds(Array.from(solvedSet));
+        appStorage.setJSON(storageKey, {
+            time: Date.now(),
+            solved: solvedArr
+        });
+        userSolvedCache = {
+            handle: handle.toLowerCase(),
+            time: Date.now(),
+            set: new Set(solvedArr)
+        };
+    }
+
+    function checkAndFetchUserSolved() {
+        const handle = getCurrentUserHandle();
+        if (!handle || isFetchingUserSolved) return;
+
+        const storageKey = 'cf_user_solved_' + handle.toLowerCase();
+        const cached = appStorage.getJSON(storageKey, null);
+        const now = Date.now();
+        // 15 minutes TTL
+        if (cached && cached.time && (now - cached.time < 15 * 60 * 1000) && Array.isArray(cached.solved)) {
+            return;
+        }
+
+        isFetchingUserSolved = true;
+        const apiUrl = `/api/user.status?handle=${encodeURIComponent(handle)}&from=1&count=10000`;
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.status === 'OK' && Array.isArray(data.result)) {
+                    const solvedSet = getUserSolvedProblems();
+                    data.result.forEach(sub => {
+                        if (sub.verdict === 'OK' && sub.problem && sub.problem.contestId && sub.problem.index) {
+                            solvedSet.add(`${sub.problem.contestId}${sub.problem.index}`.toUpperCase());
+                        }
+                    });
+                    saveUserSolvedProblems(handle, solvedSet);
+                    applyProblemTagsVisibility();
+                }
+            })
+            .catch(err => {
+                console.warn('Failed to fetch user solved status:', err);
+            })
+            .finally(() => {
+                isFetchingUserSolved = false;
+            });
+    }
+
+    function isCurrentPageProblemAccepted() {
+        const curKey = extractProblemKey(window.location.href);
+
+        // 1. Direct DOM checks for accepted problem on this page
+        const acceptedRows = document.querySelectorAll('table.problems tr.accepted-problem, #sidebar tr.accepted-problem');
+        for (const row of acceptedRows) {
+            const links = row.querySelectorAll('a[href*="/problem/"]');
+            for (const link of links) {
+                const linkKey = extractProblemKey(link.href);
+                if (linkKey && curKey && linkKey === curKey) {
+                    return true;
+                }
+            }
+        }
+
+        // 2. Check sidebar or status table submissions specific to current problem
+        const verdictEls = document.querySelectorAll('.verdict-accepted, span.verdict-accepted');
+        for (const v of verdictEls) {
+            const tr = v.closest('tr');
+            if (tr) {
+                const links = tr.querySelectorAll('a[href*="/problem/"]');
+                for (const link of links) {
+                    const linkKey = extractProblemKey(link.href);
+                    if (linkKey && curKey && linkKey === curKey) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // 3. Check cached solved set
+        if (curKey) {
+            const solvedSet = getUserSolvedProblems();
+            if (solvedSet && solvedSet.has(curKey)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     function applyProblemTagsVisibility() {
         const isHide = !!appSettings.hideTags;
+        const hideRating = !!appSettings.hideRatingTag;
+        const notHideAc = !!appSettings.notHideAcTags;
 
-        // 1. Locate the single problem tags container
+        if (notHideAc) {
+            checkAndFetchUserSolved();
+        }
+
+        // ---------------------------------------------------------
+        // 1. Sidebar Problem Tags Container (Problem Details Page)
+        // ---------------------------------------------------------
         let container = null;
-
-        // Strategy A: Find the sidebar box with caption "Problem tags" or "问题标签"
-        const tagSidebox = Array.from(document.querySelectorAll('.roundbox.sidebox, #sidebar .roundbox')).find(box => {
+        let tagSidebox = Array.from(document.querySelectorAll('.roundbox.sidebox, #sidebar .roundbox')).find(box => {
             if (box.closest('.cf-settings-modal')) return false;
             const caption = box.querySelector('.caption');
-            return caption && /tags|标签/i.test(caption.textContent);
+            return caption && /tags|标签|теги/i.test(caption.textContent);
         });
+
+        if (!tagSidebox) {
+            const firstTag = document.querySelector('span.tag-box');
+            if (firstTag && !firstTag.closest('.cf-settings-modal') && !firstTag.closest('table.problems')) {
+                tagSidebox = firstTag.closest('.roundbox.sidebox, #sidebar .roundbox');
+            }
+        }
 
         if (tagSidebox) {
             container = tagSidebox.querySelector('div[style*="padding"]') || tagSidebox.querySelector('.caption')?.nextElementSibling || tagSidebox;
         } else {
-            // Strategy B: Fallback - find common ancestor containing all tag-box spans
-            const allSpans = Array.from(document.querySelectorAll('span.tag-box')).filter(t => !t.closest('.cf-settings-modal'));
+            const allSpans = Array.from(document.querySelectorAll('span.tag-box')).filter(t => !t.closest('.cf-settings-modal') && !t.closest('table.problems'));
             if (allSpans.length > 0) {
                 let p = allSpans[0].parentElement;
                 while (p && p !== document.body) {
@@ -5259,70 +5487,133 @@
             }
         }
 
-        if (!container) return;
-        if (isHide) {
-            // Find all tag spans in this container (strictly excluding any hidden notice or child of notice)
-            const tagSpans = Array.from(container.querySelectorAll('span.tag-box')).filter(t => !t.closest('.cf-tags-hidden-notice'));
-            if (tagSpans.length === 0 && !container.querySelector('.cf-tags-hidden-notice')) return;
+        if (container) {
+            const isAc = notHideAc && isCurrentPageProblemAccepted();
 
-            let isWrapped = false;
-            let sampleFontSize = '1.2rem';
+            if (isHide && !isAc) {
+                const tagSpans = Array.from(container.querySelectorAll('span.tag-box')).filter(t => !t.closest('.cf-tags-hidden-notice'));
+                if (tagSpans.length > 0 || container.querySelector('.cf-tags-hidden-notice')) {
+                    let isWrapped = false;
+                    let sampleFontSize = '1.2rem';
 
-            // Hide all non-score tags using display: none, leave score tags untouched
-            tagSpans.forEach(span => {
-                const text = span.textContent.trim();
-                const title = span.getAttribute('title') || '';
-                const isScore = /^\*\s*\d+/.test(text) || span.dataset.rating || /difficulty|难度/i.test(title);
+                    tagSpans.forEach(span => {
+                        const text = span.textContent.trim();
+                        const title = span.getAttribute('title') || '';
+                        const isScore = /^\*\s*\d+/.test(text) || !!span.dataset.rating || span.getAttribute('data-cf-clist-tag') === 'true' || span.getAttribute('data-cf-rating-tag') === 'true' || /difficulty|难度/i.test(title);
 
-                if (span.style.fontSize) sampleFontSize = span.style.fontSize;
+                        if (span.style.fontSize) sampleFontSize = span.style.fontSize;
 
-                const item = (span.parentElement && span.parentElement !== container && span.parentElement.classList.contains('roundbox'))
-                    ? span.parentElement
-                    : span;
+                        const item = (span.parentElement && span.parentElement !== container && span.parentElement.classList.contains('roundbox'))
+                            ? span.parentElement
+                            : span;
 
-                if (item.tagName === 'DIV') isWrapped = true;
+                        if (item.tagName === 'DIV') isWrapped = true;
 
-                if (!isScore) {
-                    item.style.display = 'none';
-                    item.setAttribute('data-cf-tag-hidden', 'true');
+                        const shouldHide = hideRating ? true : !isScore;
+                        if (shouldHide) {
+                            item.style.setProperty('display', 'none', 'important');
+                            item.setAttribute('data-cf-tag-hidden', 'true');
+                            if (item !== span) {
+                                span.style.setProperty('display', 'none', 'important');
+                                span.setAttribute('data-cf-tag-hidden', 'true');
+                            }
+                        } else {
+                            item.style.removeProperty('display');
+                            item.removeAttribute('data-cf-tag-hidden');
+                            if (item !== span) {
+                                span.style.removeProperty('display');
+                                span.removeAttribute('data-cf-tag-hidden');
+                            }
+                        }
+                    });
+
+                    // Add ONE hidden tag as the first item if not already present, or ensure it's visible
+                    const existingNotice = container.querySelector('.cf-tags-hidden-notice');
+                    if (existingNotice) {
+                        existingNotice.style.removeProperty('display');
+                        existingNotice.removeAttribute('data-cf-tag-hidden');
+                    } else {
+                        let hiddenItem;
+                        if (isWrapped) {
+                            hiddenItem = document.createElement('div');
+                            hiddenItem.className = 'roundbox borderTopRound borderBottomRound cf-tags-hidden-notice';
+                            hiddenItem.style.cssText = 'margin:2px; padding:0 3px 2px 3px; float:left;';
+                            const hiddenSpan = document.createElement('span');
+                            hiddenSpan.className = 'tag-box cf-tags-hidden-notice';
+                            hiddenSpan.style.fontSize = sampleFontSize;
+                            hiddenSpan.textContent = 'tags hidden';
+                            hiddenSpan.title = 'Tags hidden';
+                            hiddenItem.appendChild(hiddenSpan);
+                        } else {
+                            hiddenItem = document.createElement('span');
+                            hiddenItem.className = 'tag-box cf-tags-hidden-notice';
+                            hiddenItem.style.fontSize = sampleFontSize;
+                            hiddenItem.textContent = 'tags hidden';
+                            hiddenItem.title = 'Tags hidden';
+                        }
+                        container.insertBefore(hiddenItem, container.firstElementChild);
+                    }
                 }
-            });
-
-            // Add ONE hidden tag as the first item if not already present, or ensure it's visible
-            const existingNotice = container.querySelector('.cf-tags-hidden-notice');
-            if (existingNotice) {
-                existingNotice.style.display = '';
-                existingNotice.removeAttribute('data-cf-tag-hidden');
             } else {
-                let hiddenItem;
-                if (isWrapped) {
-                    hiddenItem = document.createElement('div');
-                    hiddenItem.className = 'roundbox borderTopRound borderBottomRound cf-tags-hidden-notice';
-                    hiddenItem.style.cssText = 'margin:2px; padding:0 3px 2px 3px; float:left;';
-                    const hiddenSpan = document.createElement('span');
-                    hiddenSpan.className = 'tag-box cf-tags-hidden-notice';
-                    hiddenSpan.style.fontSize = sampleFontSize;
-                    hiddenSpan.textContent = 'tags hidden';
-                    hiddenSpan.title = 'Tags hidden';
-                    hiddenItem.appendChild(hiddenSpan);
-                } else {
-                    hiddenItem = document.createElement('span');
-                    hiddenItem.className = 'tag-box cf-tags-hidden-notice';
-                    hiddenItem.style.fontSize = sampleFontSize;
-                    hiddenItem.textContent = 'tags hidden';
-                    hiddenItem.title = 'Tags hidden';
+                // Restore all tags and remove notice
+                container.querySelectorAll('.cf-tags-hidden-notice').forEach(n => n.remove());
+                container.querySelectorAll('[data-cf-tag-hidden="true"]').forEach(item => {
+                    item.style.removeProperty('display');
+                    item.removeAttribute('data-cf-tag-hidden');
+                });
+            }
+        }
+
+        // ---------------------------------------------------------
+        // 2. Problemset & Contest Tables (table.problems tr)
+        // ---------------------------------------------------------
+        const tableRows = document.querySelectorAll('table.problems tr');
+        if (tableRows.length > 0) {
+            const solvedSet = notHideAc ? getUserSolvedProblems() : null;
+
+            tableRows.forEach(row => {
+                const isRowAc = row.classList.contains('accepted-problem');
+                let isAc = isRowAc;
+
+                if (isRowAc) {
+                    const probLink = row.querySelector('a[href*="/problem/"]');
+                    if (probLink) {
+                        const k = extractProblemKey(probLink.href);
+                        if (k && solvedSet) solvedSet.add(k);
+                    }
+                } else if (notHideAc && solvedSet) {
+                    const probLink = row.querySelector('a[href*="/problem/"]');
+                    if (probLink) {
+                        const k = extractProblemKey(probLink.href);
+                        if (k && solvedSet.has(k)) {
+                            isAc = true;
+                        }
+                    }
                 }
 
-                container.insertBefore(hiddenItem, container.firstElementChild);
-            }
-        } else {
-            // 1. Remove the hidden notice
-            container.querySelectorAll('.cf-tags-hidden-notice').forEach(n => n.remove());
+                const tagsInRow = row.querySelectorAll('div[style*="float: left"] a.notice, span.tag-box');
+                if (tagsInRow.length === 0) return;
 
-            // 2. Restore all previously hidden tag items
-            container.querySelectorAll('[data-cf-tag-hidden="true"]').forEach(item => {
-                item.style.display = '';
-                item.removeAttribute('data-cf-tag-hidden');
+                if (isHide && !(notHideAc && isAc)) {
+                    tagsInRow.forEach(tag => {
+                        const text = tag.textContent.trim();
+                        const title = tag.getAttribute('title') || '';
+                        const isScore = /^\*\s*\d+/.test(text) || !!tag.dataset.rating || tag.getAttribute('data-cf-clist-tag') === 'true' || tag.getAttribute('data-cf-rating-tag') === 'true' || /difficulty|难度/i.test(title);
+                        const shouldHide = hideRating ? true : !isScore;
+                        if (shouldHide) {
+                            tag.style.setProperty('display', 'none', 'important');
+                            tag.setAttribute('data-cf-tag-hidden', 'true');
+                        } else {
+                            tag.style.removeProperty('display');
+                            tag.removeAttribute('data-cf-tag-hidden');
+                        }
+                    });
+                } else {
+                    tagsInRow.forEach(tag => {
+                        tag.style.removeProperty('display');
+                        tag.removeAttribute('data-cf-tag-hidden');
+                    });
+                }
             });
         }
     }
@@ -5513,7 +5804,12 @@
             saveSettings(appSettings);
             applyProblemTagsVisibility();
             const cb = document.querySelector('.cf-toggle-hide-tags');
-            if (cb) cb.checked = !!appSettings.hideTags;
+            if (cb) {
+                cb.checked = !!appSettings.hideTags;
+                document.querySelectorAll('.cf-sub-setting-item').forEach(item => {
+                    item.style.display = appSettings.hideTags ? 'flex' : 'none';
+                });
+            }
             return;
         }
 
@@ -5704,13 +6000,36 @@
         }
     }
 
+    function getProblemRatingFromHref(href, title) {
+        if (!href) return null;
+        const regexes = [
+            /\/contest\/(\d+)\/problem\/([A-Za-z0-9_]+)/i,
+            /\/problemset\/problem\/(\d+)\/([A-Za-z0-9_]+)/i,
+            /\/gym\/(\d+)\/problem\/([A-Za-z0-9_]+)/i
+        ];
+        for (const regex of regexes) {
+            const match = href.match(regex);
+            if (match) {
+                const rating = getProblemRating(href, title);
+                return { contestId: match[1], index: match[2], rating: rating };
+            }
+        }
+        return null;
+    }
+
     // Unified handler for Problem Page difficulty tags (adapting existing or appending at the end)
     function updateProblemPageRatingTag(ratingsMap) {
-        const sidebox = Array.from(document.querySelectorAll('.roundbox.sidebox, #sidebar .roundbox')).find(box => {
+        let sidebox = Array.from(document.querySelectorAll('.roundbox.sidebox, #sidebar .roundbox')).find(box => {
             if (box.closest('.cf-settings-modal')) return false;
             const caption = box.querySelector('.caption');
-            return caption && /tags|标签/i.test(caption.textContent);
+            return caption && /tags|标签|теги/i.test(caption.textContent);
         });
+        if (!sidebox) {
+            const firstTag = document.querySelector('span.tag-box');
+            if (firstTag && !firstTag.closest('.cf-settings-modal') && !firstTag.closest('table.problems')) {
+                sidebox = firstTag.closest('.roundbox.sidebox, #sidebar .roundbox');
+            }
+        }
         if (!sidebox) return;
 
         const container = sidebox.querySelector('div[style*="padding"]') || sidebox.querySelector('.caption')?.nextElementSibling || sidebox;
@@ -5778,12 +6097,12 @@
                 officialTagSpan.setAttribute('data-original-title', officialTagSpan.getAttribute('title') || 'Difficulty');
             }
             if (!officialTagSpan.hasAttribute('data-original-css')) {
-                officialTagSpan.dataset.originalCss = officialTagSpan.style.cssText;
+                officialTagSpan.dataset.originalCss = getCleanCssText(officialTagSpan);
             }
 
             const parentBox = (officialTagSpan.parentElement && officialTagSpan.parentElement.classList.contains('roundbox') && !officialTagSpan.parentElement.classList.contains('sidebox')) ? officialTagSpan.parentElement : null;
             if (parentBox && !parentBox.hasAttribute('data-original-css')) {
-                parentBox.dataset.originalCss = parentBox.style.cssText;
+                parentBox.dataset.originalCss = getCleanCssText(parentBox);
             }
 
             let effectiveRating = targetRating;
@@ -5807,12 +6126,13 @@
                 }
                 applyProblemTagStyle(parentBox, officialTagSpan, effectiveRating);
             }
+            applyProblemTagsVisibility();
             return;
         }
 
         // Case 2: No official rating tag exists (e.g. Ref/pro2)
         let effectiveRating = targetRating;
-        if (typeof effectiveRating !== 'number' && (ratingsMap || latestRatingsMap)) {
+        if (typeof effectiveRating !== 'number') {
             const info = getProblemRatingFromHref(window.location.href, problemPageTitle);
             if (info && typeof info.rating === 'number') {
                 effectiveRating = info.rating;
@@ -5829,6 +6149,8 @@
                 const parent = (existingClistSpan.parentElement && existingClistSpan.parentElement.classList.contains('roundbox') && existingClistSpan.parentElement !== container) ? existingClistSpan.parentElement : null;
                 if (parent) {
                     parent.dataset.rating = effectiveRating;
+                    parent.setAttribute('data-cf-rating-tag', 'true');
+                    parent.setAttribute('data-cf-rating-added', 'true');
                 }
                 applyProblemTagStyle(parent, existingClistSpan, effectiveRating);
             } else {
@@ -5864,11 +6186,11 @@
                     tagItem.setAttribute('data-cf-rating-added', 'true');
                     tagItem.dataset.rating = effectiveRating;
                     tagItem.appendChild(span);
-                    tagItem.dataset.originalCss = tagItem.style.cssText;
+                    tagItem.dataset.originalCss = getCleanCssText(tagItem);
                 } else {
                     tagItem = span;
                 }
-                span.dataset.originalCss = span.style.cssText;
+                span.dataset.originalCss = getCleanCssText(span);
 
                 // Append at the end of all tags (before clear:both or notice, or append to container)
                 if (allTagItems.length > 0) {
@@ -5892,6 +6214,7 @@
         } else {
             cleanClistTags();
         }
+        applyProblemTagsVisibility();
     }
 
     // Dynamic re-evaluation of ratings on all page tables and tags
@@ -5955,6 +6278,7 @@
 
         // 3. Refresh Problem Page sidebar tags
         updateProblemPageRatingTag(ratingsMap);
+        applyProblemTagsVisibility();
     }
 
     // Apply ratings to tables and standalone links
@@ -5965,23 +6289,7 @@
         if (!hasOfficial && !clistData) return;
         const safeRatingsMap = ratingsMap || {};
 
-        const regexes = [
-            /\/contest\/(\d+)\/problem\/([A-Za-z0-9_]+)/i,
-            /\/problemset\/problem\/(\d+)\/([A-Za-z0-9_]+)/i,
-            /\/gym\/(\d+)\/problem\/([A-Za-z0-9_]+)/i
-        ];
 
-        function getProblemRatingFromHref(href) {
-            if (!href) return null;
-            for (const regex of regexes) {
-                const match = href.match(regex);
-                if (match) {
-                    const rating = getProblemRating(href);
-                    return { contestId: match[1], index: match[2], rating: rating };
-                }
-            }
-            return null;
-        }
         // Walk through nodes to replace verdict text with abbreviations
         function walkAndReplaceVerdict(node) {
             if (node.nodeType === Node.TEXT_NODE) {
@@ -6560,6 +6868,7 @@
                         applyRatings(ratingsMap);
                         formatStandingsCells();
                         applyUserAvatars();
+                        applyProblemTagsVisibility();
                         wrapVirtualParticipationTime();
                         setTimeout(applyTimeFormatting, 300);
                     } finally {
@@ -6802,6 +7111,7 @@
 
     // Initialization
     async function init() {
+        applyProblemTagsVisibility();
         const ratingsMap = await getRatings();
         latestRatingsMap = ratingsMap;
         applyRatings(ratingsMap);
@@ -6822,6 +7132,12 @@
             if (typeof cbHideTags !== 'undefined') {
                 appSettings.hideTags = cbHideTags.checked;
             }
+            if (typeof cbHideRatingTag !== 'undefined') {
+                appSettings.hideRatingTag = cbHideRatingTag.checked;
+            }
+            if (typeof cbNotHideAcTags !== 'undefined') {
+                appSettings.notHideAcTags = cbNotHideAcTags.checked;
+            }
             saveSettings(appSettings);
             applyProblemTagsVisibility();
         };
@@ -6835,6 +7151,9 @@
 
         let currentLang = appSettings.lang || 'en';
         const t = (key, ...args) => (key ? tGlobal(key, currentLang, ...args) : getLangDict(currentLang));
+
+        const CLIST_ICON_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAB3klEQVR4nNWZy1XDMBBFr1wNoRGogONOzA5lRzrh0ICpJKYTlmKBh5CPE400Ix/eMsd5c6+dWP6ARfox8vTxatKlTFfd0I+RFF4IDGtI1AkIvGQFiXKBU3hJY4kygSV4SUMJvcAteEkjCZ1ALrykgUS+gBZe4iyRJ1AKL3GUuC1QCy9xkrguYAUvcZBYFrCGlxhLXBbQwqcQCTxnb28ocS5QAv/+sOXtcbeGxLFAKbxkBYmDQC28pLHEj4AVvKShRGcOL2kk0UH4yt46F16ildCwzOmyh2jhJc79XdaQUniJY//hLLQ0pBbeuf94HTgdYgXfqv83/Rjpx2hf3KhfmzQR0yduNy2u/WkipomUJpLHENf+o3KHITn9xc+F0kQEzlfwxGAhkdtfJLBYvjDEsz+Yl/9NYBfuNJcS+n79EUgorp10R0IFP7OoBcI9O5Jir2ZKqOEhhg3bov+AtUQpPFSchawkauCh8v1ArUQtPBSchS5y6UEEQvWdsCGefmgiAJD2DAS366GzPS+pf0c2R/1zys8iPBgKgIvEVXgwFgBTiZvw4CAAJhJZ8OAkAFUS2fDgKABFEip4cBYAlYQaHhoIQJZEEXzzpD3D2S3ipFqN18+JxP+Cl8w369Gi6xvAY35uBNY3xAAAAABJRU5ErkJggg==';
+        const CF_ICON_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align: -2px; flex-shrink: 0; display: inline-block;"><rect x="2" y="9" width="4.5" height="13" rx="1.5" fill="#ffd200"/><rect x="9.5" y="2" width="4.5" height="20" rx="1.5" fill="#2487e6"/><rect x="17" y="6" width="4.5" height="16" rx="1.5" fill="#ee3424"/></svg>';
 
         const container = document.createElement('div');
         container.style.cssText = `
@@ -6868,7 +7187,7 @@
 
         const headerTitle = document.createElement('div');
         headerTitle.className = 'cf-header-title';
-        headerTitle.innerHTML = `Colorforces <span class="cf-title-version">v1.5.7</span>`;
+        headerTitle.innerHTML = `Colorforces <span class="cf-title-version">v1.5.8</span>`;
 
         const pluginSubtitle = document.createElement('div');
         pluginSubtitle.className = 'cf-header-subtitle cf-header-badge';
@@ -7177,9 +7496,70 @@
         rowHideTags.appendChild(toggleContainerHideTags);
         tabPanels.general.appendChild(rowHideTags);
 
+        // 2a) Sub-item 1: Hide Rating Tag
+        const rowHideRatingTag = document.createElement('label');
+        rowHideRatingTag.className = 'cf-setting-item cf-sub-setting-item';
+        rowHideRatingTag.style.cssText = 'display: flex; align-items: center; justify-content: space-between; font-size: 12px; cursor: pointer; user-select: none; min-height: 28px; margin: 0; padding-left: 14px;';
+
+        const labelHideRatingTag = document.createElement('span');
+        labelHideRatingTag.className = 'cf-setting-sublabel';
+
+        const toggleContainerHideRatingTag = document.createElement('div');
+        toggleContainerHideRatingTag.className = 'cf-toggle-switch';
+        const cbHideRatingTag = document.createElement('input');
+        cbHideRatingTag.type = 'checkbox';
+        cbHideRatingTag.checked = !!appSettings.hideRatingTag;
+        const sliderHideRatingTag = document.createElement('span');
+        sliderHideRatingTag.className = 'cf-toggle-slider';
+        toggleContainerHideRatingTag.appendChild(cbHideRatingTag);
+        toggleContainerHideRatingTag.appendChild(sliderHideRatingTag);
+
+        rowHideRatingTag.appendChild(labelHideRatingTag);
+        rowHideRatingTag.appendChild(toggleContainerHideRatingTag);
+        tabPanels.general.appendChild(rowHideRatingTag);
+
+        // 2b) Sub-item 2: Do Not Hide Solved (AC) Tags
+        const rowNotHideAcTags = document.createElement('label');
+        rowNotHideAcTags.className = 'cf-setting-item cf-sub-setting-item';
+        rowNotHideAcTags.style.cssText = 'display: flex; align-items: center; justify-content: space-between; font-size: 12px; cursor: pointer; user-select: none; min-height: 28px; margin: 0; padding-left: 14px;';
+
+        const labelNotHideAcTags = document.createElement('span');
+        labelNotHideAcTags.className = 'cf-setting-sublabel';
+
+        const toggleContainerNotHideAcTags = document.createElement('div');
+        toggleContainerNotHideAcTags.className = 'cf-toggle-switch';
+        const cbNotHideAcTags = document.createElement('input');
+        cbNotHideAcTags.type = 'checkbox';
+        cbNotHideAcTags.checked = !!appSettings.notHideAcTags;
+        const sliderNotHideAcTags = document.createElement('span');
+        sliderNotHideAcTags.className = 'cf-toggle-slider';
+        toggleContainerNotHideAcTags.appendChild(cbNotHideAcTags);
+        toggleContainerNotHideAcTags.appendChild(sliderNotHideAcTags);
+
+        rowNotHideAcTags.appendChild(labelNotHideAcTags);
+        rowNotHideAcTags.appendChild(toggleContainerNotHideAcTags);
+        tabPanels.general.appendChild(rowNotHideAcTags);
+
+        const updateHideTagsSubItemsVisibility = () => {
+            const isVisible = cbHideTags.checked ? 'flex' : 'none';
+            rowHideRatingTag.style.display = isVisible;
+            rowNotHideAcTags.style.display = isVisible;
+        };
+
         cbHideTags.onchange = () => {
+            updateHideTagsSubItemsVisibility();
             checkIfChanged();
         };
+
+        cbHideRatingTag.onchange = () => {
+            checkIfChanged();
+        };
+
+        cbNotHideAcTags.onchange = () => {
+            checkIfChanged();
+        };
+
+        updateHideTagsSubItemsVisibility();
 
         // -------------------------------------------------------------
         // PANEL 2: 界面 (Appearance)
@@ -8332,6 +8712,8 @@
         segCf.className = 'cf-storage-bar-seg seg-cf';
         const segAvatar = document.createElement('div');
         segAvatar.className = 'cf-storage-bar-seg seg-avatar';
+        const segSolved = document.createElement('div');
+        segSolved.className = 'cf-storage-bar-seg seg-solved';
         const segSettings = document.createElement('div');
         segSettings.className = 'cf-storage-bar-seg seg-settings';
         const segLegacy = document.createElement('div');
@@ -8340,11 +8722,12 @@
         barTrack.appendChild(segClist);
         barTrack.appendChild(segCf);
         barTrack.appendChild(segAvatar);
+        barTrack.appendChild(segSolved);
         barTrack.appendChild(segSettings);
         barTrack.appendChild(segLegacy);
         storageOverview.appendChild(barTrack);
 
-        [segClist, segCf, segAvatar, segSettings, segLegacy].forEach(seg => {
+        [segClist, segCf, segAvatar, segSolved, segSettings, segLegacy].forEach(seg => {
             seg.addEventListener('mouseenter', () => {
                 const tipText = seg.getAttribute('data-tooltip');
                 if (tipText) showFloatingTooltip(seg, tipText);
@@ -8371,12 +8754,14 @@
         const legendClist = createLegendItem('seg-clist');
         const legendCf = createLegendItem('seg-cf');
         const legendAvatar = createLegendItem('seg-avatar');
+        const legendSolved = createLegendItem('seg-solved');
         const legendSettings = createLegendItem('seg-settings');
         const legendLegacy = createLegendItem('seg-legacy');
 
         legendContainer.appendChild(legendClist.item);
         legendContainer.appendChild(legendCf.item);
         legendContainer.appendChild(legendAvatar.item);
+        legendContainer.appendChild(legendSolved.item);
         legendContainer.appendChild(legendSettings.item);
         legendContainer.appendChild(legendLegacy.item);
         storageOverview.appendChild(legendContainer);
@@ -8387,7 +8772,16 @@
         const storageList = document.createElement('div');
         storageList.className = 'cf-storage-list';
 
-        const createStorageItem = (icon, iconClass, btnType) => {
+        const STORAGE_ICONS = {
+            settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+            cf: CF_ICON_SVG,
+            clist: `<img src="${CLIST_ICON_DATA_URI}" width="18" height="18" style="border-radius:2px;" alt="CList" />`,
+            avatar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+            solved: CF_ICON_SVG,
+            legacy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>'
+        };
+
+        const createStorageItem = (iconSvg, iconClass, btnType) => {
             const item = document.createElement('div');
             item.className = 'cf-storage-item';
 
@@ -8396,7 +8790,7 @@
 
             const iconBox = document.createElement('div');
             iconBox.className = `cf-storage-icon-box ${iconClass}`;
-            iconBox.textContent = icon;
+            iconBox.innerHTML = iconSvg;
 
             const body = document.createElement('div');
             body.className = 'cf-storage-item-body';
@@ -8470,16 +8864,18 @@
             };
         };
 
-        const itemSettings = createStorageItem('⚙️', 'icon-settings', 'btn-reset');
-        const itemCf = createStorageItem('📊', 'icon-cf', 'btn-clear');
-        const itemClist = createStorageItem('⚡', 'icon-clist', 'btn-clear');
-        const itemAvatar = createStorageItem('👤', 'icon-avatar', 'btn-clear');
-        const itemLegacy = createStorageItem('📦', 'icon-legacy', 'btn-clear');
+        const itemSettings = createStorageItem(STORAGE_ICONS.settings, 'icon-settings', 'btn-reset');
+        const itemCf = createStorageItem(STORAGE_ICONS.cf, 'icon-cf', 'btn-clear');
+        const itemClist = createStorageItem(STORAGE_ICONS.clist, 'icon-clist', 'btn-clear');
+        const itemAvatar = createStorageItem(STORAGE_ICONS.avatar, 'icon-avatar', 'btn-clear');
+        const itemUserSolved = createStorageItem(STORAGE_ICONS.solved, 'icon-solved', 'btn-clear');
+        const itemLegacy = createStorageItem(STORAGE_ICONS.legacy, 'icon-legacy', 'btn-clear');
 
         storageList.appendChild(itemSettings.item);
         storageList.appendChild(itemCf.item);
         storageList.appendChild(itemClist.item);
         storageList.appendChild(itemAvatar.item);
+        storageList.appendChild(itemUserSolved.item);
         storageList.appendChild(itemLegacy.item);
 
         tabPanels.storage.appendChild(storageList);
@@ -8504,6 +8900,65 @@
             AVATAR_CACHE_KEY
         ];
 
+        const getUserSolvedStorageDetails = () => {
+            const solvedKeys = [];
+            let totalBytes = 0;
+            let totalSolvedCount = 0;
+            const dataMap = {};
+            try {
+                const allKeys = (typeof GM_listValues === 'function') ? GM_listValues() : [];
+                const keySet = new Set(allKeys);
+                if (typeof localStorage !== 'undefined') {
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const k = localStorage.key(i);
+                        if (k && k.startsWith('cf_user_solved_')) keySet.add(k);
+                    }
+                }
+                const currentHandle = getCurrentUserHandle();
+                if (currentHandle) {
+                    keySet.add('cf_user_solved_' + currentHandle.toLowerCase());
+                }
+
+                for (const k of keySet) {
+                    if (k && k.startsWith('cf_user_solved_')) {
+                        const bytes = getStorageItemBytes(k);
+                        if (bytes > 0) {
+                            solvedKeys.push(k);
+                            totalBytes += bytes;
+                            const parsed = appStorage.getJSON(k, null);
+                            if (parsed) {
+                                if (Array.isArray(parsed.solved)) {
+                                    const sorted = sortProblemIds(parsed.solved);
+                                    let isDifferent = false;
+                                    if (sorted.length !== parsed.solved.length) {
+                                        isDifferent = true;
+                                    } else {
+                                        for (let i = 0; i < sorted.length; i++) {
+                                            if (sorted[i] !== parsed.solved[i]) {
+                                                isDifferent = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (isDifferent) {
+                                        parsed.solved = sorted;
+                                        try {
+                                            appStorage.setJSON(k, parsed);
+                                        } catch (e) { }
+                                    } else {
+                                        parsed.solved = sorted;
+                                    }
+                                    totalSolvedCount += parsed.solved.length;
+                                }
+                                dataMap[k] = parsed;
+                            }
+                        }
+                    }
+                }
+            } catch (e) { }
+            return { keys: solvedKeys, bytes: totalBytes, count: totalSolvedCount, dataMap };
+        };
+
         const getLegacyStorageDetails = () => {
             const legacyKeys = [];
             let totalBytes = 0;
@@ -8511,7 +8966,7 @@
             try {
                 const allKeys = (typeof GM_listValues === 'function') ? GM_listValues() : [];
                 for (const k of allKeys) {
-                    if (k && k.startsWith('cf_') && !ACTIVE_STORAGE_KEYS.includes(k)) {
+                    if (k && k.startsWith('cf_') && !k.startsWith('cf_user_solved_') && !ACTIVE_STORAGE_KEYS.includes(k)) {
                         legacyKeys.push(k);
                         totalBytes += getStorageItemBytes(k);
                         const raw = appStorage.getItem(k);
@@ -8692,10 +9147,12 @@
             const cfBytes = getStorageItemBytes(CACHE_KEY) + getStorageItemBytes(CACHE_TIME_KEY);
             const clistBytes = getStorageItemBytes(CLIST_STORAGE_KEY) + getStorageItemBytes(CLIST_LAST_SYNC_KEY);
             const avatarBytes = getStorageItemBytes(AVATAR_CACHE_KEY);
+            const solvedInfo = getUserSolvedStorageDetails();
+            const solvedBytes = solvedInfo.bytes;
             const legacyInfo = getLegacyStorageDetails();
             const legacyBytes = legacyInfo.bytes;
 
-            const totalBytes = settingsBytes + cfBytes + clistBytes + avatarBytes + legacyBytes;
+            const totalBytes = settingsBytes + cfBytes + clistBytes + avatarBytes + solvedBytes + legacyBytes;
 
             overviewVal.textContent = formatStorageBytes(totalBytes);
 
@@ -8703,12 +9160,14 @@
                 segClist.style.width = ((clistBytes / totalBytes) * 100).toFixed(1) + '%';
                 segCf.style.width = ((cfBytes / totalBytes) * 100).toFixed(1) + '%';
                 segAvatar.style.width = ((avatarBytes / totalBytes) * 100).toFixed(1) + '%';
+                segSolved.style.width = ((solvedBytes / totalBytes) * 100).toFixed(1) + '%';
                 segSettings.style.width = ((settingsBytes / totalBytes) * 100).toFixed(1) + '%';
                 segLegacy.style.width = ((legacyBytes / totalBytes) * 100).toFixed(1) + '%';
             } else {
                 segClist.style.width = '0%';
                 segCf.style.width = '0%';
                 segAvatar.style.width = '0%';
+                segSolved.style.width = '0%';
                 segSettings.style.width = '0%';
                 segLegacy.style.width = '0%';
             }
@@ -8720,6 +9179,7 @@
             setSegInfo(segClist, t().storageBarClist, clistBytes);
             setSegInfo(segCf, t().storageBarCf, cfBytes);
             setSegInfo(segAvatar, t().storageBarAvatar, avatarBytes);
+            setSegInfo(segSolved, t().storageBarSolved, solvedBytes);
             setSegInfo(segSettings, t().storageBarSettings, settingsBytes);
             setSegInfo(segLegacy, t().storageBarLegacy, legacyBytes);
 
@@ -8760,6 +9220,11 @@
             }
             itemAvatar.countTag.textContent = avatarCount > 0 ? (typeof t().storageAvatarCount === 'function' ? t().storageAvatarCount(avatarCount) : `${avatarCount} avatars`) : t().storageClearedBadge;
 
+            itemUserSolved.sizeVal.textContent = formatStorageBytes(solvedBytes);
+            itemUserSolved.countTag.textContent = solvedInfo.count > 0
+                ? (typeof t().storageSolvedCount === 'function' ? t().storageSolvedCount(solvedInfo.count) : `${solvedInfo.count} solved`)
+                : t().storageClearedBadge;
+
             itemLegacy.sizeVal.textContent = formatStorageBytes(legacyBytes);
             const legacyKeyCount = legacyInfo.keys.length;
             itemLegacy.countTag.textContent = legacyKeyCount > 0
@@ -8774,6 +9239,15 @@
                 updateLangSwitchUI();
 
                 cbHideTags.checked = !!appSettings.hideTags;
+                if (typeof cbHideRatingTag !== 'undefined') {
+                    cbHideRatingTag.checked = !!appSettings.hideRatingTag;
+                }
+                if (typeof cbNotHideAcTags !== 'undefined') {
+                    cbNotHideAcTags.checked = !!appSettings.notHideAcTags;
+                }
+                if (typeof updateHideTagsSubItemsVisibility === 'function') {
+                    updateHideTagsSubItemsVisibility();
+                }
 
                 selectedColor = appSettings.acBgColor || DEFAULT_SETTINGS.acBgColor;
                 if (pickr) {
@@ -8945,6 +9419,42 @@
             });
         };
 
+        itemUserSolved.viewBtn.onclick = () => {
+            const solvedInfo = getUserSolvedStorageDetails();
+            showStorageJsonModal(
+                t().storageSolvedTitle,
+                () => solvedInfo.dataMap,
+                solvedInfo.keys.length > 0 ? solvedInfo.keys.join(', ') : '(cf_user_solved_*)'
+            );
+        };
+
+        itemUserSolved.btn.onclick = () => {
+            const solvedInfo = getUserSolvedStorageDetails();
+            if (solvedInfo.keys.length === 0) {
+                showStorageConfirmModal({
+                    title: t().storageSolvedTitle,
+                    type: 'info',
+                    message: t().storageSolvedNoneTip
+                });
+                return;
+            }
+            showStorageConfirmModal({
+                title: t().storageSolvedTitle,
+                type: 'danger',
+                message: t().storageSolvedClearConfirm,
+                confirmText: t().storageSolvedClearBtn,
+                onConfirm: () => {
+                    solvedInfo.keys.forEach(k => {
+                        try {
+                            appStorage.removeItem(k);
+                        } catch (e) { }
+                    });
+                    userSolvedCache = null;
+                    refreshStorageUI();
+                }
+            });
+        };
+
         itemLegacy.viewBtn.onclick = () => {
             const legacy = getLegacyStorageDetails();
             showStorageJsonModal(
@@ -8993,6 +9503,13 @@
                         appStorage.removeItem(CLIST_STORAGE_KEY);
                         appStorage.removeItem(CLIST_LAST_SYNC_KEY);
                         appStorage.removeItem(AVATAR_CACHE_KEY);
+                        const solved = getUserSolvedStorageDetails();
+                        solved.keys.forEach(k => {
+                            try {
+                                appStorage.removeItem(k);
+                            } catch (e) { }
+                        });
+                        userSolvedCache = null;
                         const legacy = getLegacyStorageDetails();
                         legacy.keys.forEach(k => {
                             try {
@@ -9031,7 +9548,28 @@
 
         const CHANGELOG_DATA = [
             {
-                version: 'v1.5.7',
+                version: 'v 1.5.8',
+                date: '2026-09-09 21:15',
+                sections: [
+                    {
+                        type: 'optimized',
+                        items: {
+                            zh: [
+                                '为“隐藏算法标签”功能增加了“隐藏难度分标签”和“不隐藏已AC题目标签”的子项。',
+                                '优化了“标签”样式下 2100~2300 以及 2300~2400 分橙题的颜色显示，提升视觉区分度。',
+                                '优化了部分界面的 UI 表现。'
+                            ],
+                            en: [
+                                'Added sub-options to "Hide Algorithm Tags" for hiding difficulty rating tags and retaining tags for AC problems.',
+                                'Optimized the color display for 2100~2300 and 2300~2400 rating problems under the "Tag" style to improve visual distinction.',
+                                'Optimized UI presentation across various interfaces.'
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                version: 'v 1.5.7',
                 date: '2026-09-08 03:45',
                 sections: [
                     {
@@ -9094,7 +9632,7 @@
                 ]
             },
             {
-                version: 'v1.5.6',
+                version: 'v 1.5.6',
                 date: '2026-09-01 03:10',
                 sections: [
                     {
@@ -9126,7 +9664,7 @@
                 ]
             },
             {
-                version: 'v1.5.5',
+                version: 'v 1.5.5',
                 date: '2026-08-29 07:45',
                 sections: [
                     {
@@ -9167,7 +9705,7 @@
                 ]
             },
             {
-                version: 'v1.5.4',
+                version: 'v 1.5.4',
                 date: '2026-08-28 18:45',
                 sections: [
                     {
@@ -9195,7 +9733,7 @@
                 ]
             },
             {
-                version: 'v1.5.3',
+                version: 'v 1.5.3',
                 date: '2026-08-24 16:15',
                 sections: [
                     {
@@ -9212,7 +9750,7 @@
                 ]
             },
             {
-                version: 'v1.5.2',
+                version: 'v 1.5.2',
                 date: '2026-08-24 14:15',
                 sections: [
                     {
@@ -9244,7 +9782,7 @@
                 ]
             },
             {
-                version: 'v1.5.1',
+                version: 'v 1.5.1',
                 date: '2026-08-24 01:39',
                 sections: [
                     {
@@ -9286,7 +9824,7 @@
                 ]
             },
             {
-                version: 'v1.5.0',
+                version: 'v 1.5.0',
                 date: '2026-08-23 21:50',
                 sections: [
                     {
@@ -9305,7 +9843,7 @@
                 ]
             },
             {
-                version: 'v1.4.2',
+                version: 'v 1.4.2',
                 date: '2026-08-23 18:25',
                 sections: [
                     {
@@ -9322,7 +9860,7 @@
                 ]
             },
             {
-                version: 'v1.4.1',
+                version: 'v 1.4.1',
                 date: '2026-08-23 18:00',
                 sections: [
                     {
@@ -9339,7 +9877,7 @@
                 ]
             },
             {
-                version: 'v1.4.0',
+                version: 'v 1.4.0',
                 date: '2026-08-23 17:33',
                 sections: [
                     {
@@ -9371,7 +9909,7 @@
                 ]
             },
             {
-                version: 'v1.3.5',
+                version: 'v 1.3.5',
                 date: '2026-08-22 23:50',
                 sections: [
                     {
@@ -9418,12 +9956,15 @@
         changelogListContainer.className = 'cf-changelog-list';
         tabPanels.changelog.appendChild(changelogListContainer);
 
-        // 默认只展开最新版本 (v1.5.7)，其他历史版本全部折叠
-        const expandedChangelogVersions = new Set(['v1.5.7']);
+        // 默认只展开最新版本，其他历史版本全部折叠
+        const defaultLatestVer = CHANGELOG_DATA[0]?.version || 'v 1.5.7';
+        const expandedChangelogVersions = new Set([defaultLatestVer]);
 
         resetChangelogExpansion = () => {
             expandedChangelogVersions.clear();
-            expandedChangelogVersions.add('v1.5.7');
+            if (CHANGELOG_DATA[0]?.version) {
+                expandedChangelogVersions.add(CHANGELOG_DATA[0].version);
+            }
             if (typeof renderChangelog === 'function') {
                 renderChangelog();
             }
@@ -9449,7 +9990,7 @@
 
                 const verSpan = document.createElement('span');
                 verSpan.className = 'cf-changelog-version';
-                verSpan.textContent = verItem.version;
+                verSpan.textContent = verItem.version.replace(/^v(?=\d)/i, 'v ');
                 cardLeft.appendChild(verSpan);
 
                 if (isLatest) {
@@ -9783,7 +10324,6 @@
         // PANEL 9: 致谢 (Acknowledgments)
         // -------------------------------------------------------------
         const CF_HELPER_ICON_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAAAA3NCSVQICAjb4U/gAAAAvVBMVEVHcEzleRnhawLibAPdiDLibATicRDibQTohCbicxThdRfhawHjcArjbwjibALjbgXibgfjbQXnfx7hawElJSXibAPhawHkcxEhJSclJSYkJifjbgfhbw3ibgYwKigjJicrKysbJSnjcQ3ibQYzMjjjcAwvLi0qKSkkJSUpKCgrKysuLi8lJSXhagABAQEhISEODg77+/sYGBjf39+7u7t/f38xMTHr6+toaGibm5vU1NSrq6uOjo5YWFhHcEzQ1Ld4AAAAP3RSTlMAFOfJBL05sQomHO5gbN+agKUO++zU9i/J3bV2TImPp0l/RJELUypc9m47Gf///////////////////////wDHlIhfAAADu0lEQVRIicWWeXvaPAzAc993IAES7nK0jVKOrt267vt/rdeWHUiWlAF79rz6AzvGP8uSZVmC8K9kFYaLe9klEAnuYzXKQmzeBbsIw+oueMVg7S5Y8Sgr34O60thQAXTBl5wbUaNPlIZiZFg61a7cBOugOhKAnQB4jgzhTYqhLwjiuO95/SASBA9uUW1Aju1kgo1zJWxY2MgRNsMtNqKKjWV8AYkpXVwME+indB4bHfawUejnwoMkFOn6qdhkfYDEEfIEYtlLzgHJYSpp3JdjSBZCFgP4dXbJYmkJdH9GDd4+VF2T7kyGIMep45qhNo6EGomJSh42o15BpDfanBYQVEh1nCqdPSgmOKKnoPIRZY4kk+2kwmUwVZxq13wn44jrwpJ9r4dFQ4ZPlWucjOmp2WzSfauiBBrqmBUt2eC8HDyRqpasusfEbJmTexCOeptOFunZcKCDbuRjNxKaoo0l8KJ5UQxmvS54OxsVxZxsTlq2bzi5RjpZ8GHaRTIZPQtCpHddcTtOWeexAezKU3fO/k/Ba8Fewg0ZNdjvP0/0gLsn7rfgEFjCeG4oLj9ez6rXOMFtBic7rZjF9IbPfMGft/2vA+sSeUTHgm21YMH0dTo6YWh5oEj5eSzJCiXDp3SWvuxgqSiVybvy55Futzz+KIvy9bUsK6MvZ4UBuun9/VtJt75/e2Ffu7PHLgjR/HL42P+gW2X6X8pv+yNZ5BKs5EFlM53+QbDy/ZP+vrKlihG1Oet6Nw2ZnRWLkXJHjD382qP+z7fyHCUuqG27x/wxXfOTQpUfSO34WbF76UPWgr3YOnuM8+i1kwyZRhPaEWbbfDeTavLh+7HSeTpmIlHcjm1yIanNz/XQPtRZ4m0an47XoTkgT1NI1Y42p9kN9nFKlYckjbQqDStVNAnc6XAmCPOiQ8jD8zQcZCBpitlM+gpZMHZN4E6btFlmsEVKFPf3pO9jSlz44LLvx99ZnggCGF+R9NeDOjrgmZckfY0n/TMcsaSvprV8/DTlebA3nZ0GO5M+G3EzZgz/42E9621na/5a4KDelfQtTPokREF3A/kc+rVXMpczR6cFIX1d7Ka/nYAiK7oIdZrShBV0FoFoRbcaf1UeLVZ4Wj6jeWVg4BNmOldWscCS+JwdkQbXUUxELJ60wPcDuop+UzVEiqdMDFntGYpBx1W4JKRcTkByNS2zSYcbcbWYMsiGo6o5KSTVLzL1JTzCfY+ju6p1VunD/1Dp539V6ffxqt3F0krUlvyvitU/i3FbiX+T/AdhLbZ9Y8xiFgAAAABJRU5ErkJggg==';
-        const CLIST_ICON_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAB3klEQVR4nNWZy1XDMBBFr1wNoRGogONOzA5lRzrh0ICpJKYTlmKBh5CPE400Ix/eMsd5c6+dWP6ARfox8vTxatKlTFfd0I+RFF4IDGtI1AkIvGQFiXKBU3hJY4kygSV4SUMJvcAteEkjCZ1ALrykgUS+gBZe4iyRJ1AKL3GUuC1QCy9xkrguYAUvcZBYFrCGlxhLXBbQwqcQCTxnb28ocS5QAv/+sOXtcbeGxLFAKbxkBYmDQC28pLHEj4AVvKShRGcOL2kk0UH4yt46F16ildCwzOmyh2jhJc79XdaQUniJY//hLLQ0pBbeuf94HTgdYgXfqv83/Rjpx2hf3KhfmzQR0yduNy2u/WkipomUJpLHENf+o3KHITn9xc+F0kQEzlfwxGAhkdtfJLBYvjDEsz+Yl/9NYBfuNJcS+n79EUgorp10R0IFP7OoBcI9O5Jir2ZKqOEhhg3bov+AtUQpPFSchawkauCh8v1ArUQtPBSchS5y6UEEQvWdsCGefmgiAJD2DAS366GzPS+pf0c2R/1zys8iPBgKgIvEVXgwFgBTiZvw4CAAJhJZ8OAkAFUS2fDgKABFEip4cBYAlYQaHhoIQJZEEXzzpD3D2S3ipFqN18+JxP+Cl8w369Gi6xvAY35uBNY3xAAAAABJRU5ErkJggg==';
         const GITHUB_ACK_ICON_SVG = '<svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" style="display: block;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>';
         const CARROT_ICON_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABRElEQVR4nOyZTQrCMBCFU/UIgiIi4lE8gSfxCC48gjfwBl5IERHxp/6doJpFNlJlMvNiJrQfdKUl8/JeJmnbMInTMIlTC4hN8gJahsls1SkMiPnklBkm3jciCy/DVwz5z6EL/4QqRO0aoE5Y3YViUx0BklYXElZR/+hI1AmDzipCWLB9gMp62i6W46bxhRtRqIDNu/hvv40WeZA1VN3DXBkx2hRszO2P+DiGAWJUR8gRa5eDjLsjxMcxAMcI4kDMM0bya0A8eXuP+Dj6wBiJIxT7iJq8ANH4B0Z8HD1QjEQOaHjCSV4Au4ajID6OLiBGbAe0PCCzN7IMcJ0BLrIcuAAGRlHNF1sZ8MqFbnpH6KooPhZvAdpez6lYAzeBq14O3JXFx+IlQFt8LGra6IPpLtmBp8L4WMgCNMbHorUuMvU3sti8AAAA///BNLeiAAAABklEQVQDAFjtSRgrNmPKAAAAAElFTkSuQmCC';
 
@@ -9992,7 +10532,6 @@
         // -------------------------------------------------------------
         // 3. Bottom Footer
         // -------------------------------------------------------------
-        const CF_ICON_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align: -2px; flex-shrink: 0; display: inline-block;"><rect x="2" y="9" width="4.5" height="13" rx="1.5" fill="#ffd200"/><rect x="9.5" y="2" width="4.5" height="20" rx="1.5" fill="#2487e6"/><rect x="17" y="6" width="4.5" height="16" rx="1.5" fill="#ee3424"/></svg>';
         const CLIST_ICON_HTML = `<img src="${CLIST_ICON_DATA_URI}" width="14" height="14" style="vertical-align: -2px; flex-shrink: 0; display: inline-block; border-radius: 2px;" alt="CList" />`;
         const GODEXIOUS_AVATAR_DATA_URI = 'data:image/png;base64,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';
         const ANTIGRAVITY_LOGO_DATA_URI = 'data:image/png;base64,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';
@@ -10120,6 +10659,12 @@
             appSettings.displayStyle = currentDisplayStyle;
             appSettings.tagFillCell = cbTagFillCell.checked;
             appSettings.hideTags = cbHideTags.checked;
+            if (typeof cbHideRatingTag !== 'undefined') {
+                appSettings.hideRatingTag = cbHideRatingTag.checked;
+            }
+            if (typeof cbNotHideAcTags !== 'undefined') {
+                appSettings.notHideAcTags = cbNotHideAcTags.checked;
+            }
             appSettings.colorRatings = cbColorRatings.checked;
             if (typeof cbClistEnabled !== 'undefined') {
                 if (!appSettings.clist) appSettings.clist = { ...DEFAULT_SETTINGS.clist };
@@ -10178,6 +10723,12 @@
             });
             labelLang.textContent = t().langLabel;
             labelHideTags.textContent = t().locHideTags;
+            if (typeof labelHideRatingTag !== 'undefined') {
+                labelHideRatingTag.textContent = t().locHideRatingTag;
+            }
+            if (typeof labelNotHideAcTags !== 'undefined') {
+                labelNotHideAcTags.textContent = t().locNotHideAcTags;
+            }
             labelMasterColorRatings.textContent = t().masterColorRatings;
             langZhBtn.textContent = '简体中文';
             langEnBtn.textContent = 'English';
@@ -10272,6 +10823,7 @@
                 legendClist.label.textContent = t().storageBarClist;
                 legendCf.label.textContent = t().storageBarCf;
                 legendAvatar.label.textContent = t().storageBarAvatar;
+                legendSolved.label.textContent = t().storageBarSolved;
                 legendSettings.label.textContent = t().storageBarSettings;
                 legendLegacy.label.textContent = t().storageBarLegacy;
 
@@ -10294,6 +10846,11 @@
                 itemAvatar.desc.textContent = t().storageAvatarDesc;
                 itemAvatar.btnTextSpan.textContent = t().storageAvatarClearBtn;
                 itemAvatar.viewBtnTextSpan.textContent = t().storageViewBtn;
+
+                itemUserSolved.title.textContent = t().storageSolvedTitle;
+                itemUserSolved.desc.textContent = t().storageSolvedDesc;
+                itemUserSolved.btnTextSpan.textContent = t().storageSolvedClearBtn;
+                itemUserSolved.viewBtnTextSpan.textContent = t().storageViewBtn;
 
                 itemLegacy.title.textContent = t().storageLegacyTitle;
                 itemLegacy.desc.textContent = t().storageLegacyDesc;
@@ -10434,8 +10991,13 @@
     }
     // Run when the page is ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => { init(); createSettingsUI(); });
+        document.addEventListener('DOMContentLoaded', () => {
+            applyProblemTagsVisibility();
+            init();
+            createSettingsUI();
+        });
     } else {
+        applyProblemTagsVisibility();
         init();
         createSettingsUI();
     }

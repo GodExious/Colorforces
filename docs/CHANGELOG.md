@@ -8,6 +8,16 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+### v1.5.8
+`2026-09-09 21:15`
+
+**Optimized**
+1. Added sub-options to "Hide Algorithm Tags" for hiding difficulty rating tags and retaining tags for AC problems.
+2. Optimized the color display for 2100~2300 and 2300~2400 rating problems under the "Tag" style to improve visual distinction.
+3. Optimized UI presentation across various interfaces.
+
+---
+
 ### v1.5.7
 `2026-09-08 03:45`
 
