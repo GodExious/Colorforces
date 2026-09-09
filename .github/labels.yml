@@ -1,0 +1,23 @@
+- name: "bug"
+  color: "d73a4a"
+  description: "Bug 修复与异常排查"
+
+- name: "optimization"
+  color: "fbca04"
+  description: "现有功能的体验、排版与性能改进"
+
+- name: "feature"
+  color: "7057ff"
+  description: "新功能提议与演进路线"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "文档与更新日志"
+
+- name: "question"
+  color: "d876e3"
+  description: "使用疑问与咨询"
+
+- name: "help wanted"
+  color: "008672"
+  description: "欢迎社区协助与贡献"

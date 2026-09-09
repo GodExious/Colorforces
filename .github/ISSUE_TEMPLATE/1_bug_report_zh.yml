@@ -1,0 +1,79 @@
+name: 🐛 Bug 反馈 (中文)
+description: 提交脚本运行中的错误、样式异常或功能失效
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提交前请确保使用的是最新版本（当前：v1.5.7），并先检索现有 Issue 避免重复提交。
+
+  - type: input
+    id: version
+    attributes:
+      label: 插件版本
+      placeholder: "例如：v1.5.7"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: 运行环境
+      options:
+        - "Chrome + Tampermonkey"
+        - "Edge + Tampermonkey"
+        - "Firefox + Tampermonkey"
+        - "Safari + Userscripts"
+        - "Violentmonkey (暴力猴)"
+        - "ScriptCat (脚本猫)"
+        - "其他环境 (请在下方说明)"
+    validations:
+      required: true
+
+  - type: input
+    id: page_url
+    attributes:
+      label: 问题页面链接
+      placeholder: "例如：https://codeforces.com/contest/1234/standings"
+    validations:
+      required: true
+
+  - type: textarea
+    id: other_plugins
+    attributes:
+      label: 其他启用的插件
+      description: 如 Dark Reader、CF-Better 等可能影响样式的扩展（无则留空）。
+      placeholder: "例如：Dark Reader"
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 清晰说明实际现象与预期效果。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开 ...
+        2. 点击 ...
+        3. 出现 ...
+
+  - type: textarea
+    id: screenshots_and_logs
+    attributes:
+      label: 问题截图 / 控制台日志
+      description: 可直接截图粘贴于此；若 F12 控制台有报错信息也可一并附上。
+      placeholder: "可直接截图并在此处 Ctrl+V 粘贴图片..."
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认事项
+      options:
+        - label: 我已确认使用的是最新版本，且未检索到类似的 Issue
+          required: true

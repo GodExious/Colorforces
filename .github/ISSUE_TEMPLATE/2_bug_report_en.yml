@@ -1,0 +1,79 @@
+name: 🐛 Bug Report (English)
+description: Report errors, styling issues, or broken functionality
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please verify that you are on the latest version (v1.5.7) and search existing issues first.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: "e.g., v1.5.7"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - "Chrome + Tampermonkey"
+        - "Edge + Tampermonkey"
+        - "Firefox + Tampermonkey"
+        - "Safari + Userscripts"
+        - "Violentmonkey"
+        - "ScriptCat"
+        - "Other (Specify below)"
+    validations:
+      required: true
+
+  - type: input
+    id: page_url
+    attributes:
+      label: Affected Page URL
+      placeholder: "e.g., https://codeforces.com/contest/1234/standings"
+    validations:
+      required: true
+
+  - type: textarea
+    id: other_plugins
+    attributes:
+      label: Other Active Extensions
+      description: Extensions that might alter styles (e.g. Dark Reader, CF-Better). Leave blank if none.
+      placeholder: "e.g., Dark Reader"
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe what happened and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click on ...
+        3. See error ...
+
+  - type: textarea
+    id: screenshots_and_logs
+    attributes:
+      label: Screenshots / Console Logs
+      description: Paste screenshots here. If there are errors in the F12 Console, you can also paste them.
+      placeholder: "Paste (Ctrl+V) screenshots directly here..."
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have verified this on the latest version and found no existing duplicates
+          required: true

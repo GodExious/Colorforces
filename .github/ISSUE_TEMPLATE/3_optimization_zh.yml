@@ -1,0 +1,39 @@
+name: ⚡ 体验优化 (中文)
+description: 针对现有功能的交互、排版或性能提出改进建议
+title: "[Opt]: "
+labels: ["optimization"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        用于改进现有功能。如需提议新功能，请使用「新功能提议」模板。
+
+  - type: input
+    id: related_module
+    attributes:
+      label: 涉及功能 / 模块
+      placeholder: "例如：难度分展示、快捷键、头像排版等"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_issue
+    attributes:
+      label: 当前问题 / 不足
+      description: 简要说明现有功能存在哪些不便或体验痛点。
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_improvement
+    attributes:
+      label: 建议方案
+      description: 具体说明你期望的改进方式或调整效果。
+    validations:
+      required: true
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: 参考截图 / 对比（可选）
+      description: 可附上修改前后的效果草图或截图。

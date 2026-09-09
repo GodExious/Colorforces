@@ -61,11 +61,6 @@
   <em>博客内容页面的用户头像展示</em>
 </p>
 
-## ✨ 功能特点
-- **🧠 全局难度直显**：在提交、状态、题单、榜单等所有核心页面无缝嵌入题目难度分。支持自由切换「经典色块」与「高级标签」两种 UI 风格。
-- **🎨 视觉体验重构**：自动抓取并显示用户头像与专属编程语言图标（如 C++、Python、Go 等），并提供极简的判题状态缩写（如 `WA`、`TLE`）。
-- **⚙️ 全能控制面板**：悬浮式双语（中/英）配置中心。支持全模块独立开关、自定义时间格式化、图标缩放及专属 AC 颜色定制。
-- **⚡ 零感性能开销**：依托 Codeforces 官方 API 并结合强效的本地缓存策略，每天仅需一次静默更新，完全不拖累网页加载速度。
 ## 🚀 安装说明
 1. 首先，在你的浏览器上安装 [Tampermonkey (油猴)](https://www.tampermonkey.net/) 脚本管理器。
 2. 点击下方链接一键安装脚本：
@@ -79,8 +74,8 @@
 ## 💡 意见与反馈
 如果你对本插件有任何好点子、改进建议，或者发现了 Bug，非常欢迎到 [GitHub Issues](https://github.com/GodExious/Colorforces/issues) 中提出反馈与讨论！也随时欢迎提交 Pull Requests。
 
-## 👏 鸣谢
-本插件主要受到 [Codeforces-Helper](https://chromewebstore.google.com/detail/codeforces-helper/ahoeafmlmoohkkalcickdnkifpfnolpj) 的启发。由于该插件不支持在 `status` 页面展示题目分数，因此我让 AI (Antigravity 1.23.2) 帮我仿写并实现了本项目。
+## 👏 致谢
+本插件主要受到 [Codeforces-Helper](https://chromewebstore.google.com/detail/codeforces-helper/ahoeafmlmoohkkalcickdnkifpfnolpj) 的启发。由于该插件不支持在 `status` 页面展示题目分数，因此我让 AI (Antigravity 2.5.5) 帮我仿写并实现了本项目。
 
 ## 📄 License
 本项目基于 [MIT License](../LICENSE) 协议开源。

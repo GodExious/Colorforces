@@ -1,0 +1,38 @@
+name: ✨ 新功能提议 (中文)
+description: 提议全新的功能模块或外部集成
+title: "[Feature]: "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提议新功能前，建议先在设置菜单的「开发计划」中查看当前规划。
+        *(已有功能的细节改进请使用「体验优化」模板)*
+
+  - type: textarea
+    id: feature_desc
+    attributes:
+      label: 功能描述
+      description: 简要说明你希望新增的功能及其核心逻辑。
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: 使用场景
+      description: 该功能适用于什么场景，能解决什么实际需求？
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution_or_mockup
+    attributes:
+      label: 设计思路 / 参考原型（可选）
+      description: 预期的界面入口、交互逻辑或效果草图。
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案 / 参考项目（可选）
+      description: 是否有其他工具或插件实现了类似功能。

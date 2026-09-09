@@ -61,12 +61,6 @@ Reimagining the Codeforces UI. A next-generation userscript that breathes life i
   <em>User avatar display on the Blogs content page</em>
 </p>
 
-## ✨ Features
-- **🧠 Global Rating Display**: Seamlessly injects problem difficulty ratings into Submissions, Status, Problemsets, and Standings. Supports switching between "Classic Block" and "Premium Tag" UI styles.
-- **🎨 UI Revitalization**: Automatically fetches and displays user avatars and dedicated programming language icons (e.g., C++, Python, Go), featuring minimalist verdict abbreviations (e.g., `WA`, `TLE`).
-- **⚙️ Omnipotent Control Panel**: Floating bilingual (EN/ZH) settings hub. Fully customize toggle zones, time formatting, icon scaling, and your personalized AC background color.
-- **⚡ Zero Performance Overhead**: Powered by official Codeforces APIs with an aggressive local caching strategy. Updates silently once a day to ensure blazing-fast page loads.
-
 ## 🚀 Installation
 1. Install a user script manager like [Tampermonkey](https://www.tampermonkey.net/) for your browser.
 2. Click the link below to install the script directly:
@@ -79,7 +73,7 @@ Reimagining the Codeforces UI. A next-generation userscript that breathes life i
 If you have any suggestions, feature requests, or find any bugs, please feel free to open an [Issue](https://github.com/GodExious/Colorforces/issues) in this repository! Contributions and Pull Requests are always welcome.
 
 ## 👏 Acknowledgments
-This plugin was mainly inspired by [Codeforces-Helper](https://chromewebstore.google.com/detail/codeforces-helper/ahoeafmlmoohkkalcickdnkifpfnolpj). However, since that extension does not support displaying problem ratings on the `status` page, I had an AI (Antigravity 1.23.2) help me write and implement this project.
+This plugin was mainly inspired by [Codeforces-Helper](https://chromewebstore.google.com/detail/codeforces-helper/ahoeafmlmoohkkalcickdnkifpfnolpj). However, since that extension does not support displaying problem ratings on the `status` page, I had an AI (Antigravity 2.5.5) help me write and implement this project.
 
 ## 📄 License
 Released under the [MIT License](LICENSE).

@@ -1,0 +1,39 @@
+name: ⚡ Optimization (English)
+description: Suggest UX, UI, or performance improvements for existing features
+title: "[Opt]: "
+labels: ["optimization"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For improvements to existing features. For brand-new features, use the "Feature Request" template instead.
+
+  - type: input
+    id: related_module
+    attributes:
+      label: Module / Feature
+      placeholder: "e.g., Rating display, Shortcuts, Avatars"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_issue
+    attributes:
+      label: Current Limitation / Pain Point
+      description: Briefly describe what feels suboptimal with the current implementation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_improvement
+    attributes:
+      label: Suggested Solution
+      description: Describe how you would like this improved.
+    validations:
+      required: true
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Screenshots / References (Optional)
+      description: Attach comparison mockups or reference screenshots.

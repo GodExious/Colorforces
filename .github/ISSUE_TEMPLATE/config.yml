@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 更新日志 (Changelog - 简体中文)
+    url: https://github.com/GodExious/Colorforces/blob/main/docs/CHANGELOG_zh.md
+    about: 查看历史版本的更新与修复记录
+  - name: 📖 Changelog (English)
+    url: https://github.com/GodExious/Colorforces/blob/main/docs/CHANGELOG.md
+    about: View release notes and changes for each version
