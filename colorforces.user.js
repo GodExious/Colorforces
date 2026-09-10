@@ -2,7 +2,7 @@
 // @name         Colorforces
 // @name:zh-CN   Colorforces 算法竞赛视觉增强
 // @namespace    https://github.com/GodExious/Colorforces
-// @version      1.5.8
+// @version      1.5.9
 // @description  Reimagining the Codeforces UI. A next-generation userscript that breathes life into your competitive programming experience with dynamic rating colors, modern badges, and a premium, highly customizable interface.
 // @description:zh-CN 重塑 Codeforces 视觉体验的新一代增强插件。通过动态的评分色彩、现代化的标签引擎和极高自由度的定制面板，为你的算法竞赛之旅注入全新的生命力。
 // @author       GodExious & Antigravity
@@ -16,6 +16,7 @@
 // @require      https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js
 // @license      MIT
 // @connect      clist.by
+// @connect      raw.githubusercontent.com
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -41,10 +42,15 @@
     const CACHE_KEY = 'cf_problems_ratings';
     const CACHE_TIME_KEY = 'cf_problems_ratings_time';
     const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 1 day in milliseconds
+    const PARALLEL_CONTESTS_KEY = 'cf_parallel_contests';
     const CLIST_STORAGE_KEY = 'cf_clist_problems';
     const CLIST_LAST_SYNC_KEY = 'cf_clist_last_sync_time';
     const CLIST_SYNC_COOLDOWN = 10 * 60 * 1000; // 10 minutes in milliseconds
     const AVATAR_CACHE_KEY = 'cf_user_avatars_v2';
+    const UPDATE_CHECK_KEY = 'cf_update_check_state';
+    const UPDATE_CHECK_COOLDOWN = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+    const SCRIPT_UPDATE_URL = 'https://raw.githubusercontent.com/GodExious/Colorforces/main/colorforces.user.js';
+    const CURRENT_VERSION = (typeof GM_info !== 'undefined' && GM_info && GM_info.script && GM_info.script.version) ? GM_info.script.version : '1.5.9';
 
     // Settings Management
     const SETTINGS_KEY = 'cf_submissions_settings';
@@ -91,6 +97,7 @@
         }
     };
     const DEFAULT_SETTINGS = {
+        disableAutoCheckUpdate: false,
         acBgColor: '#d4edc9',
         colorRatings: true,
         tagFillCell: true,
@@ -177,6 +184,7 @@
                 settings.notHideAcTags = parsed.notHideAcTags !== undefined ? !!parsed.notHideAcTags : settings.notHideAcTags;
                 settings.colorRatings = parsed.colorRatings !== undefined ? !!parsed.colorRatings : settings.colorRatings;
                 settings.tagFillCell = parsed.tagFillCell !== undefined ? !!parsed.tagFillCell : settings.tagFillCell;
+                settings.disableAutoCheckUpdate = parsed.disableAutoCheckUpdate !== undefined ? !!parsed.disableAutoCheckUpdate : settings.disableAutoCheckUpdate;
                 settings.lang = parsed.lang || settings.lang;
                 settings.displayStyle = parsed.displayStyle || settings.displayStyle;
                 if (parsed.clist) {
@@ -366,6 +374,9 @@
         };
         for (const [cls, add] of Object.entries(classMap)) {
             document.documentElement.classList.toggle(cls, add);
+        }
+        if (typeof syncSecondLevelMenuLava === 'function') {
+            syncSecondLevelMenuLava();
         }
     }
     updateDynamicStyle();
@@ -2881,6 +2892,101 @@
             margin-right: 5px !important;
             object-fit: cover !important;
         }
+        :root:not(.cf-hide-userAvatar) .cf-author-icon-hidden,
+        :root:not(.cf-hide-userAvatar) .right-meta li > a:has(> img[src*="user_16x16"]),
+        :root:not(.cf-hide-userAvatar) .right-meta li > a > img[src*="user_16x16"] {
+            display: none !important;
+        }
+        :root:not(.cf-hide-userAvatar) .cf-avatar-inline-user {
+            display: inline-flex !important;
+            align-items: center !important;
+            vertical-align: middle !important;
+            line-height: 1 !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .meta {
+            display: flow-root !important;
+            height: auto !important;
+            min-height: 2.5em !important;
+            box-sizing: border-box !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .meta br[style*="clear"] {
+            display: none !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .left-meta {
+            float: left !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 2.5em !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .left-meta ul {
+            display: flex !important;
+            align-items: center !important;
+            margin: 0.35em 0.75em !important;
+            padding: 0 !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .right-meta {
+            float: right !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 2.5em !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .right-meta ul {
+            display: flex !important;
+            align-items: center !important;
+            margin: 0.35em 0.75em !important;
+            padding: 0 !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .right-meta ul li {
+            display: inline-flex !important;
+            align-items: center !important;
+            float: none !important;
+            margin: 0 0.8rem !important;
+            line-height: 1 !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .right-meta ul li > a {
+            display: inline-flex !important;
+            align-items: center !important;
+            vertical-align: middle !important;
+            line-height: 1 !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .right-meta img.cf-user-avatar {
+            width: var(--cf-avatar-size) !important;
+            height: var(--cf-avatar-size) !important;
+            aspect-ratio: 1 / 1 !important;
+            object-fit: cover !important;
+            border-radius: 50% !important;
+            flex-shrink: 0 !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+        :root:not(.cf-hide-userAvatar) .topic .right-meta ul li > img,
+        :root:not(.cf-hide-userAvatar) .topic .right-meta ul li > a > img:not(.cf-user-avatar) {
+            vertical-align: middle !important;
+            position: relative !important;
+            top: 0 !important;
+            margin-right: 4px !important;
+        }
+        :root:not(.cf-hide-userAvatar) .topic .info a.cf-avatar-inline-user {
+            display: inline-flex !important;
+            align-items: center !important;
+            vertical-align: middle !important;
+            line-height: 1 !important;
+        }
+        :root:not(.cf-hide-userAvatar) .second-level-menu-list {
+            overflow: visible !important;
+        }
+        :root:not(.cf-hide-userAvatar) .second-level-menu-list li a.cf-avatar-inline-user {
+            overflow: visible !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+        :root:not(.cf-hide-userAvatar) .second-level-menu-list li a.cf-avatar-inline-user img.cf-user-avatar {
+            width: var(--cf-avatar-size) !important;
+            height: var(--cf-avatar-size) !important;
+            aspect-ratio: 1 / 1 !important;
+            object-fit: cover !important;
+            border-radius: 50% !important;
+            flex-shrink: 0 !important;
+        }
         .status-party-cell:not(.cf-team-formatted):not(.cf-team-unformatted) a:not(.cf-avatar-container)[href*="/profile/"] {
             display: inline-block !important;
             vertical-align: middle !important;
@@ -3088,10 +3194,17 @@
     let clistProblemsCache = null;
     let latestRatingsMap = {};
 
+    const naturalCollator = (typeof Intl !== 'undefined' && Intl.Collator)
+        ? new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
+        : null;
+    const naturalCompare = naturalCollator
+        ? naturalCollator.compare.bind(naturalCollator)
+        : (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+
     function sortProblemKeys(obj) {
         if (!obj || typeof obj !== 'object') return obj;
         const sorted = {};
-        const sortedKeys = Object.keys(obj).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+        const sortedKeys = Object.keys(obj).sort(naturalCompare);
         for (const k of sortedKeys) {
             sorted[k] = obj[k];
         }
@@ -3100,7 +3213,82 @@
 
     function sortProblemIds(arr) {
         if (!Array.isArray(arr)) return [];
-        return arr.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+        return arr.slice().sort(naturalCompare);
+    }
+
+    // -------------------------------------------------------------
+    // Parallel / Concurrent Contests (并赛分组) Module
+    // -------------------------------------------------------------
+    let parallelContestsCache = null;
+    let contestToPeersMap = null;
+    let contestProblemsIndex = null;
+
+    function buildParallelContestLookup(groups) {
+        contestToPeersMap = new Map();
+        if (!Array.isArray(groups)) return;
+        for (const group of groups) {
+            if (!Array.isArray(group) || group.length <= 1) continue;
+            for (const cid of group) {
+                const numCid = typeof cid === 'number' ? cid : parseInt(cid, 10);
+                if (!isNaN(numCid)) {
+                    const peers = group.map(x => typeof x === 'number' ? x : parseInt(x, 10)).filter(id => id !== numCid && !isNaN(id));
+                    contestToPeersMap.set(numCid, peers);
+                }
+            }
+        }
+    }
+
+    function getParallelContests() {
+        if (parallelContestsCache) return parallelContestsCache;
+        try {
+            parallelContestsCache = appStorage.getJSON(PARALLEL_CONTESTS_KEY, null) || [];
+            buildParallelContestLookup(parallelContestsCache);
+        } catch (e) {
+            parallelContestsCache = [];
+        }
+        return parallelContestsCache;
+    }
+
+    function getPeerContests(contestId) {
+        if (!contestToPeersMap) {
+            getParallelContests();
+        }
+        const numId = typeof contestId === 'number' ? contestId : parseInt(contestId, 10);
+        return (contestToPeersMap && contestToPeersMap.get(numId)) || [];
+    }
+
+    function invalidateContestProblemsIndex() {
+        contestProblemsIndex = null;
+    }
+
+    function getProblemsByContest(cid) {
+        if (!contestProblemsIndex) {
+            contestProblemsIndex = new Map();
+            const map = latestRatingsMap || {};
+            for (const k in map) {
+                const m = k.match(/^(\d+)/);
+                if (m) {
+                    const c = parseInt(m[1], 10);
+                    if (!contestProblemsIndex.has(c)) {
+                        contestProblemsIndex.set(c, []);
+                    }
+                    contestProblemsIndex.get(c).push({
+                        key: k,
+                        item: map[k]
+                    });
+                }
+            }
+        }
+        const numId = typeof cid === 'number' ? cid : parseInt(cid, 10);
+        return contestProblemsIndex.get(numId) || [];
+    }
+
+    function cleanProblemTitle(title) {
+        if (!title || typeof title !== 'string') return '';
+        let s = title.trim();
+        // Remove prefixes like "C1. ", "C1 - ", "C1: ", "Problem C1. ", "1831C - ", etc.
+        s = s.replace(/^(?:problem\s*)?(?:[0-9]+[a-z0-9]*|[a-z0-9]+)\s*[\.\-\–\—\:]\s*/i, '');
+        return s.trim();
     }
 
     function getClistProblems() {
@@ -3250,12 +3438,17 @@
             changelogTitle: '更新日志',
             changelogSubtitle: '记录 Colorforces 的所有版本演进与重要更新',
             changelogLatestBadge: '最新',
+            changelogBadgeAdded: '新增',
+            changelogBadgeOptimized: '优化',
+            changelogBadgeFixed: '修复',
+            changelogBadgeAnnouncement: '公告',
             roadmapTitle: '开发计划',
             roadmapSubtitle: '功能演进路线与开发进展规划，共同见证插件成长',
             roadmapSectionPlanned: '计划中',
             roadmapSectionCompleted: '已实现',
             roadmapStatusPlanned: '计划中',
             roadmapStatusCompleted: '已完成',
+            roadmapItemCount: (count) => `${count} 项`,
             roadmapProposalTitle: '有新的功能提议？',
             roadmapProposalDesc: '如果您有更棒的创意、功能想法或优化建议，非常欢迎随时在 GitHub Issue 中发起提议，共同见证插件成长！',
             roadmapProposalBtn: '前往 Issue 提建议',
@@ -3265,6 +3458,18 @@
             locHideTags: '隐藏算法标签',
             locHideRatingTag: '隐藏难度分标签',
             locNotHideAcTags: '不隐藏已AC题目标签',
+            locAutoCheckUpdate: '禁用自动更新',
+            btnCheckUpdateNow: '检查更新',
+            statusCheckingUpdate: '检查中...',
+            statusUpdateLatest: '已是最新',
+            statusUpdatePreview: '当前为预览版',
+            statusUpdateFailed: '检查失败',
+            updateModalTitle: '🔔 发现新版本',
+            updateModalDesc: (remoteVer, curVer) => `检测到 Colorforces 有新的可用版本 <span style="font-weight: 700; color: #1890ff;">v${remoteVer}</span>（当前安装版本为 v${curVer}）。`,
+            updateModalSubDesc: '建议及时更新以体验最新的功能优化和问题修复。',
+            updateModalStopCheck: '不再自动检测更新',
+            updateModalBtnUpdate: '立即更新',
+            updateModalBtnLater: '稍后提醒 (3小时后)',
             shortcutsSectionTitle: '快捷键设置',
             shortcutsSectionSubtitle: '自定义常用操作的快捷热键，点击按键徽标后直接按下新按键即可修改。',
             shortcutsSectionTip: '默认快捷键为 Shift 加上对应功能英文单词的首字母（如 Hidden、Status、Time、Format 等）。',
@@ -3288,6 +3493,7 @@
             shortcutUserAvatarDesc: '快速切换榜单和提交列表中用户头像的展示状态。',
             shortcutRecording: '请按下按键...',
             shortcutEditTooltip: '点击修改快捷键',
+            shortcutEmpty: '(未设置)',
             shortcutClearBtn: '清空快捷键',
             shortcutResetBtn: '恢复默认',
             shortcutResetAllBtn: '恢复默认快捷键',
@@ -3354,6 +3560,7 @@
             tokenWeekday: '星期全称 / 简称',
             tokenMonthName: '英文月份全称 / 简称',
             tokenEscape: '转义文本 (原样输出字符)',
+            tokenEscapeExample: '[年], [at]',
             saveBtn: '保存并刷新',
 
             // Footer & Metadata
@@ -3438,6 +3645,7 @@
 
             // CList Sync Execution & Errors
             syncNeedApiKey: '请先填写 CList API Key',
+            syncApiKeyMissingNote: '💡 请先在设置面板中填写您的 API Key，或切换为 Cookie 登录模式。',
             syncStatusFetching: (pulled, total, page, totalPages = 3) => `正在拉取题目数据 (${pulled} / 约 ${total} 题，第 ${page}/${totalPages} 页)...`,
             syncNetworkError: '网络请求失败，请检查网络连接或 CList 状态',
             syncApiKeyInvalid: 'API Key 无效或未授权，请检查填写的凭证',
@@ -3505,7 +3713,8 @@
             storageCloseBtn: '关闭',
             storageEmptyData: '(当前暂无缓存数据 / 缓存已清空)',
             storageViewFooterTip: '只读数据展示 · 不会更改任何油猴存储内容',
-            storageKeyPrefix: '油猴存储 Key',
+            storageKeyPrefix: '当前预览的油猴存储 Key',
+            storageTruncatedTip: '已截取部分预览以保障流畅，点击右上角「复制 JSON」可获取完整数据',
             popConfirmBtn: '确定',
             popCancelBtn: '取消',
             popGotItBtn: '知道了',
@@ -3545,12 +3754,17 @@
             changelogTitle: 'Changelog',
             changelogSubtitle: 'Notable changes and release history for Colorforces',
             changelogLatestBadge: 'Latest',
+            changelogBadgeAdded: 'Added',
+            changelogBadgeOptimized: 'Optimized',
+            changelogBadgeFixed: 'Fixed',
+            changelogBadgeAnnouncement: 'Announcement',
             roadmapTitle: 'Development Roadmap',
             roadmapSubtitle: 'Upcoming feature plans and development milestones for Colorforces',
             roadmapSectionPlanned: 'Planned',
             roadmapSectionCompleted: 'Completed',
             roadmapStatusPlanned: 'Planned',
             roadmapStatusCompleted: 'Done',
+            roadmapItemCount: (count) => `${count} ${count === 1 ? 'item' : 'items'}`,
             roadmapProposalTitle: 'Have a Feature Proposal?',
             roadmapProposalDesc: 'Got an awesome idea, feature request, or optimization tip? Feel free to open an issue on GitHub and build Colorforces together!',
             roadmapProposalBtn: 'Propose on GitHub',
@@ -3560,6 +3774,18 @@
             locHideTags: 'Hide Algorithm Tags',
             locHideRatingTag: 'Hide Difficulty Rating Tag',
             locNotHideAcTags: 'Keep Tags for Solved Problems',
+            locAutoCheckUpdate: 'Disable Auto Updates',
+            btnCheckUpdateNow: 'Check Updates',
+            statusCheckingUpdate: 'Checking...',
+            statusUpdateLatest: 'Up to date',
+            statusUpdatePreview: 'Preview version',
+            statusUpdateFailed: 'Check failed',
+            updateModalTitle: '🔔 New Version Available',
+            updateModalDesc: (remoteVer, curVer) => `A new version of Colorforces is available: <span style="font-weight: 700; color: #1890ff;">v${remoteVer}</span> (current installed version is v${curVer}).`,
+            updateModalSubDesc: 'Updating is recommended to experience the latest features and improvements.',
+            updateModalStopCheck: 'Do not check for updates automatically',
+            updateModalBtnUpdate: 'Update Now',
+            updateModalBtnLater: 'Remind Later (in 3h)',
             shortcutsSectionTitle: 'Keyboard Shortcuts',
             shortcutsSectionSubtitle: 'Customize hotkeys for frequent actions. Click a shortcut badge and press the new key combination to record.',
             shortcutsSectionTip: 'Default shortcuts follow Shift + the feature\'s initial letter (e.g. Hidden, Status, Time, Format, etc.).',
@@ -3583,6 +3809,7 @@
             shortcutUserAvatarDesc: 'Toggle visibility of user avatars in standings and status tables.',
             shortcutRecording: 'Press keys...',
             shortcutEditTooltip: 'Click to edit shortcut',
+            shortcutEmpty: '(None)',
             shortcutClearBtn: 'Clear shortcut',
             shortcutResetBtn: 'Reset to default',
             shortcutResetAllBtn: 'Reset All to Defaults',
@@ -3649,6 +3876,7 @@
             tokenWeekday: 'Full / short weekday',
             tokenMonthName: 'Full / short English month',
             tokenEscape: 'Escaped literal text',
+            tokenEscapeExample: '[at], [T]',
             saveBtn: 'Save & Reload',
 
             // Footer & Metadata
@@ -3733,6 +3961,7 @@
 
             // CList Sync Execution & Errors
             syncNeedApiKey: 'Please provide a CList API Key',
+            syncApiKeyMissingNote: '💡 Please configure your API Key or switch to Cookie mode first.',
             syncStatusFetching: (pulled, total, page, totalPages = 3) => `Fetching problems (${pulled} / ~${total}, page ${page}/${totalPages})...`,
             syncNetworkError: 'Network request failed, please check connection.',
             syncApiKeyInvalid: 'Invalid API Key or unauthorized, please check your credentials.',
@@ -3788,7 +4017,7 @@
             storageLegacyClearBtn: 'Clear Cache',
             storageLegacyClearConfirm: (count) => `Clear these ${count} deprecated storage item(s)?\n\nRemoving them will not affect current plugin features.`,
             storageLegacyNoneTip: 'No deprecated storage data detected.',
-            storageItemCount: (count) => `${count.toLocaleString()} items`,
+            storageItemCount: (count) => count === 1 ? '1 item' : `${count.toLocaleString()} items`,
             storageProblemCount: (count) => `${count.toLocaleString()} problems`,
             storageAvatarCount: (count) => `${count.toLocaleString()} avatars`,
             storageClearedBadge: 'Cleared',
@@ -3800,7 +4029,8 @@
             storageCloseBtn: 'Close',
             storageEmptyData: '(No cached data available / Cache cleared)',
             storageViewFooterTip: 'Read-only inspection · Tampermonkey storage unmodified',
-            storageKeyPrefix: 'Tampermonkey Key',
+            storageKeyPrefix: 'Current Preview Tampermonkey Key',
+            storageTruncatedTip: 'Preview truncated for performance, click "Copy JSON" to get full data',
             popConfirmBtn: 'Confirm',
             popCancelBtn: 'Cancel',
             popGotItBtn: 'Got it',
@@ -3980,7 +4210,7 @@
         let iconColor = '#ef4444';
         let confirmBtnBg = '#e11d48';
         let confirmBtnBorder = '#e11d48';
-        let defaultConfirmText = t('popConfirmBtn', lang) || (lang === 'zh' ? '确定' : 'Confirm');
+        let defaultConfirmText = t('popConfirmBtn', lang);
 
         if (isWarning) {
             iconBg = '#fef3c7';
@@ -4018,11 +4248,11 @@
 
         const footerButtonsHtml = isAlertOnly ? `
             <button type="button" class="cf-confirm-btn-primary" style="background:${confirmBtnBg}; color:#fff; border:1px solid ${confirmBtnBorder}; padding:6px 18px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">
-                ${confirmText || t('popGotItBtn', lang) || (lang === 'zh' ? '知道了' : 'Got it')}
+                ${confirmText || t('popGotItBtn', lang)}
             </button>
         ` : `
             <button type="button" class="cf-confirm-btn-cancel" style="background:#fff; color:#475569; border:1px solid #cbd5e1; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; margin-right:8px; transition:all 0.15s ease;">
-                ${cancelText || t('popCancelBtn', lang) || (lang === 'zh' ? '取消' : 'Cancel')}
+                ${cancelText || t('popCancelBtn', lang)}
             </button>
             <button type="button" class="cf-confirm-btn-primary" style="background:${confirmBtnBg}; color:#fff; border:1px solid ${confirmBtnBorder}; padding:6px 16px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s ease;">
                 ${confirmText || defaultConfirmText}
@@ -4247,7 +4477,7 @@
                                 <tr>
                                     <td style="padding: 6px 12px; white-space: nowrap;">${badge('[...]')}</td>
                                     <td style="padding: 6px 12px; color: #334155;">${t('tokenEscape', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #64748b;">${l === 'zh' ? '[年], [at]' : '[at], [T]'}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #64748b;">${t('tokenEscapeExample', l)}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -4690,11 +4920,11 @@
         if (authMode === 'api' && !rawKey) {
             const l = getLang();
             showConfirmPop({
-                title: t('clistSyncTitle', l) || (l === 'zh' ? '同步 CList 题库' : 'Sync CList Ratings'),
+                title: t('clistSyncTitle', l),
                 type: 'warning',
                 message: t('syncNeedApiKey', l),
-                note: l === 'zh' ? '💡 请先在设置面板中填写您的 API Key，或切换为 Cookie 登录模式。' : '💡 Please configure your API Key or switch to Cookie mode first.',
-                confirmText: t('popGotItBtn', l) || (l === 'zh' ? '知道了' : 'Got it'),
+                note: t('syncApiKeyMissingNote', l),
+                confirmText: t('popGotItBtn', l),
                 lang: l
             });
             return;
@@ -4902,8 +5132,13 @@
         const cachedTime = cachedTimeStr ? parseInt(cachedTimeStr, 10) : 0;
         const now = Date.now();
 
-        // Use cache if it's fresh
-        if (cached && cachedTime && (now - cachedTime < CACHE_EXPIRY)) {
+        // Check if cached data already contains the 'name' field and parallel contest data exists
+        const sampleKey = cached ? Object.keys(cached)[0] : null;
+        const hasNameField = sampleKey && cached[sampleKey] && typeof cached[sampleKey].name === 'string';
+        const hasParallelContests = !!appStorage.getItem(PARALLEL_CONTESTS_KEY);
+
+        // Use cache if it's fresh and has required name and parallel contest fields
+        if (cached && cachedTime && (now - cachedTime < CACHE_EXPIRY) && hasNameField && hasParallelContests) {
             // Auto-clean any legacy 'NAME:' keys from old cache
             let hasDirty = false;
             const cleaned = {};
@@ -4917,50 +5152,100 @@
             if (hasDirty) {
                 const sortedCleaned = sortProblemKeys(cleaned);
                 appStorage.setJSON(CACHE_KEY, sortedCleaned);
+                latestRatingsMap = sortedCleaned;
+                getParallelContests();
                 return sortedCleaned;
             }
+            latestRatingsMap = cached;
+            getParallelContests();
             return cached;
         }
 
-        // Fetch new ratings
+        // Fetch new ratings: Request 1 (contest.list) & Request 2 (problemset.problems)
         try {
-            console.log('Codeforces Rating Helper: Fetching problem ratings...');
-            const response = await fetch('https://codeforces.com/api/problemset.problems');
-            const data = await response.json();
+            console.log('Codeforces Rating Helper: Fetching contest list and problem ratings...');
+            const [contestListRes, problemsRes] = await Promise.all([
+                fetch('https://codeforces.com/api/contest.list?gym=false').catch(e => {
+                    console.warn('Codeforces Rating Helper: Failed to fetch contest.list', e);
+                    return null;
+                }),
+                fetch('https://codeforces.com/api/problemset.problems').catch(e => {
+                    console.warn('Codeforces Rating Helper: Failed to fetch problemset.problems', e);
+                    return null;
+                })
+            ]);
 
-            if (data.status === 'OK' && data.result) {
-                // Build fast lookup map for solvedCount from problemStatistics
-                const statsMap = {};
-                if (Array.isArray(data.result.problemStatistics)) {
-                    for (const s of data.result.problemStatistics) {
-                        if (s && s.contestId && s.index) {
-                            statsMap[`${s.contestId}${s.index}`.toUpperCase()] = s.solvedCount || 0;
+            // 1. Process Request 1: Group concurrent contests by startTimeSeconds
+            if (contestListRes && contestListRes.ok) {
+                try {
+                    const contestData = await contestListRes.json();
+                    if (contestData.status === 'OK' && Array.isArray(contestData.result)) {
+                        const byTime = {};
+                        for (const c of contestData.result) {
+                            if (c && c.id && c.startTimeSeconds) {
+                                if (!byTime[c.startTimeSeconds]) {
+                                    byTime[c.startTimeSeconds] = [];
+                                }
+                                byTime[c.startTimeSeconds].push(c.id);
+                            }
+                        }
+                        const parallelGroups = Object.values(byTime)
+                            .filter(g => g.length > 1)
+                            .map(g => g.sort((a, b) => a - b))
+                            .sort((a, b) => a[0] - b[0]);
+
+                        appStorage.setJSON(PARALLEL_CONTESTS_KEY, parallelGroups);
+                        parallelContestsCache = parallelGroups;
+                        buildParallelContestLookup(parallelGroups);
+                        console.log(`Codeforces Rating Helper: Grouped ${parallelGroups.length} parallel contest sets.`);
+                    }
+                } catch (cErr) {
+                    console.warn('Codeforces Rating Helper: Error parsing contest.list', cErr);
+                }
+            } else {
+                getParallelContests();
+            }
+
+            // 2. Process Request 2: Problemset problems and statistics
+            if (problemsRes && problemsRes.ok) {
+                const data = await problemsRes.json();
+                if (data.status === 'OK' && data.result) {
+                    const statsMap = {};
+                    if (Array.isArray(data.result.problemStatistics)) {
+                        for (const s of data.result.problemStatistics) {
+                            if (s && s.contestId && s.index) {
+                                statsMap[`${s.contestId}${s.index}`.toUpperCase()] = s.solvedCount || 0;
+                            }
                         }
                     }
-                }
 
-                const ratingsMap = {};
-                if (Array.isArray(data.result.problems)) {
-                    for (const p of data.result.problems) {
-                        if (!p || !p.contestId || !p.index) continue;
-                        const key = `${p.contestId}${p.index}`.toUpperCase();
-                        ratingsMap[key] = {
-                            rating: typeof p.rating === 'number' ? p.rating : null,
-                            tags: Array.isArray(p.tags) ? p.tags : [],
-                            solvedCount: statsMap[key] || 0
-                        };
+                    // Preserve existing cached items so dynamically matched parallel items are retained
+                    const ratingsMap = Object.assign({}, cached || {});
+                    if (Array.isArray(data.result.problems)) {
+                        for (const p of data.result.problems) {
+                            if (!p || !p.contestId || !p.index) continue;
+                            const key = `${p.contestId}${p.index}`.toUpperCase();
+                            ratingsMap[key] = {
+                                name: p.name || '',
+                                rating: typeof p.rating === 'number' ? p.rating : null,
+                                tags: Array.isArray(p.tags) ? p.tags : [],
+                                solvedCount: statsMap[key] || 0
+                            };
+                        }
                     }
+
+                    // Save to appStorage sorted by key
+                    const sortedRatingsMap = sortProblemKeys(ratingsMap);
+                    appStorage.setJSON(CACHE_KEY, sortedRatingsMap);
+                    appStorage.setItem(CACHE_TIME_KEY, String(now));
+                    latestRatingsMap = sortedRatingsMap;
+                    invalidateContestProblemsIndex();
+
+                    console.log('Codeforces Rating Helper: Ratings and problem names fetched and cached successfully.');
+                    return sortedRatingsMap;
+                } else {
+                    console.error('Codeforces Rating Helper: API returned status', data ? data.status : 'unknown');
                 }
-
-                // Save to appStorage sorted by key
-                const sortedRatingsMap = sortProblemKeys(ratingsMap);
-                appStorage.setJSON(CACHE_KEY, sortedRatingsMap);
-                appStorage.setItem(CACHE_TIME_KEY, String(now));
-
-                console.log('Codeforces Rating Helper: Ratings fetched and cached successfully.');
-                return ratingsMap;
-            } else {
-                console.error('Codeforces Rating Helper: API returned status', data ? data.status : 'unknown');
             }
         } catch (e) {
             console.error('Codeforces Rating Helper: Failed to fetch ratings API', e);
@@ -4968,6 +5253,8 @@
 
         // Fallback to cached if fetch failed but we have something
         if (cached) {
+            latestRatingsMap = cached;
+            getParallelContests();
             return cached;
         }
 
@@ -5937,13 +6224,15 @@
     });
 
     // Helper: Determine effective rating for a problem URL or problem key
-    function getProblemRating(hrefOrKey) {
+    function getProblemRating(hrefOrKey, probName) {
         if (!hrefOrKey) return null;
         const clistEnabled = !!(appSettings.clist && appSettings.clist.enabled);
         const clistData = clistEnabled ? getClistProblems() : null;
         const safeRatingsMap = latestRatingsMap || {};
 
         let key = '';
+        let contestId = null;
+        let index = '';
         if (typeof hrefOrKey === 'string' && hrefOrKey.includes('/')) {
             const regexes = [
                 /\/contest\/(\d+)\/problem\/([A-Za-z0-9_]+)/i,
@@ -5953,12 +6242,19 @@
             for (const regex of regexes) {
                 const match = hrefOrKey.match(regex);
                 if (match) {
+                    contestId = parseInt(match[1], 10);
+                    index = match[2].toUpperCase();
                     key = `${match[1]}${match[2]}`.toUpperCase();
                     break;
                 }
             }
         } else if (typeof hrefOrKey === 'string') {
             key = hrefOrKey.toUpperCase();
+            const match = key.match(/^(\d+)([A-Za-z0-9_]+)$/);
+            if (match) {
+                contestId = parseInt(match[1], 10);
+                index = match[2];
+            }
         }
 
         if (!key) return null;
@@ -5973,11 +6269,45 @@
         }
 
         // 2. FALLBACK: Codeforces official problem rating
+        // 2.1 Direct hit by key (e.g. 2202A)
         const officialItem = safeRatingsMap[key] || safeRatingsMap[key.toLowerCase()];
         if (officialItem !== undefined && officialItem !== null) {
             const officialRating = typeof officialItem === 'number' ? officialItem : (typeof officialItem.rating === 'number' ? officialItem.rating : null);
             if (typeof officialRating === 'number') {
                 return officialRating;
+            }
+        }
+
+        // 2.2 Parallel contest fallback: find peer contests in the same concurrent group and match by problem name
+        if (contestId) {
+            const peers = getPeerContests(contestId);
+            if (peers && peers.length > 0) {
+                let targetName = '';
+                if (probName && typeof probName === 'string') {
+                    targetName = cleanProblemTitle(probName);
+                }
+                if (!targetName && officialItem && officialItem.name) {
+                    targetName = cleanProblemTitle(officialItem.name);
+                }
+
+                if (targetName) {
+                    const lowerTarget = targetName.toLowerCase();
+                    for (const peerId of peers) {
+                        const peerProblems = getProblemsByContest(peerId);
+                        for (const pEntry of peerProblems) {
+                            const pItem = pEntry.item;
+                            if (pItem && pItem.name) {
+                                const peerName = cleanProblemTitle(pItem.name).toLowerCase();
+                                if (peerName === lowerTarget) {
+                                    const peerRating = typeof pItem.rating === 'number' ? pItem.rating : (typeof pItem === 'number' ? pItem : null);
+                                    if (typeof peerRating === 'number') {
+                                        return peerRating;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -6843,16 +7173,27 @@
     // Observe DOM changes to apply ratings to newly loaded elements (e.g. via AJAX/PJAX)
     let isMutationProcessing = false;
     let observerDebounceTimer = null;
+    const PLUGIN_IGNORE_SELECTOR = '.cf-settings-modal, .cf-clist-modal-overlay, .cf-storage-json-modal, .cf-confirm-modal-overlay, .cf-guide-modal-overlay, .cf-toast-notification, .cf-floating-tooltip, #cf-ratings-settings-btn, .pcr-app, .roundbox.sidebox, #sidebar';
+
+    function isPluginIgnoredElement(el) {
+        if (!el || el.nodeType !== 1) return false;
+        if (el.id && el.id.startsWith('cf-')) return true;
+        if (el.className && typeof el.className === 'string') {
+            if (el.className.includes('cf-json-') || el.className.includes('cf-storage-') || el.className.includes('cf-modal-') || el.className.includes('cf-tab-')) return true;
+        }
+        return !!el.closest?.(PLUGIN_IGNORE_SELECTOR);
+    }
+
     function setupObserver(ratingsMap) {
         const observer = new MutationObserver((mutations) => {
             if (isMutationProcessing) return;
             let shouldApply = false;
             for (const mutation of mutations) {
-                if (mutation.target && (mutation.target.closest?.('.cf-settings-modal, #cf-ratings-settings-btn, .pcr-app, .roundbox.sidebox, #sidebar') || mutation.target.id?.startsWith('cf-'))) {
+                if (mutation.target && isPluginIgnoredElement(mutation.target)) {
                     continue;
                 }
                 for (const node of mutation.addedNodes) {
-                    if (node.nodeType === 1 && !node.classList?.contains('cf-tags-hidden-notice') && !node.id?.startsWith('cf-') && !node.classList?.contains('cf-settings-modal') && !node.classList?.contains('pcr-app') && !node.closest?.('.cf-settings-modal, #cf-ratings-settings-btn, .pcr-app, .roundbox.sidebox, #sidebar')) {
+                    if (node.nodeType === 1 && !isPluginIgnoredElement(node) && !node.classList?.contains('cf-tags-hidden-notice')) {
                         shouldApply = true;
                         break;
                     }
@@ -6920,9 +7261,9 @@
             // Skip if it's inside a native CF avatar container or profile main-info
             if (link.closest('.avatar, .main-info')) return;
 
-            // Skip if it's a post author or comment author (they already have native CF avatars)
-            // Mentions inside the text body (.ttypography) should still receive avatars.
-            if (link.closest('.comment, .topic') && !link.closest('.ttypography')) return;
+            // Skip if it's a comment author (comments already have native CF avatar box on the left)
+            // Mentions inside the text body (.ttypography) and topic authors should receive avatars.
+            if (link.closest('.comment') && !link.closest('.ttypography')) return;
 
             const href = link.getAttribute('href');
             if (!href) return;
@@ -7103,20 +7444,45 @@
                     }
                 }
             } else {
+                el.classList.add('cf-avatar-inline-user');
                 el.style.setProperty('white-space', 'nowrap', 'important');
                 el.insertBefore(img, el.firstChild);
+
+                if (el.closest('.right-meta')) {
+                    const prevA = el.previousElementSibling;
+                    if (prevA && prevA.matches('a') && prevA.querySelector('img[src*="user_16x16"]')) {
+                        prevA.classList.add('cf-author-icon-hidden');
+                    }
+                }
+
+                if (el.closest('.second-level-menu-list')) {
+                    syncSecondLevelMenuLava();
+                    img.addEventListener('load', syncSecondLevelMenuLava);
+                    setTimeout(syncSecondLevelMenuLava, 150);
+                }
             }
         });
+    }
+
+    function syncSecondLevelMenuLava() {
+        const menu = document.querySelector('.second-level-menu-list');
+        const active = menu?.querySelector('li.selectedLava, li.current');
+        const lava = menu?.querySelector('li.backLava');
+        if (active && lava && active.offsetWidth > 0) {
+            lava.style.width = active.offsetWidth + 'px';
+            lava.style.left = active.offsetLeft + 'px';
+        }
     }
 
     // Initialization
     async function init() {
         applyProblemTagsVisibility();
+        applyUserAvatars();
+        setTimeout(syncSecondLevelMenuLava, 150);
         const ratingsMap = await getRatings();
         latestRatingsMap = ratingsMap;
         applyRatings(ratingsMap);
         formatStandingsCells();
-        applyUserAvatars();
         applyProblemTagsVisibility();
         wrapVirtualParticipationTime();
         setTimeout(applyTimeFormatting, 500);
@@ -7148,9 +7514,16 @@
         };
         updateFooterRatingStatus = () => { };
         let refreshStorageUI = () => { };
+        let pickr = null;
 
         let currentLang = appSettings.lang || 'en';
-        const t = (key, ...args) => (key ? tGlobal(key, currentLang, ...args) : getLangDict(currentLang));
+        const t = (key, ...args) => {
+            if (!key) return getLangDict(currentLang);
+            if (args.length > 0 && (args[0] === 'zh' || args[0] === 'en')) {
+                return tGlobal(key, args[0], ...args.slice(1));
+            }
+            return tGlobal(key, currentLang, ...args);
+        };
 
         const CLIST_ICON_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAB3klEQVR4nNWZy1XDMBBFr1wNoRGogONOzA5lRzrh0ICpJKYTlmKBh5CPE400Ix/eMsd5c6+dWP6ARfox8vTxatKlTFfd0I+RFF4IDGtI1AkIvGQFiXKBU3hJY4kygSV4SUMJvcAteEkjCZ1ALrykgUS+gBZe4iyRJ1AKL3GUuC1QCy9xkrguYAUvcZBYFrCGlxhLXBbQwqcQCTxnb28ocS5QAv/+sOXtcbeGxLFAKbxkBYmDQC28pLHEj4AVvKShRGcOL2kk0UH4yt46F16ildCwzOmyh2jhJc79XdaQUniJY//hLLQ0pBbeuf94HTgdYgXfqv83/Rjpx2hf3KhfmzQR0yduNy2u/WkipomUJpLHENf+o3KHITn9xc+F0kQEzlfwxGAhkdtfJLBYvjDEsz+Yl/9NYBfuNJcS+n79EUgorp10R0IFP7OoBcI9O5Jir2ZKqOEhhg3bov+AtUQpPFSchawkauCh8v1ArUQtPBSchS5y6UEEQvWdsCGefmgiAJD2DAS366GzPS+pf0c2R/1zys8iPBgKgIvEVXgwFgBTiZvw4CAAJhJZ8OAkAFUS2fDgKABFEip4cBYAlYQaHhoIQJZEEXzzpD3D2S3ipFqN18+JxP+Cl8w369Gi6xvAY35uBNY3xAAAAABJRU5ErkJggg==';
         const CF_ICON_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align: -2px; flex-shrink: 0; display: inline-block;"><rect x="2" y="9" width="4.5" height="13" rx="1.5" fill="#ffd200"/><rect x="9.5" y="2" width="4.5" height="20" rx="1.5" fill="#2487e6"/><rect x="17" y="6" width="4.5" height="16" rx="1.5" fill="#ee3424"/></svg>';
@@ -7187,7 +7560,7 @@
 
         const headerTitle = document.createElement('div');
         headerTitle.className = 'cf-header-title';
-        headerTitle.innerHTML = `Colorforces <span class="cf-title-version">v1.5.8</span>`;
+        headerTitle.innerHTML = `Colorforces <span class="cf-title-version">v${CURRENT_VERSION}</span>`;
 
         const pluginSubtitle = document.createElement('div');
         pluginSubtitle.className = 'cf-header-subtitle cf-header-badge';
@@ -7395,6 +7768,9 @@
             if (tabId === 'storage' && typeof refreshStorageUI === 'function') {
                 refreshStorageUI();
             }
+            if (tabId === 'appearance' && pickr) {
+                try { pickr.setColor(appSettings.acBgColor, true); } catch (e) { }
+            }
             if (typeof resetChangelogExpansion === 'function') {
                 resetChangelogExpansion();
             }
@@ -7561,6 +7937,111 @@
 
         updateHideTagsSubItemsVisibility();
 
+        // 3) Auto Check Script Update
+        const rowAutoCheckUpdate = document.createElement('div');
+        rowAutoCheckUpdate.className = 'cf-setting-item';
+        rowAutoCheckUpdate.style.cssText = 'display: flex; align-items: center; justify-content: space-between; user-select: none; margin: 0;';
+
+        const labelAutoCheckUpdate = document.createElement('span');
+        labelAutoCheckUpdate.className = 'cf-setting-label';
+
+        const rightAutoCheckUpdate = document.createElement('div');
+        rightAutoCheckUpdate.style.cssText = 'display: inline-flex; align-items: center; gap: 10px;';
+
+        const btnCheckUpdateNow = document.createElement('button');
+        btnCheckUpdateNow.className = 'cf-btn-secondary';
+        btnCheckUpdateNow.style.cssText = 'padding: 3px 10px; font-size: 11.5px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; cursor: pointer; transition: all 0.2s; font-weight: 500; height: 26px; display: inline-flex; align-items: center; justify-content: center;';
+        btnCheckUpdateNow.textContent = t().btnCheckUpdateNow;
+
+        btnCheckUpdateNow.onmouseenter = () => {
+            btnCheckUpdateNow.style.background = '#f1f5f9';
+            btnCheckUpdateNow.style.borderColor = '#94a3b8';
+        };
+        btnCheckUpdateNow.onmouseleave = () => {
+            btnCheckUpdateNow.style.background = '#f8fafc';
+            btnCheckUpdateNow.style.borderColor = '#cbd5e1';
+        };
+
+        let isCheckingUpdateManually = false;
+        btnCheckUpdateNow.onclick = async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (isCheckingUpdateManually) return;
+            isCheckingUpdateManually = true;
+            btnCheckUpdateNow.textContent = t().statusCheckingUpdate;
+            btnCheckUpdateNow.style.opacity = '0.7';
+            btnCheckUpdateNow.style.cursor = 'wait';
+
+            try {
+                const result = await checkScriptUpdate(true);
+                if (result && result.hasUpdate) {
+                    btnCheckUpdateNow.textContent = t().btnCheckUpdateNow;
+                } else if (result && result.success) {
+                    if (result.isPreview) {
+                        btnCheckUpdateNow.textContent = `${t().statusUpdatePreview} (v${CURRENT_VERSION})`;
+                        btnCheckUpdateNow.style.color = '#0284c7';
+                        btnCheckUpdateNow.style.borderColor = '#38bdf8';
+                    } else {
+                        btnCheckUpdateNow.textContent = `${t().statusUpdateLatest} (v${CURRENT_VERSION})`;
+                        btnCheckUpdateNow.style.color = '#10b981';
+                        btnCheckUpdateNow.style.borderColor = '#86efac';
+                    }
+                    setTimeout(() => {
+                        btnCheckUpdateNow.textContent = t().btnCheckUpdateNow;
+                        btnCheckUpdateNow.style.color = '#475569';
+                        btnCheckUpdateNow.style.borderColor = '#cbd5e1';
+                    }, 2500);
+                } else {
+                    btnCheckUpdateNow.textContent = t().statusUpdateFailed;
+                    btnCheckUpdateNow.style.color = '#ef4444';
+                    btnCheckUpdateNow.style.borderColor = '#fca5a5';
+                    setTimeout(() => {
+                        btnCheckUpdateNow.textContent = t().btnCheckUpdateNow;
+                        btnCheckUpdateNow.style.color = '#475569';
+                        btnCheckUpdateNow.style.borderColor = '#cbd5e1';
+                    }, 2500);
+                }
+            } catch (err) {
+                btnCheckUpdateNow.textContent = t().statusUpdateFailed;
+                btnCheckUpdateNow.style.color = '#ef4444';
+                setTimeout(() => {
+                    btnCheckUpdateNow.textContent = t().btnCheckUpdateNow;
+                    btnCheckUpdateNow.style.color = '#475569';
+                    btnCheckUpdateNow.style.borderColor = '#cbd5e1';
+                }, 2500);
+            } finally {
+                isCheckingUpdateManually = false;
+                btnCheckUpdateNow.style.opacity = '1';
+                btnCheckUpdateNow.style.cursor = 'pointer';
+            }
+        };
+
+        const toggleContainerAutoCheckUpdate = document.createElement('label');
+        toggleContainerAutoCheckUpdate.className = 'cf-toggle-switch';
+        toggleContainerAutoCheckUpdate.style.cssText = 'margin: 0; cursor: pointer;';
+        const cbAutoCheckUpdate = document.createElement('input');
+        cbAutoCheckUpdate.type = 'checkbox';
+        cbAutoCheckUpdate.className = 'cf-toggle-auto-check';
+        cbAutoCheckUpdate.checked = !!appSettings.disableAutoCheckUpdate;
+        const sliderAutoCheckUpdate = document.createElement('span');
+        sliderAutoCheckUpdate.className = 'cf-toggle-slider';
+        toggleContainerAutoCheckUpdate.appendChild(cbAutoCheckUpdate);
+        toggleContainerAutoCheckUpdate.appendChild(sliderAutoCheckUpdate);
+
+        cbAutoCheckUpdate.onchange = () => {
+            if (!cbAutoCheckUpdate.checked) {
+                resetUpdateCooldown();
+            }
+            checkIfChanged();
+        };
+
+        rightAutoCheckUpdate.appendChild(btnCheckUpdateNow);
+        rightAutoCheckUpdate.appendChild(toggleContainerAutoCheckUpdate);
+
+        rowAutoCheckUpdate.appendChild(labelAutoCheckUpdate);
+        rowAutoCheckUpdate.appendChild(rightAutoCheckUpdate);
+        tabPanels.general.appendChild(rowAutoCheckUpdate);
+
         // -------------------------------------------------------------
         // PANEL 2: 界面 (Appearance)
         // -------------------------------------------------------------
@@ -7577,7 +8058,6 @@
         rowAcColor.appendChild(colorPickerContainer);
         tabPanels.appearance.appendChild(rowAcColor);
 
-        let pickr = null;
         if (window.Pickr) {
             pickr = Pickr.create({
                 el: colorPickerContainer,
@@ -7598,7 +8078,9 @@
                 }
             });
 
-            pickr.on('change', (color) => {
+            pickr.on('init', () => {
+                try { pickr.setColor(appSettings.acBgColor, true); } catch (e) { }
+            }).on('change', (color) => {
                 selectedColor = color.toRGBA().toString(0);
                 pickr.applyColor(true);
                 checkIfChanged();
@@ -8009,7 +8491,7 @@
                 btnSync.classList.add('syncing');
                 btnSync.disabled = true;
                 const pct = (currentClistSyncProgress && currentClistSyncProgress.percent !== undefined) ? currentClistSyncProgress.percent : 0;
-                syncBtnText.textContent = typeof t().clistSyncBtnSyncing === 'function' ? t().clistSyncBtnSyncing(pct) : `同步中 (${pct}%)`;
+                syncBtnText.textContent = t('clistSyncBtnSyncing', pct);
                 return;
             }
             btnSync.classList.remove('syncing');
@@ -8020,7 +8502,7 @@
                 btnSync.disabled = true;
                 const min = Math.floor(cooldown / 60000);
                 const sec = Math.floor((cooldown % 60000) / 1000).toString().padStart(2, '0');
-                syncBtnText.textContent = typeof t().clistSyncBtnCooldown === 'function' ? t().clistSyncBtnCooldown(min, sec) : `Cooldown (${min}:${sec})`;
+                syncBtnText.textContent = t('clistSyncBtnCooldown', min, sec);
             } else {
                 btnSync.classList.remove('cooldown');
                 btnSync.disabled = false;
@@ -8407,11 +8889,11 @@
         const renderShortcutKeyBtn = (btn, combo) => {
             btn.innerHTML = '';
             btn.removeAttribute('title');
-            btn.setAttribute('data-tooltip', t().shortcutEditTooltip || (currentLang === 'zh' ? '点击修改快捷键' : 'Click to edit shortcut'));
+            btn.setAttribute('data-tooltip', t().shortcutEditTooltip);
             if (!combo || !combo.trim()) {
                 const emptySpan = document.createElement('span');
                 emptySpan.className = 'cf-shortcut-empty';
-                emptySpan.textContent = currentLang === 'zh' ? '(未设置)' : '(None)';
+                emptySpan.textContent = t().shortcutEmpty;
                 btn.appendChild(emptySpan);
                 return;
             }
@@ -8895,15 +9377,19 @@
             SETTINGS_KEY,
             CACHE_KEY,
             CACHE_TIME_KEY,
+            PARALLEL_CONTESTS_KEY,
             CLIST_STORAGE_KEY,
             CLIST_LAST_SYNC_KEY,
-            AVATAR_CACHE_KEY
+            AVATAR_CACHE_KEY,
+            UPDATE_CHECK_KEY
         ];
 
         const getUserSolvedStorageDetails = () => {
             const solvedKeys = [];
             let totalBytes = 0;
             let totalSolvedCount = 0;
+            let currentUserSolvedCount = 0;
+            let currentKey = null;
             const dataMap = {};
             try {
                 const allKeys = (typeof GM_listValues === 'function') ? GM_listValues() : [];
@@ -8915,8 +9401,9 @@
                     }
                 }
                 const currentHandle = getCurrentUserHandle();
-                if (currentHandle) {
-                    keySet.add('cf_user_solved_' + currentHandle.toLowerCase());
+                currentKey = currentHandle ? ('cf_user_solved_' + currentHandle.toLowerCase()) : null;
+                if (currentKey) {
+                    keySet.add(currentKey);
                 }
 
                 for (const k of keySet) {
@@ -8955,8 +9442,35 @@
                         }
                     }
                 }
+
+                if (currentKey && solvedKeys.includes(currentKey)) {
+                    solvedKeys.sort((a, b) => {
+                        if (a === currentKey) return -1;
+                        if (b === currentKey) return 1;
+                        return a.localeCompare(b);
+                    });
+                } else {
+                    solvedKeys.sort((a, b) => a.localeCompare(b));
+                }
+
+                if (currentKey && dataMap[currentKey] && Array.isArray(dataMap[currentKey].solved)) {
+                    currentUserSolvedCount = dataMap[currentKey].solved.length;
+                } else if (!currentHandle && solvedKeys.length > 0) {
+                    const fallbackKey = solvedKeys[0];
+                    if (dataMap[fallbackKey] && Array.isArray(dataMap[fallbackKey].solved)) {
+                        currentUserSolvedCount = dataMap[fallbackKey].solved.length;
+                    }
+                }
             } catch (e) { }
-            return { keys: solvedKeys, bytes: totalBytes, count: totalSolvedCount, dataMap };
+            return {
+                keys: solvedKeys,
+                bytes: totalBytes,
+                count: currentUserSolvedCount,
+                totalCount: totalSolvedCount,
+                currentUserSolvedCount,
+                dataMap,
+                currentKey
+            };
         };
 
         const getLegacyStorageDetails = () => {
@@ -8964,9 +9478,24 @@
             let totalBytes = 0;
             const dataMap = {};
             try {
-                const allKeys = (typeof GM_listValues === 'function') ? GM_listValues() : [];
-                for (const k of allKeys) {
-                    if (k && k.startsWith('cf_') && !k.startsWith('cf_user_solved_') && !ACTIVE_STORAGE_KEYS.includes(k)) {
+                const keySet = new Set();
+                if (typeof GM_listValues === 'function') {
+                    try {
+                        const gmKeys = GM_listValues() || [];
+                        gmKeys.forEach(k => { if (k) keySet.add(k); });
+                    } catch (e) { }
+                }
+                if (typeof localStorage !== 'undefined') {
+                    try {
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const k = localStorage.key(i);
+                            if (k && k.startsWith('cf_')) keySet.add(k);
+                        }
+                    } catch (e) { }
+                }
+
+                for (const k of keySet) {
+                    if (k && !ACTIVE_STORAGE_KEYS.includes(k) && !k.startsWith('cf_user_solved_')) {
                         legacyKeys.push(k);
                         totalBytes += getStorageItemBytes(k);
                         const raw = appStorage.getItem(k);
@@ -8990,11 +9519,11 @@
             return mb.toFixed(2) + ' MB';
         };
 
-        const formatJsonSyntaxHighlight = (json) => {
+        const formatJsonSyntaxHighlight = (json, forceTruncated = false) => {
             if (!json) return '';
             let displayStr = json;
-            let isTruncated = false;
-            const MAX_CHARS = 250000;
+            let isTruncated = forceTruncated;
+            const MAX_CHARS = 25000;
             if (json.length > MAX_CHARS) {
                 const cutIdx = json.lastIndexOf('\n', MAX_CHARS);
                 displayStr = json.slice(0, cutIdx > 0 ? cutIdx : MAX_CHARS);
@@ -9006,8 +9535,11 @@
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;');
 
-            const regex = /("([^"\\]|\\.)*"(?:\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g;
+            const regex = /(\/\/[^\n]*|"([^"\\]|\\.)*"(?:\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g;
             let highlighted = escaped.replace(regex, (m) => {
+                if (m.startsWith('//')) {
+                    return `<span class="cf-json-comment" style="color: #64748b; font-style: italic;">${m}</span>`;
+                }
                 if (m.charCodeAt(0) === 34) {
                     if (m.endsWith(':')) {
                         const colonIdx = m.lastIndexOf(':');
@@ -9026,17 +9558,15 @@
                 return `<span class="cf-json-number">${m}</span>`;
             });
 
-            if (isTruncated) {
-                const tipText = currentLang === 'zh'
-                    ? '已截取部分预览以保障流畅，点击右上角「复制 JSON」可获取完整数据'
-                    : 'Preview truncated for performance, click "Copy JSON" to get full data';
+            if (isTruncated && !displayStr.includes('// ... [')) {
+                const tipText = t('storageTruncatedTip');
                 highlighted += `\n\n<span style="color: #64748b; font-style: italic;">// ... [${tipText}] ...</span>`;
             }
 
             return highlighted;
         };
 
-        const showStorageJsonModal = (titleText, getDataFn, keyName) => {
+        const showStorageJsonModal = (titleText, keys, getContentForKeyFn) => {
             document.querySelectorAll('.cf-storage-json-modal').forEach(m => m.remove());
 
             const overlay = document.createElement('div');
@@ -9048,59 +9578,224 @@
             card.style.width = '640px';
             card.style.maxHeight = '85vh';
 
-            let data;
-            try {
-                data = getDataFn();
-            } catch (e) {
-                data = { error: String(e) };
-            }
-
-            const jsonStr = (data !== null && data !== undefined && Object.keys(data).length > 0)
-                ? JSON.stringify(data, null, 2)
-                : '';
-
-            const highlightedContent = jsonStr
-                ? formatJsonSyntaxHighlight(jsonStr)
-                : `<span style="color: #64748b; font-style: italic;">${t().storageEmptyData || '(当前暂无缓存数据 / 缓存已清空)'}</span>`;
-
-            const itemCount = (data && typeof data === 'object') ? Object.keys(data).length : 0;
-            const bytes = (new Blob([jsonStr])).size;
-            const sizeStr = formatStorageBytes(bytes);
-
-            const keysList = (keyName || '').split(',').map(s => s.trim()).filter(Boolean);
-            const keysHtml = keysList.length > 0
-                ? keysList.map(k => `<code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #0284c7; font-family: monospace; font-size: 11px; margin-right: 4px; display: inline-block; margin-bottom: 2px; word-break: break-all;">${k}</code>`).join(' ')
-                : `<code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #94a3b8; font-family: monospace; font-size: 11px;">(none)</code>`;
+            const keyList = Array.isArray(keys) ? keys.filter(Boolean) : (keys ? [keys] : []);
+            let activeKey = keyList.length > 0 ? keyList[0] : '';
+            let currentRenderKey = activeKey;
+            let currentJsonStr = '';
+            const keyDataCache = new Map();
 
             card.innerHTML = `
                 <div class="cf-clist-modal-header" style="padding: 12px 18px;">
                     <div class="cf-clist-modal-title" style="font-size: 14.5px;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                         <span>${titleText}</span>
-                        <span style="font-size: 11px; font-weight: 500; color: #64748b; background: #f1f5f9; padding: 2px 7px; border-radius: 4px; border: 1px solid #e2e8f0; margin-left: 6px;">${itemCount.toLocaleString()} 项 · ${sizeStr}</span>
+                        <span class="cf-storage-modal-badge" style="font-size: 11px; font-weight: 500; color: #64748b; background: #f1f5f9; padding: 2px 7px; border-radius: 4px; border: 1px solid #e2e8f0; margin-left: 6px;">${t('storageItemCount', 0)} · 0 B</span>
                     </div>
                     <button type="button" class="cf-modal-close-btn" style="background:none; border:none; font-size:20px; cursor:pointer; color:#94a3b8; line-height:1; padding:2px 4px; transition:color 0.15s ease; flex-shrink: 0;">&times;</button>
                 </div>
                 <div class="cf-clist-modal-body" style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0;">
-                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; font-size: 11.5px; color: #64748b;">
-                        <div style="flex: 1; min-width: 0; line-height: 1.6; word-break: break-word;">
-                            <span style="font-weight: 500; margin-right: 4px;">${t().storageKeyPrefix || '油猴存储 Key'}${keysList.length > 1 ? 's' : ''}:</span>
-                            ${keysHtml}
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; font-size: 11.5px; color: #64748b;">
+                        <div style="flex: 1; min-width: 0; line-height: 1.6; word-break: break-all;">
+                            <span style="font-weight: 600; margin-right: 6px; color: #334155;">${t('storageKeyPrefix')}:</span>
+                            <code class="cf-storage-active-key" style="background: #f1f5f9; padding: 2px 7px; border-radius: 4px; color: #0284c7; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; font-weight: 600; border: 1px solid #e2e8f0;">${activeKey || '(none)'}</code>
                         </div>
                         <button type="button" class="cf-storage-copy-json-btn">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                            <span class="copy-btn-text">${t().storageCopyBtn || '复制 JSON'}</span>
+                            <span class="copy-btn-text">${t('storageCopyBtn')}</span>
                         </button>
                     </div>
+                    <div class="cf-storage-key-buttons" style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 2px;"></div>
                     <div style="flex: 1; min-height: 0; position: relative;">
-                        <pre class="cf-storage-json-pre" style="margin: 0; padding: 12px 14px; background: #0f172a; color: #cbd5e1; border-radius: 8px; font-size: 11.5px; line-height: 1.5; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; overflow: auto; overscroll-behavior: contain; max-height: 52vh; border: 1px solid #1e293b; box-sizing: border-box; white-space: pre;">${highlightedContent}</pre>
+                        <pre class="cf-storage-json-pre" style="margin: 0; padding: 12px 14px; background: #0f172a; color: #cbd5e1; border-radius: 8px; font-size: 11.5px; line-height: 1.5; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; overflow: auto; overscroll-behavior: contain; max-height: 50vh; border: 1px solid #1e293b; box-sizing: border-box; white-space: pre;"></pre>
                     </div>
                 </div>
                 <div class="cf-clist-modal-footer" style="padding: 10px 18px; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border-top: 1px solid #e2e8f0;">
-                    <span style="font-size: 11px; color: #94a3b8;">${t().storageViewFooterTip || '只读数据展示 · 不会更改任何本地内容'}</span>
-                    <button type="button" class="cf-guide-confirm-btn" style="background: #0284c7; color: #fff; border: 1px solid #0284c7; border-radius: 6px; padding: 5px 16px; font-size: 12px; font-weight: 600; cursor: pointer;">${t().storageCloseBtn || '关闭'}</button>
+                    <span style="font-size: 11px; color: #94a3b8;">${t('storageViewFooterTip')}</span>
+                    <button type="button" class="cf-guide-confirm-btn" style="background: #0284c7; color: #fff; border: 1px solid #0284c7; border-radius: 6px; padding: 5px 16px; font-size: 12px; font-weight: 600; cursor: pointer;">${t('storageCloseBtn')}</button>
                 </div>
             `;
+
+            const activeKeyEl = card.querySelector('.cf-storage-active-key');
+            const keyButtonsContainer = card.querySelector('.cf-storage-key-buttons');
+            const preEl = card.querySelector('.cf-storage-json-pre');
+            const badgeEl = card.querySelector('.cf-storage-modal-badge');
+
+            const renderActiveKey = (key, isInitial = false) => {
+                if (!isInitial && activeKey === key && preEl.innerHTML) {
+                    return;
+                }
+                activeKey = key;
+                currentRenderKey = key;
+                if (activeKeyEl) {
+                    activeKeyEl.textContent = activeKey || '(none)';
+                }
+
+                keyButtonsContainer.querySelectorAll('.cf-storage-key-tab-btn').forEach(btn => {
+                    const isCurrent = btn.getAttribute('data-key') === activeKey;
+                    btn.style.background = isCurrent ? '#0284c7' : '#f8fafc';
+                    btn.style.color = isCurrent ? '#ffffff' : '#334155';
+                    btn.style.borderColor = isCurrent ? '#0284c7' : '#cbd5e1';
+                    btn.style.fontWeight = isCurrent ? '600' : '500';
+                });
+
+                if (!activeKey) {
+                    preEl.innerHTML = `<span style="color: #64748b; font-style: italic;">${t('storageEmptyData')}</span>`;
+                    if (badgeEl) badgeEl.textContent = `${t('storageItemCount', 0)} · 0 B`;
+                    currentJsonStr = '{}';
+                    return;
+                }
+
+                if (keyDataCache.has(activeKey)) {
+                    const cached = keyDataCache.get(activeKey);
+                    currentJsonStr = cached.jsonStr;
+                    preEl.innerHTML = cached.highlightedHtml;
+                    preEl.scrollTop = 0;
+                    if (badgeEl) badgeEl.textContent = cached.badgeText;
+                    return;
+                }
+
+                const targetKey = activeKey;
+                const computeAndRender = () => {
+                    if (targetKey !== currentRenderKey) return;
+                    let content;
+                    try {
+                        content = typeof getContentForKeyFn === 'function' ? getContentForKeyFn(targetKey) : appStorage.getJSON(targetKey, null);
+                    } catch (e) {
+                        content = { error: String(e) };
+                    }
+
+                    // 1. 获取完整项数与真实存储占用
+                    const count = (content && typeof content === 'object') ? Object.keys(content).length : (content !== null && content !== undefined ? 1 : 0);
+                    let storageBytes = getStorageItemBytes(targetKey);
+
+                    // 2. 切片构建轻量预览数据，彻底杜绝超大对象全量序列化造成的卡顿
+                    const PREVIEW_LIMIT = 60;
+                    const TRUNCATE_MARKER = '__CF_PREVIEW_TRUNCATED_MARKER__';
+                    let previewContent = content;
+                    let isTruncated = false;
+
+                    if (Array.isArray(content)) {
+                        if (content.length > PREVIEW_LIMIT) {
+                            previewContent = content.slice(0, PREVIEW_LIMIT);
+                            previewContent.push(TRUNCATE_MARKER);
+                            isTruncated = true;
+                        }
+                    } else if (content && typeof content === 'object') {
+                        const keys = Object.keys(content);
+                        if (keys.length > PREVIEW_LIMIT) {
+                            previewContent = {};
+                            for (let i = 0; i < PREVIEW_LIMIT; i++) {
+                                previewContent[keys[i]] = content[keys[i]];
+                            }
+                            previewContent[TRUNCATE_MARKER] = true;
+                            isTruncated = true;
+                        } else if (Array.isArray(content.solved) && content.solved.length > PREVIEW_LIMIT) {
+                            previewContent = {
+                                ...content,
+                                solved: [...content.solved.slice(0, PREVIEW_LIMIT), TRUNCATE_MARKER]
+                            };
+                            isTruncated = true;
+                        } else if (content.problems && typeof content.problems === 'object' && Object.keys(content.problems).length > PREVIEW_LIMIT) {
+                            const pKeys = Object.keys(content.problems);
+                            const slicedProblems = {};
+                            for (let i = 0; i < PREVIEW_LIMIT; i++) {
+                                slicedProblems[pKeys[i]] = content.problems[pKeys[i]];
+                            }
+                            slicedProblems[TRUNCATE_MARKER] = true;
+                            previewContent = {
+                                ...content,
+                                problems: slicedProblems
+                            };
+                            isTruncated = true;
+                        }
+                    }
+
+                    const displayPreviewObj = {
+                        [targetKey]: previewContent !== undefined ? previewContent : null
+                    };
+
+                    let previewJsonStr = JSON.stringify(displayPreviewObj, null, 2);
+                    if (isTruncated) {
+                        const tipText = t('storageTruncatedTip');
+                        previewJsonStr = previewJsonStr.replace(
+                            /([ \t]*)"__CF_PREVIEW_TRUNCATED_MARKER__"(?:\s*:\s*true)?/g,
+                            `$1// ... [${tipText}] ...`
+                        );
+                    }
+                    if (targetKey === PARALLEL_CONTESTS_KEY || targetKey === 'cf_parallel_contests') {
+                        previewJsonStr = previewJsonStr.replace(/\[\s*([-\d\s,]+?)\s*\]/g, (match, nums) => {
+                            const compact = nums.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean).join(', ');
+                            return `[${compact}]`;
+                        });
+                    }
+
+                    if (!storageBytes || storageBytes <= 0) {
+                        storageBytes = (new Blob([previewJsonStr])).size;
+                    }
+
+                    const highlightedHtml = formatJsonSyntaxHighlight(previewJsonStr, isTruncated);
+                    preEl.innerHTML = highlightedHtml;
+                    preEl.scrollTop = 0;
+
+                    const badgeText = `${t('storageItemCount', count)} · ${formatStorageBytes(storageBytes)}`;
+                    if (badgeEl) {
+                        badgeEl.textContent = badgeText;
+                    }
+
+                    keyDataCache.set(targetKey, {
+                        content,
+                        previewJsonStr,
+                        highlightedHtml,
+                        badgeText
+                    });
+                };
+
+                if (isInitial) {
+                    computeAndRender();
+                } else {
+                    requestAnimationFrame(computeAndRender);
+                }
+            };
+
+            if (keyList.length > 0) {
+                keyList.forEach(k => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'cf-storage-key-tab-btn';
+                    btn.setAttribute('data-key', k);
+                    btn.textContent = k;
+                    btn.style.cssText = `
+                        padding: 3px 9px;
+                        border-radius: 5px;
+                        font-size: 11.5px;
+                        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+                        cursor: pointer;
+                        transition: all 0.15s ease;
+                        border: 1px solid #cbd5e1;
+                        background: #f8fafc;
+                        color: #334155;
+                        line-height: 1.4;
+                    `;
+                    btn.onmouseenter = () => {
+                        if (btn.getAttribute('data-key') !== activeKey) {
+                            btn.style.background = '#f1f5f9';
+                            btn.style.borderColor = '#94a3b8';
+                        }
+                    };
+                    btn.onmouseleave = () => {
+                        if (btn.getAttribute('data-key') !== activeKey) {
+                            btn.style.background = '#f8fafc';
+                            btn.style.borderColor = '#cbd5e1';
+                        }
+                    };
+                    btn.onclick = () => renderActiveKey(k);
+                    keyButtonsContainer.appendChild(btn);
+                });
+            } else {
+                keyButtonsContainer.style.display = 'none';
+            }
+
+            renderActiveKey(activeKey, true);
 
             const close = () => {
                 window.removeEventListener('keydown', handleKeydown);
@@ -9115,14 +9810,37 @@
             const copyBtn = card.querySelector('.cf-storage-copy-json-btn');
             const copyBtnText = card.querySelector('.copy-btn-text');
             copyBtn.onclick = () => {
-                const textToCopy = jsonStr || '{}';
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    copyBtnText.textContent = t().storageCopiedBtn || '已复制!';
+                let fullJsonStr = '';
+                try {
+                    let contentToExport;
+                    if (keyDataCache.has(activeKey) && keyDataCache.get(activeKey).content !== undefined) {
+                        contentToExport = keyDataCache.get(activeKey).content;
+                    } else if (typeof getContentForKeyFn === 'function') {
+                        contentToExport = getContentForKeyFn(activeKey);
+                    } else {
+                        contentToExport = appStorage.getJSON(activeKey, null);
+                    }
+                    const exportObj = {
+                        [activeKey]: contentToExport !== undefined ? contentToExport : null
+                    };
+                    fullJsonStr = JSON.stringify(exportObj, null, 2);
+                    if (activeKey === PARALLEL_CONTESTS_KEY || activeKey === 'cf_parallel_contests') {
+                        fullJsonStr = fullJsonStr.replace(/\[\s*([-\d\s,]+?)\s*\]/g, (match, nums) => {
+                            const compact = nums.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean).join(', ');
+                            return `[${compact}]`;
+                        });
+                    }
+                } catch (e) {
+                    fullJsonStr = '{}';
+                }
+
+                navigator.clipboard.writeText(fullJsonStr).then(() => {
+                    copyBtnText.textContent = t('storageCopiedBtn');
                     copyBtn.style.background = '#ecfdf5';
                     copyBtn.style.borderColor = '#a7f3d0';
                     copyBtn.style.color = '#059669';
                     setTimeout(() => {
-                        copyBtnText.textContent = t().storageCopyBtn || '复制 JSON';
+                        copyBtnText.textContent = t('storageCopyBtn');
                         copyBtn.style.background = '#f0f9ff';
                         copyBtn.style.borderColor = '#bae6fd';
                         copyBtn.style.color = '#0284c7';
@@ -9144,7 +9862,7 @@
 
         refreshStorageUI = () => {
             const settingsBytes = getStorageItemBytes(SETTINGS_KEY);
-            const cfBytes = getStorageItemBytes(CACHE_KEY) + getStorageItemBytes(CACHE_TIME_KEY);
+            const cfBytes = getStorageItemBytes(CACHE_KEY) + getStorageItemBytes(CACHE_TIME_KEY) + getStorageItemBytes(PARALLEL_CONTESTS_KEY);
             const clistBytes = getStorageItemBytes(CLIST_STORAGE_KEY) + getStorageItemBytes(CLIST_LAST_SYNC_KEY);
             const avatarBytes = getStorageItemBytes(AVATAR_CACHE_KEY);
             const solvedInfo = getUserSolvedStorageDetails();
@@ -9221,9 +9939,13 @@
             itemAvatar.countTag.textContent = avatarCount > 0 ? (typeof t().storageAvatarCount === 'function' ? t().storageAvatarCount(avatarCount) : `${avatarCount} avatars`) : t().storageClearedBadge;
 
             itemUserSolved.sizeVal.textContent = formatStorageBytes(solvedBytes);
-            itemUserSolved.countTag.textContent = solvedInfo.count > 0
-                ? (typeof t().storageSolvedCount === 'function' ? t().storageSolvedCount(solvedInfo.count) : `${solvedInfo.count} solved`)
-                : t().storageClearedBadge;
+            if (solvedBytes === 0 || solvedInfo.keys.length === 0) {
+                itemUserSolved.countTag.textContent = t().storageClearedBadge;
+            } else {
+                itemUserSolved.countTag.textContent = typeof t().storageSolvedCount === 'function'
+                    ? t().storageSolvedCount(solvedInfo.count)
+                    : `${solvedInfo.count} solved`;
+            }
 
             itemLegacy.sizeVal.textContent = formatStorageBytes(legacyBytes);
             const legacyKeyCount = legacyInfo.keys.length;
@@ -9244,6 +9966,9 @@
                 }
                 if (typeof cbNotHideAcTags !== 'undefined') {
                     cbNotHideAcTags.checked = !!appSettings.notHideAcTags;
+                }
+                if (typeof cbAutoCheckUpdate !== 'undefined') {
+                    cbAutoCheckUpdate.checked = !!appSettings.disableAutoCheckUpdate;
                 }
                 if (typeof updateHideTagsSubItemsVisibility === 'function') {
                     updateHideTagsSubItemsVisibility();
@@ -9310,13 +10035,8 @@
         itemSettings.viewBtn.onclick = () => {
             showStorageJsonModal(
                 t().storageSettingsTitle,
-                () => {
-                    const settings = appStorage.getJSON(SETTINGS_KEY, appSettings);
-                    return {
-                        [SETTINGS_KEY]: settings
-                    };
-                },
-                SETTINGS_KEY
+                [SETTINGS_KEY],
+                (k) => appStorage.getJSON(k, appSettings)
             );
         };
 
@@ -9341,10 +10061,27 @@
         };
 
         itemCf.viewBtn.onclick = () => {
+            let loadedCfData = (latestRatingsMap && Object.keys(latestRatingsMap).length > 0) ? latestRatingsMap : null;
+            let loadedParallelData = parallelContestsCache;
+
             showStorageJsonModal(
                 t().storageCfTitle,
-                () => sortProblemKeys(appStorage.getJSON(CACHE_KEY, {})),
-                CACHE_KEY
+                [CACHE_KEY, PARALLEL_CONTESTS_KEY],
+                (k) => {
+                    if (k === CACHE_KEY) {
+                        if (!loadedCfData) {
+                            loadedCfData = sortProblemKeys(appStorage.getJSON(CACHE_KEY, {}));
+                        }
+                        return loadedCfData;
+                    }
+                    if (k === PARALLEL_CONTESTS_KEY) {
+                        if (!loadedParallelData) {
+                            loadedParallelData = appStorage.getJSON(PARALLEL_CONTESTS_KEY, null);
+                        }
+                        return loadedParallelData;
+                    }
+                    return appStorage.getJSON(k, null);
+                }
             );
         };
 
@@ -9358,8 +10095,12 @@
                     try {
                         appStorage.removeItem(CACHE_KEY);
                         appStorage.removeItem(CACHE_TIME_KEY);
+                        appStorage.removeItem(PARALLEL_CONTESTS_KEY);
                     } catch (e) { }
                     latestRatingsMap = {};
+                    parallelContestsCache = null;
+                    contestToPeersMap = null;
+                    invalidateContestProblemsIndex();
                     refreshStorageUI();
                     if (typeof updateFooterRatingStatus === 'function') updateFooterRatingStatus();
                 }
@@ -9369,8 +10110,8 @@
         itemClist.viewBtn.onclick = () => {
             showStorageJsonModal(
                 t().storageClistTitle,
-                () => sortProblemKeys(appStorage.getJSON(CLIST_STORAGE_KEY, {})),
-                CLIST_STORAGE_KEY
+                [CLIST_STORAGE_KEY],
+                (k) => sortProblemKeys(appStorage.getJSON(k, {}))
             );
         };
 
@@ -9399,8 +10140,8 @@
         itemAvatar.viewBtn.onclick = () => {
             showStorageJsonModal(
                 t().storageAvatarTitle,
-                () => appStorage.getJSON(AVATAR_CACHE_KEY, {}),
-                AVATAR_CACHE_KEY
+                [AVATAR_CACHE_KEY],
+                (k) => appStorage.getJSON(k, {})
             );
         };
 
@@ -9423,8 +10164,8 @@
             const solvedInfo = getUserSolvedStorageDetails();
             showStorageJsonModal(
                 t().storageSolvedTitle,
-                () => solvedInfo.dataMap,
-                solvedInfo.keys.length > 0 ? solvedInfo.keys.join(', ') : '(cf_user_solved_*)'
+                solvedInfo.keys,
+                (k) => solvedInfo.dataMap[k] || appStorage.getJSON(k, null)
             );
         };
 
@@ -9459,8 +10200,8 @@
             const legacy = getLegacyStorageDetails();
             showStorageJsonModal(
                 t().storageLegacyTitle,
-                () => legacy.dataMap,
-                legacy.keys.length > 0 ? legacy.keys.join(', ') : '(none)'
+                legacy.keys,
+                (k) => legacy.dataMap[k] || appStorage.getJSON(k, null) || appStorage.getItem(k)
             );
         };
 
@@ -9500,6 +10241,7 @@
                     try {
                         appStorage.removeItem(CACHE_KEY);
                         appStorage.removeItem(CACHE_TIME_KEY);
+                        appStorage.removeItem(PARALLEL_CONTESTS_KEY);
                         appStorage.removeItem(CLIST_STORAGE_KEY);
                         appStorage.removeItem(CLIST_LAST_SYNC_KEY);
                         appStorage.removeItem(AVATAR_CACHE_KEY);
@@ -9519,6 +10261,9 @@
                         appStorage.removeItem(SETTINGS_KEY);
                     } catch (e) { }
                     latestRatingsMap = {};
+                    parallelContestsCache = null;
+                    contestToPeersMap = null;
+                    invalidateContestProblemsIndex();
                     clistProblemsCache = null;
                     try {
                         Object.keys(appSettings).forEach(k => delete appSettings[k]);
@@ -9547,6 +10292,49 @@
         }
 
         const CHANGELOG_DATA = [
+            {
+                version: 'v 1.5.9',
+                date: '2026-09-11 04:41',
+                sections: [
+                    {
+                        type: 'added',
+                        items: {
+                            zh: [
+                                '新增了自动更新检测功能。'
+                            ],
+                            en: [
+                                'Added automatic update detection functionality.'
+                            ]
+                        }
+                    },
+                    {
+                        type: 'optimized',
+                        items: {
+                            zh: [
+                                '优化了存储界面的UI和相关逻辑。'
+                            ],
+                            en: [
+                                'Optimized the storage management interface UI and related logic.'
+                            ]
+                        }
+                    },
+                    {
+                        type: 'fixed',
+                        items: {
+                            zh: [
+                                '修复了 CF 官方数据中多场并赛（如 Div.1 与 Div.2 并行场次）重合题目在部分场次缺失难度分的问题，通过比赛开始时间关联同组并赛场次并自动承接同名题目的难度评分。',
+                                '修复了设置页中 AC 背景色的颜色选择器显示为纯黑的问题。',
+                                '修复了博客和主页帖子中发布者头像未正常显示的问题。'
+                            ],
+                            en: [
+                                'Fixed missing difficulty ratings for shared problems across concurrent contests (e.g., Div.1 and Div.2) in official Codeforces data by grouping parallel contests by start time and inheriting ratings from peer contests with matching problem names.',
+                                'Fixed an issue where the AC background color picker in settings displayed as pure black.',
+                                'Fixed an issue where blog and topic post author avatars were not displayed.'
+                            ]
+                        }
+                    }
+                ]
+            },
             {
                 version: 'v 1.5.8',
                 date: '2026-09-09 21:15',
@@ -9957,7 +10745,7 @@
         tabPanels.changelog.appendChild(changelogListContainer);
 
         // 默认只展开最新版本，其他历史版本全部折叠
-        const defaultLatestVer = CHANGELOG_DATA[0]?.version || 'v 1.5.7';
+        const defaultLatestVer = CHANGELOG_DATA[0]?.version || 'v 1.5.9';
         const expandedChangelogVersions = new Set([defaultLatestVer]);
 
         resetChangelogExpansion = () => {
@@ -10025,13 +10813,13 @@
 
                     const badge = document.createElement('span');
                     badge.className = `cf-changelog-section-badge ${sec.type}`;
-                    const badgeTitles = {
-                        added: isZh ? '新增' : 'Added',
-                        optimized: isZh ? '优化' : 'Optimized',
-                        fixed: isZh ? '修复' : 'Fixed',
-                        announcement: isZh ? '公告' : 'Announcement'
+                    const badgeKeyMap = {
+                        added: 'changelogBadgeAdded',
+                        optimized: 'changelogBadgeOptimized',
+                        fixed: 'changelogBadgeFixed',
+                        announcement: 'changelogBadgeAnnouncement'
                     };
-                    badge.textContent = badgeTitles[sec.type] || sec.type;
+                    badge.textContent = (badgeKeyMap[sec.type] ? t(badgeKeyMap[sec.type]) : null) || sec.type;
                     secEl.appendChild(badge);
 
                     const itemsList = document.createElement('div');
@@ -10199,7 +10987,8 @@
         function renderRoadmap() {
             if (!roadmapContainer) return;
             roadmapContainer.innerHTML = '';
-            const isZh = (appSettings.lang || 'zh') === 'zh';
+            const currentLang = appSettings.lang || 'zh';
+            const isZh = currentLang === 'zh';
 
             const plannedItems = ROADMAP_DATA.filter(item => !item.completed);
             const completedItems = ROADMAP_DATA.filter(item => item.completed);
@@ -10222,7 +11011,7 @@
 
                 const groupBadge = document.createElement('span');
                 groupBadge.className = `cf-roadmap-group-badge ${isPlanned ? 'planned' : 'completed'}`;
-                groupBadge.textContent = `${items.length} ${isZh ? '项' : 'Items'}`;
+                groupBadge.textContent = t('roadmapItemCount', items.length);
 
                 groupHeader.appendChild(groupTitle);
                 groupHeader.appendChild(groupBadge);
@@ -10665,6 +11454,9 @@
             if (typeof cbNotHideAcTags !== 'undefined') {
                 appSettings.notHideAcTags = cbNotHideAcTags.checked;
             }
+            if (typeof cbAutoCheckUpdate !== 'undefined') {
+                appSettings.disableAutoCheckUpdate = cbAutoCheckUpdate.checked;
+            }
             appSettings.colorRatings = cbColorRatings.checked;
             if (typeof cbClistEnabled !== 'undefined') {
                 if (!appSettings.clist) appSettings.clist = { ...DEFAULT_SETTINGS.clist };
@@ -10728,6 +11520,12 @@
             }
             if (typeof labelNotHideAcTags !== 'undefined') {
                 labelNotHideAcTags.textContent = t().locNotHideAcTags;
+            }
+            if (typeof labelAutoCheckUpdate !== 'undefined') {
+                labelAutoCheckUpdate.textContent = t().locAutoCheckUpdate;
+            }
+            if (typeof btnCheckUpdateNow !== 'undefined' && !isCheckingUpdateManually) {
+                btnCheckUpdateNow.textContent = t().btnCheckUpdateNow;
             }
             labelMasterColorRatings.textContent = t().masterColorRatings;
             langZhBtn.textContent = '简体中文';
@@ -10932,9 +11730,7 @@
                     }
                 }
 
-                statusText.textContent = typeof t().footerRatingStatus === 'function'
-                    ? t().footerRatingStatus(timeStr)
-                    : `上次难度分更新时间（${timeStr}）`;
+                statusText.textContent = t('footerRatingStatus', timeStr);
             };
 
             updateFooterRatingStatus();
@@ -10981,6 +11777,9 @@
                 if (contentArea) {
                     contentArea.scrollTop = 0;
                 }
+                if (activeTab === 'appearance' && pickr) {
+                    try { pickr.setColor(appSettings.acBgColor, true); } catch (e) { }
+                }
                 requestAnimationFrame(() => updateNavIndicator(false));
             }
         };
@@ -10989,16 +11788,192 @@
         container.appendChild(btn);
         document.body.appendChild(container);
     }
+
+    // =========================================================================
+    // Auto-update Detection & Reminder Engine
+    // =========================================================================
+    function resetUpdateCooldown() {
+        const state = appStorage.getJSON(UPDATE_CHECK_KEY, { lastCheckTime: 0, latestKnownVersion: '' });
+        state.lastCheckTime = 0;
+        appStorage.setJSON(UPDATE_CHECK_KEY, state);
+    }
+
+    function compareVersions(v1, v2) {
+        if (!v1 || !v2) return 0;
+        const normalize = v => String(v).replace(/^[^\d]*/, '').split('.').map(n => parseInt(n, 10) || 0);
+        const parts1 = normalize(v1);
+        const parts2 = normalize(v2);
+        const len = Math.max(parts1.length, parts2.length);
+        for (let i = 0; i < len; i++) {
+            const num1 = parts1[i] || 0;
+            const num2 = parts2[i] || 0;
+            if (num1 > num2) return 1;
+            if (num1 < num2) return -1;
+        }
+        return 0;
+    }
+
+    async function fetchRemoteVersion() {
+        const url = SCRIPT_UPDATE_URL + '?t=' + Date.now();
+        let text = '';
+
+        // 1. Try standard fetch with timeout and Range header (GitHub Raw natively supports CORS)
+        try {
+            const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+            const timeoutId = controller ? setTimeout(() => controller.abort(), 10000) : null;
+            const res = await fetch(url, {
+                headers: { 'Range': 'bytes=0-2048' },
+                signal: controller ? controller.signal : undefined
+            });
+            if (timeoutId) clearTimeout(timeoutId);
+            if (res.ok || res.status === 206) {
+                text = await res.text();
+            }
+        } catch (e) {
+            // Fetch failed or aborted
+        }
+
+        // 2. Fallback to GM_xmlhttpRequest if fetch returned no text
+        if (!text && typeof GM_xmlhttpRequest === 'function') {
+            try {
+                text = await new Promise((resolve) => {
+                    GM_xmlhttpRequest({
+                        method: 'GET',
+                        url: url,
+                        headers: { 'Range': 'bytes=0-2048' },
+                        timeout: 10000,
+                        onload: (r) => resolve((r.status === 200 || r.status === 206) ? (r.responseText || '') : ''),
+                        onerror: () => resolve(''),
+                        ontimeout: () => resolve('')
+                    });
+                });
+            } catch (e) { }
+        }
+
+        if (!text) return null;
+        const match = text.slice(0, 2048).match(/\/\/\s*@version\s+([0-9\.]+)/i);
+        return match ? match[1] : null;
+    }
+
+    function showUpdateModal(remoteVersion) {
+        if (document.getElementById('cf-update-modal-overlay')) return;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'cf-update-modal-overlay';
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.55); z-index: 99999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;';
+
+        const modal = document.createElement('div');
+        const isDark = isDarkTheme();
+        modal.style.cssText = `background: ${isDark ? '#1e2022' : '#ffffff'}; color: ${isDark ? '#e0e0e0' : '#222222'}; padding: 26px 28px; border-radius: 14px; width: 420px; max-width: 90vw; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35); border: 1px solid ${isDark ? '#333b42' : '#e2e8f0'};`;
+
+        const lang = (typeof appSettings !== 'undefined' && appSettings && appSettings.lang) || 'zh';
+        const tTitle = tGlobal('updateModalTitle', lang);
+        const tDesc = tGlobal('updateModalDesc', lang, remoteVersion, CURRENT_VERSION);
+        const tSubDesc = tGlobal('updateModalSubDesc', lang);
+        const tStop = tGlobal('updateModalStopCheck', lang);
+        const tBtnUpdate = tGlobal('updateModalBtnUpdate', lang);
+        const tBtnLater = tGlobal('updateModalBtnLater', lang);
+
+        modal.innerHTML = `
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 19px; font-weight: 800; color: ${isDark ? '#f8fafc' : '#0f172a'}; display: flex; align-items: center; gap: 8px;">
+                    ${tTitle}
+                </div>
+            </div>
+            <div style="font-size: 13.5px; line-height: 1.65; color: ${isDark ? '#cbd5e1' : '#475569'}; margin-bottom: 20px;">
+                <div style="margin-bottom: 8px;">${tDesc}</div>
+                <div style="font-size: 12.5px; color: ${isDark ? '#94a3b8' : '#64748b'};">${tSubDesc}</div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer; user-select: none; color: ${isDark ? '#94a3b8' : '#64748b'};">
+                    <input type="checkbox" id="cf-update-stop-cb" style="cursor: pointer; accent-color: #1890ff; width: 15px; height: 15px; margin: 0;">
+                    <span>${tStop}</span>
+                </label>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="cf-update-btn-later" style="background: ${isDark ? '#2d333b' : '#f1f5f9'}; color: ${isDark ? '#cbd5e1' : '#475569'}; border: 1px solid ${isDark ? '#3d444d' : '#e2e8f0'}; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">${tBtnLater}</button>
+                <button id="cf-update-btn-update" style="background: #1890ff; color: #ffffff; border: none; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 6px rgba(24, 144, 255, 0.35);">${tBtnUpdate}</button>
+            </div>
+        `;
+
+        const cbStop = modal.querySelector('#cf-update-stop-cb');
+        const btnLater = modal.querySelector('#cf-update-btn-later');
+        const btnUpdate = modal.querySelector('#cf-update-btn-update');
+
+        cbStop.checked = !!appSettings.disableAutoCheckUpdate;
+        cbStop.onchange = () => {
+            appSettings.disableAutoCheckUpdate = cbStop.checked;
+            saveSettings(appSettings);
+            if (!cbStop.checked) {
+                resetUpdateCooldown();
+            }
+            const settingToggle = document.querySelector('.cf-toggle-auto-check');
+            if (settingToggle) {
+                settingToggle.checked = appSettings.disableAutoCheckUpdate;
+            }
+        };
+
+        btnLater.onclick = () => {
+            overlay.remove();
+        };
+
+        btnUpdate.onclick = () => {
+            window.open(SCRIPT_UPDATE_URL, '_blank');
+            overlay.remove();
+        };
+
+        btnLater.onmouseover = function () { this.style.background = isDark ? '#3d444d' : '#e2e8f0'; };
+        btnLater.onmouseout = function () { this.style.background = isDark ? '#2d333b' : '#f1f5f9'; };
+        btnUpdate.onmouseover = function () { this.style.background = '#40a9ff'; };
+        btnUpdate.onmouseout = function () { this.style.background = '#1890ff'; };
+
+        overlay.appendChild(modal);
+
+        document.body.appendChild(overlay);
+    }
+
+    async function checkScriptUpdate(force = false) {
+        if (!force && appSettings.disableAutoCheckUpdate) {
+            return { success: true, skipped: true, reason: 'disabled' };
+        }
+
+        const state = appStorage.getJSON(UPDATE_CHECK_KEY, { lastCheckTime: 0, latestKnownVersion: '' });
+        const now = Date.now();
+        if (!force && state.lastCheckTime && (now - state.lastCheckTime < UPDATE_CHECK_COOLDOWN)) {
+            return { success: true, skipped: true, reason: 'cooldown' };
+        }
+
+        const remoteVersion = await fetchRemoteVersion();
+        if (!remoteVersion) {
+            return { success: false, reason: 'fetch_failed' };
+        }
+
+        state.lastCheckTime = now;
+        state.latestKnownVersion = remoteVersion;
+        appStorage.setJSON(UPDATE_CHECK_KEY, state);
+
+        const comp = compareVersions(remoteVersion, CURRENT_VERSION);
+        const hasUpdate = comp > 0;
+        const isPreview = comp < 0;
+        if (hasUpdate) {
+            showUpdateModal(remoteVersion);
+        }
+
+        return { success: true, hasUpdate, isPreview, remoteVersion, currentVersion: CURRENT_VERSION };
+    }
+
     // Run when the page is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             applyProblemTagsVisibility();
             init();
             createSettingsUI();
+            setTimeout(() => { checkScriptUpdate(); }, 1500);
         });
     } else {
         applyProblemTagsVisibility();
         init();
         createSettingsUI();
+        setTimeout(() => { checkScriptUpdate(); }, 1500);
     }
 })();

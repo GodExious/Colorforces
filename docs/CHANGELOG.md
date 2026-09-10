@@ -8,6 +8,22 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+### v1.5.9
+`2026-09-11 04:41`
+
+**Added**
+1. Added automatic update detection functionality.
+
+**Optimized**
+1. Optimized the storage management interface UI and related logic.
+
+**Fixed**
+1. Fixed missing difficulty ratings for shared problems across concurrent contests (e.g., Div.1 and Div.2) in official Codeforces data by grouping parallel contests by start time and inheriting ratings from peer contests with matching problem names.
+2. Fixed an issue where the AC background color picker in settings displayed as pure black.
+3. Fixed an issue where blog and topic post author avatars were not displayed.
+
+---
+
 ### v1.5.8
 `2026-09-09 21:15`
 
