@@ -1,0 +1,64 @@
+name: 发布 Colorforces
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: 构建并发布正式版本
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - name: 检出标签对应代码
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: 准备 Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: 安装锁定依赖
+        run: npm ci
+
+      - name: 检查代码格式
+        run: npm run format:check
+
+      - name: 构建单文件脚本
+        run: npm run build:release
+
+      - name: 校验版本并提取双语日志
+        run: npm run release:prepare -- "$RELEASE_TAG" "$RUNNER_TEMP/colorforces-release-notes.md"
+
+      - name: 上传附件并发布 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 仅重试未发布的草稿，避免覆盖用户已安装的正式版本。
+          if draft=$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq '.isDraft' 2>/dev/null); then
+            if [ "$draft" != 'true' ]; then
+              echo '该标签已有正式 Release，请递增版本号，不要覆盖已发布附件。' >&2
+              exit 1
+            fi
+          else
+            gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --verify-tag --draft --title "Colorforces $RELEASE_TAG" --notes-file "$RUNNER_TEMP/colorforces-release-notes.md"
+          fi
+          gh release upload "$RELEASE_TAG" dist/colorforces.user.js --repo "$GITHUB_REPOSITORY" --clobber
+          # 附件上传成功后才公开版本，避免更新检测遇到空Release。
+          gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --title "Colorforces $RELEASE_TAG" --notes-file "$RUNNER_TEMP/colorforces-release-notes.md" --draft=false --latest

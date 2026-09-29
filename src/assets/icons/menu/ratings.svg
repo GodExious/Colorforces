@@ -1,0 +1,5 @@
+<svg data-cf-icon="navigation" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='var(--cf-icon-ink, var(--cf-icon-primary))' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: #d47e64; --cf-icon-secondary: #e8ab79'>
+  <rect x='3.5' y='13' width='4' height='7.5' rx='1.2' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/>
+  <rect x='10' y='9' width='4' height='11.5' rx='1.2' fill='var(--cf-icon-secondary)' fill-opacity='0.3' stroke='var(--cf-icon-detail, var(--cf-icon-secondary))'/>
+  <rect x='16.5' y='4' width='4' height='16.5' rx='1.2' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='15' height='15' fill='none' stroke='var(--cf-icon-primary)' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: currentColor; --cf-icon-secondary: currentColor'>
+  <circle cx='12' cy='13' r='7.5' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/>
+  <path d='m7 19-1.5 2M17 19l1.5 2M12 3v2.5'/>
+  <g stroke='var(--cf-icon-secondary)'><path d='M12 9v4l3 1.5'/><path d='M3 7.5 7.5 3A3.2 3.2 0 0 0 3 7.5ZM16.5 3 21 7.5A3.2 3.2 0 0 0 16.5 3Z' fill='var(--cf-icon-secondary)' fill-opacity='.22'/></g>
+</svg>

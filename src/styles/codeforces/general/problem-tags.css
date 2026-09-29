@@ -1,0 +1,42 @@
+.cf-tags-moving .tag-box {
+  pointer-events: none;
+  transform-origin: center;
+}
+
+.roundbox.cf-tags-hidden-notice,
+span.tag-box.cf-tags-hidden-notice {
+  background:
+    linear-gradient(
+        135deg,
+        rgba(255, 222, 238, 0.75) 0%,
+        rgba(255, 245, 215, 0.75) 25%,
+        rgba(220, 255, 230, 0.75) 50%,
+        rgba(210, 245, 255, 0.75) 75%,
+        rgba(235, 220, 255, 0.75) 100%
+      )
+      padding-box,
+    linear-gradient(135deg, #ff78cb 0%, #ffa502 25%, #2ed573 50%, #70a1ff 75%, #a55eea 100%)
+      border-box !important;
+  border: 1px solid transparent !important;
+  user-select: none;
+  cursor: default;
+}
+
+.roundbox.cf-tags-hidden-notice .tag-box,
+span.tag-box.cf-tags-hidden-notice {
+  background: linear-gradient(
+    90deg,
+    #c0392b 0%,
+    #d35400 24%,
+    #1b8a5a 52%,
+    #1b62b3 78%,
+    #5f27cd 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: transparent !important;
+  font-weight: 600;
+  user-select: none;
+  cursor: default;
+}

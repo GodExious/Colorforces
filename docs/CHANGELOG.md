@@ -8,6 +8,27 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+### v1.6.0
+`2026-09-28 00:27`
+
+**Optimized**
+1. With help from Codex, decoupled and standardized the project structure and component organization, adding extensive concise Chinese function-level comments to improve readability and maintainability.
+2. Further polished the menu interface.
+3. Added transitions for page feature changes and settings-panel interactions.
+4. Improved compatibility with native Codeforces styles.
+5. Separated plugin runtime data from preferences.
+6. Bundled the menu title font to avoid reliance on remote font loading.
+7. Moved distribution and updates to Releases, automated publishing, and retained the legacy update entry.
+8. Added a separate solved-row highlighting toggle, with shortcuts for highlighting and menu language switching.
+9. Improved real-time verdict abbreviations and extended them to submission history on problem pages.
+
+**Fixed**
+1. Explicitly request the official problemset in English and refresh older-language caches.
+2. Fixed menu selection indicator misalignment when moving between displays with different scaling levels.
+3. Fixed middle-click opening of menu links in new tabs.
+
+---
+
 ### v1.5.9
 `2026-09-11 04:41`
 

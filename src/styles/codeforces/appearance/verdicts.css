@@ -1,0 +1,33 @@
+.status-verdict-cell {
+  white-space: normal !important;
+  word-break: normal !important;
+  line-height: 1.25 !important;
+  min-width: 75px !important;
+  max-width: 110px !important;
+  vertical-align: middle !important;
+}
+
+/* 新旧判题文字只在自己的窗口内上下交接，不悬浮到邻近单元格。 */
+.cf-verdict-text {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  vertical-align: bottom;
+  line-height: inherit;
+}
+.cf-verdict-current {
+  display: block;
+  /* 原站 HTML 含缩进和换行；按正常文本折叠空白，显式 br 仍保留。 */
+  white-space: normal;
+}
+.cf-verdict-outgoing {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: normal;
+  pointer-events: none;
+}
+.status-verdict-cell .cf-verdict-text {
+  max-width: 110px;
+}

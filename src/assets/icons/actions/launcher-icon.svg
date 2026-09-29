@@ -1,0 +1,11 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='26' height='26' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='color: #ffffff'>
+  <circle cx='12' cy='12' r='6.4' fill='none' stroke-width='3'/>
+  <rect x='10.6' y='1.8' width='2.8' height='4.2' rx='0.9' fill='currentColor' stroke='none' transform='rotate(0 12 12)'/>
+  <rect x='10.6' y='1.8' width='2.8' height='4.2' rx='0.9' fill='currentColor' stroke='none' transform='rotate(45 12 12)'/>
+  <rect x='10.6' y='1.8' width='2.8' height='4.2' rx='0.9' fill='currentColor' stroke='none' transform='rotate(90 12 12)'/>
+  <rect x='10.6' y='1.8' width='2.8' height='4.2' rx='0.9' fill='currentColor' stroke='none' transform='rotate(135 12 12)'/>
+  <rect x='10.6' y='1.8' width='2.8' height='4.2' rx='0.9' fill='currentColor' stroke='none' transform='rotate(180 12 12)'/>
+  <rect x='10.6' y='1.8' width='2.8' height='4.2' rx='0.9' fill='currentColor' stroke='none' transform='rotate(225 12 12)'/>
+  <rect x='10.6' y='1.8' width='2.8' height='4.2' rx='0.9' fill='currentColor' stroke='none' transform='rotate(270 12 12)'/>
+  <rect x='10.6' y='1.8' width='2.8' height='4.2' rx='0.9' fill='currentColor' stroke='none' transform='rotate(315 12 12)'/>
+</svg>

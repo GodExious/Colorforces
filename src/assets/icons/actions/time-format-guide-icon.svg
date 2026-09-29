@@ -1,0 +1,3 @@
+<svg data-cf-icon="interface" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='18' height='18' fill='none' stroke='var(--cf-icon-ink, var(--cf-icon-primary))' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: var(--cf-menu-accent, #4e98b7); --cf-icon-secondary: var(--cf-menu-secondary, #7e8fdc)'>
+  <circle cx='12' cy='12' r='8.5' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/><g stroke='var(--cf-icon-detail, var(--cf-icon-secondary))'><path d='M12 7v5l3.5 2'/></g>
+</svg>

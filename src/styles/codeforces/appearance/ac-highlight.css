@@ -1,0 +1,29 @@
+html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.act,
+html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.id,
+html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td,
+html:root:not(.cf-ac-highlight-disabled) body .problems .accepted-problem td.act,
+html:root:not(.cf-ac-highlight-disabled) body tr.accepted-problem td {
+  background-color: var(--cf-ac-background) !important;
+}
+
+html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.id,
+html:root:not(.cf-ac-highlight-disabled) body .problems .accepted-problem td.id {
+  border-left-color: var(--cf-ac-background) !important;
+}
+
+html:root body tr.accepted-problem td {
+  transition: none;
+}
+
+html:root.cf-ac-highlight-transition body tr.accepted-problem td {
+  /* 只在开关切换时过渡；关闭后自然回到原站底色，取色时不延迟。 */
+  transition:
+    background-color 320ms ease-in-out,
+    border-left-color 320ms ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:root.cf-ac-highlight-transition body tr.accepted-problem td {
+    transition: none;
+  }
+}

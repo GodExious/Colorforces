@@ -1,0 +1,11 @@
+<svg data-cf-icon="interface" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="--cf-icon-primary: var(--cf-menu-accent, #71849b); --cf-icon-secondary: #e7b451">
+  <circle cx="12" cy="9.5" r="8" fill="#f7c755" fill-opacity=".12"/>
+  <circle cx="12" cy="9.5" r="6.5" fill="#ffd773" fill-opacity=".16"/>
+  <g stroke="#d9a137" stroke-width="1.5">
+    <path d="M12 1v1M4.8 3.2l.9.9M2 9h1.2M4.2 14.5l1-.6M19.2 3.2l-.9.9M22 9h-1.2M19.8 14.5l-1-.6"/>
+  </g>
+  <path d="M9 16c0-2.4-3-3.2-3-6.5a6 6 0 0 1 12 0c0 3.3-3 4.1-3 6.5Z" fill="#ffd773" fill-opacity=".62" stroke="var(--cf-icon-ink, var(--cf-icon-primary))" stroke-width="1.5"/>
+  <path d="M8.6 8.6c.2-1.4 1.2-2.5 2.6-2.7" stroke="white" stroke-opacity=".9" stroke-width="1.8"/>
+  <path d="m10 10.5 2 1.6 2-1.6M12 12.1V16" stroke="#b57b26" stroke-width="1.3"/>
+  <path d="M9.2 18.5h5.6M10 21h4" stroke="var(--cf-icon-ink, var(--cf-icon-primary))" stroke-width="1.7"/>
+</svg>

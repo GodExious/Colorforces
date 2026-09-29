@@ -1,0 +1,12 @@
+@import './fonts.css';
+@import './codeforces/page/tables.css';
+@import './codeforces/appearance/time.css';
+@import './codeforces/user/avatars/standings.css';
+@import './codeforces/appearance/language-icons.css';
+@import './codeforces/appearance/verdicts.css';
+@import './codeforces/ratings/tables.css';
+@import './codeforces/ratings/transitions.css';
+@import './codeforces/user/avatars/avatars.css';
+@import './codeforces/appearance/ac-highlight.css';
+
+@import './codeforces/general/problem-tags.css';

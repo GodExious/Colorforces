@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="cf-launcher-art" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+  <defs>
+    <path id="cf-flower-petal-form" d="M22 24C18 21 15 15 17 9C18 4 23 3 26 7C30 12 27 20 22 24Z"/>
+    <linearGradient id="cf-flower-glaze" x1="17" y1="5" x2="25" y2="24" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" stop-opacity=".64"/>
+      <stop offset=".42" stop-color="white" stop-opacity=".04"/>
+      <stop offset="1" stop-color="white" stop-opacity=".5"/>
+    </linearGradient>
+    <linearGradient id="cf-current-color" x1="18" y1="4" x2="25" y2="25" gradientUnits="userSpaceOnUse">
+      <stop style="stop-color: var(--cf-aurora-deep)" stop-opacity=".9"/>
+      <stop offset=".17" style="stop-color: var(--cf-aurora-color)" stop-opacity=".8"/>
+      <stop offset=".38" style="stop-color: var(--cf-aurora-light)" stop-opacity=".2"/>
+      <stop offset=".58" style="stop-color: var(--cf-aurora-light)" stop-opacity="0"/>
+      <stop offset=".8" style="stop-color: var(--cf-aurora-color)" stop-opacity=".52"/>
+      <stop offset="1" style="stop-color: var(--cf-aurora-deep)" stop-opacity=".83"/>
+    </linearGradient>
+    <linearGradient id="cf-current-sheen" x1="17" y1="5" x2="25" y2="24" gradientUnits="userSpaceOnUse">
+      <stop style="stop-color: var(--cf-aurora-light)" stop-opacity=".75"/>
+      <stop offset=".38" style="stop-color: var(--cf-aurora-color)" stop-opacity=".15"/>
+      <stop offset=".7" style="stop-color: var(--cf-aurora-glow)" stop-opacity=".08"/>
+      <stop offset="1" style="stop-color: var(--cf-aurora-light)" stop-opacity=".55"/>
+    </linearGradient>
+    <linearGradient id="cf-current-fold-color" x1="26" y1="6" x2="19" y2="23" gradientUnits="userSpaceOnUse">
+      <stop style="stop-color: var(--cf-aurora-deep)" stop-opacity=".78"/>
+      <stop offset=".32" style="stop-color: var(--cf-aurora-color)" stop-opacity=".35"/>
+      <stop offset=".62" style="stop-color: var(--cf-aurora-light)" stop-opacity=".1"/>
+      <stop offset=".84" style="stop-color: var(--cf-aurora-glow)" stop-opacity=".7"/>
+      <stop offset="1" style="stop-color: var(--cf-aurora-deep)" stop-opacity=".92"/>
+    </linearGradient>
+    <radialGradient id="cf-current-halo">
+      <stop style="stop-color: var(--cf-aurora-glow)" stop-opacity=".38"/>
+      <stop offset=".45" style="stop-color: var(--cf-aurora-color)" stop-opacity=".16"/>
+      <stop offset="1" style="stop-color: var(--cf-aurora-color)" stop-opacity="0"/>
+    </radialGradient>
+    <path id="cf-current-petal-rim" d="M22 24C18 21 15 15 17 9C18 4 23 3 26 7C23.7 4.7 19 5 17.8 9.6C16.4 15 19 20.5 22 24Z"/>
+    <path id="cf-current-petal-sheet" d="M22 24C27 20 30 12 26 7C24.9 5.5 22.9 5.1 21.5 5.6C25.3 5.5 27.9 10.2 26.5 15.3C25.6 18.6 23.7 21.8 22 24Z"/>
+    <g id="cf-current-petal-glass">
+      <use href="#cf-flower-petal-form" fill="url(#cf-current-color)" opacity=".48"/>
+      <use href="#cf-current-petal-rim" fill="url(#cf-current-color)" fill-opacity=".82"/>
+    </g>
+    <g id="cf-current-petal-glint" fill="none" stroke-linecap="round">
+      <path d="M18.1 9.7C18.8 6.1 22 5.1 24.1 6.6" stroke="url(#cf-current-sheen)" stroke-width=".3"/>
+      <path d="M25.6 10.2C25.2 13.8 21.7 16.2 22.2 20.3" stroke="var(--cf-aurora-deep)" stroke-opacity=".24" stroke-width=".3"/>
+    </g>
+  </defs>
+  <g class="cf-launcher-flower">
+    <g class="cf-flower-sway cf-launcher-motion">
+      <g transform="rotate(0 22 22)"><g class="cf-flower-launch"><g class="cf-flower-petal cf-launcher-motion" style="color: #e45b96; --cf-petal-delay: 0s"><use href="#cf-flower-petal-form" fill="currentColor"/><use href="#cf-flower-petal-form" fill="url(#cf-flower-glaze)"/></g></g></g>
+      <g transform="rotate(45 22 22)"><g class="cf-flower-launch"><g class="cf-flower-petal cf-launcher-motion" style="color: #ef8875; --cf-petal-delay: -0.7s"><use href="#cf-flower-petal-form" fill="currentColor"/><use href="#cf-flower-petal-form" fill="url(#cf-flower-glaze)"/></g></g></g>
+      <g transform="rotate(90 22 22)"><g class="cf-flower-launch"><g class="cf-flower-petal cf-launcher-motion" style="color: #e8bd58; --cf-petal-delay: -1.4s"><use href="#cf-flower-petal-form" fill="currentColor"/><use href="#cf-flower-petal-form" fill="url(#cf-flower-glaze)"/></g></g></g>
+      <g transform="rotate(135 22 22)"><g class="cf-flower-launch"><g class="cf-flower-petal cf-launcher-motion" style="color: #85bc75; --cf-petal-delay: -2.1s"><use href="#cf-flower-petal-form" fill="currentColor"/><use href="#cf-flower-petal-form" fill="url(#cf-flower-glaze)"/></g></g></g>
+      <g transform="rotate(180 22 22)"><g class="cf-flower-launch"><g class="cf-flower-petal cf-launcher-motion" style="color: #43b8af; --cf-petal-delay: -2.8s"><use href="#cf-flower-petal-form" fill="currentColor"/><use href="#cf-flower-petal-form" fill="url(#cf-flower-glaze)"/></g></g></g>
+      <g transform="rotate(225 22 22)"><g class="cf-flower-launch"><g class="cf-flower-petal cf-launcher-motion" style="color: #62a9d5; --cf-petal-delay: -3.5s"><use href="#cf-flower-petal-form" fill="currentColor"/><use href="#cf-flower-petal-form" fill="url(#cf-flower-glaze)"/></g></g></g>
+      <g transform="rotate(270 22 22)"><g class="cf-flower-launch"><g class="cf-flower-petal cf-launcher-motion" style="color: #8681d5; --cf-petal-delay: -4.2s"><use href="#cf-flower-petal-form" fill="currentColor"/><use href="#cf-flower-petal-form" fill="url(#cf-flower-glaze)"/></g></g></g>
+      <g transform="rotate(315 22 22)"><g class="cf-flower-launch"><g class="cf-flower-petal cf-launcher-motion" style="color: #bc7bc5; --cf-petal-delay: -4.9s"><use href="#cf-flower-petal-form" fill="currentColor"/><use href="#cf-flower-petal-form" fill="url(#cf-flower-glaze)"/></g></g></g>
+      <circle cx="22" cy="22" r="3.1" fill="#fff8ff" fill-opacity=".84"/>
+      <circle cx="21.4" cy="21" r="1.2" fill="white" fill-opacity=".8"/>
+    </g>
+  </g>
+  <g class="cf-launcher-current">
+    <circle class="cf-current-glow cf-launcher-motion" cx="22" cy="22" r="21" fill="url(#cf-current-halo)"/>
+    <g class="cf-current-petals cf-launcher-motion">
+      <g transform="rotate(0 22 22)"><g class="cf-current-entry"><g class="cf-current-petal cf-launcher-motion" style="--cf-flow-delay: 0.000s"><use href="#cf-current-petal-glass"/><use class="cf-current-sheet cf-launcher-motion" href="#cf-current-petal-sheet" fill="url(#cf-current-fold-color)" fill-opacity=".58" stroke="var(--cf-aurora-deep)" stroke-opacity=".35" stroke-width=".25"/><use class="cf-current-glint cf-launcher-motion" href="#cf-current-petal-glint"/></g></g></g>
+      <g transform="rotate(45 22 22)"><g class="cf-current-entry"><g class="cf-current-petal cf-launcher-motion" style="--cf-flow-delay: -0.725s"><use href="#cf-current-petal-glass"/><use class="cf-current-sheet cf-launcher-motion" href="#cf-current-petal-sheet" fill="url(#cf-current-fold-color)" fill-opacity=".58" stroke="var(--cf-aurora-deep)" stroke-opacity=".35" stroke-width=".25"/><use class="cf-current-glint cf-launcher-motion" href="#cf-current-petal-glint"/></g></g></g>
+      <g transform="rotate(90 22 22)"><g class="cf-current-entry"><g class="cf-current-petal cf-launcher-motion" style="--cf-flow-delay: -1.450s"><use href="#cf-current-petal-glass"/><use class="cf-current-sheet cf-launcher-motion" href="#cf-current-petal-sheet" fill="url(#cf-current-fold-color)" fill-opacity=".58" stroke="var(--cf-aurora-deep)" stroke-opacity=".35" stroke-width=".25"/><use class="cf-current-glint cf-launcher-motion" href="#cf-current-petal-glint"/></g></g></g>
+      <g transform="rotate(135 22 22)"><g class="cf-current-entry"><g class="cf-current-petal cf-launcher-motion" style="--cf-flow-delay: -2.175s"><use href="#cf-current-petal-glass"/><use class="cf-current-sheet cf-launcher-motion" href="#cf-current-petal-sheet" fill="url(#cf-current-fold-color)" fill-opacity=".58" stroke="var(--cf-aurora-deep)" stroke-opacity=".35" stroke-width=".25"/><use class="cf-current-glint cf-launcher-motion" href="#cf-current-petal-glint"/></g></g></g>
+      <g transform="rotate(180 22 22)"><g class="cf-current-entry"><g class="cf-current-petal cf-launcher-motion" style="--cf-flow-delay: -2.900s"><use href="#cf-current-petal-glass"/><use class="cf-current-sheet cf-launcher-motion" href="#cf-current-petal-sheet" fill="url(#cf-current-fold-color)" fill-opacity=".58" stroke="var(--cf-aurora-deep)" stroke-opacity=".35" stroke-width=".25"/><use class="cf-current-glint cf-launcher-motion" href="#cf-current-petal-glint"/></g></g></g>
+      <g transform="rotate(225 22 22)"><g class="cf-current-entry"><g class="cf-current-petal cf-launcher-motion" style="--cf-flow-delay: -3.625s"><use href="#cf-current-petal-glass"/><use class="cf-current-sheet cf-launcher-motion" href="#cf-current-petal-sheet" fill="url(#cf-current-fold-color)" fill-opacity=".58" stroke="var(--cf-aurora-deep)" stroke-opacity=".35" stroke-width=".25"/><use class="cf-current-glint cf-launcher-motion" href="#cf-current-petal-glint"/></g></g></g>
+      <g transform="rotate(270 22 22)"><g class="cf-current-entry"><g class="cf-current-petal cf-launcher-motion" style="--cf-flow-delay: -4.350s"><use href="#cf-current-petal-glass"/><use class="cf-current-sheet cf-launcher-motion" href="#cf-current-petal-sheet" fill="url(#cf-current-fold-color)" fill-opacity=".58" stroke="var(--cf-aurora-deep)" stroke-opacity=".35" stroke-width=".25"/><use class="cf-current-glint cf-launcher-motion" href="#cf-current-petal-glint"/></g></g></g>
+      <g transform="rotate(315 22 22)"><g class="cf-current-entry"><g class="cf-current-petal cf-launcher-motion" style="--cf-flow-delay: -5.075s"><use href="#cf-current-petal-glass"/><use class="cf-current-sheet cf-launcher-motion" href="#cf-current-petal-sheet" fill="url(#cf-current-fold-color)" fill-opacity=".58" stroke="var(--cf-aurora-deep)" stroke-opacity=".35" stroke-width=".25"/><use class="cf-current-glint cf-launcher-motion" href="#cf-current-petal-glint"/></g></g></g>
+    </g>
+    <circle class="cf-current-core cf-launcher-motion" cx="22" cy="22" r="6" fill="url(#cf-current-halo)"/>
+    <circle cx="22" cy="22" r="2.1" fill="var(--cf-aurora-color)" fill-opacity=".3"/>
+    <circle cx="21.4" cy="21" r=".7" fill="var(--cf-aurora-light)" fill-opacity=".42"/>
+  </g>
+</svg>

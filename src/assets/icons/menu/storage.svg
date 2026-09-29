@@ -1,0 +1,5 @@
+<svg data-cf-icon="navigation" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='var(--cf-icon-ink, var(--cf-icon-primary))' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: #57a365; --cf-icon-secondary: #89bf7e'>
+  <path d='M4 6v12c0 1.9 3.6 3 8 3s8-1.1 8-3V6' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/>
+  <ellipse cx='12' cy='6' rx='8' ry='3' fill='var(--cf-icon-primary)' fill-opacity='0.2'/>
+  <g stroke='var(--cf-icon-detail, var(--cf-icon-secondary))'><path d='M4 12c0 1.9 3.6 3 8 3s8-1.1 8-3'/></g>
+</svg>

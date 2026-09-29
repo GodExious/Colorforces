@@ -1,0 +1,64 @@
+td[data-cf-lang-icon-processed],
+th.cf-table-lang-header {
+  white-space: nowrap !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  width: 110px !important;
+  max-width: 115px !important;
+}
+
+.cf-lang-content {
+  display: inline-flex;
+  align-items: center;
+  width: 100px;
+  max-width: 100%;
+  vertical-align: middle;
+}
+.cf-lang-icon-slot {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: calc(var(--cf-lang-icon-size, 14px) + 4px);
+  height: var(--cf-lang-icon-size, 14px);
+  overflow: hidden;
+  transition:
+    width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 180ms ease;
+}
+.cf-lang-icon {
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 180ms ease,
+    height 180ms ease;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  margin-right: 4px !important;
+  width: var(--cf-lang-icon-size, 14px) !important;
+  height: var(--cf-lang-icon-size, 14px) !important;
+  object-fit: contain !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-lang-icon,
+  .cf-lang-icon-slot {
+    transition: none;
+  }
+}
+
+.cf-lang-text {
+  display: inline-block !important;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+}
+
+:root.cf-hide-langIcon .cf-lang-icon-slot {
+  width: 0;
+}
+
+:root.cf-hide-langIcon .cf-lang-icon {
+  transform: translateX(-110%);
+}

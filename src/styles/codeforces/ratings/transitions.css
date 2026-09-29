@@ -1,0 +1,137 @@
+/* 一块底板在铺满、色块与紧凑标签之间变形，评分文字不被替换或复制。 */
+[data-cf-rating-mode] {
+  position: relative !important;
+  isolation: isolate;
+}
+[data-cf-rating-mode]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  font-size: 12px;
+  background-color: var(--cf-rating-bg);
+  border: 1px solid var(--cf-rating-border);
+  border-radius: 0;
+  opacity: 1;
+  transform: scaleY(1);
+  transition:
+    opacity 280ms ease,
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    inset 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 280ms ease,
+    border-color 280ms ease,
+    border-radius 280ms ease;
+}
+[data-cf-rating-mode='compact']::before {
+  inset: calc((100% - 20px) / 2) max(0px, calc((100% - var(--cf-rating-digits) - 14px) / 2));
+  border-radius: 4px;
+}
+.cf-rating-value {
+  display: inline-block;
+  vertical-align: middle;
+  min-width: var(--cf-rating-digits, 4ch);
+  min-height: 1lh;
+  clip-path: inset(0);
+  transform: translateY(0);
+  font-variant-numeric: tabular-nums;
+  position: relative;
+  z-index: 1;
+  color: var(--cf-rating-color);
+  font-size: 1em;
+  font-weight: normal;
+  transition:
+    clip-path 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 280ms ease,
+    font-size 280ms ease,
+    font-weight 280ms ease;
+}
+/* 缺分时收拢文字和底板，列宽不动；再次有分时从同一位置展开。 */
+[data-cf-rating-empty='true']::before {
+  opacity: 0;
+  transform: scaleY(0);
+}
+[data-cf-rating-empty='true'] .cf-rating-value {
+  clip-path: inset(50% 0);
+  transform: translateY(3px);
+}
+[data-cf-rating-mode='compact'] .cf-rating-value {
+  font-size: 12px;
+  font-weight: 500;
+}
+[data-cf-rating-mode='filled'] .cf-rating-value {
+  font-weight: 500;
+}
+.cf-rating-clip {
+  display: inline-block;
+  vertical-align: middle;
+}
+.cf-rating-moving,
+.cf-rating-moving > :is(td, th) {
+  overflow: hidden !important;
+}
+.cf-rating-moving .cf-rating-clip {
+  /* 裁剪仅用于收放过程，避免静止时截断原站评分标题。 */
+  overflow: hidden;
+  white-space: nowrap;
+}
+/* 一份进度同时收放单元格、边框、内边距与文字槽，避免原站 !important 阻断插值。 */
+@property --cf-rating-progress {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+.cf-rating-col.cf-rating-moving {
+  width: calc(var(--cf-rating-base-width) * var(--cf-rating-progress)) !important;
+  min-width: calc(var(--cf-rating-base-width) * var(--cf-rating-progress)) !important;
+  max-width: calc(var(--cf-rating-base-width) * var(--cf-rating-progress)) !important;
+  padding-left: calc(var(--cf-rating-base-padding-left) * var(--cf-rating-progress)) !important;
+  padding-right: calc(var(--cf-rating-base-padding-right) * var(--cf-rating-progress)) !important;
+  border-left-width: calc(
+    var(--cf-rating-base-border-left-width) * var(--cf-rating-progress)
+  ) !important;
+  border-right-width: calc(
+    var(--cf-rating-base-border-right-width) * var(--cf-rating-progress)
+  ) !important;
+}
+.cf-rating-col.cf-rating-moving .cf-rating-clip {
+  width: calc(var(--cf-rating-content-size) * var(--cf-rating-progress));
+}
+.cf-rating-standings-row.cf-rating-moving > :is(td, th) {
+  height: calc(var(--cf-rating-base-height) * var(--cf-rating-progress)) !important;
+  min-height: 0 !important;
+  padding-top: calc(var(--cf-rating-base-padding-top) * var(--cf-rating-progress)) !important;
+  padding-bottom: calc(var(--cf-rating-base-padding-bottom) * var(--cf-rating-progress)) !important;
+  border-top-width: calc(
+    var(--cf-rating-base-border-top-width) * var(--cf-rating-progress)
+  ) !important;
+  border-bottom-width: calc(
+    var(--cf-rating-base-border-bottom-width) * var(--cf-rating-progress)
+  ) !important;
+  line-height: 0 !important;
+}
+.cf-rating-standings-row.cf-rating-moving .cf-rating-clip {
+  height: calc(var(--cf-rating-content-size) * var(--cf-rating-progress));
+  line-height: var(--cf-rating-line-height);
+}
+.tag-box[data-rating],
+.roundbox:has(> .tag-box[data-rating]) {
+  transition:
+    color 280ms ease,
+    background-color 280ms ease,
+    border-color 280ms ease;
+}
+/* 缺失来源的标签保留节点；收放期间由标签动画临时接管 display。 */
+[data-cf-rating-absent='true'] {
+  display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-cf-rating-mode]::before,
+  .cf-rating-value,
+  .tag-box[data-rating],
+  .roundbox:has(> .tag-box[data-rating]) {
+    transition: none;
+  }
+}

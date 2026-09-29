@@ -1,0 +1,46 @@
+.datatable > div[style*='background-color: white'],
+.datatable > div[style*='background-color:white'],
+.datatable > div:has(> table.status-frame-datatable) {
+  overflow-x: auto !important;
+  max-width: 100% !important;
+}
+
+table.cf-status-table,
+table.status-frame-datatable {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+table.cf-status-table th,
+table.cf-status-table td,
+table.status-frame-datatable th,
+table.status-frame-datatable td {
+  padding: 5px 6px !important;
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
+}
+
+.id-cell,
+table.status-frame-datatable th:first-child {
+  white-space: nowrap !important;
+  width: 70px !important;
+  min-width: 65px !important;
+  vertical-align: middle !important;
+}
+
+.time-consumed-cell,
+th.cf-time-consumed-header {
+  white-space: nowrap !important;
+  text-align: right !important;
+  vertical-align: middle !important;
+  width: 55px !important;
+}
+
+.memory-consumed-cell,
+th.cf-memory-consumed-header {
+  white-space: nowrap !important;
+  text-align: right !important;
+  vertical-align: middle !important;
+  width: 60px !important;
+}

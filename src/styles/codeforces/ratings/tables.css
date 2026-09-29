@@ -1,0 +1,25 @@
+.cf-rating-col {
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 52px !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
+}
+
+:root.cf-hide-submissions .cf-table-submissions .cf-rating-col,
+:root.cf-hide-status .cf-table-status .cf-rating-col,
+:root.cf-hide-hacks .cf-table-hacks .cf-rating-col,
+:root.cf-hide-problemset .cf-table-problemset .cf-rating-col,
+:root.cf-hide-contestProblems .cf-table-contestProblems .cf-rating-col,
+:root.cf-hide-standings .cf-rating-standings-row {
+  display: none !important;
+}
+
+:root.cf-hide-problemset .cf-table-problemset tr th:nth-last-child(2),
+:root.cf-hide-problemset .cf-table-problemset tr td:nth-last-child(2),
+:root.cf-hide-contestProblems .cf-table-contestProblems tr th:nth-last-child(2),
+:root.cf-hide-contestProblems .cf-table-contestProblems tr td:nth-last-child(2) {
+  border-right: none !important;
+}

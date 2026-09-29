@@ -1,0 +1,50 @@
+// 原版默认设置；组件不得另行维护默认值副本。
+export const DEFAULT_SETTINGS = {
+  disableAutoCheckUpdate: false,
+  acBgColor: '#d4edc9',
+  colorRatings: true,
+  tagFillCell: true,
+  show: {
+    acHighlight: true,
+    submissions: true,
+    status: true,
+    hacks: true,
+    problemset: true,
+    contestProblems: true,
+    standings: true,
+    problemTags: true,
+    userAvatar: true,
+    formatTeams: true,
+    langIcon: true,
+    shortVerdict: true,
+  },
+  avatarSize: 1.6,
+  langIconSize: 1.6,
+  timeFormat: {
+    enabled: true,
+    format: 'YYYY/MM/DD HH:mm',
+  },
+  displayStyle: 'tag',
+  hideTags: false,
+  hideRatingTag: false,
+  notHideAcTags: false,
+  lang: 'en',
+  clist: {
+    enabled: false,
+    authMode: 'cookie',
+    isLoggedIn: true,
+    apiKey: '',
+  },
+  shortcuts: {
+    hideTags: 'Shift+H',
+    menuLanguage: 'Shift+M', // Menu language：切换菜单语言，不与语言图标的 Shift+L 冲突。
+    acHighlight: 'Shift+B', // Background：整行背景高亮，避开头像使用的 Shift+A。
+    langIcon: 'Shift+L',
+    shortVerdict: 'Shift+S',
+    timeFormat: 'Shift+T',
+    clistEnabled: 'Shift+C',
+    colorRatings: 'Shift+R',
+    displayStyle: 'Shift+F',
+    userAvatar: 'Shift+A',
+  },
+};

@@ -1,0 +1,3 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='var(--cf-icon-primary)' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: #d46a76; --cf-icon-secondary: #eea1a8'>
+  <path d='M5.5 7.5h13l-.9 12H6.4Z' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/><path d='M3.5 7.5h17M9 7.5V4h6v3.5M10 11v5M14 11v5'/>
+</svg>

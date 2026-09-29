@@ -1,0 +1,22 @@
+.cf-table-time-cell,
+th.cf-table-time-header {
+  white-space: nowrap !important;
+  width: 120px !important;
+  min-width: 110px !important;
+  vertical-align: middle !important;
+}
+
+:root.cf-hide-timeFormat .cf-time-timezone-label {
+  display: none !important;
+}
+
+/* 静态容器按原文占位，不裁掉原站伸出行框的上标时区。 */
+.cf-time-slot {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: visible;
+}
+.cf-time-value {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,241 @@
+.cf-team-layout {
+  overflow: hidden;
+}
+.cf-team-moving a:not(.cf-avatar-container) {
+  display: inline-block;
+}
+
+.status-party-cell {
+  white-space: nowrap !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  width: 140px !important;
+  max-width: 155px !important;
+}
+
+.status-party-cell.cf-team-formatted,
+.status-party-cell.cf-team-unformatted {
+  white-space: normal !important;
+  word-break: break-word !important;
+  width: auto !important;
+  min-width: 140px !important;
+  max-width: 240px !important;
+  vertical-align: middle !important;
+}
+
+.cf-team-formatted {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+.cf-team-header {
+  word-break: break-word;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.cf-team-members {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 2px;
+}
+
+.cf-team-header sup,
+.cf-team-formatted sup {
+  display: inline-block !important;
+  vertical-align: super !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+  margin-left: 2px !important;
+}
+
+.cf-avatar-line-wrapper {
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  max-width: 100% !important;
+  white-space: nowrap !important;
+}
+
+a.cf-avatar-container {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  width: auto !important;
+  min-width: auto !important;
+  max-width: none !important;
+  overflow: visible !important;
+  line-height: 1 !important;
+}
+
+img.cf-user-avatar {
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  margin-right: 5px !important;
+  object-fit: cover !important;
+}
+
+:root:not(.cf-hide-userAvatar) .cf-author-icon-hidden,
+:root:not(.cf-hide-userAvatar) .right-meta li > a:has(> img[src*='user_16x16']),
+:root:not(.cf-hide-userAvatar) .right-meta li > a > img[src*='user_16x16'] {
+  display: none !important;
+}
+
+.cf-avatar-inline-user {
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .meta {
+  display: flow-root !important;
+  height: auto !important;
+  min-height: 2.5em !important;
+  box-sizing: border-box !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .meta br[style*='clear'] {
+  display: none !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .left-meta {
+  float: left !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 2.5em !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .left-meta ul {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0.35em 0.75em !important;
+  padding: 0 !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .right-meta {
+  float: right !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 2.5em !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .right-meta ul {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0.35em 0.75em !important;
+  padding: 0 !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .right-meta ul li {
+  display: inline-flex !important;
+  align-items: center !important;
+  float: none !important;
+  margin: 0 0.8rem !important;
+  line-height: 1 !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .right-meta ul li > a {
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .right-meta img.cf-user-avatar {
+  width: var(--cf-avatar-size) !important;
+  height: var(--cf-avatar-size) !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+:root:not(.cf-hide-userAvatar) .topic .right-meta ul li > img,
+:root:not(.cf-hide-userAvatar) .topic .right-meta ul li > a > img:not(.cf-user-avatar) {
+  vertical-align: middle !important;
+  position: relative !important;
+  top: 0 !important;
+  margin-right: 4px !important;
+}
+
+:root:not(.cf-hide-userAvatar) .topic .info a.cf-avatar-inline-user {
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
+:root:not(.cf-hide-userAvatar) .second-level-menu-list {
+  overflow: visible !important;
+}
+
+:root:not(.cf-hide-userAvatar) .second-level-menu-list li a.cf-avatar-inline-user {
+  overflow: visible !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+:root:not(.cf-hide-userAvatar)
+  .second-level-menu-list
+  li
+  a.cf-avatar-inline-user
+  img.cf-user-avatar {
+  width: var(--cf-avatar-size) !important;
+  height: var(--cf-avatar-size) !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+}
+
+.status-party-cell:not(.cf-team-formatted):not(.cf-team-unformatted)
+  a:not(.cf-avatar-container)[href*='/profile/'] {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  max-width: 105px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  line-height: 1.3 !important;
+}
+
+.status-party-cell.cf-team-formatted a:not(.cf-avatar-container)[href*='/profile/'],
+.status-party-cell.cf-team-unformatted a:not(.cf-avatar-container)[href*='/profile/'],
+.status-party-cell.cf-team-unformatted a.rated-user {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  max-width: 180px !important;
+  white-space: nowrap !important;
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  line-height: 1.3 !important;
+}
+
+.status-party-cell sup,
+.cf-avatar-line-wrapper sup {
+  display: inline-block !important;
+  align-self: flex-start !important;
+  vertical-align: super !important;
+  flex-shrink: 0 !important;
+  margin-left: 2px !important;
+  font-size: 9px !important;
+  line-height: 1.1 !important;
+  padding-top: 1px !important;
+}
+
+.status-party-cell sup a,
+.cf-avatar-line-wrapper sup a {
+  vertical-align: top !important;
+  line-height: 1 !important;
+}
