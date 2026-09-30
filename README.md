@@ -72,7 +72,7 @@ Colorforces is a userscript that makes Codeforces problem ratings, submissions, 
 
 3. Open or refresh a Codeforces page. Click the flower button near the upper-right corner to open settings.
 
-## Build from Source
+## 🛠️ Build from Source
 
 Requires Node.js 20.x (20.19.0 or later) or 22.12.0 or later, and npm.
 
