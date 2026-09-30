@@ -1,4 +1,4 @@
-<h1 align="center"><img src="../src/assets/icons/brands/colorforces.svg" width="44" height="44" alt=""> Colorforces</h1>
+<h1 align="center"><img src="../src/assets/icons/brands/colorforces.svg" width="44" height="44" align="absmiddle" alt=""> Colorforces</h1>
 
 <p align="center">
   <a href="../README.md">English</a> | <strong>简体中文</strong>
