@@ -35,6 +35,38 @@ function getSettings() {
       if (settings.langIconSize < 0.8) settings.langIconSize = 0.8;
       if (settings.langIconSize > 3.0) settings.langIconSize = 3.0;
       if (parsed.timeFormat) Object.assign(settings.timeFormat, parsed.timeFormat);
+      // 旧配置默认关闭自定义尺寸；空值留待首次启用时取当前面板大小。
+      if (parsed.menuSize && typeof parsed.menuSize === 'object') {
+        settings.menuSize.enabled = parsed.menuSize.enabled === true;
+        for (const axis of ['width', 'height']) {
+          const value = Number(parsed.menuSize[axis]);
+          settings.menuSize[axis] = Number.isFinite(value) && value > 0 ? Math.round(value) : null;
+        }
+      }
+      // 百分比位置独立于尺寸保存；无有效旧值时首次启用沿用当前位置。
+      if (parsed.menuPosition && typeof parsed.menuPosition === 'object') {
+        settings.menuPosition.enabled = parsed.menuPosition.enabled === true;
+        settings.menuPosition.reference =
+          parsed.menuPosition.reference === 'panel' ? 'panel' : 'button';
+        const panelSize = parsed.menuPosition.panelSize;
+        const sizeKeys = ['width', 'height', 'viewportWidth', 'viewportHeight'];
+        if (
+          panelSize &&
+          sizeKeys.every((key) => Number.isFinite(panelSize[key]) && panelSize[key] > 0)
+        ) {
+          settings.menuPosition.panelSize = Object.fromEntries(
+            sizeKeys.map((key) => [key, panelSize[key]]),
+          );
+        }
+        for (const axis of ['x', 'y']) {
+          const raw = parsed.menuPosition[axis];
+          const value = Number(raw);
+          settings.menuPosition[axis] =
+            raw !== null && raw !== '' && Number.isFinite(value)
+              ? Math.round(Math.min(100, Math.max(0, value)) * 1e6) / 1e6
+              : null;
+        }
+      }
       settings.hideTags = parsed.hideTags !== undefined ? !!parsed.hideTags : settings.hideTags;
       settings.hideRatingTag =
         parsed.hideRatingTag !== undefined ? !!parsed.hideRatingTag : settings.hideRatingTag;

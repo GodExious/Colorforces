@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { tooltip } from '../../../../components/tooltips/FloatingTooltip/FloatingTooltip.vue';
 import { init, use } from 'echarts/core';
 import { PieChart } from 'echarts/charts';
 import { TooltipComponent } from 'echarts/components';
@@ -151,7 +152,12 @@ onBeforeUnmount(() => {
     <ul class="cf-storage-pie-legend">
       <li v-for="slice in slices" :key="slice.id" :data-category="slice.id">
         <i class="cf-storage-pie-dot" :style="{ background: slice.color }" aria-hidden="true"></i>
-        <span class="cf-storage-pie-name">{{ slice.name }}</span>
+        <span
+          class="cf-storage-pie-name"
+          @mouseenter="tooltip.showIfTruncated"
+          @mouseleave="tooltip.hide"
+          >{{ slice.name }}</span
+        >
         <span class="cf-storage-pie-percentage">{{ slice.percentage }}</span>
         <span class="cf-storage-pie-size">{{ formatStorageBytes(slice.value) }}</span>
       </li>

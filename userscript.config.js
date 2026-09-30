@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { SCRIPT_UPDATE_URL } from './src/config/release.js';
+import { PICKR_SCRIPT } from './src/assets/remote.js';
 
 // 从唯一版本源生成元数据，更新检查同时允许 Release 附件及其下载重定向。
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
@@ -19,7 +20,7 @@ export default {
   updateURL: SCRIPT_UPDATE_URL,
   downloadURL: SCRIPT_UPDATE_URL,
   'run-at': 'document-start',
-  require: ['https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js'],
+  require: [PICKR_SCRIPT],
   license: 'MIT',
   connect: [
     'clist.by',

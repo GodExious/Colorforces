@@ -1,3 +1,4 @@
+// 与界面页的标签显示设置共用动画状态。
 const active = new WeakMap();
 const initialized = new WeakSet();
 const duration = 300;

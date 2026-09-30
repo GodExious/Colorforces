@@ -6,6 +6,7 @@ import { tooltip } from '../../components/tooltips/FloatingTooltip/FloatingToolt
 import { translate as t } from '../../../i18n/index.js';
 import { customFormatTime } from '../../../utils/time.js';
 import ColorPicker from './components/ColorPicker/ColorPicker.vue';
+import TagVisibilitySettings from './components/TagVisibilitySettings/TagVisibilitySettings.vue';
 import { openTimeFormatGuide } from './components/TimeFormatGuide/TimeFormatGuide.vue';
 import { openVerdictGuide } from './components/VerdictGuide/VerdictGuide.vue';
 import ToggleSwitch from '../../components/forms/ToggleSwitch/ToggleSwitch.vue';
@@ -29,6 +30,7 @@ const timePreview = computed(() =>
 </script>
 <template>
   <div class="cf-tab-panel">
+    <TagVisibilitySettings />
     <label class="cf-setting-item" style="cursor: pointer; user-select: none; margin: 0px"
       ><span class="cf-setting-label" v-text="t('locAcHighlight')"></span
       ><toggle-switch

@@ -4,6 +4,7 @@ defineProps({
   modelValue: Boolean,
   as: { type: String, default: 'div' },
   inputClass: String,
+  inputId: String,
   dataControl: String,
 });
 const emit = defineEmits(['update:modelValue', 'change']);
@@ -17,6 +18,7 @@ function change(event) {
   <component :is="as" class="cf-toggle-switch" v-bind="$attrs">
     <input
       type="checkbox"
+      :id="inputId"
       :class="inputClass"
       :data-control="dataControl"
       :checked="modelValue"

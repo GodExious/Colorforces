@@ -2,7 +2,7 @@
 export default [
   {
     version: 'v 1.6.0',
-    date: '2026-09-28 00:27',
+    date: '2026-09-30 09:07',
     sections: [
       { type: 'optimized', contentKey: 'v 1.6.0:0' },
       { type: 'fixed', contentKey: 'v 1.6.0:1' },

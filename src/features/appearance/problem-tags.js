@@ -3,7 +3,7 @@ import {
   checkAndFetchUserSolved,
   isCurrentPageProblemAccepted,
   getUserSolvedProblems,
-} from './solved.js';
+} from '../general/solved.js';
 import { t } from '../../i18n/index.js';
 import { extractProblemKey } from '../../utils/problem.js';
 import { beginTagMotion, finishTagMotion } from './problem-tags-motion.js';

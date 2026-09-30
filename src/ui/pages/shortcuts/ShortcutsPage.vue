@@ -4,6 +4,7 @@ import { appSettings, saveSettings } from '../../../settings.js';
 import { translate as t } from '../../../i18n/index.js';
 import * as assets from '../../../assets/index.js';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
+import ResetButton from '../../components/forms/ResetButton/ResetButton.vue';
 import { DEFAULT_SETTINGS } from '../../../config/defaults.js';
 import { isShiftActive, CODE_TO_BASE_KEY } from '../../../utils/shortcuts.js';
 import { tooltip } from '../../components/tooltips/FloatingTooltip/FloatingTooltip.vue';
@@ -73,11 +74,6 @@ const recording = ref(null);
 const draftCombo = ref('');
 const conflictingKeys = ref([]);
 let release;
-// 仅在标题被截断时显示完整标题。
-function showOverflowTip(event) {
-  const target = event.currentTarget;
-  if (target.scrollWidth > target.clientWidth) tooltip.show(target, target.textContent);
-}
 // 结束录制并释放全局捕获监听。
 function stopRecording() {
   release?.();
@@ -195,7 +191,7 @@ onBeforeUnmount(stopRecording);
             <div
               class="cf-shortcut-title"
               v-text="t(item.titleKey)"
-              v-on:mouseenter="showOverflowTip"
+              v-on:mouseenter="tooltip.showIfTruncated"
               v-on:mouseleave="tooltip.hide"
             ></div>
             <div class="cf-shortcut-controls">
@@ -229,14 +225,11 @@ onBeforeUnmount(stopRecording);
                 v-on:click="clearShortcut(item.key)"
               >
                 <inline-svg v-bind:source="assets.shortcutClearIcon"></inline-svg></button
-              ><button
-                type="button"
+              ><ResetButton
                 class="cf-shortcut-reset-btn"
-                v-bind:data-tooltip="t('shortcutResetBtn')"
+                :label="t('shortcutResetBtn')"
                 v-on:click="resetShortcut(item.key, $event.currentTarget)"
-              >
-                <inline-svg v-bind:source="assets.shortcutResetIcon"></inline-svg>
-              </button>
+              />
             </div>
           </div>
         </div>
@@ -590,8 +583,7 @@ onBeforeUnmount(stopRecording);
   background: #f1f5f9;
 }
 
-.cf-shortcut-clear-btn,
-.cf-shortcut-reset-btn {
+.cf-shortcut-clear-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -612,12 +604,6 @@ onBeforeUnmount(stopRecording);
   background: #fef2f2;
   color: #ef4444;
   border-color: #fee2e2;
-}
-
-.cf-shortcut-reset-btn:hover {
-  background: var(--cf-control-active);
-  color: var(--cf-control-ink);
-  border-color: var(--cf-surface-border);
 }
 
 .cf-shortcut-reset-all-btn {

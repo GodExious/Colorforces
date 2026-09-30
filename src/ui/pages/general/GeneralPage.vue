@@ -1,5 +1,4 @@
 <script setup>
-import ExpandTransition from '../../components/transitions/ExpandTransition/ExpandTransition.vue';
 import { computed, ref, inject, onBeforeUnmount } from 'vue';
 import { appSettings, saveSettings, setSetting as choose } from '../../../settings.js';
 import { translate as t } from '../../../i18n/index.js';
@@ -11,6 +10,8 @@ import SegmentedSwitch from '../../components/forms/SegmentedSwitch/SegmentedSwi
 import ActionButton from '../../components/forms/ActionButton/ActionButton.vue';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
 import { syncIcon } from '../../../assets/index.js';
+import MenuSizeSettings from './components/MenuSizeSettings/MenuSizeSettings.vue';
+import MenuPositionSettings from './components/MenuPositionSettings/MenuPositionSettings.vue';
 const updateState = ref('');
 const changeLanguage = inject('cf-change-language', (value) => choose('lang', value));
 const languageOptions = computed(() =>
@@ -71,64 +72,8 @@ onBeforeUnmount(() => clearTimeout(resetTimer));
         :options="languageOptions"
       ></segmented-switch>
     </div>
-    <label class="cf-setting-item" style="cursor: pointer; user-select: none; margin: 0px"
-      ><span class="cf-setting-label" data-cf-language-text v-text="t().locHideTags"></span
-      ><toggle-switch
-        as="div"
-        v-model="appSettings.hideTags"
-        input-class="cf-toggle-hide-tags"
-        data-control="cbHideTags"
-        @change="saveSettings()"
-      ></toggle-switch></label
-    ><ExpandTransition :show="appSettings.hideTags"
-      ><label
-        class="cf-setting-item cf-sub-setting-item"
-        style="
-          align-items: center;
-          justify-content: space-between;
-          font-size: 12px;
-          cursor: pointer;
-          user-select: none;
-          min-height: 28px;
-          margin: 0px;
-          padding-left: 14px;
-        "
-        ><span
-          class="cf-setting-sublabel"
-          data-cf-language-text
-          v-text="t().locHideRatingTag"
-        ></span
-        ><toggle-switch
-          as="div"
-          v-model="appSettings.hideRatingTag"
-          data-control="cbHideRatingTag"
-          @change="saveSettings()"
-        ></toggle-switch></label></ExpandTransition
-    ><ExpandTransition :show="appSettings.hideTags"
-      ><label
-        class="cf-setting-item cf-sub-setting-item"
-        style="
-          align-items: center;
-          justify-content: space-between;
-          font-size: 12px;
-          cursor: pointer;
-          user-select: none;
-          min-height: 28px;
-          margin: 0px;
-          padding-left: 14px;
-        "
-        ><span
-          class="cf-setting-sublabel"
-          data-cf-language-text
-          v-text="t().locNotHideAcTags"
-        ></span
-        ><toggle-switch
-          as="div"
-          v-model="appSettings.notHideAcTags"
-          data-control="cbNotHideAcTags"
-          @change="saveSettings()"
-        ></toggle-switch></label
-    ></ExpandTransition>
+    <MenuPositionSettings />
+    <MenuSizeSettings />
     <div
       class="cf-setting-item"
       style="

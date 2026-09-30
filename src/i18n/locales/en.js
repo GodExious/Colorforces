@@ -32,6 +32,18 @@ export default {
     'Got an awesome idea, feature request, or optimization tip? Feel free to open an issue on GitHub and build Colorforces together!',
   roadmapProposalBtn: 'Propose on GitHub',
   langLabel: 'Menu Language',
+  menuSizeCustom: 'Custom Settings Panel Size',
+  menuLayoutReset: 'Restore default values without changing the switch',
+  menuLayoutResetAction: 'Reset to default',
+  menuSizeWidth: 'Width',
+  menuSizeHeight: 'Height',
+  menuSizeHint:
+    'Drag the outer edges or corner to resize. Available edges follow the panel’s opening direction.',
+  menuPositionCustom: 'Custom Button and Panel Position',
+  menuPositionX: 'Horizontal Position',
+  menuPositionY: 'Vertical Position',
+  menuPositionHint:
+    'Drag the button or panel header to anchor that element; the other moves around it. Position percentages use the current anchor.',
   langZhName: '简体中文',
   langEnName: 'English',
   locHideTags: 'Hide Algorithm Tags',

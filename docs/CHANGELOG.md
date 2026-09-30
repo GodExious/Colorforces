@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 ---
 
 ### v1.6.0
-`2026-09-28 00:27`
+`2026-09-30 09:07`
 
 **Optimized**
 1. With help from Codex, decoupled and standardized the project structure and component organization, adding extensive concise Chinese function-level comments to improve readability and maintainability.
@@ -21,6 +21,8 @@ All notable changes to this project will be documented in this file.
 7. Moved distribution and updates to Releases, automated publishing, and retained the legacy update entry.
 8. Added a separate solved-row highlighting toggle, with shortcuts for highlighting and menu language switching.
 9. Improved real-time verdict abbreviations and extended them to submission history on problem pages.
+10. Moved the algorithm-tag visibility settings to Appearance.
+11. Users can customize the settings panel size and position, with drag-to-adjust support.
 
 **Fixed**
 1. Explicitly request the official problemset in English and refresh older-language caches.

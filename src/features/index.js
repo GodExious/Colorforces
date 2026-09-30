@@ -2,7 +2,7 @@ import { appSettings, subscribeSettings } from '../settings.js';
 import { updateDynamicStyle } from './appearance/ac-highlight.js';
 import { refreshVerdicts } from './appearance/verdicts.js';
 import { applyTimeFormatting, wrapVirtualParticipationTime } from './appearance/time.js';
-import { applyProblemTagsVisibility } from './general/problem-tags.js';
+import { applyProblemTagsVisibility } from './appearance/problem-tags.js';
 import { getRatings } from './ratings/data.js';
 import { applyRatings, refreshRatingsOnPage } from './ratings/enhance.js';
 import { applyUserAvatars } from './user/avatars/enhance.js';

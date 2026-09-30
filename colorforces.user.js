@@ -13,7 +13,7 @@
 // @updateURL          https://github.com/GodExious/Colorforces/releases/latest/download/colorforces.user.js
 // @match              *://codeforces.com/*
 // @match              *://*.codeforces.com/*
-// @require            https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js
+// @require            https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.10.2/dist/pickr.min.js
 // @connect            clist.by
 // @connect            raw.githubusercontent.com
 // @connect            github.com
@@ -412,7 +412,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			else (document.head || document.documentElement).appendChild(document.createElement("style")).append(c);
 		})(t);
 	};
-	_css(" .cf-floating-tooltip{--cf-tip-surface:#0f172aeb;z-index:10000030;background:var(--cf-tip-surface);-webkit-backdrop-filter:blur(6px);color:#fff;pointer-events:none;white-space:normal;word-break:break-word;visibility:hidden;max-width:280px;clip-path:circle(0px at var(--tip-x) var(--tip-y));border-radius:6px;padding:7px 11px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:11.5px;font-weight:400;line-height:1.5;transition:clip-path .22s cubic-bezier(.22,1,.36,1);display:none;position:fixed;box-shadow:0 4px 16px #00000047}.cf-floating-tooltip.visible{visibility:visible;clip-path:circle(var(--tip-radius) at var(--tip-x) var(--tip-y))}.cf-floating-tooltip:after{content:\"\";left:var(--arrow-left,50%);border:4px solid #0000;position:absolute;transform:translate(-50%)}.cf-floating-tooltip.cf-tip-top:after{border-top-color:var(--cf-tip-surface);top:100%}.cf-floating-tooltip.cf-tip-bottom:after{border-bottom-color:var(--cf-tip-surface);bottom:100%}.cf-floating-tooltip.cf-menu-theme{--cf-tip-surface:color-mix(in srgb, var(--cf-menu-accent) 24%, #233047);box-shadow:0 4px 14px color-mix(in srgb, var(--cf-menu-accent) 18%, #23304730);transition:clip-path .22s cubic-bezier(.22,1,.36,1),--cf-menu-accent .48s,--cf-menu-secondary .48s}.cf-floating-tooltip.cf-tip-launcher{--cf-tip-surface:color-mix(in srgb, var(--cf-menu-accent,#9980bc) 8%, #fff);border:1px solid color-mix(in srgb, var(--cf-menu-accent,#9980bc) 20%, #ffffffb8);background:linear-gradient(135deg, #ffffffef, var(--cf-tip-surface));color:color-mix(in srgb, var(--cf-menu-accent,#9980bc) 24%, #465166);clip-path:inset(-12px -12px -12px 100% round 16px);border-radius:999px;padding:7px 12px 7px 23px;font-weight:500;transition:clip-path .22s cubic-bezier(.22,1,.36,1),transform .22s cubic-bezier(.22,1,.36,1),--cf-menu-accent .48s,--cf-menu-secondary .48s;transform:translate(5px);box-shadow:0 3px 11px #44516a14}.cf-floating-tooltip.cf-tip-launcher:before{content:\"\";background:var(--cf-menu-accent,#9980bc);width:4px;height:4px;box-shadow:0 0 5px color-mix(in srgb, var(--cf-menu-accent,#9980bc) 30%, transparent);border-radius:50%;position:absolute;top:calc(50% - 2px);left:11px}.cf-floating-tooltip.cf-tip-launcher:after{top:calc(var(--arrow-top) - 3px);background:var(--cf-tip-surface);border:none;width:6px;height:6px;left:auto;right:-3px;transform:rotate(45deg)}.cf-floating-tooltip.cf-tip-launcher.cf-tip-right{clip-path:inset(-12px 100% -12px -12px round 16px);transform:translate(-5px)}.cf-floating-tooltip.cf-tip-launcher.cf-tip-right:after{left:-3px;right:auto}.cf-floating-tooltip.cf-tip-launcher.visible{clip-path:inset(-12px round 16px);transform:translate(0)}@media (prefers-reduced-motion:reduce){.cf-floating-tooltip,.cf-floating-tooltip.cf-menu-theme,.cf-floating-tooltip.cf-tip-launcher{transition:none}}.cf-dialog-unrolling{will-change:transform, clip-path;position:relative}.cf-dialog-unrolling:after{content:\"\";z-index:1;pointer-events:none;background:linear-gradient(#0000,#ffffffbf 40%,#0f172a29 80%,#0000);height:20px;position:absolute;top:0;left:0;right:0}.cf-dialog-unroll-bottom:after{background:linear-gradient(#0000,#0f172a29 20%,#ffffffbf 60%,#0000)}.cf-confirm-pop-overlay{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:10000005;box-sizing:border-box;overscroll-behavior:contain;background:#0f172a7a;justify-content:center;align-items:center;width:100vw;height:100vh;padding:16px;display:flex;position:fixed;top:0;left:0}.cf-confirm-pop-card{box-sizing:border-box;overscroll-behavior:contain;background:#fff;border:1px solid #e2e8f0;border-radius:12px;width:420px;max-width:92vw;overflow:hidden;box-shadow:0 20px 25px -5px #00000026,0 8px 10px -6px #0000001a}.cf-confirm-btn-cancel:hover{color:#0f172a!important;background:#f1f5f9!important;border-color:#94a3b8!important}.cf-confirm-btn-primary:hover{filter:brightness(.92)}.cf-sidebar-nav{background:linear-gradient(155deg, color-mix(in srgb, var(--cf-paint-secondary) 5%, transparent), transparent 75%), color-mix(in srgb, var(--cf-paint-accent) 11%, #f5f8fc);border-right:1px solid color-mix(in srgb, var(--cf-paint-accent) 18%, #dde5ee);box-sizing:border-box;width:200px;min-width:200px;max-width:200px;overflow-y:auto;overflow-y:overlay;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;overscroll-behavior:contain;flex-direction:column;flex-shrink:0;gap:4px;padding:10px 8px;display:flex;position:relative}.cf-sidebar-nav::-webkit-scrollbar{width:4px}.cf-sidebar-nav::-webkit-scrollbar-track{background:0 0}.cf-sidebar-nav::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}.cf-sidebar-nav::-webkit-scrollbar-thumb:hover{background:#94a3b8}.cf-nav-indicator{background-color:#e6f4ff;background-color:color-mix(in srgb, var(--cf-tab-accent,#1677ff) 18%, white);pointer-events:none;z-index:1;box-sizing:border-box;will-change:transform;opacity:0;border-radius:8px;width:calc(100% - 16px);height:36px;transition:transform .25s cubic-bezier(.16,1,.3,1),opacity .2s,background-color .22s;position:absolute;top:0;left:8px}.cf-nav-indicator:before{content:\"\";background-color:var(--cf-tab-accent,#1677ff);border-radius:3px;width:3.5px;height:18px;transition:background-color .22s;position:absolute;top:50%;left:4px;transform:translateY(-50%)}.cf-nav-tab{color:#475569;cursor:pointer;z-index:2;-webkit-user-select:none;user-select:none;text-align:left;box-sizing:border-box;white-space:nowrap;background:0 0;border:none;border-radius:8px;flex:0 36px;align-items:center;gap:8px;width:100%;height:36px;min-height:28px;padding:8px 12px 8px 16px;font-size:13px;font-weight:500;line-height:20px;transition:color .22s cubic-bezier(.16,1,.3,1),background-color .18s,transform .12s;display:flex;position:relative;overflow:hidden}.cf-nav-tab:not(.active):hover{color:#0f172a;background:#00000009}.cf-nav-tab:active{transform:scale(.98)}.cf-nav-tab.active{color:color-mix(in srgb, var(--cf-tab-accent,#1677ff) 60%, #25334b);font-weight:600}.cf-tab-icon{width:16px;height:16px;color:inherit;flex-shrink:0;justify-content:center;align-items:center;font-size:14px;transition:transform .22s cubic-bezier(.16,1,.3,1);display:inline-flex}.cf-nav-tab.active .cf-tab-icon{--cf-icon-wash:.3;transform:scale(1.08)}.cf-tab-icon svg [fill-opacity]{transition:fill-opacity .22s}.cf-tab-icon svg{flex-shrink:0;width:16px;height:16px;display:block}.cf-tab-text{white-space:nowrap;text-overflow:ellipsis;flex:1;overflow:hidden}.cf-contributors-motion-enter-active[data-v-1efb4c08],.cf-contributors-motion-leave-active[data-v-1efb4c08]{transition:clip-path .26s cubic-bezier(.22,1,.36,1)}.cf-contributors-panel.cf-contributors-motion-enter-from[data-v-1efb4c08],.cf-contributors-panel.cf-contributors-motion-leave-to[data-v-1efb4c08]{clip-path:inset(100% 0 0 round 10px)}.cf-contributors-motion-leave-active[data-v-1efb4c08]{pointer-events:none}@media (prefers-reduced-motion:reduce){.cf-contributors-motion-enter-active[data-v-1efb4c08],.cf-contributors-motion-leave-active[data-v-1efb4c08]{transition:none}}.cf-footer-contributors[data-v-1efb4c08]{flex-shrink:0;position:relative}.cf-contributors-trigger[data-v-1efb4c08]{color:#64748b;font:inherit;cursor:pointer;-webkit-user-select:none;user-select:none;border-radius:4px;align-items:center;gap:6px;padding:0;line-height:18px;list-style:none;transition:color .15s;display:inline-flex}.cf-contributors-trigger[data-v-1efb4c08]::-webkit-details-marker{display:none}.cf-contributors-trigger[data-v-1efb4c08]:hover,.cf-footer-contributors[open] .cf-contributors-trigger[data-v-1efb4c08]{color:var(--cf-control-ink)}.cf-contributors-trigger[data-v-1efb4c08]:focus-visible,.cf-contributor-link[data-v-1efb4c08]:focus-visible{outline:2px solid var(--cf-menu-accent);outline-offset:3px}.cf-contributors-avatars[data-v-1efb4c08]{align-items:center;padding-right:2px;display:inline-flex}.cf-contributors-avatars img[data-v-1efb4c08]{box-sizing:border-box;border:2px solid var(--cf-card-surface);background:var(--cf-card-surface,#fff);object-fit:contain;border-radius:50%;width:18px;height:18px}.cf-contributors-avatars img+img[data-v-1efb4c08]{margin-left:-5px}.cf-contributors-count[data-v-1efb4c08]{color:#94a3b8;font-variant-numeric:tabular-nums}.cf-contributors-chevron[data-v-1efb4c08]{transition:transform .15s;display:inline-flex;transform:rotate(180deg)}.cf-contributors-chevron[data-v-1efb4c08] svg{width:10px;height:10px}.cf-footer-contributors[open] .cf-contributors-chevron[data-v-1efb4c08]{transform:rotate(0)}.cf-contributors-panel[data-v-1efb4c08]{clip-path:inset(-30px round 10px);z-index:10;box-sizing:border-box;border:1px solid var(--cf-surface-border,#e2e8f0);background:var(--cf-card-surface,#fff);color:#334155;-webkit-user-select:text;user-select:text;border-radius:10px;width:320px;max-width:calc(100vw - 80px);padding:10px;font-size:12px;line-height:1.5;position:absolute;bottom:calc(100% + 10px);right:0;box-shadow:0 8px 28px #0f172a21}.cf-contributors-heading[data-v-1efb4c08]{border-bottom:1px solid var(--cf-surface-border);justify-content:space-between;align-items:center;gap:8px;padding:2px 6px 8px;display:flex}.cf-contributors-heading span[data-v-1efb4c08]{color:#94a3b8;font-size:10px}.cf-contributors-list[data-v-1efb4c08]{overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;flex-direction:column;gap:3px;max-height:280px;margin:6px 0 0;padding:0;list-style:none;display:flex;overflow-y:auto}.cf-contributors-list li[data-v-1efb4c08]{margin:0;padding:0}.cf-footer-contributors .cf-contributor-link[data-v-1efb4c08],.cf-footer-contributors .cf-contributor-link[data-v-1efb4c08]:link,.cf-footer-contributors .cf-contributor-link[data-v-1efb4c08]:visited{color:#334155;border-radius:7px;grid-template-columns:44px minmax(0,1fr) 12px;align-items:center;gap:4px 10px;padding:10px 8px;text-decoration:none;transition:background .15s,color .15s;display:grid}.cf-footer-contributors .cf-contributor-link[data-v-1efb4c08]:hover,.cf-footer-contributors .cf-contributor-link[data-v-1efb4c08]:active,.cf-footer-contributors .cf-contributor-link[data-v-1efb4c08]:focus-visible{color:var(--cf-control-ink);background:var(--cf-control-active)}.cf-contributor-link:hover .cf-contributor-external[data-v-1efb4c08],.cf-contributor-link:focus-visible .cf-contributor-external[data-v-1efb4c08]{color:var(--cf-control-ink)}.cf-contributor-image[data-v-1efb4c08]{object-fit:contain;border-radius:8px;grid-area:1/1/span 2;align-self:stretch;width:44px;height:100%;min-height:44px}.cf-contributor-info[data-v-1efb4c08]{flex-wrap:wrap;grid-area:1/2;align-items:baseline;gap:2px 8px;min-width:0;display:flex}.cf-contributor-name[data-v-1efb4c08]{overflow-wrap:anywhere;font-weight:600}.cf-contributor-role[data-v-1efb4c08]{color:#94a3b8;font-size:11px}.cf-contributor-description[data-v-1efb4c08]{color:#64748b;overflow-wrap:break-word;grid-area:2/2/auto/-1;min-width:0;font-size:11px;line-height:1.6}.cf-contributor-external[data-v-1efb4c08]{color:#94a3b8;grid-area:1/3;display:inline-flex}.cf-contributor-external[data-v-1efb4c08] svg{width:12px;height:12px}.cf-menu-glass-surface[data-v-c2bef5a6],.cf-menu-glass-light[data-v-c2bef5a6]:after,.cf-menu-glass-light[data-v-c2bef5a6]:before{--cf-paint-accent:var(--cf-menu-accent);--cf-paint-secondary:var(--cf-menu-secondary);transition:--cf-paint-accent .48s,--cf-paint-secondary .48s}.cf-menu-glass-surface[data-v-c2bef5a6]{isolation:isolate;z-index:3;background:linear-gradient(112deg, color-mix(in srgb, var(--cf-paint-accent) 18%, #ffffff70), #ffffff45 46%, color-mix(in srgb, var(--cf-paint-secondary) 20%, #ffffff78));-webkit-backdrop-filter:blur(9px)saturate(155%)contrast(102%);backdrop-filter:blur(9px)saturate(155%)contrast(102%);border-color:color-mix(in srgb, var(--cf-paint-accent) 23%, #c5d5df78);box-shadow:inset 0 1px 0 #ffffffeb, inset 0 2px 4px #ffffff45, inset 0 -1px 0 #ffffffd0, inset 0 -3px 5px color-mix(in srgb, var(--cf-paint-accent) 8%, transparent);position:relative}.cf-menu-glass-light[data-v-c2bef5a6]{z-index:-1;pointer-events:none;position:absolute;inset:0;overflow:hidden}.cf-menu-glass-light[data-v-c2bef5a6]:before{content:\"\";background:radial-gradient(ellipse at 23% 50%, #ffffff70 0%, #ffffff05 32%, transparent 44%), conic-gradient(from 145deg at 65% 70%, transparent 0deg, #ffffff60 10deg, transparent 22deg, transparent 170deg, color-mix(in srgb, var(--cf-paint-secondary) 30%, #ffffff40) 190deg, transparent 204deg);filter:blur(7px);animation:13s ease-in-out infinite alternate cf-menu-glass-caustic-c2bef5a6;position:absolute;inset:-80% -15%}.is-bottom>.cf-menu-glass-light[data-v-c2bef5a6]:before{animation-delay:-5s}.is-resting>.cf-menu-glass-light[data-v-c2bef5a6]:before{animation-play-state:paused}.cf-menu-glass-light[data-v-c2bef5a6]:after{content:\"\";inset-inline:0;pointer-events:none;background:linear-gradient(90deg, #ffffff30, #ffffffd0 20%, color-mix(in srgb, var(--cf-paint-accent) 28%, #e8fbffa0) 50%, #ffffffe0 80%, #ffffff30);height:2px;position:absolute;bottom:-1px;box-shadow:0 -2px 4px #ffffff4d}.is-bottom>.cf-menu-glass-light[data-v-c2bef5a6]:after{background:linear-gradient(90deg, #ffffff30, #ffffffe0 20%, color-mix(in srgb, var(--cf-paint-accent) 28%, #e8fbffa0) 50%, #ffffffd0 80%, #ffffff30);top:-1px;bottom:auto;box-shadow:0 2px 4px #ffffff4d}@keyframes cf-menu-glass-caustic-c2bef5a6{0%{opacity:.72;transform:translate(-8%)rotate(-5deg)}to{opacity:1;transform:translate(8%)rotate(5deg)}}@media (prefers-reduced-motion:reduce){.cf-menu-glass-light[data-v-c2bef5a6]:before{animation:none}.cf-menu-glass-surface[data-v-c2bef5a6],.cf-menu-glass-light[data-v-c2bef5a6]:after,.cf-menu-glass-light[data-v-c2bef5a6]:before{transition:none}}@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.cf-menu-glass-surface[data-v-c2bef5a6]{background:color-mix(in srgb, var(--cf-paint-accent) 14%, #f8fafc)}}.cf-action-button{--cf-action-color:var(--cf-menu-accent,#3b82f6);--cf-action-ink:color-mix(in srgb, var(--cf-action-color) 40%, #243447);color:var(--cf-action-ink);background:color-mix(in srgb, var(--cf-action-color) 22%, var(--cf-card-surface,#fff));border:1px solid color-mix(in srgb, var(--cf-action-color) 48%, var(--cf-card-surface,#fff));box-shadow:inset 0 1px 0 #ffffff60, 0 1px 2px color-mix(in srgb, var(--cf-action-color) 12%, transparent);cursor:pointer;-webkit-user-select:none;user-select:none;white-space:nowrap;border-radius:6px;justify-content:center;align-items:center;gap:5px;padding:5px 12px;font-size:12px;font-weight:500;line-height:18px;transition:background-color .18s,border-color .18s,color .18s,box-shadow .18s;display:inline-flex}.cf-action-button:not(:disabled):hover{background:color-mix(in srgb, var(--cf-action-color) 32%, var(--cf-card-surface,#fff));color:var(--cf-action-ink);border-color:color-mix(in srgb, var(--cf-action-color) 65%, var(--cf-card-surface,#fff));box-shadow:inset 0 1px 0 #ffffff60, 0 2px 5px color-mix(in srgb, var(--cf-action-color) 17%, transparent)}.cf-action-button:focus-visible{outline:2px solid var(--cf-action-color);outline-offset:2px}.cf-action-button[data-state=preview]{--cf-action-color:#0284c7}.cf-action-button[data-state=latest]{--cf-action-color:#168451}.cf-action-button[data-state=failed]{--cf-action-color:#c74747}.cf-action-button:is([data-state=preview],[data-state=latest],[data-state=failed]){border-color:color-mix(in srgb, var(--cf-action-color) 58%, var(--cf-card-surface,#fff))}.cf-action-button:disabled,.cf-action-button.cooldown{cursor:not-allowed;box-shadow:none}.cf-action-button:disabled:not(:where([data-state=preview],[data-state=latest],[data-state=failed])),.cf-action-button.cooldown{color:#94a3b8;background:var(--cf-control-surface,#f8fafc);border-color:var(--cf-surface-border,#e2e8f0)}.cf-action-button[aria-busy=true],.cf-action-button.syncing{color:var(--cf-action-ink);background:color-mix(in srgb, var(--cf-action-color) 15%, var(--cf-card-surface,#fff));border-color:color-mix(in srgb, var(--cf-action-color) 45%, white);cursor:wait}.cf-action-button svg{width:14px;height:14px;transition:transform .2s}.cf-action-button:not(:disabled):hover svg{transform:rotate(45deg)}@keyframes cfSpin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}.cf-spin,.cf-action-button[aria-busy=true] svg,.cf-action-button.syncing svg{animation:1s linear infinite cfSpin}@media (prefers-reduced-motion:reduce){.cf-action-button,.cf-action-button svg{transition:none}.cf-action-button svg,.cf-spin{animation:none!important}}.cf-clist-progress-modal .cf-clist-modal-body{overflow-wrap:anywhere;min-width:0}.cf-clist-progress-modal .cf-progress-status{min-width:0}.cf-clist-progress-modal .cf-progress-sync-icon{flex:none;justify-content:center;align-items:center;width:20px;height:20px;display:inline-flex}.cf-clist-progress-modal.is-syncing .cf-progress-sync-icon{animation:1.8s linear infinite cfSpin}.cf-clist-progress-modal .cf-progress-heading{color:var(--cf-control-ink);justify-content:space-between;align-items:center;gap:16px;font-size:13px;font-weight:500;line-height:1.6;display:flex}.cf-clist-progress-modal .cf-progress-percent{font-variant-numeric:tabular-nums;flex:none;font-size:15px}.cf-clist-progress-modal .cf-clist-progress-track{box-sizing:border-box;border:1px solid var(--cf-surface-border);background:var(--cf-control-surface);border-radius:99px;height:9px;margin:10px 0}.cf-clist-progress-modal .cf-clist-progress-fill{border-radius:inherit;background:linear-gradient(100deg, var(--cf-menu-secondary), var(--cf-menu-accent));transition:width .65s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden}.cf-clist-progress-modal.is-syncing .cf-clist-progress-fill:after{content:\"\";background:linear-gradient(100deg,#0000 20%,#ffffff65 50%,#0000 80%);animation:2.6s ease-in-out infinite cf-sync-progress-sheen;position:absolute;inset:0}.cf-clist-progress-modal.is-success .cf-clist-progress-fill{background:linear-gradient(100deg,#74c5a1,#29976b)}.cf-clist-progress-modal.is-error .cf-clist-progress-fill{background:#d88c93}.cf-clist-progress-modal .cf-progress-metrics{color:color-mix(in srgb, var(--cf-control-ink) 65%, #64748b);font-variant-numeric:tabular-nums;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 16px;font-size:12px;line-height:1.7;display:flex}.cf-clist-progress-modal .cf-progress-metrics strong{color:var(--cf-control-ink)}.cf-clist-progress-modal .cf-progress-eta{text-align:right;margin-left:auto}.cf-clist-progress-modal .cf-val-eta{min-width:7.5em;display:inline-block}.cf-clist-progress-modal .cf-progress-tip{background:var(--cf-control-active);border:1px solid var(--cf-surface-border);color:var(--cf-control-ink);border-radius:8px;margin-top:16px;padding:10px 12px;font-size:12px;line-height:1.6}.cf-clist-progress-modal .cf-btn-action{font-weight:600}@keyframes cf-sync-progress-sheen{0%{transform:translate(-100%)}to{transform:translate(100%)}}@media (prefers-reduced-motion:reduce){.cf-clist-progress-modal .cf-progress-sync-icon,.cf-clist-progress-modal .cf-clist-progress-fill:after{animation:none!important}.cf-clist-progress-modal .cf-clist-progress-fill{transition:none}}.cf-clist-input-box{box-sizing:border-box;color:#334155;border-radius:6px;outline:none;width:100%;padding:6px 10px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:11px}.cf-footer-status-slot{flex:1;align-items:center;min-width:0;min-height:18px;display:grid;position:relative}.cf-footer-status-slot>*{grid-area:1/1;justify-self:start}.cf-footer-swap-enter-active,.cf-footer-swap-leave-active{transition:opacity .18s,transform .18s}.cf-footer-swap-leave-active{pointer-events:none}.cf-footer-swap-enter-from{opacity:0;transform:translateY(4px)}.cf-footer-swap-leave-to{opacity:0;transform:translateY(-4px)}@media (prefers-reduced-motion:reduce){.cf-footer-swap-enter-active,.cf-footer-swap-leave-active{transition:none}}.cf-modal-footer{border-top-style:solid;border-top-width:1px;flex-direction:column;gap:6px;padding:10px 18px 8px;display:flex}.cf-footer-top-row{justify-content:space-between;align-items:center;font-size:12px;display:flex}.cf-footer-status{color:#64748b;-webkit-user-select:none;user-select:none;align-items:center;gap:6px;font-size:12px;display:flex}.cf-status-dot{background-color:#10b981;border-radius:50%;width:6px;height:6px;display:inline-block;box-shadow:0 0 6px #10b98199}.cf-footer-links{align-items:center;gap:8px;display:flex}.cf-footer-link,.cf-footer-link:link,.cf-footer-link:visited{cursor:pointer;-webkit-user-select:none;user-select:none;align-items:center;gap:4px;font-size:12px;transition:color .15s;display:inline-flex;color:#64748b!important;text-decoration:none!important}.cf-footer-link:hover,.cf-footer-link:active{color:#1677ff!important;text-decoration:none!important}.cf-footer-divider{color:#cbd5e1;-webkit-user-select:none;user-select:none;font-size:12px}.cf-footer-bottom-row{color:#94a3b8;-webkit-user-select:none;user-select:none;border-top:1px dashed #edf2f7;justify-content:space-between;align-items:center;padding-top:5px;font-size:11px;display:flex}.cf-footer-motto{color:#94a3b8}.cf-footer-mini-progress{appearance:none;font-family:inherit;line-height:inherit;-webkit-user-select:none;user-select:none;cursor:pointer;background:0 0;border:0;border-radius:6px;align-items:center;gap:8px;width:max-content;max-width:100%;margin:-2px -7px;padding:2px 7px;font-size:12px;transition:background .2s,transform .15s;display:inline-flex}.cf-footer-mini-progress:hover{background:#3b82f614}.cf-footer-mini-progress:active{transform:scale(.98)}.cf-mini-progress-bar{background:#e2e8f0;border-radius:3px;flex-shrink:0;width:76px;height:6px;transition:box-shadow .2s;display:block;position:relative;overflow:hidden;box-shadow:inset 0 1px 2px #0000000f}.cf-footer-mini-progress:hover .cf-mini-progress-bar{box-shadow:0 0 0 1px #3b82f64d}.cf-mini-progress-bar-fill{background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:3px;height:100%;transition:width .3s;display:block}.cf-mini-progress-text{color:#334155;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:11px;font-weight:600;transition:color .2s}.cf-footer-mini-progress:hover .cf-mini-progress-text{color:#1d4ed8}.cf-menu-scrollbar[data-v-153fa333]{z-index:3;pointer-events:none;touch-action:none;width:10px;position:absolute;top:6px;bottom:6px;right:0}.cf-menu-scrollbar.is-scrollable[data-v-153fa333]{pointer-events:auto}.cf-menu-scrollbar-thumb[data-v-153fa333]{opacity:0;cursor:grab;touch-action:none;background:#cbd5e1;border-radius:4px;width:5px;height:100%;position:absolute;top:0;right:1px}.cf-menu-scrollbar-thumb[data-v-153fa333]:hover,.is-dragging .cf-menu-scrollbar-thumb[data-v-153fa333]{background:#94a3b8}.is-dragging .cf-menu-scrollbar-thumb[data-v-153fa333]{cursor:grabbing}.cf-menu-scrollbar-thumb[data-v-153fa333]:focus-visible{outline-offset:1px;outline:2px solid #60a5fa}@property --cf-launcher-open{syntax:\"<percentage>\";inherits:true;initial-value:0%}@property --cf-wind-phase{syntax:\"<angle>\";inherits:true;initial-value:0deg}@property --cf-launcher-accent{syntax:\"<color>\";inherits:true;initial-value:#5576df}#cf-ratings-settings-btn{--cf-launcher-accent:var(--cf-menu-accent);--cf-aurora-color:var(--cf-launcher-accent);--cf-aurora-light:color-mix(in srgb, var(--cf-launcher-accent) 46%, #e9f5fb);--cf-aurora-deep:color-mix(in srgb, var(--cf-launcher-accent) 74%, #192849);--cf-aurora-glow:color-mix(in srgb, var(--cf-launcher-accent) 65%, var(--cf-menu-secondary));isolation:isolate;place-items:center;transition:--cf-launcher-accent .48s,transform .24s,box-shadow .48s;position:relative;overflow:visible;box-shadow:0 2px 8px #71669324,0 1px 2px #7166931f;box-sizing:border-box!important;cursor:pointer!important;-webkit-user-select:none!important;user-select:none!important;background:conic-gradient(from -35deg,#ffd7e8,#ffe6c5,#d8f0e0,#cfeaf7,#e1d8f8,#ffd7e8)!important;border:0!important;border-radius:50%!important;width:44px!important;height:44px!important;display:grid!important}#cf-ratings-settings-btn:before,#cf-ratings-settings-btn:after{content:\"\";border-radius:inherit;pointer-events:none;position:absolute;inset:0}#cf-ratings-settings-btn:before{background:linear-gradient(145deg, color-mix(in srgb, var(--cf-launcher-accent) 12%, #f7fbff), color-mix(in srgb, var(--cf-launcher-accent) 28%, #eaf0fa));opacity:0;transition:opacity .48s}#cf-ratings-settings-btn:after{z-index:2;background:radial-gradient(at 26% 9%,#ffffff78,#0000 43%);box-shadow:inset 0 0 0 1px #ffffff85,inset 0 -1px 2px #4e517521}#cf-ratings-settings-btn:hover{transform:translateY(-.5px);box-shadow:0 3px 11px #71669330}#cf-ratings-settings-btn:not(.is-open):is(:hover,:focus-visible) .cf-launcher-flower{transform:scale(1)rotate(360deg)}#cf-ratings-settings-btn.is-open{box-shadow:0 0 0 1px color-mix(in srgb, var(--cf-menu-accent) 25%, transparent), 0 3px 13px color-mix(in srgb, var(--cf-menu-accent) 27%, transparent)}#cf-ratings-settings-btn.is-open:before{opacity:1}#cf-ratings-settings-btn.is-open:after{box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--cf-launcher-accent) 36%, transparent), inset 0 -1px 2px color-mix(in srgb, var(--cf-launcher-accent) 18%, transparent);background:radial-gradient(at 26% 9%,#ffffff30,#0000 43%)}#cf-ratings-settings-btn:active{transform:scale(.96)}#cf-ratings-settings-btn:focus-visible{outline:2px solid var(--cf-menu-accent);outline-offset:3px}.cf-launcher-art{z-index:1;pointer-events:none;width:100%;height:100%;position:absolute;inset:0;overflow:visible}.cf-launcher-flower,.cf-launcher-current,.cf-flower-launch,.cf-current-entry,.cf-launcher-motion{transform-box:view-box;transform-origin:22px 22px}.cf-launcher-flower,.cf-launcher-current{transition:transform .78s cubic-bezier(.22,1,.36,1),opacity .42s}.cf-launcher-flower{opacity:1;transform:scale(1)rotate(0)}.cf-launcher-current{opacity:0;transform:scale(.96)rotate(-6deg)}#cf-ratings-settings-btn.is-open .cf-launcher-flower{opacity:0;transition:transform .58s cubic-bezier(.22,1,.36,1),opacity .38s 80ms;transform:scale(1)rotate(360deg)}#cf-ratings-settings-btn.is-open .cf-launcher-current{opacity:1;transform:scale(1)rotate(0)}.cf-flower-sway{animation:16s ease-in-out infinite cf-flower-sway}.cf-flower-petal{animation:cf-flower-breathe 6s ease-in-out var(--cf-petal-delay) infinite}.cf-flower-petal use{stroke:#ffffff60;stroke-width:.35px}.cf-current-petals{--cf-wind-x:calc(3.2 * sin(var(--cf-wind-phase)) + .45 * sin(var(--cf-wind-phase) * 2));--cf-wind-y:calc(-.85 * sin(var(--cf-wind-phase)) + .8 * sin(var(--cf-wind-phase) * 2) + .25 * sin(var(--cf-wind-phase) * 3));animation:6.6s linear infinite cf-current-wind}.cf-current-petals>g:first-child{--cf-wind-cos:1;--cf-wind-sin:0;--cf-wind-response:1}.cf-current-petals>g:nth-child(2){--cf-wind-cos:.707107;--cf-wind-sin:.707107;--cf-wind-response:.94}.cf-current-petals>g:nth-child(3){--cf-wind-cos:0;--cf-wind-sin:1;--cf-wind-response:1.08}.cf-current-petals>g:nth-child(4){--cf-wind-cos:-.707107;--cf-wind-sin:.707107;--cf-wind-response:.88}.cf-current-petals>g:nth-child(5){--cf-wind-cos:-1;--cf-wind-sin:0;--cf-wind-response:.92}.cf-current-petals>g:nth-child(6){--cf-wind-cos:-.707107;--cf-wind-sin:-.707107;--cf-wind-response:1.02}.cf-current-petals>g:nth-child(7){--cf-wind-cos:0;--cf-wind-sin:-1;--cf-wind-response:.9}.cf-current-petals>g:nth-child(8){--cf-wind-cos:.707107;--cf-wind-sin:-.707107;--cf-wind-response:1.05}.cf-current-petal{--cf-local-wind-x:calc((var(--cf-wind-x) * var(--cf-wind-cos) + var(--cf-wind-y) * var(--cf-wind-sin)) * var(--cf-wind-response));--cf-local-wind-y:calc((var(--cf-wind-y) * var(--cf-wind-cos) - var(--cf-wind-x) * var(--cf-wind-sin)) * var(--cf-wind-response));transform-origin:22px 24px;transform:matrix(1, 0, calc(var(--cf-local-wind-x) / -18), calc(1 - var(--cf-local-wind-y) / 18), 0, 0);animation:none}.cf-current-sheet{transform-origin:22px 24px;transform:matrix(1, 0, calc(var(--cf-local-wind-x) * -.28 / 18), calc(1 - var(--cf-local-wind-y) * .28 / 18), 0, 0);animation:none}.cf-current-glint{animation:cf-current-glint 3.8s ease-in-out var(--cf-flow-delay) infinite}.cf-current-glow,.cf-current-core{animation:3.8s ease-in-out infinite cf-current-breathe}#cf-ratings-settings-btn:not(.is-open) .cf-launcher-current .cf-launcher-motion,#cf-ratings-settings-btn.is-open .cf-launcher-flower .cf-launcher-motion,#cf-ratings-settings-btn.is-resting .cf-launcher-motion{animation-play-state:paused}#cf-ratings-settings-btn.is-flower{--cf-launcher-open:0%;transition:--cf-launcher-open .68s cubic-bezier(.22,.7,.2,1),--cf-launcher-accent .48s,transform .24s,box-shadow .48s}#cf-ratings-settings-btn.is-flower.is-open{--cf-launcher-open:100%}#cf-ratings-settings-btn.is-flower .cf-flower-petal>use:first-child{fill:color-mix(in srgb, var(--cf-petal-color), var(--cf-launcher-accent) var(--cf-launcher-open))}#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower{opacity:1;transition:transform .78s cubic-bezier(.22,1,.36,1);transform:scale(1)rotate(360deg)}#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower .cf-launcher-motion{animation-play-state:running}#cf-ratings-settings-btn.is-flower .cf-launcher-art{transform-origin:50%;animation:24s linear infinite paused cf-launcher-flower-turn}#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-art{animation-play-state:running}#cf-ratings-settings-btn.is-flower.is-resting .cf-launcher-art,#cf-ratings-settings-btn.is-flower.is-resting .cf-launcher-flower .cf-launcher-motion{animation-play-state:paused}@keyframes cf-launcher-flower-turn{0%{transform:rotate(0)}to{transform:rotate(360deg)}}@keyframes cf-flower-sway{0%,to{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes cf-flower-breathe{0%,to{transform:scale(.96,.97)}50%{transform:scaleY(1.025)}}@keyframes cf-current-wind{0%{--cf-wind-phase:0deg}to{--cf-wind-phase:360deg}}@keyframes cf-current-glint{0%,to{opacity:.2}50%{opacity:.75}}@keyframes cf-current-breathe{0%,to{opacity:.6;transform:scale(.88)}50%{opacity:1;transform:scale(1.1)}}@media (prefers-reduced-motion:reduce){#cf-ratings-settings-btn.is-flower .cf-launcher-art{animation:none}#cf-ratings-settings-btn.is-flower,#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower{transition:none}#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower{transform:none}#cf-ratings-settings-btn .cf-launcher-motion{animation:none}#cf-ratings-settings-btn,#cf-ratings-settings-btn:before,.cf-launcher-flower,.cf-launcher-current,#cf-ratings-settings-btn.is-open .cf-launcher-flower{transition:none}#cf-ratings-settings-btn:not(.is-open):is(:hover,:focus-visible) .cf-launcher-flower{transform:none}}.cf-expand-region[data-v-9bacab14]{flex:none;min-height:0}.cf-expand-content[data-v-9bacab14]{display:flow-root}.cf-toggle-switch{vertical-align:middle;flex-shrink:0;width:34px;height:18px;display:inline-block;position:relative}.cf-toggle-switch input{opacity:0;width:0;height:0}.cf-toggle-slider{cursor:pointer;background-color:#ccc;border-radius:18px;transition:all .2s;position:absolute;inset:0}.cf-toggle-slider:before{content:\"\";background-color:#fff;border-radius:50%;width:14px;height:14px;transition:all .2s;position:absolute;bottom:2px;left:2px}.cf-toggle-switch input:checked+.cf-toggle-slider{background-color:#1890ff}.cf-toggle-switch input:checked+.cf-toggle-slider:before{transform:translate(16px)}.cf-segmented-switch{background:var(--cf-control-surface);box-shadow:inset 0 0 0 1px var(--cf-surface-border);cursor:pointer;-webkit-user-select:none;user-select:none;box-sizing:border-box;border-radius:12px;padding:2px;font-size:12px;font-weight:700;display:flex;position:relative}.cf-segmented-slider{width:calc(50% - 2px);box-shadow:0 1px 3px color-mix(in srgb, var(--cf-menu-accent) 20%, transparent), inset 0 0 0 1px var(--cf-surface-border);box-sizing:border-box;background:var(--cf-control-active);border-radius:10px;transition:left .25s cubic-bezier(.4,0,.2,1),background-color .25s;position:absolute;top:2px;bottom:2px}.cf-segmented-btn{text-align:center;z-index:1;box-sizing:border-box;color:#888;flex:1;margin:1px;padding:3px 0;font-size:12px;transition:color .25s}.pcr-app{opacity:0;visibility:hidden;pointer-events:none;z-index:9999999!important}.pcr-app.visible{opacity:1;visibility:visible;pointer-events:auto}.pcr-app[data-theme=nano]{width:240px!important}.pcr-app[data-theme=nano] .pcr-interaction{flex-wrap:wrap!important}.pcr-app[data-theme=nano] .pcr-interaction .pcr-result{flex:100%!important;width:100%!important;min-width:100%!important;margin-top:8px!important}.cf-clist-modal-overlay{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);z-index:10000002;overscroll-behavior:contain;background:#0f172aa6;justify-content:center;align-items:center;display:flex;position:fixed;inset:0}.cf-clist-modal-card{background:var(--cf-card-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0cc);overscroll-behavior:contain;border-radius:12px;flex-direction:column;width:580px;max-width:92vw;max-height:88vh;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;display:flex;overflow:hidden;box-shadow:0 25px 50px -12px #00000040}.cf-clist-modal-header{background:var(--cf-control-active,#f8fafc);border-bottom:1px solid var(--cf-surface-border,#e2e8f0);justify-content:space-between;align-items:center;padding:14px 20px;display:flex}.cf-clist-modal-title{color:var(--cf-control-ink,#1e293b);align-items:center;gap:8px;font-size:15px;font-weight:600;display:flex}.cf-clist-modal-body{color:#334155;overscroll-behavior:contain;padding:20px;font-size:13px;line-height:1.6;overflow-y:auto}.cf-clist-modal-footer{background:var(--cf-control-surface,#f8fafc);border-top:1px solid var(--cf-surface-border,#e2e8f0);justify-content:flex-end;padding:12px 20px;display:flex}.cf-clist-mock-panel{background:var(--cf-control-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0);border-radius:8px;margin:12px 0;padding:14px;box-shadow:0 2px 4px #0000000a}.cf-clist-code-block{background:var(--cf-guide-code-bg,#0f172a);color:var(--cf-guide-code-ink,#38bdf8);-webkit-user-select:all;user-select:all;border:1px solid #1e293b;border-radius:6px;margin:8px 0;padding:10px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;overflow-x:auto}.cf-clist-popover-demo{background:var(--cf-control-surface,#fff);border:1px solid var(--cf-surface-border,#cbd5e1);border-radius:8px;margin-top:10px;padding:12px;position:relative;box-shadow:0 10px 15px -3px #0000001a,0 4px 6px -4px #0000000d}.cf-clist-popover-demo:before{content:\"\";background:var(--cf-control-surface,#fff);border-top:1px solid var(--cf-surface-border,#cbd5e1);border-left:1px solid var(--cf-surface-border,#cbd5e1);width:10px;height:10px;position:absolute;top:-6px;left:28px;transform:rotate(45deg)}.cf-clist-progress-track{background:var(--cf-surface-border,#e2e8f0);border-radius:5px;width:100%;height:10px;margin:12px 0 8px;position:relative;overflow:hidden}.cf-clist-progress-fill{background:linear-gradient(90deg, var(--cf-menu-secondary,#3b82f6), var(--cf-menu-accent,#6366f1));border-radius:5px;width:0%;height:100%;transition:width .3s}.cf-guide-theme{--cf-guide-code-bg:color-mix(in srgb, var(--cf-menu-accent) 18%, #172536);--cf-guide-code-ink:color-mix(in srgb, var(--cf-menu-secondary) 26%, #f2f7fb)}.cf-guide-theme a:link,.cf-guide-theme a:visited{color:var(--cf-control-ink)}.cf-guide-theme a:hover{color:color-mix(in srgb, var(--cf-menu-accent) 45%, #19283d)}.cf-clist-guide-modal .cf-clist-guide-link:any-link{color:var(--cf-control-ink);font-weight:500;text-decoration:none}.cf-clist-guide-modal .cf-clist-guide-link:hover{color:var(--cf-control-ink);text-decoration:underline}.cf-clist-guide-modal .cf-clist-guide-here{color:var(--cf-control-ink);font-weight:700;text-decoration:underline}.cf-clist-section{flex-direction:column;gap:10px;display:flex}.cf-clist-section-title{color:#334155;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;display:flex}.cf-clist-subgroup{flex-direction:column;gap:10px;padding-left:12px;transition:all .25s;display:flex}.cf-clist-icon-btn{cursor:pointer;-webkit-user-select:none;user-select:none;box-sizing:border-box;vertical-align:middle;border-radius:50%;flex-shrink:0;justify-content:center;align-items:center;width:14px;height:14px;margin-left:6px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:10px;font-weight:700;line-height:1;transition:all .2s;display:inline-flex;position:relative}.cf-clist-icon-help{color:#0284c7;background:#e0f2fe;border:1px solid #bae6fd}.cf-clist-icon-help:hover{color:#fff;background:#0284c7;box-shadow:0 0 6px #0284c766}.cf-clist-icon-warn{color:#d97706;background:#fef3c7;border:1px solid #fde68a}.cf-clist-icon-warn:hover{color:#fff;background:#d97706;box-shadow:0 0 6px #d9770666}.cf-shortcut-content[data-v-4a397e75]{overflow-clip-margin:2px;align-items:center;height:22px;display:inline-grid;overflow:clip}.cf-shortcut-value[data-v-4a397e75],.cf-shortcut-recording-label[data-v-4a397e75]{grid-area:1/1;transition:transform .18s cubic-bezier(.22,1,.36,1),opacity .14s,visibility}.cf-shortcut-value[data-v-4a397e75]{justify-content:flex-end;align-items:center;gap:3px;display:inline-flex}.cf-shortcut-recording-label[data-v-4a397e75]{text-align:center;opacity:0;visibility:hidden;padding:0 6px;font-weight:600;transition-delay:0s,0s,.18s;transform:translateY(6px)}.is-recording .cf-shortcut-value[data-v-4a397e75]{opacity:0;visibility:hidden;transition-delay:0s,0s,.18s;transform:translateY(-6px)}.is-recording .cf-shortcut-recording-label[data-v-4a397e75]{opacity:1;visibility:visible;transition-delay:0s;transform:translateY(0)}@media (prefers-reduced-motion:reduce){.cf-shortcut-value[data-v-4a397e75],.cf-shortcut-recording-label[data-v-4a397e75]{transition:none;transform:none}}.cf-shortcuts-container{flex-direction:column;gap:12px;display:flex}.cf-shortcuts-header{margin-bottom:2px}.cf-shortcuts-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-shortcuts-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-shortcuts-subtitle+.cf-shortcuts-subtitle{margin-top:8px}.cf-shortcuts-note{--cf-note-ink:color-mix(in srgb, var(--cf-menu-accent) 52%, #172b39);background:color-mix(in srgb, var(--cf-menu-accent) 11%, white);border:1px solid var(--cf-surface-border);border-left:3.5px solid var(--cf-menu-accent);box-sizing:border-box;border-radius:6px;align-items:flex-start;gap:7px;margin-top:10px;padding:8px 12px;font-size:12px;line-height:1.5;display:flex}.cf-shortcuts-note-icon{width:15px;height:15px;color:var(--cf-note-ink);flex-shrink:0;justify-content:center;align-items:center;margin-top:1.5px;display:inline-flex}.cf-shortcuts-note-icon svg{width:15px;height:15px;display:block}.cf-shortcuts-note-body{color:var(--cf-note-ink);flex:auto}.cf-shortcuts-note-label{color:var(--cf-note-ink);margin-right:2px;font-weight:700}.cf-shortcuts-note-text{color:var(--cf-note-ink);font-weight:500}.cf-shortcuts-list{flex-direction:column;gap:8px;display:flex}.cf-shortcut-group{flex-direction:column;gap:3px;display:flex}.cf-shortcut-group-header{color:#64748b;-webkit-user-select:none;user-select:none;text-transform:uppercase;letter-spacing:.4px;align-items:center;gap:6px;padding-left:6px;font-size:11px;font-weight:700;display:flex}.cf-shortcut-group-icon{color:#1677ff;flex-shrink:0;justify-content:center;align-items:center;width:14px;height:14px;display:inline-flex}.cf-shortcut-group-icon svg{width:14px;height:14px;display:block}.cf-shortcut-group-box{background:var(--cf-control-surface,#f8fafc);border:1px solid var(--cf-surface-border);border-radius:10px;flex-direction:column;gap:2px;padding:3px 4px;display:flex}.cf-shortcut-item{box-sizing:border-box;background:0 0;border-radius:6px;justify-content:space-between;align-items:center;gap:10px;min-height:34px;padding:3px 8px;transition:background-color .18s,box-shadow .18s;display:flex;overflow:hidden}.cf-shortcut-item:hover,.cf-shortcut-item:focus-within{background:var(--cf-control-active);box-shadow:inset 0 0 0 1px var(--cf-surface-border)}.cf-shortcut-title{color:#1e293b;-webkit-user-select:none;user-select:none;white-space:nowrap;text-overflow:ellipsis;cursor:default;flex:auto;min-width:0;margin-right:4px;font-size:13px;font-weight:600;overflow:hidden}.cf-shortcut-controls{flex-shrink:0;justify-content:flex-end;align-items:center;gap:6px;margin-left:auto;display:flex}.cf-shortcut-key-btn{white-space:nowrap;cursor:pointer;color:#0f172a;-webkit-user-select:none;user-select:none;box-sizing:border-box;background:0 0;border:1px solid #0000;border-radius:6px;outline:none;flex-wrap:nowrap;flex-shrink:0;justify-content:flex-end;align-items:center;gap:3px;min-height:28px;padding:2px 4px;font-size:11px;transition:background-color .18s,border-color .18s,color .18s;display:inline-flex;position:relative}.cf-shortcut-key-btn:hover{background:#f1f5f9b3}.cf-shortcut-key-btn.recording{color:#1d4ed8;background:#eff6ff;border-color:#3b82f6}.cf-shortcut-key-btn:after{content:\"\";border-radius:inherit;opacity:0;pointer-events:none;transition:opacity .18s;position:absolute;inset:-1px;box-shadow:0 0 0 3px #3b82f64d}.cf-shortcut-key-btn.recording:after{opacity:.5;animation:1.8s ease-in-out infinite cf-pulse-recording}.cf-shortcut-key-btn.has-conflict{color:#bd2542;background:#fff1f2;border-color:#e65b70}.cf-shortcut-key-btn.has-conflict:after{box-shadow:0 0 0 3px #e65b7026}.cf-shortcut-key-btn.has-conflict kbd{color:#bd2542;background:#ffe4e9;border-color:#f0a6b3;box-shadow:0 1px #f0a6b3}@keyframes cf-pulse-recording{0%,to{opacity:.35}50%{opacity:.85}}.cf-shortcut-key-btn kbd{color:#334155;box-sizing:border-box;white-space:nowrap;background:linear-gradient(#fff 0%,#f8fafc 100%);border:1px solid #cbd5e1;border-bottom:2px solid #94a3b8;border-radius:4px;flex-shrink:0;justify-content:center;align-items:center;min-width:20px;height:22px;padding:0 5px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:11px;font-weight:600;line-height:1;transition:transform .15s,border-color .15s,color .15s,box-shadow .15s;display:inline-flex;box-shadow:0 1px 2px #0000000d}.cf-shortcut-key-btn:hover kbd{color:#1d4ed8;background:linear-gradient(#fff 0%,#eff6ff 100%);border-color:#93c5fd #93c5fd #3b82f6;transform:translateY(-1px);box-shadow:0 1px 3px #3b82f626}.cf-shortcut-key-btn:active kbd{box-shadow:none;transform:translateY(1px)}.cf-shortcut-key-btn.has-conflict:hover kbd{color:#bd2542;background:#ffe4e9;border-color:#f0a6b3;box-shadow:0 1px #f0a6b3}.cf-shortcut-plus{color:#94a3b8;-webkit-user-select:none;user-select:none;flex-shrink:0;justify-content:center;align-items:center;margin:0 .5px;font-size:10px;font-weight:600;display:inline-flex}.cf-shortcut-key-btn .cf-shortcut-empty{color:#94a3b8;box-sizing:border-box;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:4px;justify-content:center;align-items:center;height:22px;padding:0 6px;font-size:11px;font-style:normal;font-weight:500;line-height:1;transition:all .15s;display:inline-flex}.cf-shortcut-key-btn:hover .cf-shortcut-empty{color:#475569;background:#f1f5f9;border-color:#94a3b8}.cf-shortcut-clear-btn,.cf-shortcut-reset-btn{color:#94a3b8;cursor:pointer;box-sizing:border-box;background:0 0;border:1px solid #0000;border-radius:5px;flex-shrink:0;justify-content:center;align-items:center;width:22px;height:22px;padding:0;transition:all .15s;display:inline-flex}.cf-shortcut-clear-btn:hover{color:#ef4444;background:#fef2f2;border-color:#fee2e2}.cf-shortcut-reset-btn:hover{background:var(--cf-control-active);color:var(--cf-control-ink);border-color:var(--cf-surface-border)}.cf-shortcut-reset-all-btn{border:1px solid var(--cf-surface-border,#e2e8f0);background:var(--cf-control-surface,#f8fafc);color:#64748b;cursor:pointer;border-radius:6px;align-self:flex-start;align-items:center;gap:6px;margin-top:4px;padding:6px 12px;font-size:12px;font-weight:500;transition:all .15s;display:inline-flex}.cf-shortcut-reset-all-btn:hover{background:var(--cf-card-surface,#fff);color:var(--cf-control-ink);border-color:var(--cf-surface-border)}@media (prefers-reduced-motion:reduce){.cf-shortcut-item,.cf-shortcut-key-btn,.cf-shortcut-key-btn:after,.cf-shortcut-key-btn kbd{transition:none;animation:none}}.cf-storage-key-tab-btn:not(.active):hover{background:#f1f5f9!important;border-color:#94a3b8!important}.cf-storage-json-pre{scrollbar-width:thin;scrollbar-color:#334155 #0f172a;overscroll-behavior:contain}.cf-storage-json-pre::-webkit-scrollbar{width:7px;height:7px}.cf-storage-json-pre::-webkit-scrollbar-track{background:#0f172a;border-radius:6px}.cf-storage-json-pre::-webkit-scrollbar-thumb{background:#334155;border:1px solid #1e293b;border-radius:4px;transition:background .15s}.cf-storage-json-pre::-webkit-scrollbar-thumb:hover{background:#475569}.cf-storage-json-pre::-webkit-scrollbar-corner{background:#0f172a}.cf-json-key{color:#38bdf8;font-weight:500}.cf-json-string{color:#4ade80}.cf-json-number{color:#fb923c;font-weight:500}.cf-json-boolean{color:#c084fc;font-weight:600}.cf-json-null{color:#94a3b8;font-style:italic}.cf-json-punct{color:#94a3b8}.cf-storage-copy-json-btn{cursor:pointer;color:#0284c7;-webkit-user-select:none;user-select:none;box-sizing:border-box;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;justify-content:center;align-self:flex-start;align-items:center;gap:5px;padding:4px 11px;font-size:11.5px;font-weight:600;transition:all .15s;display:inline-flex;white-space:nowrap!important;flex-shrink:0!important}.cf-storage-copy-json-btn:hover{color:#0369a1;background:#e0f2fe;border-color:#7dd3fc}.cf-storage-copy-json-btn .copy-btn-text{display:inline-block;white-space:nowrap!important}.cf-storage-usage[data-v-166560c6]{grid-template-columns:120px minmax(0,1fr);align-items:center;gap:20px;min-width:0;display:grid;position:relative}.cf-storage-pie-summary[data-v-166560c6]{min-width:0}.cf-storage-pie[data-v-166560c6]{width:120px;height:120px}.cf-storage-pie-total[data-v-166560c6]{color:var(--cf-control-ink);flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 5px;margin-top:2px;font-size:10px;line-height:17px;display:flex}.cf-storage-pie-total strong[data-v-166560c6]{white-space:nowrap;font-variant-numeric:tabular-nums;font-size:11px;font-weight:650}.cf-storage-pie-legend[data-v-166560c6]{grid-template-columns:7px minmax(0,max-content) 44px 60px;justify-self:end;gap:2px 7px;width:max-content;min-width:0;max-width:100%;margin:0;padding:0;font-size:11px;line-height:17px;list-style:none;display:grid}.cf-storage-pie-legend li[data-v-166560c6]{grid-template-columns:subgrid;grid-column:1/-1;align-items:center;gap:7px;min-width:0;margin:0;padding:0;display:grid}.cf-storage-pie-dot[data-v-166560c6]{border-radius:50%;width:7px;height:7px}.cf-storage-pie-name[data-v-166560c6]{color:color-mix(in srgb, var(--cf-control-ink) 65%, #586579);white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.cf-storage-pie-percentage[data-v-166560c6]{text-align:right;color:var(--cf-control-ink);font-variant-numeric:tabular-nums;font-weight:600}.cf-storage-pie-size[data-v-166560c6]{color:color-mix(in srgb, var(--cf-control-ink) 70%, #718096);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:10px}.cf-storage-container{flex-direction:column;gap:12px;display:flex}.cf-storage-header{margin-bottom:2px}.cf-storage-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-storage-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-storage-overview{background:linear-gradient(135deg, var(--cf-control-surface), var(--cf-control-active));border:1px solid var(--cf-surface-border,#e2e8f0);box-sizing:border-box;border-radius:12px;flex-direction:column;gap:10px;padding:12px 14px;display:flex;box-shadow:0 1px 3px #00000008}.cf-storage-overview-top{flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 12px;display:flex}.cf-storage-overview-info{flex-direction:column;gap:2px;min-width:0;display:flex}.cf-storage-overview-label{color:var(--cf-control-ink);text-transform:uppercase;letter-spacing:.3px;font-size:11px;font-weight:600}.cf-storage-clear-all-btn{cursor:pointer;border:1px solid color-mix(in srgb, #e11d48 25%, var(--cf-surface-border));background:color-mix(in srgb, #e11d48 5%, var(--cf-control-surface));color:#be123c;white-space:nowrap;border-radius:6px;flex-shrink:0;justify-content:center;align-items:center;gap:5px;padding:5px 8px;font-size:11.5px;font-weight:600;line-height:16px;transition:background-color .16s,border-color .16s,color .16s;display:inline-flex}.cf-storage-clear-all-btn>svg{flex:0 0 14px;width:14px;height:14px}.cf-storage-clear-all-btn:hover{background:color-mix(in srgb, #e11d48 11%, var(--cf-control-surface));color:#9f1239;border-color:#e8798f}.cf-storage-clear-all-btn:focus-visible{outline-offset:2px;outline:2px solid #e8798f}.cf-storage-list{flex-direction:column;gap:8px;display:flex}.cf-storage-item{background:var(--cf-card-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0);box-sizing:border-box;border-radius:10px;flex-direction:column;gap:7px;padding:10px 12px;transition:all .2s cubic-bezier(.4,0,.2,1);display:flex;box-shadow:0 1px 2px #00000005}.cf-storage-item:hover{border-color:#cbd5e1;box-shadow:0 4px 12px -2px #0000000d}.cf-storage-item-main{align-items:center;gap:10px;width:100%;display:flex}.cf-storage-icon-box{--cf-storage-tone:#64748b;background:color-mix(in srgb, var(--cf-storage-tone) 10%, var(--cf-card-surface));color:color-mix(in srgb, var(--cf-storage-tone) 78%, #354458);border:1px solid color-mix(in srgb, var(--cf-storage-tone) 24%, var(--cf-surface-border));border-radius:8px;flex-shrink:0;justify-content:center;align-items:center;width:32px;height:32px;font-size:16px;display:flex}.cf-storage-icon-box svg,.cf-storage-icon-box img{object-fit:contain;flex-shrink:0;width:17px;height:17px;display:block}.cf-storage-icon-box.icon-settings{--cf-storage-tone:#ad8438}.cf-storage-icon-box.icon-runtime{--cf-storage-tone:#7371b7}.cf-storage-icon-box.icon-cf{--cf-storage-tone:#359574}.cf-storage-icon-box.icon-clist{--cf-storage-tone:#438caa}.cf-storage-icon-box.icon-avatar{--cf-storage-tone:#8869b5}.cf-storage-icon-box.icon-solved{--cf-storage-tone:#36979d}.cf-storage-item-body{flex-direction:column;flex:1;gap:3px;min-width:0;display:flex}.cf-storage-item-header{justify-content:space-between;align-items:center;gap:8px;min-width:0;display:flex}.cf-storage-item-title{color:#0f172a;white-space:nowrap;text-overflow:ellipsis;font-size:13px;font-weight:600;overflow:hidden}.cf-storage-item-meta{align-items:center;gap:6px;min-width:0;display:flex}.cf-storage-size-val{color:#334155;white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:12px;font-weight:600}.cf-storage-meta-dot{color:#cbd5e1;-webkit-user-select:none;user-select:none;font-size:11px;line-height:1}.cf-storage-count-tag{background:color-mix(in srgb, var(--cf-menu-accent) 24%, var(--cf-card-surface));color:color-mix(in srgb, var(--cf-menu-accent) 38%, #26374b);border:1px solid color-mix(in srgb, var(--cf-menu-accent) 40%, var(--cf-card-surface));white-space:nowrap;border-radius:4px;flex-shrink:0;padding:1px 6px;font-size:10.5px;font-weight:600}.cf-storage-item-desc{color:#64748b;white-space:normal;word-break:break-word;margin:0;font-size:11px;line-height:1.45}.cf-storage-btn-group{flex-shrink:0;align-items:center;gap:6px;display:inline-flex}.cf-storage-btn{cursor:pointer;white-space:nowrap;border-radius:6px;flex-shrink:0;align-items:center;gap:4px;padding:3px 8px;font-size:11px;font-weight:600;transition:all .15s;display:inline-flex}.cf-storage-btn.btn-view{color:#0284c7;background:#f0f9ff;border:1px solid #bae6fd}.cf-storage-btn.btn-view:hover{color:#0369a1;background:#e0f2fe;border-color:#7dd3fc}.cf-storage-btn.btn-reset{color:#d97706;background:#fffbeb;border:1px solid #fde68a}.cf-storage-btn.btn-reset:hover{color:#b45309;background:#fef3c7;border-color:#fcd34d}.cf-storage-btn.btn-clear{color:#e11d48;background:#fff1f2;border:1px solid #fecdd3}.cf-storage-btn.btn-clear:hover{color:#be123c;background:#ffe4e6;border-color:#fda4af}.cf-changelog-header{margin-bottom:8px}.cf-changelog-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-changelog-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-changelog-list{flex-direction:column;gap:10px;display:flex}.cf-changelog-card{background:var(--cf-card-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0);border-radius:10px;transition:border-color .2s,box-shadow .2s;overflow:hidden}.cf-changelog-card:hover{border-color:color-mix(in srgb, var(--cf-menu-accent) 38%, var(--cf-surface-border));box-shadow:0 2px 8px color-mix(in srgb, var(--cf-menu-accent) 10%, transparent)}.cf-changelog-card.expanded{border-color:color-mix(in srgb, var(--cf-menu-accent) 30%, var(--cf-surface-border))}.cf-changelog-card-header{cursor:pointer;-webkit-user-select:none;user-select:none;background:var(--cf-card-hover,#fcfdfe);justify-content:space-between;align-items:center;padding:10px 14px;transition:background .15s;display:flex}.cf-changelog-card-header:hover{background:var(--cf-control-active)}.cf-changelog-card-left{flex-wrap:wrap;align-items:center;gap:8px;display:flex}.cf-changelog-card-right{align-items:center;gap:10px;margin-left:auto;display:flex}.cf-changelog-version{color:#0f172a;letter-spacing:-.01em;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:13.5px;font-weight:700;line-height:1.3}.cf-changelog-badge-latest{color:#fff;background:color-mix(in srgb, var(--cf-menu-accent) 55%, #174338);border:1px solid color-mix(in srgb, var(--cf-menu-accent) 48%, #174338);box-shadow:0 2px 6px color-mix(in srgb, var(--cf-menu-accent) 20%, transparent);border-radius:999px;padding:2px 8px;font-size:11px;font-weight:700;line-height:1.3}.cf-changelog-date{color:#94a3b8;white-space:nowrap;font-feature-settings:\"tnum\";font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:11.5px}.cf-changelog-chevron{color:#94a3b8;align-items:center;transition:transform .2s;display:flex}.cf-changelog-card.expanded .cf-changelog-chevron{transform:rotate(180deg)}.cf-changelog-card-body{border-top:1px solid var(--cf-surface-border);color:#334155;background:0 0;padding:12px 16px 14px;font-size:12.5px;line-height:1.6}.cf-changelog-section{margin-bottom:14px}.cf-changelog-section:last-child{margin-bottom:0}.cf-changelog-section-badge{--cf-section-hue:#658078;letter-spacing:.2px;color:color-mix(in srgb, var(--cf-section-hue) 65%, #23394a);background:color-mix(in srgb, var(--cf-section-hue) 8%, var(--cf-card-surface));border:1px solid color-mix(in srgb, var(--cf-section-hue) 24%, var(--cf-surface-border));border-radius:6px;margin-bottom:8px;padding:2px 8px;font-size:11px;font-weight:600;line-height:1.4;display:inline-block}.cf-changelog-section-badge.added{--cf-section-hue:#258064}.cf-changelog-section-badge.optimized{--cf-section-hue:#3b78a0}.cf-changelog-section-badge.fixed{--cf-section-hue:#aa752f}.cf-changelog-section-badge.announcement{--cf-section-hue:#866299}.cf-changelog-items{flex-direction:column;gap:8px;display:flex;margin:0!important;padding:0 0 0 6px!important;list-style:none!important}.cf-changelog-item{color:#334155;align-items:flex-start;gap:6px;font-size:12.5px;line-height:1.6;display:flex}.cf-changelog-item-index{color:#64748b;text-align:right;-webkit-user-select:none;user-select:none;font-feature-settings:\"tnum\";flex-shrink:0;min-width:18px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:12px;font-weight:600;line-height:1.6}.cf-changelog-item-content{word-break:break-word;flex:1;line-height:1.6}.cf-changelog-link{font-weight:500;color:#0284c7!important;text-decoration:none!important}.cf-changelog-link:hover{text-decoration:underline!important}.cf-changelog-code{background:var(--cf-control-surface);color:#0f172a;border:1px solid var(--cf-surface-border,#e2e8f0);border-radius:4px;padding:1px 5px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:11px}.cf-roadmap-header{margin-bottom:12px}.cf-roadmap-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-roadmap-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-roadmap-container{--cf-roadmap-planned:color-mix(in srgb, var(--cf-menu-accent) 24%, #6681a7);--cf-roadmap-planned-ink:color-mix(in srgb, var(--cf-roadmap-planned) 65%, #263747);--cf-proposal-accent:#aa7c30;--cf-proposal-ink:#77572e;flex-direction:column;gap:16px;display:flex}.cf-roadmap-group{flex-direction:column;gap:8px;display:flex}.cf-roadmap-group-header{justify-content:space-between;align-items:center;padding-bottom:4px;display:flex}.cf-roadmap-group-title{color:#334155;align-items:center;gap:6px;font-size:12px;font-weight:700;display:flex}.cf-roadmap-group-badge{border-radius:10px;padding:1px 7px;font-size:11px;font-weight:600;line-height:1.3}.cf-roadmap-group-badge.planned{background:color-mix(in srgb, var(--cf-roadmap-planned) 13%, var(--cf-content-surface));color:var(--cf-roadmap-planned-ink);border:1px solid color-mix(in srgb, var(--cf-roadmap-planned) 30%, transparent)}.cf-roadmap-group-badge.completed{color:#059669;background:#ecfdf5;border:1px solid #a7f3d0}.cf-roadmap-list{flex-direction:column;gap:8px;display:flex}.cf-roadmap-card{background:var(--cf-card-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0);border-radius:9px;flex-direction:column;gap:6px;padding:10px 14px;transition:background-color .2s,border-color .2s,box-shadow .2s;display:flex}.cf-roadmap-card:hover{border-color:color-mix(in srgb, var(--cf-roadmap-planned) 48%, var(--cf-surface-border));box-shadow:0 2px 8px color-mix(in srgb, var(--cf-roadmap-planned) 10%, transparent)}.cf-roadmap-card.planned{background:linear-gradient(115deg, color-mix(in srgb, var(--cf-roadmap-planned) 14%, var(--cf-content-surface)), color-mix(in srgb, var(--cf-roadmap-planned) 5%, var(--cf-content-surface)));border-color:color-mix(in srgb, var(--cf-roadmap-planned) 26%, var(--cf-surface-border));box-shadow:inset 2px 0 color-mix(in srgb, var(--cf-roadmap-planned) 60%, transparent)}.cf-roadmap-card.planned:hover{border-color:color-mix(in srgb, var(--cf-roadmap-planned) 55%, var(--cf-surface-border));box-shadow:inset 2px 0 var(--cf-roadmap-planned), 0 2px 8px color-mix(in srgb, var(--cf-roadmap-planned) 12%, transparent)}.cf-roadmap-card.completed{background:color-mix(in srgb, var(--cf-menu-accent) 7%, var(--cf-content-surface));border-color:var(--cf-surface-border)}.cf-roadmap-card.completed:hover{background:color-mix(in srgb, var(--cf-menu-accent) 11%, var(--cf-content-surface));border-color:color-mix(in srgb, var(--cf-menu-accent) 42%, #dde5ee)}.cf-roadmap-card-header{justify-content:space-between;align-items:center;gap:8px;display:flex}.cf-roadmap-card-title-wrap{align-items:center;gap:8px;min-width:0;display:flex}.cf-roadmap-status-icon{border-radius:50%;flex-shrink:0;justify-content:center;align-items:center;width:18px;height:18px;display:flex}.cf-roadmap-status-icon.completed{color:#fff;background:#10b981}.cf-roadmap-status-icon.planned{color:var(--cf-roadmap-planned-ink);background:0 0;border:none}.cf-roadmap-item-title-text{color:#0f172a;font-size:13px;font-weight:600;line-height:1.4}.cf-roadmap-card.completed .cf-roadmap-item-title-text{color:#1e293b}.cf-roadmap-item-desc{color:#64748b;margin:0;font-size:11.5px;line-height:1.55}.cf-roadmap-tag{white-space:nowrap;border-radius:4px;flex-shrink:0;padding:1px 6px;font-size:10.5px;font-weight:600}.cf-roadmap-tag.planned{background:color-mix(in srgb, var(--cf-roadmap-planned) 15%, var(--cf-content-surface));color:var(--cf-roadmap-planned-ink);border:1px solid color-mix(in srgb, var(--cf-roadmap-planned) 30%, transparent)}.cf-roadmap-tag.completed{color:#15803d;background:#dcfce7;border:1px solid #bbf7d0}.cf-roadmap-proposal-card{background:linear-gradient(135deg, color-mix(in srgb, var(--cf-menu-accent) 4%, #fcf0d8), color-mix(in srgb, var(--cf-menu-secondary) 7%, #f8efdf));border:1px dashed color-mix(in srgb, var(--cf-proposal-accent) 48%, transparent);border-radius:9px;flex-direction:column;gap:7px;margin-top:4px;padding:11px 14px;transition:border-color .2s,box-shadow .2s,transform .2s;display:flex}.cf-roadmap-proposal-card:hover{border-color:var(--cf-proposal-accent);box-shadow:0 3px 12px color-mix(in srgb, var(--cf-proposal-accent) 12%, transparent)}.cf-roadmap-proposal-header{justify-content:space-between;align-items:center;gap:10px;display:flex}.cf-roadmap-proposal-title-wrap{align-items:center;gap:8px;min-width:0;display:flex}.cf-roadmap-proposal-icon{background:color-mix(in srgb, var(--cf-proposal-accent) 16%, #fcf0d8);width:22px;height:22px;color:var(--cf-proposal-ink);border-radius:6px;flex-shrink:0;justify-content:center;align-items:center;display:flex}.cf-roadmap-proposal-title-text{color:var(--cf-proposal-ink);font-size:13px;font-weight:700;line-height:1.4}.cf-settings-modal .cf-roadmap-proposal-btn{color:var(--cf-proposal-ink);background:color-mix(in srgb, var(--cf-proposal-accent) 12%, #fcf0d8);border:1px solid color-mix(in srgb, var(--cf-proposal-accent) 34%, transparent);box-shadow:0 1px 2px color-mix(in srgb, var(--cf-proposal-accent) 8%, transparent);border-radius:6px;flex-shrink:0;align-items:center;gap:5px;padding:3px 10px;font-size:11.5px;font-weight:600;line-height:1.35;text-decoration:none;transition:background-color .15s,color .15s,border-color .15s,box-shadow .15s,transform .15s;display:inline-flex}.cf-settings-modal .cf-roadmap-proposal-btn:hover{background:var(--cf-proposal-ink);color:#fff;border-color:var(--cf-proposal-ink);box-shadow:0 2px 8px color-mix(in srgb, var(--cf-proposal-accent) 22%, transparent);transform:translateY(-1px)}.cf-roadmap-proposal-btn svg{transition:transform .15s}.cf-roadmap-proposal-btn:hover svg{transform:translate(1px,-1px)}.cf-roadmap-proposal-desc{color:var(--cf-proposal-ink);opacity:.9;margin:0;padding-left:30px;font-size:11.5px;line-height:1.55}.cf-ack-project-type{border:1px solid color-mix(in srgb, var(--cf-ack-accent) 40%, var(--cf-content-surface));background:color-mix(in srgb, var(--cf-ack-accent) 24%, var(--cf-content-surface));color:color-mix(in srgb, var(--cf-ack-accent) 38%, #26374b);white-space:nowrap;border-radius:6px;align-items:center;gap:5px;padding:3px 7px;font-size:11px;font-weight:600;line-height:18px;display:inline-flex}.cf-ack-project-type svg{flex:none;width:15px;height:15px}.cf-project-links{display:inline-flex;position:relative}.cf-project-links-chevron{border-bottom:1.5px solid;border-right:1.5px solid;width:6px;height:6px;margin:0 2px 3px 4px;transition:transform .17s;transform:rotate(45deg)}.cf-project-links-chevron.is-open{transform:translateY(3px)rotate(225deg)}.cf-project-link-panel{z-index:30;border:1px solid color-mix(in srgb, var(--cf-ack-accent) 42%, var(--cf-card-surface));background:var(--cf-card-surface);transform-origin:100% 0;border-radius:10px;width:214px;max-width:calc(100vw - 32px);margin:0;padding:5px;list-style:none;position:absolute;top:calc(100% + 6px);right:0;box-shadow:0 6px 20px #26374b26}.cf-project-link-panel.is-above{transform-origin:100% 100%;top:auto;bottom:calc(100% + 6px)}.cf-project-link-panel li{margin:0;padding:0;list-style:none}.cf-settings-modal .cf-project-link-option:any-link{color:var(--cf-ack-ink);white-space:nowrap;border-radius:6px;align-items:center;gap:8px;padding:8px 10px;font-size:12px;font-weight:500;line-height:20px;text-decoration:none;transition:background-color .16s;display:flex}.cf-settings-modal .cf-project-link-option:is(:hover,:focus-visible){background:color-mix(in srgb, var(--cf-ack-accent) 18%, var(--cf-card-surface));outline:2px solid color-mix(in srgb, var(--cf-ack-accent) 38%, transparent);outline-offset:-2px}.cf-project-link-option svg{flex:none;width:17px;height:17px}.cf-project-links-enter-active,.cf-project-links-leave-active{transition:opacity .16s,transform .18s cubic-bezier(.22,1,.36,1)}.cf-project-links-enter-from,.cf-project-links-leave-to{opacity:0;transform:translateY(-5px)scale(.98)}.cf-project-link-panel.is-above.cf-project-links-enter-from,.cf-project-link-panel.is-above.cf-project-links-leave-to{transform:translateY(5px)scale(.98)}@media (prefers-reduced-motion:reduce){.cf-project-links-chevron,.cf-project-links-enter-active,.cf-project-links-leave-active{transition:none}}.cf-ack-header{margin-bottom:2px}.cf-ack-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-ack-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-ack-card{--cf-ack-accent:var(--cf-menu-accent);--cf-ack-ink:color-mix(in srgb, var(--cf-ack-accent) 65%, #243447);background:linear-gradient(120deg, color-mix(in srgb, var(--cf-ack-accent) 14%, var(--cf-content-surface)), color-mix(in srgb, var(--cf-ack-accent) 5%, var(--cf-content-surface)));border:1px solid color-mix(in srgb, var(--cf-ack-accent) 28%, var(--cf-surface-border));box-sizing:border-box;border-radius:12px;flex-direction:column;gap:9px;padding:13px 15px;transition:border-color .2s,box-shadow .2s;display:flex;position:relative;box-shadow:inset 0 1px #ffffff60}.cf-ack-card:hover{border-color:color-mix(in srgb, var(--cf-ack-accent) 62%, var(--cf-surface-border));box-shadow:inset 0 1px 0 #ffffff60, 0 4px 12px color-mix(in srgb, var(--cf-ack-accent) 14%, transparent)}.cf-ack-card.helper-card{--cf-ack-accent:#5276bd}.cf-ack-card.clist-card{--cf-ack-accent:#3096a8}.cf-ack-card.ojbetter-card{--cf-ack-accent:#8570b7}.cf-ack-card.carrot-card{--cf-ack-accent:#ba8746}.cf-ack-card.analytics-card{--cf-ack-accent:#5c9290}.cf-ack-card.analytics-card .cf-ack-icon-box{isolation:isolate}.cf-ack-card.analytics-card .cf-ack-icon-img{mix-blend-mode:multiply}.cf-ack-project-types{flex-wrap:wrap;gap:6px;display:flex}.cf-ack-card-top{justify-content:space-between;align-items:center;gap:10px;display:flex}.cf-ack-project-info{align-items:center;gap:10px;min-width:0;display:flex}.cf-ack-icon-box{background:color-mix(in srgb, var(--cf-ack-accent) 16%, var(--cf-content-surface));border:1px solid color-mix(in srgb, var(--cf-ack-accent) 22%, transparent);width:32px;height:32px;color:var(--cf-ack-ink);border-radius:8px;flex-shrink:0;justify-content:center;align-items:center;display:flex;overflow:hidden}.cf-ack-icon-img{object-fit:contain;border-radius:3px;width:22px;height:22px;display:block}.cf-ack-card.carrot-card .cf-ack-icon-img{image-rendering:pixelated}.cf-ack-project-name{color:#1e293b;white-space:nowrap;text-overflow:ellipsis;font-size:13.5px;font-weight:700;overflow:hidden}.cf-ack-badge{white-space:nowrap;background:color-mix(in srgb, var(--cf-ack-accent) 14%, var(--cf-content-surface));color:var(--cf-ack-ink);border:1px solid color-mix(in srgb, var(--cf-ack-accent) 27%, transparent);border-radius:9999px;flex-shrink:0;padding:3px 8px;font-size:11px;font-weight:600}.cf-ack-desc{color:#475569;flex-direction:column;gap:7px;margin:0;font-size:12.5px;line-height:1.6;display:flex}.cf-ack-desc p{margin:0;line-height:1.6}.cf-ack-footer{flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-top:2px;display:flex}.cf-settings-modal .cf-ack-link-btn{cursor:pointer;background:color-mix(in srgb, var(--cf-ack-accent) 28%, var(--cf-content-surface));color:color-mix(in srgb, var(--cf-ack-accent) 40%, #243447);border:1px solid color-mix(in srgb, var(--cf-ack-accent) 48%, var(--cf-content-surface));box-shadow:inset 0 1px 0 #ffffff65, 0 1px 2px color-mix(in srgb, var(--cf-ack-accent) 12%, transparent);border-radius:6px;align-items:center;gap:6px;padding:5px 12px;font-size:12px;font-weight:600;transition:color .2s,background-color .2s,border-color .2s,box-shadow .2s;display:inline-flex;text-decoration:none!important}.cf-settings-modal .cf-ack-link-btn:is(:hover,:focus-visible){background:color-mix(in srgb, var(--cf-ack-accent) 36%, var(--cf-content-surface));color:color-mix(in srgb, var(--cf-ack-accent) 40%, #243447);border-color:color-mix(in srgb, var(--cf-ack-accent) 65%, var(--cf-content-surface));box-shadow:inset 0 1px 0 #ffffff65, 0 2px 5px color-mix(in srgb, var(--cf-ack-accent) 17%, transparent)}@property --cf-menu-accent{syntax:\"<color>\";inherits:true;initial-value:#5576df}@property --cf-menu-secondary{syntax:\"<color>\";inherits:true;initial-value:#27b7a5}@property --cf-paint-accent{syntax:\"<color>\";inherits:false;initial-value:#5576df}@property --cf-paint-secondary{syntax:\"<color>\";inherits:false;initial-value:#27b7a5}.cf-setting-label,.cf-setting-sublabel{line-height:20px}.cf-menu-theme [data-cf-language-text]{display:inline-block}.cf-menu-theme svg[data-cf-icon]{--cf-icon-ink:color-mix(in srgb, var(--cf-icon-primary) 70%, #2b3d50);--cf-icon-detail:color-mix(in srgb, var(--cf-icon-secondary) 78%, var(--cf-icon-primary))}.cf-menu-theme{--cf-content-surface:color-mix(in srgb, var(--cf-menu-accent) 9%, #fafcfe);--cf-card-surface:color-mix(in srgb, var(--cf-menu-accent) 4%, var(--cf-content-surface));--cf-card-hover:color-mix(in srgb, var(--cf-menu-accent) 9%, var(--cf-content-surface));--cf-control-surface:color-mix(in srgb, var(--cf-menu-accent) 5%, var(--cf-content-surface));--cf-control-active:color-mix(in srgb, var(--cf-menu-accent) 18%, #f6f9fc);--cf-control-ink:color-mix(in srgb, var(--cf-menu-accent) 46%, #27364e);--cf-surface-border:color-mix(in srgb, var(--cf-menu-accent) 18%, #dde5ee)}.cf-sidebar-nav{--cf-paint-accent:var(--cf-menu-accent);--cf-paint-secondary:var(--cf-menu-secondary);transition:--cf-paint-accent .48s,--cf-paint-secondary .48s}.cf-menu-theme :is(input[type=text],input[type=password],input[type=number],textarea,select){background:var(--cf-control-surface);color:#334155;border:1px solid var(--cf-surface-border);transition:background-color .22s,border-color .22s,box-shadow .22s}.cf-menu-theme :is(input[type=text],input[type=password],input[type=number],textarea,select):focus{background:var(--cf-control-active);border-color:var(--cf-menu-accent);box-shadow:0 0 0 2px color-mix(in srgb, var(--cf-menu-accent) 15%, transparent);outline:none}.cf-version-tag{color:#1890ff;letter-spacing:.5px;background-color:#e6f7ff;border:1px solid #91d5ff;border-radius:6px;justify-content:center;align-items:center;margin-left:8px;padding:2px 8px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:12px;font-weight:700;display:inline-flex}.cf-settings-modal{border:1px solid color-mix(in srgb, var(--cf-menu-accent) 18%, #e2e8f0);width:680px;height:56vh;min-height:440px;max-height:56vh;box-shadow:0 12px 35px #00000024, 0 2px 6px #0000000a, 0 0 28px color-mix(in srgb, var(--cf-menu-accent) 9%, transparent);color:#1e293b;box-sizing:border-box;overscroll-behavior:contain;background:0 0;border-radius:14px;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;transition:border-color .48s,box-shadow .48s;animation:.2s cubic-bezier(.16,1,.3,1) cf-fadeIn;display:none;position:absolute;top:55px;right:0;overflow:hidden}@keyframes cf-fadeIn{0%{opacity:0;transform:translateY(-6px)scale(.98)}to{opacity:1;transform:translateY(0)scale(1)}}.cf-modal-header{border-bottom-style:solid;border-bottom-width:1px;justify-content:space-between;align-items:center;padding:16px 20px;display:flex;position:relative}.cf-header-left{align-items:center;gap:10px;min-width:0;display:flex}.cf-header-logo{will-change:transform;flex-shrink:0;width:42px;height:42px;animation:20s linear infinite cf-header-logo-turn;position:relative}.cf-header-logo .cf-launcher-motion{animation:none;transform:none}.cf-header-logo .cf-launcher-flower{transition:none}@keyframes cf-header-logo-turn{0%{transform:rotate(0)}to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.cf-header-logo{animation:none}}@keyframes cf-title-rainbow-roll{0%{background-position:0%}to{background-position:200%}}.cf-header-title{letter-spacing:.6px;background:linear-gradient(90deg,#ff8e9e 0%,#ffd166 16.6%,#69db7c 33.3%,#48cae4 50%,#91a7ff 66.6%,#f783ac 83.3%,#ff8e9e 100%,#ffd166 116.6%,#69db7c 133.3%,#48cae4 150%,#91a7ff 166.6%,#f783ac 183.3%,#ff8e9e 200%) 0 0/200%;-webkit-text-fill-color:transparent;color:#0000;-webkit-user-select:none;user-select:none;-webkit-background-clip:text;background-clip:text;align-items:baseline;gap:8px;margin:0;padding:0;font-family:Kaushan Script,Satisfy,Segoe Script,Brush Script MT,cursive,sans-serif;font-size:26px;font-weight:700;line-height:1.15;animation:4s linear infinite cf-title-rainbow-roll;display:inline-flex}.cf-title-version{letter-spacing:.5px;opacity:.95;padding-right:6px;font-family:inherit;font-size:20px;font-weight:700;display:inline-block}.cf-close-btn{color:#94a3b8;cursor:pointer;width:28px;height:28px;box-shadow:none;background:0 0;border:none;border-radius:8px;flex-shrink:0;justify-content:center;align-items:center;padding:0;line-height:1;transition:color .15s;display:flex}.cf-close-btn:hover{color:#151b25}.cf-modal-body{overscroll-behavior:contain;background:#fff;flex:1;min-height:0;display:flex;overflow:hidden}.cf-section-title-icon{color:#1677ff;flex-shrink:0;justify-content:center;align-items:center;width:18px;height:18px;display:inline-flex}.cf-section-title-icon svg{width:18px;height:18px;display:block}.cf-content-viewport{background:var(--cf-content-surface);flex:1;min-width:0;min-height:0;padding-right:6px;transition:background-color .48s;display:flex;position:relative}.cf-content-area{scrollbar-width:none;overscroll-behavior:contain;box-sizing:border-box;overflow-anchor:none;flex:1;min-width:0;padding:14px 18px;position:relative;overflow-y:auto;overflow-x:hidden!important}.cf-content-area::-webkit-scrollbar{display:none}.cf-content-area:focus-visible{outline-offset:-2px;outline:2px solid #bfdbfe}.cf-content-panels{min-height:var(--cf-scroll-floor,0px);display:flow-root;position:relative;overflow:clip}.cf-tab-panel{will-change:transform, opacity;transform-origin:top;flex-direction:column;gap:12px;display:none}.cf-tab-panel.active{display:flex}.cf-setting-item{justify-content:space-between;align-items:center;min-height:32px;display:flex}.cf-setting-label{color:#334155;-webkit-user-select:none;user-select:none;font-size:13px;font-weight:600}.cf-setting-sublabel{color:#64748b;-webkit-user-select:none;user-select:none;font-size:12px}.cf-settings-modal a,.cf-settings-modal a:link,.cf-settings-modal a:visited{text-decoration:none!important}@media (prefers-reduced-motion:reduce){.cf-menu-theme *,.cf-menu-theme :before,.cf-menu-theme :after{scroll-behavior:auto!important;transition:none!important;animation:none!important}.cf-menu-theme{transition:none}.cf-header-title{animation:none}}\n/*$vite$:1*/ ");
+	_css(" .cf-floating-tooltip{--cf-tip-surface:#0f172aeb;z-index:10000030;background:var(--cf-tip-surface);-webkit-backdrop-filter:blur(6px);color:#fff;pointer-events:none;white-space:normal;word-break:break-word;visibility:hidden;max-width:280px;clip-path:circle(0px at var(--tip-x) var(--tip-y));border-radius:6px;padding:7px 11px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:11.5px;font-weight:400;line-height:1.5;transition:clip-path .22s cubic-bezier(.22,1,.36,1);display:none;position:fixed;box-shadow:0 4px 16px #00000047}.cf-floating-tooltip.visible{visibility:visible;clip-path:circle(var(--tip-radius) at var(--tip-x) var(--tip-y))}.cf-floating-tooltip:after{content:\"\";left:var(--arrow-left,50%);border:4px solid #0000;position:absolute;transform:translate(-50%)}.cf-floating-tooltip.cf-tip-top:after{border-top-color:var(--cf-tip-surface);top:100%}.cf-floating-tooltip.cf-tip-bottom:after{border-bottom-color:var(--cf-tip-surface);bottom:100%}.cf-floating-tooltip.cf-menu-theme{--cf-tip-surface:color-mix(in srgb, var(--cf-menu-accent) 24%, #233047);box-shadow:0 4px 14px color-mix(in srgb, var(--cf-menu-accent) 18%, #23304730);transition:clip-path .22s cubic-bezier(.22,1,.36,1),--cf-menu-accent .48s,--cf-menu-secondary .48s}.cf-floating-tooltip.cf-tip-launcher{--cf-tip-surface:color-mix(in srgb, var(--cf-menu-accent,#9980bc) 8%, #fff);border:1px solid color-mix(in srgb, var(--cf-menu-accent,#9980bc) 20%, #ffffffb8);background:linear-gradient(135deg, #ffffffef, var(--cf-tip-surface));color:color-mix(in srgb, var(--cf-menu-accent,#9980bc) 24%, #465166);clip-path:inset(-12px -12px -12px 100% round 16px);border-radius:999px;padding:7px 12px 7px 23px;font-weight:500;transition:clip-path .22s cubic-bezier(.22,1,.36,1),transform .22s cubic-bezier(.22,1,.36,1),--cf-menu-accent .48s,--cf-menu-secondary .48s;transform:translate(5px);box-shadow:0 3px 11px #44516a14}.cf-floating-tooltip.cf-tip-launcher:before{content:\"\";background:var(--cf-menu-accent,#9980bc);width:4px;height:4px;box-shadow:0 0 5px color-mix(in srgb, var(--cf-menu-accent,#9980bc) 30%, transparent);border-radius:50%;position:absolute;top:calc(50% - 2px);left:11px}.cf-floating-tooltip.cf-tip-launcher:after{top:calc(var(--arrow-top) - 3px);background:var(--cf-tip-surface);border:none;width:6px;height:6px;left:auto;right:-3px;transform:rotate(45deg)}.cf-floating-tooltip.cf-tip-launcher.cf-tip-right{clip-path:inset(-12px 100% -12px -12px round 16px);transform:translate(-5px)}.cf-floating-tooltip.cf-tip-launcher.cf-tip-right:after{left:-3px;right:auto}.cf-floating-tooltip.cf-tip-launcher.visible{clip-path:inset(-12px round 16px);transform:translate(0)}@media (prefers-reduced-motion:reduce){.cf-floating-tooltip,.cf-floating-tooltip.cf-menu-theme,.cf-floating-tooltip.cf-tip-launcher{transition:none}}.cf-dialog-unrolling{will-change:transform, clip-path;position:relative}.cf-dialog-unrolling:after{content:\"\";z-index:1;pointer-events:none;background:linear-gradient(#0000,#ffffffbf 40%,#0f172a29 80%,#0000);height:20px;position:absolute;top:0;left:0;right:0}.cf-dialog-unroll-bottom:after{background:linear-gradient(#0000,#0f172a29 20%,#ffffffbf 60%,#0000)}.cf-confirm-pop-overlay{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:10000005;box-sizing:border-box;overscroll-behavior:contain;background:#0f172a7a;justify-content:center;align-items:center;width:100vw;height:100vh;padding:16px;display:flex;position:fixed;top:0;left:0}.cf-confirm-pop-card{box-sizing:border-box;overscroll-behavior:contain;background:#fff;border:1px solid #e2e8f0;border-radius:12px;width:420px;max-width:92vw;overflow:hidden;box-shadow:0 20px 25px -5px #00000026,0 8px 10px -6px #0000001a}.cf-confirm-btn-cancel:hover{color:#0f172a!important;background:#f1f5f9!important;border-color:#94a3b8!important}.cf-confirm-btn-primary:hover{filter:brightness(.92)}.cf-sidebar-nav{background:linear-gradient(155deg, color-mix(in srgb, var(--cf-paint-secondary) 5%, transparent), transparent 75%), color-mix(in srgb, var(--cf-paint-accent) 11%, #f5f8fc);border-right:1px solid color-mix(in srgb, var(--cf-paint-accent) 18%, #dde5ee);box-sizing:border-box;width:200px;min-width:200px;max-width:200px;overflow-y:auto;overflow-y:overlay;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;overscroll-behavior:contain;flex-direction:column;flex-shrink:0;gap:4px;padding:10px 8px;display:flex;position:relative}.cf-sidebar-nav::-webkit-scrollbar{width:4px}.cf-sidebar-nav::-webkit-scrollbar-track{background:0 0}.cf-sidebar-nav::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}.cf-sidebar-nav::-webkit-scrollbar-thumb:hover{background:#94a3b8}.cf-nav-indicator{background-color:#e6f4ff;background-color:color-mix(in srgb, var(--cf-tab-accent,#1677ff) 18%, white);pointer-events:none;z-index:1;box-sizing:border-box;will-change:transform;opacity:0;border-radius:8px;width:calc(100% - 16px);height:36px;transition:transform .25s cubic-bezier(.16,1,.3,1),opacity .2s,background-color .22s;position:absolute;top:0;left:8px}.cf-nav-indicator:before{content:\"\";background-color:var(--cf-tab-accent,#1677ff);border-radius:3px;width:3.5px;height:18px;transition:background-color .22s;position:absolute;top:50%;left:4px;transform:translateY(-50%)}.cf-nav-tab{color:#475569;cursor:pointer;z-index:2;-webkit-user-select:none;user-select:none;text-align:left;box-sizing:border-box;white-space:nowrap;background:0 0;border:none;border-radius:8px;flex:0 36px;align-items:center;gap:8px;width:100%;height:36px;min-height:28px;padding:8px 12px 8px 16px;font-size:13px;font-weight:500;line-height:20px;transition:color .22s cubic-bezier(.16,1,.3,1),background-color .18s,transform .12s;display:flex;position:relative;overflow:hidden}.cf-nav-tab:not(.active):hover{color:#0f172a;background:#00000009}.cf-nav-tab:active{transform:scale(.98)}.cf-nav-tab.active{color:color-mix(in srgb, var(--cf-tab-accent,#1677ff) 60%, #25334b);font-weight:600}.cf-tab-icon{width:16px;height:16px;color:inherit;flex-shrink:0;justify-content:center;align-items:center;font-size:14px;transition:transform .22s cubic-bezier(.16,1,.3,1);display:inline-flex}.cf-nav-tab.active .cf-tab-icon{--cf-icon-wash:.3;transform:scale(1.08)}.cf-tab-icon svg [fill-opacity]{transition:fill-opacity .22s}.cf-tab-icon svg{flex-shrink:0;width:16px;height:16px;display:block}.cf-tab-text{white-space:nowrap;text-overflow:ellipsis;flex:1;overflow:hidden}.cf-contributors-motion-enter-active[data-v-a00ea695],.cf-contributors-motion-leave-active[data-v-a00ea695]{transition:clip-path .26s cubic-bezier(.22,1,.36,1)}.cf-contributors-panel.cf-contributors-motion-enter-from[data-v-a00ea695],.cf-contributors-panel.cf-contributors-motion-leave-to[data-v-a00ea695]{clip-path:inset(100% 0 0 round 10px)}.cf-contributors-motion-leave-active[data-v-a00ea695]{pointer-events:none}@media (prefers-reduced-motion:reduce){.cf-contributors-motion-enter-active[data-v-a00ea695],.cf-contributors-motion-leave-active[data-v-a00ea695]{transition:none}}.cf-footer-contributors[data-v-a00ea695]{flex-shrink:0;position:relative}.cf-contributors-trigger[data-v-a00ea695]{color:#64748b;font:inherit;cursor:pointer;-webkit-user-select:none;user-select:none;border-radius:4px;align-items:center;gap:6px;padding:0;line-height:18px;list-style:none;transition:color .15s;display:inline-flex}.cf-contributors-trigger[data-v-a00ea695]::-webkit-details-marker{display:none}.cf-contributors-trigger[data-v-a00ea695]:hover,.cf-footer-contributors[open] .cf-contributors-trigger[data-v-a00ea695]{color:var(--cf-control-ink)}.cf-contributors-trigger[data-v-a00ea695]:focus-visible,.cf-contributor-link[data-v-a00ea695]:focus-visible{outline:2px solid var(--cf-menu-accent);outline-offset:3px}.cf-contributors-avatars[data-v-a00ea695]{align-items:center;padding-right:2px;display:inline-flex}.cf-contributors-avatars img[data-v-a00ea695]{box-sizing:border-box;border:2px solid var(--cf-card-surface);background:var(--cf-card-surface,#fff);object-fit:contain;border-radius:50%;width:18px;height:18px}.cf-contributors-avatars img+img[data-v-a00ea695]{margin-left:-5px}.cf-contributors-count[data-v-a00ea695]{color:#94a3b8;font-variant-numeric:tabular-nums}.cf-contributors-chevron[data-v-a00ea695]{transition:transform .15s;display:inline-flex;transform:rotate(180deg)}.cf-contributors-chevron[data-v-a00ea695] svg{width:10px;height:10px}.cf-footer-contributors[open] .cf-contributors-chevron[data-v-a00ea695]{transform:rotate(0)}.cf-contributors-panel[data-v-a00ea695]{clip-path:inset(-30px round 10px);z-index:10;box-sizing:border-box;border:1px solid var(--cf-surface-border,#e2e8f0);background:var(--cf-card-surface,#fff);color:#334155;-webkit-user-select:text;user-select:text;border-radius:10px;width:320px;max-width:calc(100vw - 80px);padding:10px;font-size:12px;line-height:1.5;position:absolute;bottom:calc(100% + 10px);right:0;box-shadow:0 8px 28px #0f172a21}.cf-contributors-heading[data-v-a00ea695]{border-bottom:1px solid var(--cf-surface-border);justify-content:space-between;align-items:center;gap:8px;padding:2px 6px 8px;display:flex}.cf-contributors-heading span[data-v-a00ea695]{color:#94a3b8;font-size:10px}.cf-contributors-list[data-v-a00ea695]{overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;flex-direction:column;gap:3px;max-height:280px;margin:6px 0 0;padding:0;list-style:none;display:flex;overflow-y:auto}.cf-contributors-list li[data-v-a00ea695]{margin:0;padding:0}.cf-footer-contributors .cf-contributor-link[data-v-a00ea695],.cf-footer-contributors .cf-contributor-link[data-v-a00ea695]:link,.cf-footer-contributors .cf-contributor-link[data-v-a00ea695]:visited{color:#334155;border-radius:7px;grid-template-columns:44px minmax(0,1fr) 12px;align-items:center;gap:4px 10px;padding:10px 8px;text-decoration:none;transition:background .15s,color .15s;display:grid}.cf-footer-contributors .cf-contributor-link[data-v-a00ea695]:hover,.cf-footer-contributors .cf-contributor-link[data-v-a00ea695]:active,.cf-footer-contributors .cf-contributor-link[data-v-a00ea695]:focus-visible{color:var(--cf-control-ink);background:var(--cf-control-active)}.cf-contributor-link:hover .cf-contributor-external[data-v-a00ea695],.cf-contributor-link:focus-visible .cf-contributor-external[data-v-a00ea695]{color:var(--cf-control-ink)}.cf-contributor-image[data-v-a00ea695]{object-fit:contain;border-radius:8px;grid-area:1/1/span 2;align-self:stretch;width:44px;height:100%;min-height:44px}.cf-contributor-info[data-v-a00ea695]{flex-wrap:wrap;grid-area:1/2;align-items:baseline;gap:2px 8px;min-width:0;display:flex}.cf-contributor-name[data-v-a00ea695]{overflow-wrap:anywhere;font-weight:600}.cf-contributor-role[data-v-a00ea695]{color:#94a3b8;font-size:11px}.cf-contributor-description[data-v-a00ea695]{color:#64748b;overflow-wrap:break-word;grid-area:2/2/auto/-1;min-width:0;font-size:11px;line-height:1.6}.cf-contributor-external[data-v-a00ea695]{color:#94a3b8;grid-area:1/3;display:inline-flex}.cf-contributor-external[data-v-a00ea695] svg{width:12px;height:12px}.cf-menu-glass-surface[data-v-c2bef5a6],.cf-menu-glass-light[data-v-c2bef5a6]:after,.cf-menu-glass-light[data-v-c2bef5a6]:before{--cf-paint-accent:var(--cf-menu-accent);--cf-paint-secondary:var(--cf-menu-secondary);transition:--cf-paint-accent .48s,--cf-paint-secondary .48s}.cf-menu-glass-surface[data-v-c2bef5a6]{isolation:isolate;z-index:3;background:linear-gradient(112deg, color-mix(in srgb, var(--cf-paint-accent) 18%, #ffffff70), #ffffff45 46%, color-mix(in srgb, var(--cf-paint-secondary) 20%, #ffffff78));-webkit-backdrop-filter:blur(9px)saturate(155%)contrast(102%);backdrop-filter:blur(9px)saturate(155%)contrast(102%);border-color:color-mix(in srgb, var(--cf-paint-accent) 23%, #c5d5df78);box-shadow:inset 0 1px 0 #ffffffeb, inset 0 2px 4px #ffffff45, inset 0 -1px 0 #ffffffd0, inset 0 -3px 5px color-mix(in srgb, var(--cf-paint-accent) 8%, transparent);position:relative}.cf-menu-glass-light[data-v-c2bef5a6]{z-index:-1;pointer-events:none;position:absolute;inset:0;overflow:hidden}.cf-menu-glass-light[data-v-c2bef5a6]:before{content:\"\";background:radial-gradient(ellipse at 23% 50%, #ffffff70 0%, #ffffff05 32%, transparent 44%), conic-gradient(from 145deg at 65% 70%, transparent 0deg, #ffffff60 10deg, transparent 22deg, transparent 170deg, color-mix(in srgb, var(--cf-paint-secondary) 30%, #ffffff40) 190deg, transparent 204deg);filter:blur(7px);animation:13s ease-in-out infinite alternate cf-menu-glass-caustic-c2bef5a6;position:absolute;inset:-80% -15%}.is-bottom>.cf-menu-glass-light[data-v-c2bef5a6]:before{animation-delay:-5s}.is-resting>.cf-menu-glass-light[data-v-c2bef5a6]:before{animation-play-state:paused}.cf-menu-glass-light[data-v-c2bef5a6]:after{content:\"\";inset-inline:0;pointer-events:none;background:linear-gradient(90deg, #ffffff30, #ffffffd0 20%, color-mix(in srgb, var(--cf-paint-accent) 28%, #e8fbffa0) 50%, #ffffffe0 80%, #ffffff30);height:2px;position:absolute;bottom:-1px;box-shadow:0 -2px 4px #ffffff4d}.is-bottom>.cf-menu-glass-light[data-v-c2bef5a6]:after{background:linear-gradient(90deg, #ffffff30, #ffffffe0 20%, color-mix(in srgb, var(--cf-paint-accent) 28%, #e8fbffa0) 50%, #ffffffd0 80%, #ffffff30);top:-1px;bottom:auto;box-shadow:0 2px 4px #ffffff4d}@keyframes cf-menu-glass-caustic-c2bef5a6{0%{opacity:.72;transform:translate(-8%)rotate(-5deg)}to{opacity:1;transform:translate(8%)rotate(5deg)}}@media (prefers-reduced-motion:reduce){.cf-menu-glass-light[data-v-c2bef5a6]:before{animation:none}.cf-menu-glass-surface[data-v-c2bef5a6],.cf-menu-glass-light[data-v-c2bef5a6]:after,.cf-menu-glass-light[data-v-c2bef5a6]:before{transition:none}}@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.cf-menu-glass-surface[data-v-c2bef5a6]{background:color-mix(in srgb, var(--cf-paint-accent) 14%, #f8fafc)}}.cf-action-button{--cf-action-color:var(--cf-menu-accent,#3b82f6);--cf-action-ink:color-mix(in srgb, var(--cf-action-color) 40%, #243447);color:var(--cf-action-ink);background:color-mix(in srgb, var(--cf-action-color) 22%, var(--cf-card-surface,#fff));border:1px solid color-mix(in srgb, var(--cf-action-color) 48%, var(--cf-card-surface,#fff));box-shadow:inset 0 1px 0 #ffffff60, 0 1px 2px color-mix(in srgb, var(--cf-action-color) 12%, transparent);cursor:pointer;-webkit-user-select:none;user-select:none;white-space:nowrap;border-radius:6px;justify-content:center;align-items:center;gap:5px;padding:5px 12px;font-size:12px;font-weight:500;line-height:18px;transition:background-color .18s,border-color .18s,color .18s,box-shadow .18s;display:inline-flex}.cf-action-button:not(:disabled):hover{background:color-mix(in srgb, var(--cf-action-color) 32%, var(--cf-card-surface,#fff));color:var(--cf-action-ink);border-color:color-mix(in srgb, var(--cf-action-color) 65%, var(--cf-card-surface,#fff));box-shadow:inset 0 1px 0 #ffffff60, 0 2px 5px color-mix(in srgb, var(--cf-action-color) 17%, transparent)}.cf-action-button:focus-visible{outline:2px solid var(--cf-action-color);outline-offset:2px}.cf-action-button[data-state=preview]{--cf-action-color:#0284c7}.cf-action-button[data-state=latest]{--cf-action-color:#168451}.cf-action-button[data-state=failed]{--cf-action-color:#c74747}.cf-action-button:is([data-state=preview],[data-state=latest],[data-state=failed]){border-color:color-mix(in srgb, var(--cf-action-color) 58%, var(--cf-card-surface,#fff))}.cf-action-button:disabled,.cf-action-button.cooldown{cursor:not-allowed;box-shadow:none}.cf-action-button:disabled:not(:where([data-state=preview],[data-state=latest],[data-state=failed])),.cf-action-button.cooldown{color:#94a3b8;background:var(--cf-control-surface,#f8fafc);border-color:var(--cf-surface-border,#e2e8f0)}.cf-action-button[aria-busy=true],.cf-action-button.syncing{color:var(--cf-action-ink);background:color-mix(in srgb, var(--cf-action-color) 15%, var(--cf-card-surface,#fff));border-color:color-mix(in srgb, var(--cf-action-color) 45%, white);cursor:wait}.cf-action-button svg{width:14px;height:14px;transition:transform .2s}.cf-action-button:not(:disabled):hover svg{transform:rotate(45deg)}@keyframes cfSpin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}.cf-spin,.cf-action-button[aria-busy=true] svg,.cf-action-button.syncing svg{animation:1s linear infinite cfSpin}@media (prefers-reduced-motion:reduce){.cf-action-button,.cf-action-button svg{transition:none}.cf-action-button svg,.cf-spin{animation:none!important}}.cf-clist-progress-modal .cf-clist-modal-body{overflow-wrap:anywhere;min-width:0}.cf-clist-progress-modal .cf-progress-status{min-width:0}.cf-clist-progress-modal .cf-progress-sync-icon{flex:none;justify-content:center;align-items:center;width:20px;height:20px;display:inline-flex}.cf-clist-progress-modal.is-syncing .cf-progress-sync-icon{animation:1.8s linear infinite cfSpin}.cf-clist-progress-modal .cf-progress-heading{color:var(--cf-control-ink);justify-content:space-between;align-items:center;gap:16px;font-size:13px;font-weight:500;line-height:1.6;display:flex}.cf-clist-progress-modal .cf-progress-percent{font-variant-numeric:tabular-nums;flex:none;font-size:15px}.cf-clist-progress-modal .cf-clist-progress-track{box-sizing:border-box;border:1px solid var(--cf-surface-border);background:var(--cf-control-surface);border-radius:99px;height:9px;margin:10px 0}.cf-clist-progress-modal .cf-clist-progress-fill{border-radius:inherit;background:linear-gradient(100deg, var(--cf-menu-secondary), var(--cf-menu-accent));transition:width .65s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden}.cf-clist-progress-modal.is-syncing .cf-clist-progress-fill:after{content:\"\";background:linear-gradient(100deg,#0000 20%,#ffffff65 50%,#0000 80%);animation:2.6s ease-in-out infinite cf-sync-progress-sheen;position:absolute;inset:0}.cf-clist-progress-modal.is-success .cf-clist-progress-fill{background:linear-gradient(100deg,#74c5a1,#29976b)}.cf-clist-progress-modal.is-error .cf-clist-progress-fill{background:#d88c93}.cf-clist-progress-modal .cf-progress-metrics{color:color-mix(in srgb, var(--cf-control-ink) 65%, #64748b);font-variant-numeric:tabular-nums;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 16px;font-size:12px;line-height:1.7;display:flex}.cf-clist-progress-modal .cf-progress-metrics strong{color:var(--cf-control-ink)}.cf-clist-progress-modal .cf-progress-eta{text-align:right;margin-left:auto}.cf-clist-progress-modal .cf-val-eta{min-width:7.5em;display:inline-block}.cf-clist-progress-modal .cf-progress-tip{background:var(--cf-control-active);border:1px solid var(--cf-surface-border);color:var(--cf-control-ink);border-radius:8px;margin-top:16px;padding:10px 12px;font-size:12px;line-height:1.6}.cf-clist-progress-modal .cf-btn-action{font-weight:600}@keyframes cf-sync-progress-sheen{0%{transform:translate(-100%)}to{transform:translate(100%)}}@media (prefers-reduced-motion:reduce){.cf-clist-progress-modal .cf-progress-sync-icon,.cf-clist-progress-modal .cf-clist-progress-fill:after{animation:none!important}.cf-clist-progress-modal .cf-clist-progress-fill{transition:none}}.cf-clist-input-box{box-sizing:border-box;color:#334155;border-radius:6px;outline:none;width:100%;padding:6px 10px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:11px}.cf-footer-status-slot{flex:1;align-items:center;min-width:0;min-height:18px;display:grid;position:relative}.cf-footer-status-slot>*{grid-area:1/1;justify-self:start}.cf-footer-swap-enter-active,.cf-footer-swap-leave-active{transition:opacity .18s,transform .18s}.cf-footer-swap-leave-active{pointer-events:none}.cf-footer-swap-enter-from{opacity:0;transform:translateY(4px)}.cf-footer-swap-leave-to{opacity:0;transform:translateY(-4px)}@media (prefers-reduced-motion:reduce){.cf-footer-swap-enter-active,.cf-footer-swap-leave-active{transition:none}}.cf-modal-footer{border-top-style:solid;border-top-width:1px;flex-direction:column;gap:6px;padding:10px 18px 8px;display:flex}.cf-footer-top-row{justify-content:space-between;align-items:center;font-size:12px;display:flex}.cf-footer-status{color:#64748b;-webkit-user-select:none;user-select:none;align-items:center;gap:6px;font-size:12px;display:flex}.cf-status-dot{background-color:#10b981;border-radius:50%;width:6px;height:6px;display:inline-block;box-shadow:0 0 6px #10b98199}.cf-footer-links{align-items:center;gap:8px;display:flex}.cf-footer-link,.cf-footer-link:link,.cf-footer-link:visited{cursor:pointer;-webkit-user-select:none;user-select:none;align-items:center;gap:4px;font-size:12px;transition:color .15s;display:inline-flex;color:#64748b!important;text-decoration:none!important}.cf-footer-link:hover,.cf-footer-link:active{color:#1677ff!important;text-decoration:none!important}.cf-footer-divider{color:#cbd5e1;-webkit-user-select:none;user-select:none;font-size:12px}.cf-footer-bottom-row{color:#94a3b8;-webkit-user-select:none;user-select:none;border-top:1px dashed #edf2f7;justify-content:space-between;align-items:center;padding-top:5px;font-size:11px;display:flex}.cf-footer-motto{color:#94a3b8}.cf-footer-mini-progress{appearance:none;font-family:inherit;line-height:inherit;-webkit-user-select:none;user-select:none;cursor:pointer;background:0 0;border:0;border-radius:6px;align-items:center;gap:8px;width:max-content;max-width:100%;margin:-2px -7px;padding:2px 7px;font-size:12px;transition:background .2s,transform .15s;display:inline-flex}.cf-footer-mini-progress:hover{background:#3b82f614}.cf-footer-mini-progress:active{transform:scale(.98)}.cf-mini-progress-bar{background:#e2e8f0;border-radius:3px;flex-shrink:0;width:76px;height:6px;transition:box-shadow .2s;display:block;position:relative;overflow:hidden;box-shadow:inset 0 1px 2px #0000000f}.cf-footer-mini-progress:hover .cf-mini-progress-bar{box-shadow:0 0 0 1px #3b82f64d}.cf-mini-progress-bar-fill{background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:3px;height:100%;transition:width .3s;display:block}.cf-mini-progress-text{color:#334155;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:11px;font-weight:600;transition:color .2s}.cf-footer-mini-progress:hover .cf-mini-progress-text{color:#1d4ed8}.cf-menu-scrollbar[data-v-153fa333]{z-index:3;pointer-events:none;touch-action:none;width:10px;position:absolute;top:6px;bottom:6px;right:0}.cf-menu-scrollbar.is-scrollable[data-v-153fa333]{pointer-events:auto}.cf-menu-scrollbar-thumb[data-v-153fa333]{opacity:0;cursor:grab;touch-action:none;background:#cbd5e1;border-radius:4px;width:5px;height:100%;position:absolute;top:0;right:1px}.cf-menu-scrollbar-thumb[data-v-153fa333]:hover,.is-dragging .cf-menu-scrollbar-thumb[data-v-153fa333]{background:#94a3b8}.is-dragging .cf-menu-scrollbar-thumb[data-v-153fa333]{cursor:grabbing}.cf-menu-scrollbar-thumb[data-v-153fa333]:focus-visible{outline-offset:1px;outline:2px solid #60a5fa}@property --cf-launcher-open{syntax:\"<percentage>\";inherits:true;initial-value:0%}@property --cf-wind-phase{syntax:\"<angle>\";inherits:true;initial-value:0deg}@property --cf-launcher-accent{syntax:\"<color>\";inherits:true;initial-value:#5576df}#cf-ratings-settings-btn{--cf-launcher-accent:var(--cf-menu-accent);--cf-aurora-color:var(--cf-launcher-accent);--cf-aurora-light:color-mix(in srgb, var(--cf-launcher-accent) 46%, #e9f5fb);--cf-aurora-deep:color-mix(in srgb, var(--cf-launcher-accent) 74%, #192849);--cf-aurora-glow:color-mix(in srgb, var(--cf-launcher-accent) 65%, var(--cf-menu-secondary));isolation:isolate;place-items:center;transition:--cf-launcher-accent .48s,transform .24s,box-shadow .48s;position:relative;overflow:visible;box-shadow:0 2px 8px #71669324,0 1px 2px #7166931f;box-sizing:border-box!important;cursor:pointer!important;-webkit-user-select:none!important;user-select:none!important;background:conic-gradient(from -35deg,#ffd7e8,#ffe6c5,#d8f0e0,#cfeaf7,#e1d8f8,#ffd7e8)!important;border:0!important;border-radius:50%!important;width:44px!important;height:44px!important;display:grid!important}#cf-ratings-settings-btn:before,#cf-ratings-settings-btn:after{content:\"\";border-radius:inherit;pointer-events:none;position:absolute;inset:0}#cf-ratings-settings-btn:before{background:linear-gradient(145deg, color-mix(in srgb, var(--cf-launcher-accent) 12%, #f7fbff), color-mix(in srgb, var(--cf-launcher-accent) 28%, #eaf0fa));opacity:0;transition:opacity .48s}#cf-ratings-settings-btn:after{z-index:2;background:radial-gradient(at 26% 9%,#ffffff78,#0000 43%);box-shadow:inset 0 0 0 1px #ffffff85,inset 0 -1px 2px #4e517521}#cf-ratings-settings-btn:hover{transform:translateY(-.5px);box-shadow:0 3px 11px #71669330}#cf-ratings-settings-btn:not(.is-open):is(:hover,:focus-visible) .cf-launcher-flower{transform:scale(1)rotate(360deg)}#cf-ratings-settings-btn.is-open{box-shadow:0 0 0 1px color-mix(in srgb, var(--cf-menu-accent) 25%, transparent), 0 3px 13px color-mix(in srgb, var(--cf-menu-accent) 27%, transparent)}#cf-ratings-settings-btn.is-open:before{opacity:1}#cf-ratings-settings-btn.is-open:after{box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--cf-launcher-accent) 36%, transparent), inset 0 -1px 2px color-mix(in srgb, var(--cf-launcher-accent) 18%, transparent);background:radial-gradient(at 26% 9%,#ffffff30,#0000 43%)}#cf-ratings-settings-btn:active{transform:scale(.96)}#cf-ratings-settings-btn:focus-visible{outline:2px solid var(--cf-menu-accent);outline-offset:3px}.cf-launcher-art{z-index:1;pointer-events:none;width:100%;height:100%;position:absolute;inset:0;overflow:visible}.cf-launcher-flower,.cf-launcher-current,.cf-flower-launch,.cf-current-entry,.cf-launcher-motion{transform-box:view-box;transform-origin:22px 22px}.cf-launcher-flower,.cf-launcher-current{transition:transform .78s cubic-bezier(.22,1,.36,1),opacity .42s}.cf-launcher-flower{opacity:1;transform:scale(1)rotate(0)}.cf-launcher-current{opacity:0;transform:scale(.96)rotate(-6deg)}#cf-ratings-settings-btn.is-open .cf-launcher-flower{opacity:0;transition:transform .58s cubic-bezier(.22,1,.36,1),opacity .38s 80ms;transform:scale(1)rotate(360deg)}#cf-ratings-settings-btn.is-open .cf-launcher-current{opacity:1;transform:scale(1)rotate(0)}.cf-flower-sway{animation:16s ease-in-out infinite cf-flower-sway}.cf-flower-petal{animation:cf-flower-breathe 6s ease-in-out var(--cf-petal-delay) infinite}.cf-flower-petal use{stroke:#ffffff60;stroke-width:.35px}.cf-current-petals{--cf-wind-x:calc(3.2 * sin(var(--cf-wind-phase)) + .45 * sin(var(--cf-wind-phase) * 2));--cf-wind-y:calc(-.85 * sin(var(--cf-wind-phase)) + .8 * sin(var(--cf-wind-phase) * 2) + .25 * sin(var(--cf-wind-phase) * 3));animation:6.6s linear infinite cf-current-wind}.cf-current-petals>g:first-child{--cf-wind-cos:1;--cf-wind-sin:0;--cf-wind-response:1}.cf-current-petals>g:nth-child(2){--cf-wind-cos:.707107;--cf-wind-sin:.707107;--cf-wind-response:.94}.cf-current-petals>g:nth-child(3){--cf-wind-cos:0;--cf-wind-sin:1;--cf-wind-response:1.08}.cf-current-petals>g:nth-child(4){--cf-wind-cos:-.707107;--cf-wind-sin:.707107;--cf-wind-response:.88}.cf-current-petals>g:nth-child(5){--cf-wind-cos:-1;--cf-wind-sin:0;--cf-wind-response:.92}.cf-current-petals>g:nth-child(6){--cf-wind-cos:-.707107;--cf-wind-sin:-.707107;--cf-wind-response:1.02}.cf-current-petals>g:nth-child(7){--cf-wind-cos:0;--cf-wind-sin:-1;--cf-wind-response:.9}.cf-current-petals>g:nth-child(8){--cf-wind-cos:.707107;--cf-wind-sin:-.707107;--cf-wind-response:1.05}.cf-current-petal{--cf-local-wind-x:calc((var(--cf-wind-x) * var(--cf-wind-cos) + var(--cf-wind-y) * var(--cf-wind-sin)) * var(--cf-wind-response));--cf-local-wind-y:calc((var(--cf-wind-y) * var(--cf-wind-cos) - var(--cf-wind-x) * var(--cf-wind-sin)) * var(--cf-wind-response));transform-origin:22px 24px;transform:matrix(1, 0, calc(var(--cf-local-wind-x) / -18), calc(1 - var(--cf-local-wind-y) / 18), 0, 0);animation:none}.cf-current-sheet{transform-origin:22px 24px;transform:matrix(1, 0, calc(var(--cf-local-wind-x) * -.28 / 18), calc(1 - var(--cf-local-wind-y) * .28 / 18), 0, 0);animation:none}.cf-current-glint{animation:cf-current-glint 3.8s ease-in-out var(--cf-flow-delay) infinite}.cf-current-glow,.cf-current-core{animation:3.8s ease-in-out infinite cf-current-breathe}#cf-ratings-settings-btn:not(.is-open) .cf-launcher-current .cf-launcher-motion,#cf-ratings-settings-btn.is-open .cf-launcher-flower .cf-launcher-motion,#cf-ratings-settings-btn.is-resting .cf-launcher-motion{animation-play-state:paused}#cf-ratings-settings-btn.is-flower{--cf-launcher-open:0%;transition:--cf-launcher-open .68s cubic-bezier(.22,.7,.2,1),--cf-launcher-accent .48s,transform .24s,box-shadow .48s}#cf-ratings-settings-btn.is-flower.is-open{--cf-launcher-open:100%}#cf-ratings-settings-btn.is-flower .cf-flower-petal>use:first-child{fill:color-mix(in srgb, var(--cf-petal-color), var(--cf-launcher-accent) var(--cf-launcher-open))}#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower{opacity:1;transition:transform .78s cubic-bezier(.22,1,.36,1);transform:scale(1)rotate(360deg)}#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower .cf-launcher-motion{animation-play-state:running}#cf-ratings-settings-btn.is-flower .cf-launcher-art{transform-origin:50%;transform:rotate(0)}#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-art{animation:24s linear infinite cf-launcher-flower-turn}#cf-ratings-settings-btn.is-flower:not(.is-open) .cf-launcher-motion{animation:none;transform:none}#cf-ratings-settings-btn.is-flower.is-resting .cf-launcher-art,#cf-ratings-settings-btn.is-flower.is-resting .cf-launcher-flower .cf-launcher-motion{animation-play-state:paused}@keyframes cf-launcher-flower-turn{0%{transform:rotate(var(--cf-launcher-turn-start,0deg))}to{transform:rotate(calc(var(--cf-launcher-turn-start,0deg) + 360deg))}}@keyframes cf-flower-sway{0%,to{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes cf-flower-breathe{0%,to{transform:scale(.96,.97)}50%{transform:scaleY(1.025)}}@keyframes cf-current-wind{0%{--cf-wind-phase:0deg}to{--cf-wind-phase:360deg}}@keyframes cf-current-glint{0%,to{opacity:.2}50%{opacity:.75}}@keyframes cf-current-breathe{0%,to{opacity:.6;transform:scale(.88)}50%{opacity:1;transform:scale(1.1)}}@media (prefers-reduced-motion:reduce){#cf-ratings-settings-btn.is-flower .cf-launcher-art,#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-art{animation:none}#cf-ratings-settings-btn.is-flower,#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower{transition:none}#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower{transform:none}#cf-ratings-settings-btn .cf-launcher-motion{animation:none}#cf-ratings-settings-btn,#cf-ratings-settings-btn:before,.cf-launcher-flower,.cf-launcher-current,#cf-ratings-settings-btn.is-open .cf-launcher-flower{transition:none}#cf-ratings-settings-btn:not(.is-open):is(:hover,:focus-visible) .cf-launcher-flower{transform:none}}.cf-menu-resize-handle[data-v-07a72e58]{z-index:6;touch-action:none;-webkit-user-select:none;user-select:none;position:absolute}.cf-menu-resize-west[data-v-07a72e58],.cf-menu-resize-east[data-v-07a72e58]{cursor:ew-resize;width:5px;top:14px;bottom:14px}.cf-menu-resize-west[data-v-07a72e58]{left:0}.cf-menu-resize-east[data-v-07a72e58]{right:0}.cf-menu-resize-north[data-v-07a72e58],.cf-menu-resize-south[data-v-07a72e58]{cursor:ns-resize;height:5px;left:14px;right:14px}.cf-menu-resize-north[data-v-07a72e58]{top:0}.cf-menu-resize-south[data-v-07a72e58]{bottom:0}.cf-menu-resize-northwest[data-v-07a72e58],.cf-menu-resize-northeast[data-v-07a72e58],.cf-menu-resize-southwest[data-v-07a72e58],.cf-menu-resize-southeast[data-v-07a72e58]{width:16px;height:16px}.cf-menu-resize-northwest[data-v-07a72e58]{cursor:nwse-resize;top:0;left:0}.cf-menu-resize-northeast[data-v-07a72e58]{cursor:nesw-resize;top:0;right:0}.cf-menu-resize-southwest[data-v-07a72e58]{cursor:nesw-resize;bottom:0;left:0}.cf-menu-resize-southeast[data-v-07a72e58]{cursor:nwse-resize;bottom:0;right:0}.cf-menu-resize-handle[data-v-07a72e58]:after{content:\"\";background:color-mix(in srgb, var(--cf-menu-accent) 45%, transparent);opacity:0;pointer-events:none;border-radius:2px;transition:opacity .14s;position:absolute;inset:1px}.cf-menu-resize-handle[data-v-07a72e58]:hover:after,.cf-menu-resize-handle.is-dragging[data-v-07a72e58]:after{opacity:1}@media (prefers-reduced-motion:reduce){.cf-menu-resize-handle[data-v-07a72e58]:after{transition:none}}.cf-menu-placement{z-index:1;position:absolute}#cf-ratings-settings-btn{z-index:2}#cf-ratings-settings-btn.is-positionable{touch-action:none;cursor:grab!important}#cf-ratings-settings-btn.is-position-dragging{cursor:grabbing!important}.cf-modal-header.is-positionable{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}.cf-modal-header.is-position-dragging{cursor:grabbing}.cf-toggle-switch{vertical-align:middle;flex-shrink:0;width:34px;height:18px;display:inline-block;position:relative}.cf-toggle-switch input{opacity:0;width:0;height:0}.cf-toggle-slider{cursor:pointer;background-color:#ccc;border-radius:18px;transition:all .2s;position:absolute;inset:0}.cf-toggle-slider:before{content:\"\";background-color:#fff;border-radius:50%;width:14px;height:14px;transition:all .2s;position:absolute;bottom:2px;left:2px}.cf-toggle-switch input:checked+.cf-toggle-slider{background-color:#1890ff}.cf-toggle-switch input:checked+.cf-toggle-slider:before{transform:translate(16px)}.cf-segmented-switch{background:var(--cf-control-surface);box-shadow:inset 0 0 0 1px var(--cf-surface-border);cursor:pointer;-webkit-user-select:none;user-select:none;box-sizing:border-box;border-radius:12px;padding:2px;font-size:12px;font-weight:700;display:flex;position:relative}.cf-segmented-slider{width:calc(50% - 2px);box-shadow:0 1px 3px color-mix(in srgb, var(--cf-menu-accent) 20%, transparent), inset 0 0 0 1px var(--cf-surface-border);box-sizing:border-box;background:var(--cf-control-active);border-radius:10px;transition:left .25s cubic-bezier(.4,0,.2,1),background-color .25s;position:absolute;top:2px;bottom:2px}.cf-segmented-btn{text-align:center;z-index:1;box-sizing:border-box;color:#888;flex:1;margin:1px;padding:3px 0;font-size:12px;transition:color .25s}.cf-expand-region[data-v-9bacab14]{flex:none;min-height:0}.cf-expand-content[data-v-9bacab14]{display:flow-root}.cf-info-hint[data-v-e38b89aa]{color:#537da8;cursor:help;background:#eaf2fb;border:1px solid #a8c1dd;border-radius:50%;flex:0 0 16px;justify-content:center;align-items:center;width:16px;height:16px;padding:0;font:italic 600 12px/1 Georgia,serif;transition:background-color .16s,border-color .16s;display:inline-flex}.cf-info-hint[data-v-e38b89aa]:hover,.cf-info-hint[data-v-e38b89aa]:focus-visible{background:#dceafa;border-color:#759ac3;outline:none}.cf-menu-layout-toggle[data-v-8ac521da]{cursor:pointer;-webkit-user-select:none;user-select:none;gap:10px;margin:0}.cf-menu-layout-label[data-v-8ac521da]{align-items:center;gap:6px;min-width:0;display:inline-flex}.cf-menu-layout-fields[data-v-8ac521da]{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:8px 0 0 14px;display:grid}.cf-menu-layout-actions[data-v-8ac521da]{flex-shrink:0;align-items:center;gap:10px;display:inline-flex}.cf-menu-layout-field[data-v-8ac521da]{color:#64748b;gap:5px;min-width:0;font-size:12px;display:grid}.cf-menu-layout-value[data-v-8ac521da]{align-items:center;gap:6px;min-width:0;display:flex}.cf-menu-layout-value input[data-v-8ac521da]{box-sizing:border-box;border:1px solid color-mix(in srgb, var(--cf-menu-accent) 24%, #dce2eb);background:color-mix(in srgb, var(--cf-menu-accent) 9%, #f8fafc);color:#334155;width:100%;min-width:0;font:inherit;font-variant-numeric:tabular-nums;border-radius:7px;padding:6px 8px;line-height:18px}.cf-menu-layout-value input[data-v-8ac521da]:focus{border-color:color-mix(in srgb, var(--cf-menu-accent) 65%, #dce2eb);outline:2px solid color-mix(in srgb, var(--cf-menu-accent) 18%, transparent)}.cf-menu-layout-value input[type=number][data-v-8ac521da]{appearance:textfield}.cf-menu-layout-value input[data-v-8ac521da]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.cf-menu-layout-value input[data-v-8ac521da]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.cf-menu-layout-unit[data-v-8ac521da]{flex-shrink:0;font-size:11px}.pcr-app{opacity:0;visibility:hidden;pointer-events:none;z-index:9999999!important}.pcr-app.visible{opacity:1;visibility:visible;pointer-events:auto}.pcr-app[data-theme=nano]{width:240px!important}.pcr-app[data-theme=nano] .pcr-interaction{flex-wrap:wrap!important}.pcr-app[data-theme=nano] .pcr-interaction .pcr-result{flex:100%!important;width:100%!important;min-width:100%!important;margin-top:8px!important}.cf-tag-visibility-setting[data-v-60c221c8]{cursor:pointer;-webkit-user-select:none;user-select:none;margin:0}.cf-tag-visibility-subitem[data-v-60c221c8]{justify-content:space-between;align-items:center;min-height:28px;padding-left:14px;font-size:12px}.cf-clist-modal-overlay{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);z-index:10000002;overscroll-behavior:contain;background:#0f172aa6;justify-content:center;align-items:center;display:flex;position:fixed;inset:0}.cf-clist-modal-card{background:var(--cf-card-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0cc);overscroll-behavior:contain;border-radius:12px;flex-direction:column;width:580px;max-width:92vw;max-height:88vh;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;display:flex;overflow:hidden;box-shadow:0 25px 50px -12px #00000040}.cf-clist-modal-header{background:var(--cf-control-active,#f8fafc);border-bottom:1px solid var(--cf-surface-border,#e2e8f0);justify-content:space-between;align-items:center;padding:14px 20px;display:flex}.cf-clist-modal-title{color:var(--cf-control-ink,#1e293b);align-items:center;gap:8px;font-size:15px;font-weight:600;display:flex}.cf-clist-modal-body{color:#334155;overscroll-behavior:contain;padding:20px;font-size:13px;line-height:1.6;overflow-y:auto}.cf-clist-modal-footer{background:var(--cf-control-surface,#f8fafc);border-top:1px solid var(--cf-surface-border,#e2e8f0);justify-content:flex-end;padding:12px 20px;display:flex}.cf-clist-mock-panel{background:var(--cf-control-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0);border-radius:8px;margin:12px 0;padding:14px;box-shadow:0 2px 4px #0000000a}.cf-clist-code-block{background:var(--cf-guide-code-bg,#0f172a);color:var(--cf-guide-code-ink,#38bdf8);-webkit-user-select:all;user-select:all;border:1px solid #1e293b;border-radius:6px;margin:8px 0;padding:10px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;overflow-x:auto}.cf-clist-popover-demo{background:var(--cf-control-surface,#fff);border:1px solid var(--cf-surface-border,#cbd5e1);border-radius:8px;margin-top:10px;padding:12px;position:relative;box-shadow:0 10px 15px -3px #0000001a,0 4px 6px -4px #0000000d}.cf-clist-popover-demo:before{content:\"\";background:var(--cf-control-surface,#fff);border-top:1px solid var(--cf-surface-border,#cbd5e1);border-left:1px solid var(--cf-surface-border,#cbd5e1);width:10px;height:10px;position:absolute;top:-6px;left:28px;transform:rotate(45deg)}.cf-clist-progress-track{background:var(--cf-surface-border,#e2e8f0);border-radius:5px;width:100%;height:10px;margin:12px 0 8px;position:relative;overflow:hidden}.cf-clist-progress-fill{background:linear-gradient(90deg, var(--cf-menu-secondary,#3b82f6), var(--cf-menu-accent,#6366f1));border-radius:5px;width:0%;height:100%;transition:width .3s}.cf-guide-theme{--cf-guide-code-bg:color-mix(in srgb, var(--cf-menu-accent) 18%, #172536);--cf-guide-code-ink:color-mix(in srgb, var(--cf-menu-secondary) 26%, #f2f7fb)}.cf-guide-theme a:link,.cf-guide-theme a:visited{color:var(--cf-control-ink)}.cf-guide-theme a:hover{color:color-mix(in srgb, var(--cf-menu-accent) 45%, #19283d)}.cf-clist-guide-modal .cf-clist-guide-link:any-link{color:var(--cf-control-ink);font-weight:500;text-decoration:none}.cf-clist-guide-modal .cf-clist-guide-link:hover{color:var(--cf-control-ink);text-decoration:underline}.cf-clist-guide-modal .cf-clist-guide-here{color:var(--cf-control-ink);font-weight:700;text-decoration:underline}.cf-clist-section{flex-direction:column;gap:10px;display:flex}.cf-clist-section-title{color:#334155;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;display:flex}.cf-clist-subgroup{flex-direction:column;gap:10px;padding-left:12px;transition:all .25s;display:flex}.cf-clist-icon-btn{cursor:pointer;-webkit-user-select:none;user-select:none;box-sizing:border-box;vertical-align:middle;border-radius:50%;flex-shrink:0;justify-content:center;align-items:center;width:14px;height:14px;margin-left:6px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:10px;font-weight:700;line-height:1;transition:all .2s;display:inline-flex;position:relative}.cf-clist-icon-help{color:#0284c7;background:#e0f2fe;border:1px solid #bae6fd}.cf-clist-icon-help:hover{color:#fff;background:#0284c7;box-shadow:0 0 6px #0284c766}.cf-clist-icon-warn{color:#d97706;background:#fef3c7;border:1px solid #fde68a}.cf-clist-icon-warn:hover{color:#fff;background:#d97706;box-shadow:0 0 6px #d9770666}.cf-reset-button[data-v-24e4211c]{box-sizing:border-box;color:#94a3b8;cursor:pointer;background:0 0;border:1px solid #0000;border-radius:5px;flex-shrink:0;justify-content:center;align-items:center;width:22px;height:22px;padding:0;transition:background-color .15s,color .15s,border-color .15s;display:inline-flex}.cf-reset-button[data-v-24e4211c]:not(:disabled):hover,.cf-reset-button[data-v-24e4211c]:focus-visible{background:var(--cf-control-active);color:var(--cf-control-ink);border-color:var(--cf-surface-border)}.cf-reset-button[data-v-24e4211c]:disabled{opacity:.4;cursor:default}.cf-shortcut-content[data-v-4a397e75]{overflow-clip-margin:2px;align-items:center;height:22px;display:inline-grid;overflow:clip}.cf-shortcut-value[data-v-4a397e75],.cf-shortcut-recording-label[data-v-4a397e75]{grid-area:1/1;transition:transform .18s cubic-bezier(.22,1,.36,1),opacity .14s,visibility}.cf-shortcut-value[data-v-4a397e75]{justify-content:flex-end;align-items:center;gap:3px;display:inline-flex}.cf-shortcut-recording-label[data-v-4a397e75]{text-align:center;opacity:0;visibility:hidden;padding:0 6px;font-weight:600;transition-delay:0s,0s,.18s;transform:translateY(6px)}.is-recording .cf-shortcut-value[data-v-4a397e75]{opacity:0;visibility:hidden;transition-delay:0s,0s,.18s;transform:translateY(-6px)}.is-recording .cf-shortcut-recording-label[data-v-4a397e75]{opacity:1;visibility:visible;transition-delay:0s;transform:translateY(0)}@media (prefers-reduced-motion:reduce){.cf-shortcut-value[data-v-4a397e75],.cf-shortcut-recording-label[data-v-4a397e75]{transition:none;transform:none}}.cf-shortcuts-container{flex-direction:column;gap:12px;display:flex}.cf-shortcuts-header{margin-bottom:2px}.cf-shortcuts-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-shortcuts-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-shortcuts-subtitle+.cf-shortcuts-subtitle{margin-top:8px}.cf-shortcuts-note{--cf-note-ink:color-mix(in srgb, var(--cf-menu-accent) 52%, #172b39);background:color-mix(in srgb, var(--cf-menu-accent) 11%, white);border:1px solid var(--cf-surface-border);border-left:3.5px solid var(--cf-menu-accent);box-sizing:border-box;border-radius:6px;align-items:flex-start;gap:7px;margin-top:10px;padding:8px 12px;font-size:12px;line-height:1.5;display:flex}.cf-shortcuts-note-icon{width:15px;height:15px;color:var(--cf-note-ink);flex-shrink:0;justify-content:center;align-items:center;margin-top:1.5px;display:inline-flex}.cf-shortcuts-note-icon svg{width:15px;height:15px;display:block}.cf-shortcuts-note-body{color:var(--cf-note-ink);flex:auto}.cf-shortcuts-note-label{color:var(--cf-note-ink);margin-right:2px;font-weight:700}.cf-shortcuts-note-text{color:var(--cf-note-ink);font-weight:500}.cf-shortcuts-list{flex-direction:column;gap:8px;display:flex}.cf-shortcut-group{flex-direction:column;gap:3px;display:flex}.cf-shortcut-group-header{color:#64748b;-webkit-user-select:none;user-select:none;text-transform:uppercase;letter-spacing:.4px;align-items:center;gap:6px;padding-left:6px;font-size:11px;font-weight:700;display:flex}.cf-shortcut-group-icon{color:#1677ff;flex-shrink:0;justify-content:center;align-items:center;width:14px;height:14px;display:inline-flex}.cf-shortcut-group-icon svg{width:14px;height:14px;display:block}.cf-shortcut-group-box{background:var(--cf-control-surface,#f8fafc);border:1px solid var(--cf-surface-border);border-radius:10px;flex-direction:column;gap:2px;padding:3px 4px;display:flex}.cf-shortcut-item{box-sizing:border-box;background:0 0;border-radius:6px;justify-content:space-between;align-items:center;gap:10px;min-height:34px;padding:3px 8px;transition:background-color .18s,box-shadow .18s;display:flex;overflow:hidden}.cf-shortcut-item:hover,.cf-shortcut-item:focus-within{background:var(--cf-control-active);box-shadow:inset 0 0 0 1px var(--cf-surface-border)}.cf-shortcut-title{color:#1e293b;-webkit-user-select:none;user-select:none;white-space:nowrap;text-overflow:ellipsis;cursor:default;flex:auto;min-width:0;margin-right:4px;font-size:13px;font-weight:600;overflow:hidden}.cf-shortcut-controls{flex-shrink:0;justify-content:flex-end;align-items:center;gap:6px;margin-left:auto;display:flex}.cf-shortcut-key-btn{white-space:nowrap;cursor:pointer;color:#0f172a;-webkit-user-select:none;user-select:none;box-sizing:border-box;background:0 0;border:1px solid #0000;border-radius:6px;outline:none;flex-wrap:nowrap;flex-shrink:0;justify-content:flex-end;align-items:center;gap:3px;min-height:28px;padding:2px 4px;font-size:11px;transition:background-color .18s,border-color .18s,color .18s;display:inline-flex;position:relative}.cf-shortcut-key-btn:hover{background:#f1f5f9b3}.cf-shortcut-key-btn.recording{color:#1d4ed8;background:#eff6ff;border-color:#3b82f6}.cf-shortcut-key-btn:after{content:\"\";border-radius:inherit;opacity:0;pointer-events:none;transition:opacity .18s;position:absolute;inset:-1px;box-shadow:0 0 0 3px #3b82f64d}.cf-shortcut-key-btn.recording:after{opacity:.5;animation:1.8s ease-in-out infinite cf-pulse-recording}.cf-shortcut-key-btn.has-conflict{color:#bd2542;background:#fff1f2;border-color:#e65b70}.cf-shortcut-key-btn.has-conflict:after{box-shadow:0 0 0 3px #e65b7026}.cf-shortcut-key-btn.has-conflict kbd{color:#bd2542;background:#ffe4e9;border-color:#f0a6b3;box-shadow:0 1px #f0a6b3}@keyframes cf-pulse-recording{0%,to{opacity:.35}50%{opacity:.85}}.cf-shortcut-key-btn kbd{color:#334155;box-sizing:border-box;white-space:nowrap;background:linear-gradient(#fff 0%,#f8fafc 100%);border:1px solid #cbd5e1;border-bottom:2px solid #94a3b8;border-radius:4px;flex-shrink:0;justify-content:center;align-items:center;min-width:20px;height:22px;padding:0 5px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:11px;font-weight:600;line-height:1;transition:transform .15s,border-color .15s,color .15s,box-shadow .15s;display:inline-flex;box-shadow:0 1px 2px #0000000d}.cf-shortcut-key-btn:hover kbd{color:#1d4ed8;background:linear-gradient(#fff 0%,#eff6ff 100%);border-color:#93c5fd #93c5fd #3b82f6;transform:translateY(-1px);box-shadow:0 1px 3px #3b82f626}.cf-shortcut-key-btn:active kbd{box-shadow:none;transform:translateY(1px)}.cf-shortcut-key-btn.has-conflict:hover kbd{color:#bd2542;background:#ffe4e9;border-color:#f0a6b3;box-shadow:0 1px #f0a6b3}.cf-shortcut-plus{color:#94a3b8;-webkit-user-select:none;user-select:none;flex-shrink:0;justify-content:center;align-items:center;margin:0 .5px;font-size:10px;font-weight:600;display:inline-flex}.cf-shortcut-key-btn .cf-shortcut-empty{color:#94a3b8;box-sizing:border-box;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:4px;justify-content:center;align-items:center;height:22px;padding:0 6px;font-size:11px;font-style:normal;font-weight:500;line-height:1;transition:all .15s;display:inline-flex}.cf-shortcut-key-btn:hover .cf-shortcut-empty{color:#475569;background:#f1f5f9;border-color:#94a3b8}.cf-shortcut-clear-btn{color:#94a3b8;cursor:pointer;box-sizing:border-box;background:0 0;border:1px solid #0000;border-radius:5px;flex-shrink:0;justify-content:center;align-items:center;width:22px;height:22px;padding:0;transition:all .15s;display:inline-flex}.cf-shortcut-clear-btn:hover{color:#ef4444;background:#fef2f2;border-color:#fee2e2}.cf-shortcut-reset-all-btn{border:1px solid var(--cf-surface-border,#e2e8f0);background:var(--cf-control-surface,#f8fafc);color:#64748b;cursor:pointer;border-radius:6px;align-self:flex-start;align-items:center;gap:6px;margin-top:4px;padding:6px 12px;font-size:12px;font-weight:500;transition:all .15s;display:inline-flex}.cf-shortcut-reset-all-btn:hover{background:var(--cf-card-surface,#fff);color:var(--cf-control-ink);border-color:var(--cf-surface-border)}@media (prefers-reduced-motion:reduce){.cf-shortcut-item,.cf-shortcut-key-btn,.cf-shortcut-key-btn:after,.cf-shortcut-key-btn kbd{transition:none;animation:none}}.cf-storage-key-tab-btn:not(.active):hover{background:#f1f5f9!important;border-color:#94a3b8!important}.cf-storage-json-pre{scrollbar-width:thin;scrollbar-color:#334155 #0f172a;overscroll-behavior:contain}.cf-storage-json-pre::-webkit-scrollbar{width:7px;height:7px}.cf-storage-json-pre::-webkit-scrollbar-track{background:#0f172a;border-radius:6px}.cf-storage-json-pre::-webkit-scrollbar-thumb{background:#334155;border:1px solid #1e293b;border-radius:4px;transition:background .15s}.cf-storage-json-pre::-webkit-scrollbar-thumb:hover{background:#475569}.cf-storage-json-pre::-webkit-scrollbar-corner{background:#0f172a}.cf-json-key{color:#38bdf8;font-weight:500}.cf-json-string{color:#4ade80}.cf-json-number{color:#fb923c;font-weight:500}.cf-json-boolean{color:#c084fc;font-weight:600}.cf-json-null{color:#94a3b8;font-style:italic}.cf-json-punct{color:#94a3b8}.cf-storage-copy-json-btn{cursor:pointer;color:#0284c7;-webkit-user-select:none;user-select:none;box-sizing:border-box;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;justify-content:center;align-self:flex-start;align-items:center;gap:5px;padding:4px 11px;font-size:11.5px;font-weight:600;transition:all .15s;display:inline-flex;white-space:nowrap!important;flex-shrink:0!important}.cf-storage-copy-json-btn:hover{color:#0369a1;background:#e0f2fe;border-color:#7dd3fc}.cf-storage-copy-json-btn .copy-btn-text{display:inline-block;white-space:nowrap!important}.cf-storage-usage[data-v-e3e59c57]{grid-template-columns:120px minmax(0,1fr);align-items:center;gap:20px;min-width:0;display:grid;position:relative}.cf-storage-pie-summary[data-v-e3e59c57]{min-width:0}.cf-storage-pie[data-v-e3e59c57]{width:120px;height:120px}.cf-storage-pie-total[data-v-e3e59c57]{color:var(--cf-control-ink);flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 5px;margin-top:2px;font-size:10px;line-height:17px;display:flex}.cf-storage-pie-total strong[data-v-e3e59c57]{white-space:nowrap;font-variant-numeric:tabular-nums;font-size:11px;font-weight:650}.cf-storage-pie-legend[data-v-e3e59c57]{grid-template-columns:7px minmax(0,max-content) 44px 60px;justify-self:end;gap:2px 7px;width:max-content;min-width:0;max-width:100%;margin:0;padding:0;font-size:11px;line-height:17px;list-style:none;display:grid}.cf-storage-pie-legend li[data-v-e3e59c57]{grid-template-columns:subgrid;grid-column:1/-1;align-items:center;gap:7px;min-width:0;margin:0;padding:0;display:grid}.cf-storage-pie-dot[data-v-e3e59c57]{border-radius:50%;width:7px;height:7px}.cf-storage-pie-name[data-v-e3e59c57]{color:color-mix(in srgb, var(--cf-control-ink) 65%, #586579);white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.cf-storage-pie-percentage[data-v-e3e59c57]{text-align:right;color:var(--cf-control-ink);font-variant-numeric:tabular-nums;font-weight:600}.cf-storage-pie-size[data-v-e3e59c57]{color:color-mix(in srgb, var(--cf-control-ink) 70%, #718096);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:10px}.cf-storage-container{flex-direction:column;gap:12px;display:flex}.cf-storage-header{margin-bottom:2px}.cf-storage-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-storage-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-storage-overview{background:linear-gradient(135deg, var(--cf-control-surface), var(--cf-control-active));border:1px solid var(--cf-surface-border,#e2e8f0);box-sizing:border-box;border-radius:12px;flex-direction:column;gap:10px;padding:12px 14px;display:flex;box-shadow:0 1px 3px #00000008}.cf-storage-overview-top{flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 12px;display:flex}.cf-storage-overview-info{flex-direction:column;gap:2px;min-width:0;display:flex}.cf-storage-overview-label{color:var(--cf-control-ink);text-transform:uppercase;letter-spacing:.3px;font-size:11px;font-weight:600}.cf-storage-btn>svg{flex:0 0 12px;width:12px;height:12px}.cf-storage-btn:focus-visible{outline-offset:2px;outline:2px solid #e8798f}.cf-storage-list{flex-direction:column;gap:8px;display:flex}.cf-storage-item{background:var(--cf-card-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0);box-sizing:border-box;border-radius:10px;flex-direction:column;gap:7px;padding:10px 12px;transition:all .2s cubic-bezier(.4,0,.2,1);display:flex;box-shadow:0 1px 2px #00000005}.cf-storage-item:hover{border-color:#cbd5e1;box-shadow:0 4px 12px -2px #0000000d}.cf-storage-item-main{align-items:center;gap:10px;width:100%;display:flex}.cf-storage-icon-box{--cf-storage-tone:#64748b;background:color-mix(in srgb, var(--cf-storage-tone) 10%, var(--cf-card-surface));color:color-mix(in srgb, var(--cf-storage-tone) 78%, #354458);border:1px solid color-mix(in srgb, var(--cf-storage-tone) 24%, var(--cf-surface-border));border-radius:8px;flex-shrink:0;justify-content:center;align-items:center;width:32px;height:32px;font-size:16px;display:flex}.cf-storage-icon-box svg,.cf-storage-icon-box img{object-fit:contain;flex-shrink:0;width:17px;height:17px;display:block}.cf-storage-icon-box.icon-settings{--cf-storage-tone:#ad8438}.cf-storage-icon-box.icon-runtime{--cf-storage-tone:#7371b7}.cf-storage-icon-box.icon-cf{--cf-storage-tone:#359574}.cf-storage-icon-box.icon-clist{--cf-storage-tone:#438caa}.cf-storage-icon-box.icon-avatar{--cf-storage-tone:#8869b5}.cf-storage-icon-box.icon-solved{--cf-storage-tone:#36979d}.cf-storage-item-body{flex-direction:column;flex:1;gap:3px;min-width:0;display:flex}.cf-storage-item-header{justify-content:space-between;align-items:center;gap:8px;min-width:0;display:flex}.cf-storage-item-title{color:#0f172a;white-space:nowrap;text-overflow:ellipsis;font-size:13px;font-weight:600;overflow:hidden}.cf-storage-item-meta{align-items:center;gap:6px;min-width:0;display:flex}.cf-storage-size-val{color:#334155;white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:12px;font-weight:600}.cf-storage-meta-dot{color:#cbd5e1;-webkit-user-select:none;user-select:none;font-size:11px;line-height:1}.cf-storage-count-tag{background:color-mix(in srgb, var(--cf-menu-accent) 24%, var(--cf-card-surface));color:color-mix(in srgb, var(--cf-menu-accent) 38%, #26374b);border:1px solid color-mix(in srgb, var(--cf-menu-accent) 40%, var(--cf-card-surface));white-space:nowrap;border-radius:4px;flex-shrink:0;padding:1px 6px;font-size:10.5px;font-weight:600}.cf-storage-item-desc{color:#64748b;white-space:normal;word-break:break-word;margin:0;font-size:11px;line-height:1.45}.cf-storage-btn-group{flex-shrink:0;align-items:center;gap:6px;display:inline-flex}.cf-storage-btn{cursor:pointer;white-space:nowrap;border-radius:6px;flex-shrink:0;align-items:center;gap:4px;padding:3px 8px;font-size:11px;font-weight:600;transition:all .15s;display:inline-flex}.cf-storage-btn.btn-view{color:#0284c7;background:#f0f9ff;border:1px solid #bae6fd}.cf-storage-btn.btn-view:hover{color:#0369a1;background:#e0f2fe;border-color:#7dd3fc}.cf-storage-btn.btn-reset{color:#d97706;background:#fffbeb;border:1px solid #fde68a}.cf-storage-btn.btn-reset:hover{color:#b45309;background:#fef3c7;border-color:#fcd34d}.cf-storage-btn.btn-clear{color:#e11d48;background:#fff1f2;border:1px solid #fecdd3}.cf-storage-btn.btn-clear:hover{color:#be123c;background:#ffe4e6;border-color:#fda4af}.cf-changelog-header{margin-bottom:8px}.cf-changelog-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-changelog-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-changelog-list{flex-direction:column;gap:10px;display:flex}.cf-changelog-card{background:var(--cf-card-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0);border-radius:10px;transition:border-color .2s,box-shadow .2s;overflow:hidden}.cf-changelog-card:hover{border-color:color-mix(in srgb, var(--cf-menu-accent) 38%, var(--cf-surface-border));box-shadow:0 2px 8px color-mix(in srgb, var(--cf-menu-accent) 10%, transparent)}.cf-changelog-card.expanded{border-color:color-mix(in srgb, var(--cf-menu-accent) 30%, var(--cf-surface-border))}.cf-changelog-card-header{cursor:pointer;-webkit-user-select:none;user-select:none;background:var(--cf-card-hover,#fcfdfe);justify-content:space-between;align-items:center;padding:10px 14px;transition:background .15s;display:flex}.cf-changelog-card-header:hover{background:var(--cf-control-active)}.cf-changelog-card-left{flex-wrap:wrap;align-items:center;gap:8px;display:flex}.cf-changelog-card-right{align-items:center;gap:10px;margin-left:auto;display:flex}.cf-changelog-version{color:#0f172a;letter-spacing:-.01em;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:13.5px;font-weight:700;line-height:1.3}.cf-changelog-badge-latest{color:#fff;background:color-mix(in srgb, var(--cf-menu-accent) 55%, #174338);border:1px solid color-mix(in srgb, var(--cf-menu-accent) 48%, #174338);box-shadow:0 2px 6px color-mix(in srgb, var(--cf-menu-accent) 20%, transparent);border-radius:999px;padding:2px 8px;font-size:11px;font-weight:700;line-height:1.3}.cf-changelog-date{color:#94a3b8;white-space:nowrap;font-feature-settings:\"tnum\";font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:11.5px}.cf-changelog-chevron{color:#94a3b8;align-items:center;transition:transform .2s;display:flex}.cf-changelog-card.expanded .cf-changelog-chevron{transform:rotate(180deg)}.cf-changelog-card-body{border-top:1px solid var(--cf-surface-border);color:#334155;background:0 0;padding:12px 16px 14px;font-size:12.5px;line-height:1.6}.cf-changelog-section{margin-bottom:14px}.cf-changelog-section:last-child{margin-bottom:0}.cf-changelog-section-badge{--cf-section-hue:#658078;letter-spacing:.2px;color:color-mix(in srgb, var(--cf-section-hue) 65%, #23394a);background:color-mix(in srgb, var(--cf-section-hue) 8%, var(--cf-card-surface));border:1px solid color-mix(in srgb, var(--cf-section-hue) 24%, var(--cf-surface-border));border-radius:6px;margin-bottom:8px;padding:2px 8px;font-size:11px;font-weight:600;line-height:1.4;display:inline-block}.cf-changelog-section-badge.added{--cf-section-hue:#258064}.cf-changelog-section-badge.optimized{--cf-section-hue:#3b78a0}.cf-changelog-section-badge.fixed{--cf-section-hue:#aa752f}.cf-changelog-section-badge.announcement{--cf-section-hue:#866299}.cf-changelog-items{flex-direction:column;gap:8px;display:flex;margin:0!important;padding:0 0 0 6px!important;list-style:none!important}.cf-changelog-item{color:#334155;align-items:flex-start;gap:6px;font-size:12.5px;line-height:1.6;display:flex}.cf-changelog-item-index{color:#64748b;text-align:right;-webkit-user-select:none;user-select:none;font-feature-settings:\"tnum\";flex-shrink:0;min-width:18px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:12px;font-weight:600;line-height:1.6}.cf-changelog-item-content{word-break:break-word;flex:1;line-height:1.6}.cf-changelog-link{font-weight:500;color:#0284c7!important;text-decoration:none!important}.cf-changelog-link:hover{text-decoration:underline!important}.cf-changelog-code{background:var(--cf-control-surface);color:#0f172a;border:1px solid var(--cf-surface-border,#e2e8f0);border-radius:4px;padding:1px 5px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:11px}.cf-roadmap-header{margin-bottom:12px}.cf-roadmap-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-roadmap-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-roadmap-container{--cf-roadmap-planned:color-mix(in srgb, var(--cf-menu-accent) 24%, #6681a7);--cf-roadmap-planned-ink:color-mix(in srgb, var(--cf-roadmap-planned) 65%, #263747);--cf-proposal-accent:#aa7c30;--cf-proposal-ink:#77572e;flex-direction:column;gap:16px;display:flex}.cf-roadmap-group{flex-direction:column;gap:8px;display:flex}.cf-roadmap-group-header{justify-content:space-between;align-items:center;padding-bottom:4px;display:flex}.cf-roadmap-group-title{color:#334155;align-items:center;gap:6px;font-size:12px;font-weight:700;display:flex}.cf-roadmap-group-badge{border-radius:10px;padding:1px 7px;font-size:11px;font-weight:600;line-height:1.3}.cf-roadmap-group-badge.planned{background:color-mix(in srgb, var(--cf-roadmap-planned) 13%, var(--cf-content-surface));color:var(--cf-roadmap-planned-ink);border:1px solid color-mix(in srgb, var(--cf-roadmap-planned) 30%, transparent)}.cf-roadmap-group-badge.completed{color:#059669;background:#ecfdf5;border:1px solid #a7f3d0}.cf-roadmap-list{flex-direction:column;gap:8px;display:flex}.cf-roadmap-card{background:var(--cf-card-surface,#fff);border:1px solid var(--cf-surface-border,#e2e8f0);border-radius:9px;flex-direction:column;gap:6px;padding:10px 14px;transition:background-color .2s,border-color .2s,box-shadow .2s;display:flex}.cf-roadmap-card:hover{border-color:color-mix(in srgb, var(--cf-roadmap-planned) 48%, var(--cf-surface-border));box-shadow:0 2px 8px color-mix(in srgb, var(--cf-roadmap-planned) 10%, transparent)}.cf-roadmap-card.planned{background:linear-gradient(115deg, color-mix(in srgb, var(--cf-roadmap-planned) 14%, var(--cf-content-surface)), color-mix(in srgb, var(--cf-roadmap-planned) 5%, var(--cf-content-surface)));border-color:color-mix(in srgb, var(--cf-roadmap-planned) 26%, var(--cf-surface-border));box-shadow:inset 2px 0 color-mix(in srgb, var(--cf-roadmap-planned) 60%, transparent)}.cf-roadmap-card.planned:hover{border-color:color-mix(in srgb, var(--cf-roadmap-planned) 55%, var(--cf-surface-border));box-shadow:inset 2px 0 var(--cf-roadmap-planned), 0 2px 8px color-mix(in srgb, var(--cf-roadmap-planned) 12%, transparent)}.cf-roadmap-card.completed{background:color-mix(in srgb, var(--cf-menu-accent) 7%, var(--cf-content-surface));border-color:var(--cf-surface-border)}.cf-roadmap-card.completed:hover{background:color-mix(in srgb, var(--cf-menu-accent) 11%, var(--cf-content-surface));border-color:color-mix(in srgb, var(--cf-menu-accent) 42%, #dde5ee)}.cf-roadmap-card-header{justify-content:space-between;align-items:center;gap:8px;display:flex}.cf-roadmap-card-title-wrap{align-items:center;gap:8px;min-width:0;display:flex}.cf-roadmap-status-icon{border-radius:50%;flex-shrink:0;justify-content:center;align-items:center;width:18px;height:18px;display:flex}.cf-roadmap-status-icon.completed{color:#fff;background:#10b981}.cf-roadmap-status-icon.planned{color:var(--cf-roadmap-planned-ink);background:0 0;border:none}.cf-roadmap-item-title-text{color:#0f172a;font-size:13px;font-weight:600;line-height:1.4}.cf-roadmap-card.completed .cf-roadmap-item-title-text{color:#1e293b}.cf-roadmap-item-desc{color:#64748b;margin:0;font-size:11.5px;line-height:1.55}.cf-roadmap-tag{white-space:nowrap;border-radius:4px;flex-shrink:0;padding:1px 6px;font-size:10.5px;font-weight:600}.cf-roadmap-tag.planned{background:color-mix(in srgb, var(--cf-roadmap-planned) 15%, var(--cf-content-surface));color:var(--cf-roadmap-planned-ink);border:1px solid color-mix(in srgb, var(--cf-roadmap-planned) 30%, transparent)}.cf-roadmap-tag.completed{color:#15803d;background:#dcfce7;border:1px solid #bbf7d0}.cf-roadmap-proposal-card{background:linear-gradient(135deg, color-mix(in srgb, var(--cf-menu-accent) 4%, #fcf0d8), color-mix(in srgb, var(--cf-menu-secondary) 7%, #f8efdf));border:1px dashed color-mix(in srgb, var(--cf-proposal-accent) 48%, transparent);border-radius:9px;flex-direction:column;gap:7px;margin-top:4px;padding:11px 14px;transition:border-color .2s,box-shadow .2s,transform .2s;display:flex}.cf-roadmap-proposal-card:hover{border-color:var(--cf-proposal-accent);box-shadow:0 3px 12px color-mix(in srgb, var(--cf-proposal-accent) 12%, transparent)}.cf-roadmap-proposal-header{justify-content:space-between;align-items:center;gap:10px;display:flex}.cf-roadmap-proposal-title-wrap{align-items:center;gap:8px;min-width:0;display:flex}.cf-roadmap-proposal-icon{background:color-mix(in srgb, var(--cf-proposal-accent) 16%, #fcf0d8);width:22px;height:22px;color:var(--cf-proposal-ink);border-radius:6px;flex-shrink:0;justify-content:center;align-items:center;display:flex}.cf-roadmap-proposal-title-text{color:var(--cf-proposal-ink);font-size:13px;font-weight:700;line-height:1.4}.cf-settings-modal .cf-roadmap-proposal-btn{color:var(--cf-proposal-ink);background:color-mix(in srgb, var(--cf-proposal-accent) 12%, #fcf0d8);border:1px solid color-mix(in srgb, var(--cf-proposal-accent) 34%, transparent);box-shadow:0 1px 2px color-mix(in srgb, var(--cf-proposal-accent) 8%, transparent);border-radius:6px;flex-shrink:0;align-items:center;gap:5px;padding:3px 10px;font-size:11.5px;font-weight:600;line-height:1.35;text-decoration:none;transition:background-color .15s,color .15s,border-color .15s,box-shadow .15s,transform .15s;display:inline-flex}.cf-settings-modal .cf-roadmap-proposal-btn:hover{background:var(--cf-proposal-ink);color:#fff;border-color:var(--cf-proposal-ink);box-shadow:0 2px 8px color-mix(in srgb, var(--cf-proposal-accent) 22%, transparent);transform:translateY(-1px)}.cf-roadmap-proposal-btn svg{transition:transform .15s}.cf-roadmap-proposal-btn:hover svg{transform:translate(1px,-1px)}.cf-roadmap-proposal-desc{color:var(--cf-proposal-ink);opacity:.9;margin:0;padding-left:30px;font-size:11.5px;line-height:1.55}.cf-ack-project-type{border:1px solid color-mix(in srgb, var(--cf-ack-accent) 40%, var(--cf-content-surface));background:color-mix(in srgb, var(--cf-ack-accent) 24%, var(--cf-content-surface));color:color-mix(in srgb, var(--cf-ack-accent) 38%, #26374b);white-space:nowrap;border-radius:6px;align-items:center;gap:5px;padding:3px 7px;font-size:11px;font-weight:600;line-height:18px;display:inline-flex}.cf-ack-project-type svg{flex:none;width:15px;height:15px}.cf-project-links{display:inline-flex;position:relative}.cf-project-links-chevron{border-bottom:1.5px solid;border-right:1.5px solid;width:6px;height:6px;margin:0 2px 3px 4px;transition:transform .17s;transform:rotate(45deg)}.cf-project-links-chevron.is-open{transform:translateY(3px)rotate(225deg)}.cf-project-link-panel{z-index:30;border:1px solid color-mix(in srgb, var(--cf-ack-accent) 42%, var(--cf-card-surface));background:var(--cf-card-surface);transform-origin:100% 0;border-radius:10px;width:214px;max-width:calc(100vw - 32px);margin:0;padding:5px;list-style:none;position:absolute;top:calc(100% + 6px);right:0;box-shadow:0 6px 20px #26374b26}.cf-project-link-panel.is-above{transform-origin:100% 100%;top:auto;bottom:calc(100% + 6px)}.cf-project-link-panel li{margin:0;padding:0;list-style:none}.cf-settings-modal .cf-project-link-option:any-link{color:var(--cf-ack-ink);white-space:nowrap;border-radius:6px;align-items:center;gap:8px;padding:8px 10px;font-size:12px;font-weight:500;line-height:20px;text-decoration:none;transition:background-color .16s;display:flex}.cf-settings-modal .cf-project-link-option:is(:hover,:focus-visible){background:color-mix(in srgb, var(--cf-ack-accent) 18%, var(--cf-card-surface));outline:2px solid color-mix(in srgb, var(--cf-ack-accent) 38%, transparent);outline-offset:-2px}.cf-project-link-option svg{flex:none;width:17px;height:17px}.cf-project-links-enter-active,.cf-project-links-leave-active{transition:opacity .16s,transform .18s cubic-bezier(.22,1,.36,1)}.cf-project-links-enter-from,.cf-project-links-leave-to{opacity:0;transform:translateY(-5px)scale(.98)}.cf-project-link-panel.is-above.cf-project-links-enter-from,.cf-project-link-panel.is-above.cf-project-links-leave-to{transform:translateY(5px)scale(.98)}@media (prefers-reduced-motion:reduce){.cf-project-links-chevron,.cf-project-links-enter-active,.cf-project-links-leave-active{transition:none}}.cf-ack-header{margin-bottom:2px}.cf-ack-title{color:#0f172a;align-items:center;gap:6px;margin:0 0 4px;font-size:14px;font-weight:700;display:flex}.cf-ack-subtitle{color:#64748b;margin:0;font-size:12px;line-height:1.5}.cf-ack-card{--cf-ack-accent:var(--cf-menu-accent);--cf-ack-ink:color-mix(in srgb, var(--cf-ack-accent) 65%, #243447);background:linear-gradient(120deg, color-mix(in srgb, var(--cf-ack-accent) 14%, var(--cf-content-surface)), color-mix(in srgb, var(--cf-ack-accent) 5%, var(--cf-content-surface)));border:1px solid color-mix(in srgb, var(--cf-ack-accent) 28%, var(--cf-surface-border));box-sizing:border-box;border-radius:12px;flex-direction:column;gap:9px;padding:13px 15px;transition:border-color .2s,box-shadow .2s;display:flex;position:relative;box-shadow:inset 0 1px #ffffff60}.cf-ack-card:hover{border-color:color-mix(in srgb, var(--cf-ack-accent) 62%, var(--cf-surface-border));box-shadow:inset 0 1px 0 #ffffff60, 0 4px 12px color-mix(in srgb, var(--cf-ack-accent) 14%, transparent)}.cf-ack-card.helper-card{--cf-ack-accent:#5276bd}.cf-ack-card.clist-card{--cf-ack-accent:#3096a8}.cf-ack-card.ojbetter-card{--cf-ack-accent:#8570b7}.cf-ack-card.carrot-card{--cf-ack-accent:#ba8746}.cf-ack-card.analytics-card{--cf-ack-accent:#5c9290}.cf-ack-card.analytics-card .cf-ack-icon-box{isolation:isolate}.cf-ack-card.analytics-card .cf-ack-icon-img{mix-blend-mode:multiply}.cf-ack-project-types{flex-wrap:wrap;gap:6px;display:flex}.cf-ack-card-top{justify-content:space-between;align-items:center;gap:10px;display:flex}.cf-ack-project-info{align-items:center;gap:10px;min-width:0;display:flex}.cf-ack-icon-box{background:color-mix(in srgb, var(--cf-ack-accent) 16%, var(--cf-content-surface));border:1px solid color-mix(in srgb, var(--cf-ack-accent) 22%, transparent);width:32px;height:32px;color:var(--cf-ack-ink);border-radius:8px;flex-shrink:0;justify-content:center;align-items:center;display:flex;overflow:hidden}.cf-ack-icon-img{object-fit:contain;border-radius:3px;width:22px;height:22px;display:block}.cf-ack-card.carrot-card .cf-ack-icon-img{image-rendering:pixelated}.cf-ack-project-name{color:#1e293b;white-space:nowrap;text-overflow:ellipsis;font-size:13.5px;font-weight:700;overflow:hidden}.cf-ack-badge{white-space:nowrap;background:color-mix(in srgb, var(--cf-ack-accent) 14%, var(--cf-content-surface));color:var(--cf-ack-ink);border:1px solid color-mix(in srgb, var(--cf-ack-accent) 27%, transparent);border-radius:9999px;flex-shrink:0;padding:3px 8px;font-size:11px;font-weight:600}.cf-ack-desc{color:#475569;flex-direction:column;gap:7px;margin:0;font-size:12.5px;line-height:1.6;display:flex}.cf-ack-desc p{margin:0;line-height:1.6}.cf-ack-footer{flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-top:2px;display:flex}.cf-settings-modal .cf-ack-link-btn{cursor:pointer;background:color-mix(in srgb, var(--cf-ack-accent) 28%, var(--cf-content-surface));color:color-mix(in srgb, var(--cf-ack-accent) 40%, #243447);border:1px solid color-mix(in srgb, var(--cf-ack-accent) 48%, var(--cf-content-surface));box-shadow:inset 0 1px 0 #ffffff65, 0 1px 2px color-mix(in srgb, var(--cf-ack-accent) 12%, transparent);border-radius:6px;align-items:center;gap:6px;padding:5px 12px;font-size:12px;font-weight:600;transition:color .2s,background-color .2s,border-color .2s,box-shadow .2s;display:inline-flex;text-decoration:none!important}.cf-settings-modal .cf-ack-link-btn:is(:hover,:focus-visible){background:color-mix(in srgb, var(--cf-ack-accent) 36%, var(--cf-content-surface));color:color-mix(in srgb, var(--cf-ack-accent) 40%, #243447);border-color:color-mix(in srgb, var(--cf-ack-accent) 65%, var(--cf-content-surface));box-shadow:inset 0 1px 0 #ffffff65, 0 2px 5px color-mix(in srgb, var(--cf-ack-accent) 17%, transparent)}@property --cf-menu-accent{syntax:\"<color>\";inherits:true;initial-value:#5576df}@property --cf-menu-secondary{syntax:\"<color>\";inherits:true;initial-value:#27b7a5}@property --cf-paint-accent{syntax:\"<color>\";inherits:false;initial-value:#5576df}@property --cf-paint-secondary{syntax:\"<color>\";inherits:false;initial-value:#27b7a5}.cf-setting-label,.cf-setting-sublabel{line-height:20px}.cf-menu-theme [data-cf-language-text]{display:inline-block}.cf-menu-theme svg[data-cf-icon]{--cf-icon-ink:color-mix(in srgb, var(--cf-icon-primary) 70%, #2b3d50);--cf-icon-detail:color-mix(in srgb, var(--cf-icon-secondary) 78%, var(--cf-icon-primary))}.cf-menu-theme{--cf-content-surface:color-mix(in srgb, var(--cf-menu-accent) 9%, #fafcfe);--cf-card-surface:color-mix(in srgb, var(--cf-menu-accent) 4%, var(--cf-content-surface));--cf-card-hover:color-mix(in srgb, var(--cf-menu-accent) 9%, var(--cf-content-surface));--cf-control-surface:color-mix(in srgb, var(--cf-menu-accent) 5%, var(--cf-content-surface));--cf-control-active:color-mix(in srgb, var(--cf-menu-accent) 18%, #f6f9fc);--cf-control-ink:color-mix(in srgb, var(--cf-menu-accent) 46%, #27364e);--cf-surface-border:color-mix(in srgb, var(--cf-menu-accent) 18%, #dde5ee)}.cf-sidebar-nav{--cf-paint-accent:var(--cf-menu-accent);--cf-paint-secondary:var(--cf-menu-secondary);transition:--cf-paint-accent .48s,--cf-paint-secondary .48s}.cf-menu-theme :is(input[type=text],input[type=password],input[type=number],textarea,select){background:var(--cf-control-surface);color:#334155;border:1px solid var(--cf-surface-border);transition:background-color .22s,border-color .22s,box-shadow .22s}.cf-menu-theme :is(input[type=text],input[type=password],input[type=number],textarea,select):focus{background:var(--cf-control-active);border-color:var(--cf-menu-accent);box-shadow:0 0 0 2px color-mix(in srgb, var(--cf-menu-accent) 15%, transparent);outline:none}.cf-version-tag{color:#1890ff;letter-spacing:.5px;background-color:#e6f7ff;border:1px solid #91d5ff;border-radius:6px;justify-content:center;align-items:center;margin-left:8px;padding:2px 8px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-size:12px;font-weight:700;display:inline-flex}.cf-settings-modal{border:1px solid color-mix(in srgb, var(--cf-menu-accent) 18%, #e2e8f0);box-shadow:0 12px 35px #00000024, 0 2px 6px #0000000a, 0 0 28px color-mix(in srgb, var(--cf-menu-accent) 9%, transparent);color:#1e293b;box-sizing:border-box;overscroll-behavior:contain;background:0 0;border-radius:14px;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;transition:border-color .48s,box-shadow .48s;animation:.2s cubic-bezier(.16,1,.3,1) cf-menu-open;display:none;position:relative;overflow:hidden}@keyframes cf-menu-open{0%{transform:translateY(var(--cf-menu-open-y,-6px)) scale(.98)}to{transform:translateY(0)scale(1)}}.cf-modal-header{border-bottom-style:solid;border-bottom-width:1px;justify-content:space-between;align-items:center;padding:16px 20px;display:flex;position:relative}.cf-header-left{align-items:center;gap:10px;min-width:0;display:flex}.cf-header-logo{will-change:transform;flex-shrink:0;width:42px;height:42px;animation:20s linear infinite cf-header-logo-turn;position:relative}.cf-header-logo .cf-launcher-motion{animation:none;transform:none}.cf-header-logo .cf-launcher-flower{transition:none}@keyframes cf-header-logo-turn{0%{transform:rotate(0)}to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.cf-header-logo{animation:none}}@keyframes cf-title-rainbow-roll{0%{background-position:0%}to{background-position:200%}}.cf-header-title{letter-spacing:.6px;background:linear-gradient(90deg,#ff8e9e 0%,#ffd166 16.6%,#69db7c 33.3%,#48cae4 50%,#91a7ff 66.6%,#f783ac 83.3%,#ff8e9e 100%,#ffd166 116.6%,#69db7c 133.3%,#48cae4 150%,#91a7ff 166.6%,#f783ac 183.3%,#ff8e9e 200%) 0 0/200%;-webkit-text-fill-color:transparent;color:#0000;-webkit-user-select:none;user-select:none;-webkit-background-clip:text;background-clip:text;align-items:baseline;gap:8px;margin:0;padding:0;font-family:Kaushan Script,Satisfy,Segoe Script,Brush Script MT,cursive,sans-serif;font-size:26px;font-weight:700;line-height:1.15;animation:4s linear infinite cf-title-rainbow-roll;display:inline-flex}.cf-title-version{letter-spacing:.5px;opacity:.95;padding-right:6px;font-family:inherit;font-size:20px;font-weight:700;display:inline-block}.cf-close-btn{color:#94a3b8;cursor:pointer;width:28px;height:28px;box-shadow:none;background:0 0;border:none;border-radius:8px;flex-shrink:0;justify-content:center;align-items:center;padding:0;line-height:1;transition:color .15s;display:flex}.cf-close-btn:hover{color:#151b25}.cf-modal-body{overscroll-behavior:contain;background:#fff;flex:1;min-height:0;display:flex;overflow:hidden}.cf-section-title-icon{color:#1677ff;flex-shrink:0;justify-content:center;align-items:center;width:18px;height:18px;display:inline-flex}.cf-section-title-icon svg{width:18px;height:18px;display:block}.cf-content-viewport{background:var(--cf-content-surface);flex:1;min-width:0;min-height:0;padding-right:6px;transition:background-color .48s;display:flex;position:relative}.cf-content-area{scrollbar-width:none;overscroll-behavior:contain;box-sizing:border-box;overflow-anchor:none;flex:1;min-width:0;padding:14px 18px;position:relative;overflow-y:auto;overflow-x:hidden!important}.cf-content-area::-webkit-scrollbar{display:none}.cf-content-area:focus-visible{outline-offset:-2px;outline:2px solid #bfdbfe}.cf-content-panels{min-height:var(--cf-scroll-floor,0px);display:flow-root;position:relative;overflow:clip}.cf-tab-panel{will-change:transform, opacity;transform-origin:top;flex-direction:column;gap:12px;display:none}.cf-tab-panel.active{display:flex}.cf-setting-item{justify-content:space-between;align-items:center;min-height:32px;display:flex}.cf-setting-label{color:#334155;-webkit-user-select:none;user-select:none;font-size:13px;font-weight:600}.cf-setting-sublabel{color:#64748b;-webkit-user-select:none;user-select:none;font-size:12px}.cf-settings-modal a,.cf-settings-modal a:link,.cf-settings-modal a:visited{text-decoration:none!important}@media (prefers-reduced-motion:reduce){.cf-menu-theme *,.cf-menu-theme :before,.cf-menu-theme :after{scroll-behavior:auto!important;transition:none!important;animation:none!important}.cf-menu-theme{transition:none}.cf-header-title{animation:none}}\n/*$vite$:1*/ ");
 	var __defProp = Object.defineProperty;
 	var __exportAll = (all, no_symbols) => {
 		let target = {};
@@ -424,7 +424,9 @@ PERFORMANCE OF THIS SOFTWARE.
 		return target;
 	};
 	_css("@font-face{font-family:Kaushan Script;font-style:normal;font-display:swap;font-weight:400;src:url(data:font/woff2;base64,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)format(\"woff2\");unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}.datatable>div[style*=\"background-color: white\"],.datatable>div[style*=background-color\\:white]{max-width:100%!important;overflow-x:auto!important}.datatable>div:has(>table.status-frame-datatable){max-width:100%!important;overflow-x:auto!important}table.cf-status-table,table.status-frame-datatable{border-collapse:collapse!important;width:100%!important;max-width:100%!important}table.cf-status-table th,table.cf-status-table td,table.status-frame-datatable th,table.status-frame-datatable td{box-sizing:border-box!important;vertical-align:middle!important;padding:5px 6px!important}.id-cell,table.status-frame-datatable th:first-child{white-space:nowrap!important;vertical-align:middle!important;width:70px!important;min-width:65px!important}.time-consumed-cell,th.cf-time-consumed-header{white-space:nowrap!important;text-align:right!important;vertical-align:middle!important;width:55px!important}.memory-consumed-cell,th.cf-memory-consumed-header{white-space:nowrap!important;text-align:right!important;vertical-align:middle!important;width:60px!important}.cf-table-time-cell,th.cf-table-time-header{white-space:nowrap!important;vertical-align:middle!important;width:120px!important;min-width:110px!important}:root.cf-hide-timeFormat .cf-time-timezone-label{display:none!important}.cf-time-slot{vertical-align:middle;display:inline-block;overflow:visible}.cf-time-value{font-variant-numeric:tabular-nums;display:block}.cf-team-layout{overflow:hidden}.cf-team-moving a:not(.cf-avatar-container){display:inline-block}.status-party-cell{white-space:nowrap!important;text-align:left!important;vertical-align:middle!important;width:140px!important;max-width:155px!important}.status-party-cell.cf-team-formatted,.status-party-cell.cf-team-unformatted{white-space:normal!important;word-break:break-word!important;vertical-align:middle!important;width:auto!important;min-width:140px!important;max-width:240px!important}.cf-team-formatted{padding-top:8px!important;padding-bottom:8px!important}.cf-team-header{word-break:break-word;margin-bottom:6px;font-size:13px;font-weight:700;line-height:1.4}.cf-team-members{flex-direction:column;gap:4px;margin-left:2px;display:flex}.cf-team-header sup,.cf-team-formatted sup{vertical-align:super!important;margin-left:2px!important;font-size:9px!important;line-height:1!important;display:inline-block!important}.cf-avatar-line-wrapper{vertical-align:middle!important;white-space:nowrap!important;align-items:center!important;max-width:100%!important;display:inline-flex!important}a.cf-avatar-container{vertical-align:middle!important;flex-grow:0!important;flex-shrink:0!important;justify-content:center!important;align-items:center!important;width:auto!important;min-width:auto!important;max-width:none!important;line-height:1!important;display:inline-flex!important;overflow:visible!important}img.cf-user-avatar{vertical-align:middle!important;object-fit:cover!important;flex-shrink:0!important;margin-right:5px!important;display:inline-block!important}:root:not(.cf-hide-userAvatar) .cf-author-icon-hidden,:root:not(.cf-hide-userAvatar) .right-meta li>a>img[src*=user_16x16]{display:none!important}:root:not(.cf-hide-userAvatar) .right-meta li>a:has(>img[src*=user_16x16]){display:none!important}.cf-avatar-inline-user{vertical-align:middle!important;align-items:center!important;line-height:1!important;display:inline-flex!important}:root:not(.cf-hide-userAvatar) .topic .meta{box-sizing:border-box!important;height:auto!important;min-height:2.5em!important;display:flow-root!important}:root:not(.cf-hide-userAvatar) .topic .meta br[style*=clear]{display:none!important}:root:not(.cf-hide-userAvatar) .topic .left-meta{float:left!important;align-items:center!important;min-height:2.5em!important;display:flex!important}:root:not(.cf-hide-userAvatar) .topic .left-meta ul{align-items:center!important;margin:.35em .75em!important;padding:0!important;display:flex!important}:root:not(.cf-hide-userAvatar) .topic .right-meta{float:right!important;align-items:center!important;min-height:2.5em!important;display:flex!important}:root:not(.cf-hide-userAvatar) .topic .right-meta ul{align-items:center!important;margin:.35em .75em!important;padding:0!important;display:flex!important}:root:not(.cf-hide-userAvatar) .topic .right-meta ul li{float:none!important;align-items:center!important;margin:0 .8rem!important;line-height:1!important;display:inline-flex!important}:root:not(.cf-hide-userAvatar) .topic .right-meta ul li>a{vertical-align:middle!important;align-items:center!important;line-height:1!important;display:inline-flex!important}:root:not(.cf-hide-userAvatar) .topic .right-meta img.cf-user-avatar{box-shadow:0 1px 2px #00000026;width:var(--cf-avatar-size)!important;height:var(--cf-avatar-size)!important;aspect-ratio:1!important;object-fit:cover!important;border-radius:50%!important;flex-shrink:0!important}:root:not(.cf-hide-userAvatar) .topic .right-meta ul li>img,:root:not(.cf-hide-userAvatar) .topic .right-meta ul li>a>img:not(.cf-user-avatar){vertical-align:middle!important;margin-right:4px!important;position:relative!important;top:0!important}:root:not(.cf-hide-userAvatar) .topic .info a.cf-avatar-inline-user{vertical-align:middle!important;align-items:center!important;line-height:1!important;display:inline-flex!important}:root:not(.cf-hide-userAvatar) .second-level-menu-list{overflow:visible!important}:root:not(.cf-hide-userAvatar) .second-level-menu-list li a.cf-avatar-inline-user{align-items:center!important;display:inline-flex!important;overflow:visible!important}:root:not(.cf-hide-userAvatar) .second-level-menu-list li a.cf-avatar-inline-user img.cf-user-avatar{width:var(--cf-avatar-size)!important;height:var(--cf-avatar-size)!important;aspect-ratio:1!important;object-fit:cover!important;border-radius:50%!important;flex-shrink:0!important}.status-party-cell:not(.cf-team-formatted):not(.cf-team-unformatted) a:not(.cf-avatar-container)[href*=\"/profile/\"]{vertical-align:middle!important;text-overflow:ellipsis!important;white-space:nowrap!important;flex:0 auto!important;min-width:0!important;max-width:105px!important;line-height:1.3!important;display:inline-block!important;overflow:hidden!important}.status-party-cell.cf-team-formatted a:not(.cf-avatar-container)[href*=\"/profile/\"],.status-party-cell.cf-team-unformatted a:not(.cf-avatar-container)[href*=\"/profile/\"],.status-party-cell.cf-team-unformatted a.rated-user{vertical-align:middle!important;white-space:nowrap!important;flex:0 auto!important;min-width:0!important;max-width:180px!important;line-height:1.3!important;display:inline-block!important}.status-party-cell sup,.cf-avatar-line-wrapper sup{vertical-align:super!important;flex-shrink:0!important;align-self:flex-start!important;margin-left:2px!important;padding-top:1px!important;font-size:9px!important;line-height:1.1!important;display:inline-block!important}.status-party-cell sup a,.cf-avatar-line-wrapper sup a{vertical-align:top!important;line-height:1!important}td[data-cf-lang-icon-processed],th.cf-table-lang-header{white-space:nowrap!important;text-align:left!important;vertical-align:middle!important;width:110px!important;max-width:115px!important}.cf-lang-content{vertical-align:middle;align-items:center;width:100px;max-width:100%;display:inline-flex}.cf-lang-icon-slot{width:calc(var(--cf-lang-icon-size,14px) + 4px);height:var(--cf-lang-icon-size,14px);flex:none;transition:width .26s cubic-bezier(.22,1,.36,1),height .18s;display:inline-block;overflow:hidden}.cf-lang-icon{transition:transform .26s cubic-bezier(.22,1,.36,1),width .18s,height .18s;vertical-align:middle!important;width:var(--cf-lang-icon-size,14px)!important;height:var(--cf-lang-icon-size,14px)!important;object-fit:contain!important;flex-shrink:0!important;margin-right:4px!important;display:inline-block!important}@media (prefers-reduced-motion:reduce){.cf-lang-icon,.cf-lang-icon-slot{transition:none}}.cf-lang-text{flex:auto;min-width:0;text-overflow:ellipsis!important;white-space:nowrap!important;vertical-align:middle!important;max-width:100%!important;display:inline-block!important;overflow:hidden!important}:root.cf-hide-langIcon .cf-lang-icon-slot{width:0}:root.cf-hide-langIcon .cf-lang-icon{transform:translate(-110%)}.status-verdict-cell{white-space:normal!important;word-break:normal!important;vertical-align:middle!important;min-width:75px!important;max-width:110px!important;line-height:1.25!important}.cf-verdict-text{vertical-align:bottom;max-width:100%;line-height:inherit;display:inline-block;position:relative;overflow:hidden}.cf-verdict-current{white-space:normal;display:block}.cf-verdict-outgoing{white-space:normal;pointer-events:none;position:absolute;top:0;left:0}.status-verdict-cell .cf-verdict-text{max-width:110px}.cf-rating-col{white-space:nowrap!important;text-align:center!important;vertical-align:middle!important;box-sizing:border-box!important;width:52px!important;min-width:52px!important;max-width:52px!important}:root.cf-hide-submissions .cf-table-submissions .cf-rating-col,:root.cf-hide-status .cf-table-status .cf-rating-col,:root.cf-hide-hacks .cf-table-hacks .cf-rating-col,:root.cf-hide-problemset .cf-table-problemset .cf-rating-col,:root.cf-hide-contestProblems .cf-table-contestProblems .cf-rating-col,:root.cf-hide-standings .cf-rating-standings-row{display:none!important}:root.cf-hide-problemset .cf-table-problemset tr th:nth-last-child(2),:root.cf-hide-problemset .cf-table-problemset tr td:nth-last-child(2),:root.cf-hide-contestProblems .cf-table-contestProblems tr th:nth-last-child(2),:root.cf-hide-contestProblems .cf-table-contestProblems tr td:nth-last-child(2){border-right:none!important}[data-cf-rating-mode]{isolation:isolate;position:relative!important}[data-cf-rating-mode]:before{content:\"\";z-index:0;pointer-events:none;box-sizing:border-box;background-color:var(--cf-rating-bg);border:1px solid var(--cf-rating-border);opacity:1;border-radius:0;font-size:12px;transition:opacity .28s,transform .28s cubic-bezier(.22,1,.36,1),inset .28s cubic-bezier(.22,1,.36,1),background-color .28s,border-color .28s,border-radius .28s;position:absolute;inset:0;transform:scaleY(1)}[data-cf-rating-mode=compact]:before{inset:calc((100% - 20px) / 2) max(0px, calc((100% - var(--cf-rating-digits) - 14px) / 2));border-radius:4px}.cf-rating-value{vertical-align:middle;min-width:var(--cf-rating-digits,4ch);clip-path:inset(0);font-variant-numeric:tabular-nums;z-index:1;min-height:1lh;color:var(--cf-rating-color);font-size:1em;font-weight:400;transition:clip-path .28s cubic-bezier(.22,1,.36,1),transform .28s cubic-bezier(.22,1,.36,1),color .28s,font-size .28s,font-weight .28s;display:inline-block;position:relative;transform:translateY(0)}[data-cf-rating-empty=true]:before{opacity:0;transform:scaleY(0)}[data-cf-rating-empty=true] .cf-rating-value{clip-path:inset(50% 0);transform:translateY(3px)}[data-cf-rating-mode=compact] .cf-rating-value{font-size:12px;font-weight:500}[data-cf-rating-mode=filled] .cf-rating-value{font-weight:500}.cf-rating-clip{vertical-align:middle;display:inline-block}.cf-rating-moving,.cf-rating-moving>:is(td,th){overflow:hidden!important}.cf-rating-moving .cf-rating-clip{white-space:nowrap;overflow:hidden}@property --cf-rating-progress{syntax:\"<number>\";inherits:true;initial-value:1}.cf-rating-col.cf-rating-moving{width:calc(var(--cf-rating-base-width) * var(--cf-rating-progress))!important;min-width:calc(var(--cf-rating-base-width) * var(--cf-rating-progress))!important;max-width:calc(var(--cf-rating-base-width) * var(--cf-rating-progress))!important;padding-left:calc(var(--cf-rating-base-padding-left) * var(--cf-rating-progress))!important;padding-right:calc(var(--cf-rating-base-padding-right) * var(--cf-rating-progress))!important;border-left-width:calc(var(--cf-rating-base-border-left-width) * var(--cf-rating-progress))!important;border-right-width:calc(var(--cf-rating-base-border-right-width) * var(--cf-rating-progress))!important}.cf-rating-col.cf-rating-moving .cf-rating-clip{width:calc(var(--cf-rating-content-size) * var(--cf-rating-progress))}.cf-rating-standings-row.cf-rating-moving>:is(td,th){height:calc(var(--cf-rating-base-height) * var(--cf-rating-progress))!important;min-height:0!important;padding-top:calc(var(--cf-rating-base-padding-top) * var(--cf-rating-progress))!important;padding-bottom:calc(var(--cf-rating-base-padding-bottom) * var(--cf-rating-progress))!important;border-top-width:calc(var(--cf-rating-base-border-top-width) * var(--cf-rating-progress))!important;border-bottom-width:calc(var(--cf-rating-base-border-bottom-width) * var(--cf-rating-progress))!important;line-height:0!important}.cf-rating-standings-row.cf-rating-moving .cf-rating-clip{height:calc(var(--cf-rating-content-size) * var(--cf-rating-progress));line-height:var(--cf-rating-line-height)}.tag-box[data-rating]{transition:color .28s,background-color .28s,border-color .28s}.roundbox:has(>.tag-box[data-rating]){transition:color .28s,background-color .28s,border-color .28s}[data-cf-rating-absent=true]{display:none!important}@media (prefers-reduced-motion:reduce){[data-cf-rating-mode]:before,.cf-rating-value,.tag-box[data-rating]{transition:none}.roundbox:has(>.tag-box[data-rating]){transition:none}}:root{--cf-avatar-size:var(--cf-avatar-em);--cf-lang-icon-size:var(--cf-lang-px)}.cf-avatar-slot{width:calc(var(--cf-avatar-size,1.6em) + 5px);height:var(--cf-avatar-size,1.6em);vertical-align:middle;flex:none;transition:width .26s cubic-bezier(.22,1,.36,1),height .18s;overflow:hidden;display:inline-block!important}.cf-avatar-slot img.cf-user-avatar{box-sizing:border-box;border:1px solid #0000001a;border-radius:50%;transition:transform .26s cubic-bezier(.22,1,.36,1),width .18s,height .18s;transform:translate(0);width:var(--cf-avatar-size,1.6em)!important;height:var(--cf-avatar-size,1.6em)!important}:root.cf-hide-userAvatar .cf-avatar-slot,.cf-avatar-slot.cf-avatar-loading{pointer-events:none;width:0}:root.cf-hide-userAvatar .cf-avatar-slot img,.cf-avatar-loading img.cf-user-avatar{transform:translate(-110%)}@media (prefers-reduced-motion:reduce){.cf-avatar-slot,.cf-avatar-slot img.cf-user-avatar{transition:none}}html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.act,html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.id,html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td,html:root:not(.cf-ac-highlight-disabled) body .problems .accepted-problem td.act,html:root:not(.cf-ac-highlight-disabled) body tr.accepted-problem td{background-color:var(--cf-ac-background)!important}html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.id,html:root:not(.cf-ac-highlight-disabled) body .problems .accepted-problem td.id{border-left-color:var(--cf-ac-background)!important}html:root body tr.accepted-problem td{transition:none}html:root.cf-ac-highlight-transition body tr.accepted-problem td{transition:background-color .32s ease-in-out,border-left-color .32s ease-in-out}@media (prefers-reduced-motion:reduce){html:root.cf-ac-highlight-transition body tr.accepted-problem td{transition:none}}.cf-tags-moving .tag-box{pointer-events:none;transform-origin:50%}.roundbox.cf-tags-hidden-notice,span.tag-box.cf-tags-hidden-notice{-webkit-user-select:none;user-select:none;cursor:default;background:linear-gradient(135deg,#ffdeeebf 0%,#fff5d7bf 25%,#dcffe6bf 50%,#d2f5ffbf 75%,#ebdcffbf 100%) padding-box padding-box,linear-gradient(135deg,#ff78cb 0%,#ffa502 25%,#2ed573 50%,#70a1ff 75%,#a55eea 100%) border-box!important;border:1px solid #0000!important}.roundbox.cf-tags-hidden-notice .tag-box,span.tag-box.cf-tags-hidden-notice{-webkit-user-select:none;user-select:none;cursor:default;font-weight:600;background:linear-gradient(90deg,#c0392b 0%,#d35400 24%,#1b8a5a 52%,#1b62b3 78%,#5f27cd 100%)!important;-webkit-text-fill-color:transparent!important;color:#0000!important;-webkit-background-clip:text!important;background-clip:text!important}");
-	var PICKR_STYLESHEET = "https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css";
+	var PICKR_DIST_URL = "https://cdn.jsdelivr.net/npm/@simonwep/pickr@1.10.2/dist";
+	`${PICKR_DIST_URL}`;
+	var PICKR_STYLESHEET = `${PICKR_DIST_URL}/themes/nano.min.css`;
 	function getDeviconUrl(iconName, fileName) {
 		return `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${iconName}/${fileName}`;
 	}
@@ -5639,6 +5641,18 @@ PERFORMANCE OF THIS SOFTWARE.
 	];
 	var DEFAULT_SETTINGS = {
 		disableAutoCheckUpdate: false,
+		menuSize: {
+			enabled: false,
+			width: null,
+			height: null
+		},
+		menuPosition: {
+			enabled: false,
+			x: null,
+			y: null,
+			reference: "button",
+			panelSize: null
+		},
 		acBgColor: "#d4edc9",
 		colorRatings: true,
 		tagFillCell: true,
@@ -5711,6 +5725,30 @@ PERFORMANCE OF THIS SOFTWARE.
 			if (settings.langIconSize < .8) settings.langIconSize = .8;
 			if (settings.langIconSize > 3) settings.langIconSize = 3;
 			if (parsed.timeFormat) Object.assign(settings.timeFormat, parsed.timeFormat);
+			if (parsed.menuSize && typeof parsed.menuSize === "object") {
+				settings.menuSize.enabled = parsed.menuSize.enabled === true;
+				for (const axis of ["width", "height"]) {
+					const value = Number(parsed.menuSize[axis]);
+					settings.menuSize[axis] = Number.isFinite(value) && value > 0 ? Math.round(value) : null;
+				}
+			}
+			if (parsed.menuPosition && typeof parsed.menuPosition === "object") {
+				settings.menuPosition.enabled = parsed.menuPosition.enabled === true;
+				settings.menuPosition.reference = parsed.menuPosition.reference === "panel" ? "panel" : "button";
+				const panelSize = parsed.menuPosition.panelSize;
+				const sizeKeys = [
+					"width",
+					"height",
+					"viewportWidth",
+					"viewportHeight"
+				];
+				if (panelSize && sizeKeys.every((key) => Number.isFinite(panelSize[key]) && panelSize[key] > 0)) settings.menuPosition.panelSize = Object.fromEntries(sizeKeys.map((key) => [key, panelSize[key]]));
+				for (const axis of ["x", "y"]) {
+					const raw = parsed.menuPosition[axis];
+					const value = Number(raw);
+					settings.menuPosition[axis] = raw !== null && raw !== "" && Number.isFinite(value) ? Math.round(Math.min(100, Math.max(0, value)) * 1e6) / 1e6 : null;
+				}
+			}
 			settings.hideTags = parsed.hideTags !== void 0 ? !!parsed.hideTags : settings.hideTags;
 			settings.hideRatingTag = parsed.hideRatingTag !== void 0 ? !!parsed.hideRatingTag : settings.hideRatingTag;
 			settings.notHideAcTags = parsed.notHideAcTags !== void 0 ? !!parsed.notHideAcTags : settings.notHideAcTags;
@@ -5803,6 +5841,16 @@ PERFORMANCE OF THIS SOFTWARE.
 		roadmapProposalDesc: "Got an awesome idea, feature request, or optimization tip? Feel free to open an issue on GitHub and build Colorforces together!",
 		roadmapProposalBtn: "Propose on GitHub",
 		langLabel: "Menu Language",
+		menuSizeCustom: "Custom Settings Panel Size",
+		menuLayoutReset: "Restore default values without changing the switch",
+		menuLayoutResetAction: "Reset to default",
+		menuSizeWidth: "Width",
+		menuSizeHeight: "Height",
+		menuSizeHint: "Drag the outer edges or corner to resize. Available edges follow the panel’s opening direction.",
+		menuPositionCustom: "Custom Button and Panel Position",
+		menuPositionX: "Horizontal Position",
+		menuPositionY: "Vertical Position",
+		menuPositionHint: "Drag the button or panel header to anchor that element; the other moves around it. Position percentages use the current anchor.",
 		langZhName: "简体中文",
 		langEnName: "English",
 		locHideTags: "Hide Algorithm Tags",
@@ -6133,6 +6181,16 @@ PERFORMANCE OF THIS SOFTWARE.
 		roadmapProposalDesc: "如果您有更棒的创意、功能想法或优化建议，非常欢迎随时在 GitHub Issue 中发起提议，共同见证插件成长！",
 		roadmapProposalBtn: "前往 Issue 提建议",
 		langLabel: "菜单语言",
+		menuSizeCustom: "自定义设置面板宽高",
+		menuLayoutReset: "恢复默认数值，保留开关状态",
+		menuLayoutResetAction: "恢复默认",
+		menuSizeWidth: "宽度",
+		menuSizeHeight: "高度",
+		menuSizeHint: "也可拖动面板外侧边框或角落调整大小。可拖动的边框会随展开方向切换。",
+		menuPositionCustom: "自定义设置按钮和面板位置",
+		menuPositionX: "水平位置",
+		menuPositionY: "垂直位置",
+		menuPositionHint: "拖动按钮或面板标题栏，以抓取对象为定位基准，另一方自动换边。位置输入使用当前定位基准的百分比。",
 		langZhName: "简体中文",
 		langEnName: "English",
 		locHideTags: "隐藏算法标签",
@@ -6762,7 +6820,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		}
 		return h(node.tag, attrs, node.children.map((child) => renderIcon(child, prefix)));
 	}
-	var _sfc_main$37 = {
+	var _sfc_main$45 = {
 		props: {
 			source: {
 				type: String,
@@ -6869,6 +6927,10 @@ PERFORMANCE OF THIS SOFTWARE.
 				state.visible = true;
 			}
 		}
+		function showIfTruncated(event) {
+			const target = event.currentTarget;
+			if (target.scrollWidth > target.clientWidth) show(target, target.textContent);
+		}
 		function bind(root = document) {
 			const enter = (event) => {
 				const target = event.target.closest?.("[data-tooltip]");
@@ -6902,6 +6964,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		return {
 			state,
 			show,
+			showIfTruncated,
 			hide,
 			bind,
 			dispose,
@@ -6911,7 +6974,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		};
 	}
 	var tooltip = createTooltipController();
-	var _sfc_main$36 = {
+	var _sfc_main$44 = {
 		__name: "FloatingTooltip",
 		setup(__props) {
 			const element = ref(null);
@@ -6953,7 +7016,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			};
 		}
 	};
-	var _sfc_main$35 = {
+	var _sfc_main$43 = {
 		__name: "DialogTransition",
 		props: { origin: Object },
 		setup(__props) {
@@ -7178,21 +7241,21 @@ PERFORMANCE OF THIS SOFTWARE.
 			e.stopPropagation();
 		}, { passive: false });
 	}
-	var _hoisted_1$28 = { class: "cf-confirm-pop-card" };
-	var _hoisted_2$23 = { style: {
+	var _hoisted_1$33 = { class: "cf-confirm-pop-card" };
+	var _hoisted_2$25 = { style: {
 		"display": "flex",
 		"gap": "14px",
 		"align-items": "flex-start",
 		"padding": "18px 20px 14px 20px"
 	} };
-	var _hoisted_3$21 = { style: {
+	var _hoisted_3$23 = { style: {
 		"flex": "1",
 		"min-width": "0"
 	} };
-	var _hoisted_4$20 = ["textContent"];
-	var _hoisted_5$18 = ["innerHTML"];
-	var _hoisted_6$18 = ["innerHTML"];
-	var _hoisted_7$17 = { style: {
+	var _hoisted_4$22 = ["textContent"];
+	var _hoisted_5$20 = ["innerHTML"];
+	var _hoisted_6$20 = ["innerHTML"];
+	var _hoisted_7$18 = { style: {
 		"padding": "10px 18px",
 		"background": "#f8fafc",
 		"border-top": "1px solid #e2e8f0",
@@ -7202,7 +7265,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		"border-radius": "0 0 12px 12px"
 	} };
 	var _hoisted_8$16 = ["textContent"];
-	var _hoisted_9$16 = ["textContent"];
+	var _hoisted_9$15 = ["textContent"];
 	var pending$1 = shallowRef(null);
 	function showConfirmPop(options) {
 		pending$1.value = options;
@@ -7264,7 +7327,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			}
 		};
 	}
-	var _sfc_main$34 = {
+	var _sfc_main$42 = {
 		__name: "ConfirmDialog",
 		setup(__props) {
 			const overlay = ref(null);
@@ -7290,14 +7353,14 @@ PERFORMANCE OF THIS SOFTWARE.
 			onMounted(() => window.addEventListener("keydown", keydown));
 			onBeforeUnmount(() => window.removeEventListener("keydown", keydown));
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$35, null, {
+				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$43, null, {
 					default: withCtx(() => [pending$1.value ? (openBlock(), createElementBlock("div", {
 						key: 0,
 						class: "cf-confirm-pop-overlay",
 						ref_key: "overlay",
 						ref: overlay,
 						onClick: withModifiers(close, ["self"])
-					}, [createBaseVNode("div", _hoisted_1$28, [createBaseVNode("div", _hoisted_2$23, [createBaseVNode("div", { style: normalizeStyle$1([{
+					}, [createBaseVNode("div", _hoisted_1$33, [createBaseVNode("div", _hoisted_2$25, [createBaseVNode("div", { style: normalizeStyle$1([{
 						"width": "40px",
 						"height": "40px",
 						"border-radius": "10px",
@@ -7307,7 +7370,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						"align-items": "center",
 						"justify-content": "center",
 						"flex-shrink": "0"
-					}, appearance.value.iconStyle]) }, [createVNode$1(_sfc_main$37, { source: appearance.value.iconSvg }, null, 8, ["source"])], 4), createBaseVNode("div", _hoisted_3$21, [
+					}, appearance.value.iconStyle]) }, [createVNode$1(_sfc_main$45, { source: appearance.value.iconSvg }, null, 8, ["source"])], 4), createBaseVNode("div", _hoisted_3$23, [
 						createBaseVNode("div", {
 							style: {
 								"font-size": "14.5px",
@@ -7317,7 +7380,7 @@ PERFORMANCE OF THIS SOFTWARE.
 								"line-height": "1.3"
 							},
 							textContent: toDisplayString(displayed.value.title)
-						}, null, 8, _hoisted_4$20),
+						}, null, 8, _hoisted_4$22),
 						createBaseVNode("div", {
 							style: {
 								"font-size": "12.5px",
@@ -7326,7 +7389,7 @@ PERFORMANCE OF THIS SOFTWARE.
 								"word-break": "break-word"
 							},
 							innerHTML: appearance.value.mainHtml
-						}, null, 8, _hoisted_5$18),
+						}, null, 8, _hoisted_5$20),
 						appearance.value.subNote ? (openBlock(), createElementBlock("div", {
 							key: 0,
 							style: normalizeStyle$1([{
@@ -7340,8 +7403,8 @@ PERFORMANCE OF THIS SOFTWARE.
 								"margin-top": "10px"
 							}, appearance.value.noteStyle]),
 							innerHTML: appearance.value.noteHtml
-						}, null, 12, _hoisted_6$18)) : createCommentVNode("", true)
-					])]), createBaseVNode("div", _hoisted_7$17, [!appearance.value.isAlertOnly ? (openBlock(), createElementBlock("button", {
+						}, null, 12, _hoisted_6$20)) : createCommentVNode("", true)
+					])]), createBaseVNode("div", _hoisted_7$18, [!appearance.value.isAlertOnly ? (openBlock(), createElementBlock("button", {
 						key: 0,
 						type: "button",
 						class: "cf-confirm-btn-cancel",
@@ -7375,19 +7438,19 @@ PERFORMANCE OF THIS SOFTWARE.
 						}, appearance.value.buttonStyle]),
 						textContent: toDisplayString(appearance.value.confirmLabel),
 						onClick: confirm
-					}, null, 12, _hoisted_9$16)])])], 512)) : createCommentVNode("", true)]),
+					}, null, 12, _hoisted_9$15)])])], 512)) : createCommentVNode("", true)]),
 					_: 1
 				})]);
 			};
 		}
 	};
-	var _hoisted_1$27 = ["data-tab", "onClick"];
-	var _hoisted_2$22 = { class: "cf-tab-icon" };
-	var _hoisted_3$20 = {
+	var _hoisted_1$32 = ["data-tab", "onClick"];
+	var _hoisted_2$24 = { class: "cf-tab-icon" };
+	var _hoisted_3$22 = {
 		class: "cf-tab-text",
 		"data-cf-language-text": ""
 	};
-	var _sfc_main$33 = {
+	var _sfc_main$41 = {
 		__name: "MenuNav",
 		props: { active: String },
 		emits: ["select", "theme"],
@@ -7511,7 +7574,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						class: normalizeClass(["cf-nav-tab", { active: __props.active === tab.id }]),
 						"data-tab": tab.id,
 						onClick: ($event) => _ctx.$emit("select", tab.id)
-					}, [createBaseVNode("span", _hoisted_2$22, [createVNode$1(_sfc_main$37, { source: TAB_ICONS[tab.id] }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_3$20, toDisplayString(unref(translate$1)(tab.label)), 1)], 10, _hoisted_1$27);
+					}, [createBaseVNode("span", _hoisted_2$24, [createVNode$1(_sfc_main$45, { source: TAB_ICONS[tab.id] }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_3$22, toDisplayString(unref(translate$1)(tab.label)), 1)], 10, _hoisted_1$32);
 				}), 64))], 512);
 			};
 		}
@@ -7521,22 +7584,22 @@ PERFORMANCE OF THIS SOFTWARE.
 		for (const [key, val] of props) target[key] = val;
 		return target;
 	};
-	var _hoisted_1$26 = ["open"];
-	var _hoisted_2$21 = ["aria-expanded"];
-	var _hoisted_3$19 = {
+	var _hoisted_1$31 = ["open"];
+	var _hoisted_2$23 = ["aria-expanded"];
+	var _hoisted_3$21 = {
 		class: "cf-contributors-avatars",
 		"aria-hidden": "true"
 	};
-	var _hoisted_4$19 = ["src"];
-	var _hoisted_5$17 = { "data-cf-language-text": "" };
-	var _hoisted_6$17 = { class: "cf-contributors-count" };
-	var _hoisted_7$16 = ["aria-label"];
+	var _hoisted_4$21 = ["src"];
+	var _hoisted_5$19 = { "data-cf-language-text": "" };
+	var _hoisted_6$19 = { class: "cf-contributors-count" };
+	var _hoisted_7$17 = ["aria-label"];
 	var _hoisted_8$15 = { class: "cf-contributors-heading" };
-	var _hoisted_9$15 = { "data-cf-language-text": "" };
+	var _hoisted_9$14 = { "data-cf-language-text": "" };
 	var _hoisted_10$13 = { "data-cf-language-text": "" };
-	var _hoisted_11$12 = { class: "cf-contributors-list" };
-	var _hoisted_12$12 = ["href"];
-	var _hoisted_13$11 = ["src"];
+	var _hoisted_11$11 = { class: "cf-contributors-list" };
+	var _hoisted_12$11 = ["href"];
+	var _hoisted_13$10 = ["src"];
 	var _hoisted_14$9 = { class: "cf-contributor-info" };
 	var _hoisted_15$9 = { class: "cf-contributor-name" };
 	var _hoisted_16$9 = {
@@ -7618,21 +7681,21 @@ PERFORMANCE OF THIS SOFTWARE.
 					"aria-expanded": opened.value,
 					onClick: _cache[0] || (_cache[0] = withModifiers(($event) => opened.value = !opened.value, ["prevent"]))
 				}, [
-					createBaseVNode("span", _hoisted_3$19, [(openBlock(true), createElementBlock(Fragment, null, renderList(unref(avatarPreview), (person) => {
+					createBaseVNode("span", _hoisted_3$21, [(openBlock(true), createElementBlock(Fragment, null, renderList(unref(avatarPreview), (person) => {
 						return openBlock(), createElementBlock("img", {
 							key: person.name,
 							src: person.image,
 							alt: ""
-						}, null, 8, _hoisted_4$19);
+						}, null, 8, _hoisted_4$21);
 					}), 128))]),
-					createBaseVNode("span", _hoisted_5$17, toDisplayString(unref(translate$1)("footerContributors")), 1),
-					createBaseVNode("span", _hoisted_6$17, toDisplayString(contributors.length), 1),
-					createVNode$1(_sfc_main$37, {
+					createBaseVNode("span", _hoisted_5$19, toDisplayString(unref(translate$1)("footerContributors")), 1),
+					createBaseVNode("span", _hoisted_6$19, toDisplayString(contributors.length), 1),
+					createVNode$1(_sfc_main$45, {
 						class: "cf-contributors-chevron",
 						source: changelog_chevron_icon_default,
 						"aria-hidden": "true"
 					}, null, 8, ["source"])
-				], 8, _hoisted_2$21), createVNode$1(Transition, {
+				], 8, _hoisted_2$23), createVNode$1(Transition, {
 					name: "cf-contributors-motion",
 					onAfterLeave: _cache[1] || (_cache[1] = ($event) => renderOpen.value = opened.value)
 				}, {
@@ -7642,7 +7705,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						class: "cf-contributors-panel",
 						role: "region",
 						"aria-label": unref(translate$1)("footerContributors")
-					}, [createBaseVNode("div", _hoisted_8$15, [createBaseVNode("strong", _hoisted_9$15, toDisplayString(unref(translate$1)("footerContributors")), 1), createBaseVNode("span", _hoisted_10$13, toDisplayString(unref(translate$1)("footerContributorsNote")), 1)]), createBaseVNode("ul", _hoisted_11$12, [(openBlock(), createElementBlock(Fragment, null, renderList(contributors, (person) => {
+					}, [createBaseVNode("div", _hoisted_8$15, [createBaseVNode("strong", _hoisted_9$14, toDisplayString(unref(translate$1)("footerContributors")), 1), createBaseVNode("span", _hoisted_10$13, toDisplayString(unref(translate$1)("footerContributorsNote")), 1)]), createBaseVNode("ul", _hoisted_11$11, [(openBlock(), createElementBlock(Fragment, null, renderList(contributors, (person) => {
 						return createBaseVNode("li", { key: person.name }, [createBaseVNode("a", {
 							class: "cf-contributor-link",
 							href: person.url,
@@ -7653,21 +7716,21 @@ PERFORMANCE OF THIS SOFTWARE.
 								class: "cf-contributor-image",
 								src: person.image,
 								alt: ""
-							}, null, 8, _hoisted_13$11),
+							}, null, 8, _hoisted_13$10),
 							createBaseVNode("span", _hoisted_14$9, [createBaseVNode("span", _hoisted_15$9, toDisplayString(person.name), 1), createBaseVNode("span", _hoisted_16$9, toDisplayString(unref(translate$1)(person.role)), 1)]),
-							createVNode$1(_sfc_main$37, {
+							createVNode$1(_sfc_main$45, {
 								class: "cf-contributor-external",
 								source: brand_external_link_icon_default,
 								"aria-hidden": "true"
 							}, null, 8, ["source"]),
 							createBaseVNode("span", _hoisted_17$8, toDisplayString(unref(translate$1)(person.description)), 1)
-						], 8, _hoisted_12$12)]);
-					}), 64))])], 8, _hoisted_7$16)) : createCommentVNode("", true)]),
+						], 8, _hoisted_12$11)]);
+					}), 64))])], 8, _hoisted_7$17)) : createCommentVNode("", true)]),
 					_: 1
-				})], 40, _hoisted_1$26);
+				})], 40, _hoisted_1$31);
 			};
 		}
-	}, [["__scopeId", "data-v-1efb4c08"]]);
+	}, [["__scopeId", "data-v-a00ea695"]]);
 	var MenuGlassSurface_default = _plugin_vue_export_helper_default({
 		__name: "MenuGlassSurface",
 		props: { bottom: Boolean },
@@ -8009,7 +8072,7 @@ PERFORMANCE OF THIS SOFTWARE.
 	}
 	var active$1 = new WeakMap();
 	var initialized = new WeakSet();
-	var duration = 300;
+	var duration$1 = 300;
 	function items(container) {
 		return [...new Set([...container.querySelectorAll("span.tag-box")].map((span) => span.parentElement !== container && span.parentElement.classList.contains("roundbox") ? span.parentElement : span))];
 	}
@@ -8074,7 +8137,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		if (![...new Set([...before.visible.keys(), ...after.keys()])].filter((item) => item.isConnected && (before.visible.has(item) !== after.has(item) || Math.abs(before.visible.get(item)?.rect.x - after.get(item)?.x) > .5 || Math.abs(before.visible.get(item)?.rect.y - after.get(item)?.y) > .5)).length) return;
 		const restores = [], animations = [];
 		const options = {
-			duration,
+			duration: duration$1,
 			easing: "cubic-bezier(.22,1,.36,1)",
 			fill: "both"
 		};
@@ -10321,12 +10384,12 @@ PERFORMANCE OF THIS SOFTWARE.
 		if (group === "all") resetSettings();
 		listeners.forEach((listener) => listener());
 	}
-	var _hoisted_1$25 = [
+	var _hoisted_1$30 = [
 		"data-state",
 		"disabled",
 		"aria-busy"
 	];
-	var _sfc_main$30 = {
+	var _sfc_main$38 = {
 		__name: "ActionButton",
 		props: {
 			status: String,
@@ -10341,26 +10404,26 @@ PERFORMANCE OF THIS SOFTWARE.
 					"data-state": __props.status || "idle",
 					disabled: __props.busy || __props.disabled,
 					"aria-busy": __props.busy
-				}, [renderSlot(_ctx.$slots, "default")], 8, _hoisted_1$25);
+				}, [renderSlot(_ctx.$slots, "default")], 8, _hoisted_1$30);
 			};
 		}
 	};
-	var _hoisted_1$24 = {
+	var _hoisted_1$29 = {
 		class: "cf-clist-modal-card",
 		style: { "width": "520px" }
 	};
-	var _hoisted_2$20 = { class: "cf-clist-modal-header" };
-	var _hoisted_3$18 = { class: "cf-clist-modal-title" };
-	var _hoisted_4$18 = { class: "cf-progress-sync-icon" };
-	var _hoisted_5$16 = ["textContent"];
-	var _hoisted_6$16 = ["title"];
-	var _hoisted_7$15 = { class: "cf-clist-modal-body" };
+	var _hoisted_2$22 = { class: "cf-clist-modal-header" };
+	var _hoisted_3$20 = { class: "cf-clist-modal-title" };
+	var _hoisted_4$20 = { class: "cf-progress-sync-icon" };
+	var _hoisted_5$18 = ["textContent"];
+	var _hoisted_6$18 = ["title"];
+	var _hoisted_7$16 = { class: "cf-clist-modal-body" };
 	var _hoisted_8$14 = { class: "cf-progress-heading" };
-	var _hoisted_9$14 = ["innerHTML"];
+	var _hoisted_9$13 = ["innerHTML"];
 	var _hoisted_10$12 = { class: "cf-progress-percent" };
-	var _hoisted_11$11 = ["aria-label", "aria-valuenow"];
-	var _hoisted_12$11 = { class: "cf-progress-metrics" };
-	var _hoisted_13$10 = ["textContent"];
+	var _hoisted_11$10 = ["aria-label", "aria-valuenow"];
+	var _hoisted_12$10 = { class: "cf-progress-metrics" };
+	var _hoisted_13$9 = ["textContent"];
 	var _hoisted_14$8 = ["textContent"];
 	var _hoisted_15$8 = ["textContent"];
 	var _hoisted_16$8 = { class: "cf-progress-eta" };
@@ -10441,7 +10504,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		sync.visible = true;
 		return controller;
 	}
-	var _sfc_main$29 = {
+	var _sfc_main$37 = {
 		__name: "ClistSyncDialog",
 		setup(__props) {
 			const overlay = ref(null);
@@ -10478,7 +10541,7 @@ PERFORMANCE OF THIS SOFTWARE.
 				if (node) preventScrollChaining(node);
 			});
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$35, null, {
+				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$43, null, {
 					default: withCtx(() => [sync.exists ? withDirectives((openBlock(), createElementBlock("div", {
 						key: 0,
 						class: normalizeClass(["cf-clist-modal-overlay cf-clist-progress-modal cf-menu-theme", {
@@ -10489,11 +10552,11 @@ PERFORMANCE OF THIS SOFTWARE.
 						style: normalizeStyle$1(unref(theme)),
 						ref_key: "overlay",
 						ref: overlay
-					}, [createBaseVNode("div", _hoisted_1$24, [
-						createBaseVNode("div", _hoisted_2$20, [createBaseVNode("div", _hoisted_3$18, [createBaseVNode("span", _hoisted_4$18, [createVNode$1(_sfc_main$37, { source: clist_sync_dialog_icon_default }, null, 8, ["source"])]), createBaseVNode("span", {
+					}, [createBaseVNode("div", _hoisted_1$29, [
+						createBaseVNode("div", _hoisted_2$22, [createBaseVNode("div", _hoisted_3$20, [createBaseVNode("span", _hoisted_4$20, [createVNode$1(_sfc_main$45, { source: clist_sync_dialog_icon_default }, null, 8, ["source"])]), createBaseVNode("span", {
 							class: "cf-progress-modal-title",
 							textContent: toDisplayString(unref(translate$1)("syncModalTitle"))
-						}, null, 8, _hoisted_5$16)]), createBaseVNode("button", {
+						}, null, 8, _hoisted_5$18)]), createBaseVNode("button", {
 							type: "button",
 							class: "cf-modal-close-btn",
 							style: {
@@ -10505,12 +10568,12 @@ PERFORMANCE OF THIS SOFTWARE.
 							},
 							onClick: _cache[0] || (_cache[0] = (...args) => controller.hide && controller.hide(...args)),
 							title: unref(translate$1)("syncBtnBackground")
-						}, " × ", 8, _hoisted_6$16)]),
-						createBaseVNode("div", _hoisted_7$15, [
+						}, " × ", 8, _hoisted_6$18)]),
+						createBaseVNode("div", _hoisted_7$16, [
 							createBaseVNode("div", _hoisted_8$14, [createBaseVNode("div", {
 								class: "cf-progress-status",
 								innerHTML: statusHtml.value
-							}, null, 8, _hoisted_9$14), createBaseVNode("strong", _hoisted_10$12, toDisplayString(Math.round(percent.value)) + "%", 1)]),
+							}, null, 8, _hoisted_9$13), createBaseVNode("strong", _hoisted_10$12, toDisplayString(Math.round(percent.value)) + "%", 1)]),
 							createBaseVNode("div", {
 								class: "cf-clist-progress-track",
 								role: "progressbar",
@@ -10521,12 +10584,12 @@ PERFORMANCE OF THIS SOFTWARE.
 							}, [createBaseVNode("div", {
 								class: "cf-clist-progress-fill",
 								style: normalizeStyle$1(fillStyle.value)
-							}, null, 4)], 8, _hoisted_11$11),
-							createBaseVNode("div", _hoisted_12$11, [createBaseVNode("div", null, [
+							}, null, 4)], 8, _hoisted_11$10),
+							createBaseVNode("div", _hoisted_12$10, [createBaseVNode("div", null, [
 								createBaseVNode("span", {
 									class: "cf-label-pulled",
 									textContent: toDisplayString(unref(translate$1)("syncLabelPulled"))
-								}, null, 8, _hoisted_13$10),
+								}, null, 8, _hoisted_13$9),
 								_cache[1] || (_cache[1] = createTextVNode(": ", -1)),
 								createBaseVNode("strong", {
 									class: "cf-val-pulled",
@@ -10567,7 +10630,7 @@ PERFORMANCE OF THIS SOFTWARE.
 								textContent: toDisplayString(sync.error)
 							}, null, 8, _hoisted_20$5), [[vShow, sync.status === "error"]])
 						]),
-						createBaseVNode("div", _hoisted_21$5, [withDirectives(createVNode$1(_sfc_main$30, {
+						createBaseVNode("div", _hoisted_21$5, [withDirectives(createVNode$1(_sfc_main$38, {
 							type: "button",
 							class: "cf-clist-sync-btn cf-btn-bg",
 							style: {
@@ -10576,7 +10639,7 @@ PERFORMANCE OF THIS SOFTWARE.
 							},
 							textContent: toDisplayString(sync.status === "error" ? unref(translate$1)("syncBtnClose") : unref(translate$1)("syncBtnBackground")),
 							onClick: backgroundAction
-						}, null, 8, ["textContent"]), [[vShow, sync.status !== "success"]]), withDirectives(createVNode$1(_sfc_main$30, {
+						}, null, 8, ["textContent"]), [[vShow, sync.status !== "success"]]), withDirectives(createVNode$1(_sfc_main$38, {
 							type: "button",
 							class: "cf-clist-sync-btn cf-btn-action",
 							textContent: toDisplayString(sync.status === "success" ? unref(translate$1)("syncBtnDone") : unref(translate$1)("syncBtnRetry")),
@@ -10588,13 +10651,13 @@ PERFORMANCE OF THIS SOFTWARE.
 			};
 		}
 	};
-	var _hoisted_1$23 = { class: "cf-footer-top-row" };
-	var _hoisted_2$19 = { class: "cf-footer-status-slot" };
-	var _hoisted_3$17 = ["title"];
-	var _hoisted_4$17 = ["src"];
-	var _hoisted_5$15 = { "data-cf-language-text": "" };
-	var _hoisted_6$15 = ["aria-label", "data-tooltip"];
-	var _hoisted_7$14 = {
+	var _hoisted_1$28 = { class: "cf-footer-top-row" };
+	var _hoisted_2$21 = { class: "cf-footer-status-slot" };
+	var _hoisted_3$19 = ["title"];
+	var _hoisted_4$19 = ["src"];
+	var _hoisted_5$17 = { "data-cf-language-text": "" };
+	var _hoisted_6$17 = ["aria-label", "data-tooltip"];
+	var _hoisted_7$15 = {
 		class: "cf-spin",
 		style: {
 			"display": "inline-flex",
@@ -10603,19 +10666,19 @@ PERFORMANCE OF THIS SOFTWARE.
 		}
 	};
 	var _hoisted_8$13 = { class: "cf-mini-progress-bar" };
-	var _hoisted_9$13 = { class: "cf-mini-progress-text" };
+	var _hoisted_9$12 = { class: "cf-mini-progress-text" };
 	var _hoisted_10$11 = { class: "cf-footer-links" };
-	var _hoisted_11$10 = {
+	var _hoisted_11$9 = {
 		href: "https://github.com/GodExious/Colorforces",
 		target: "_blank",
 		class: "cf-footer-link"
 	};
-	var _hoisted_12$10 = { style: {
+	var _hoisted_12$9 = { style: {
 		"display": "flex",
 		"align-items": "center",
 		"justify-content": "center"
 	} };
-	var _hoisted_13$9 = ["textContent"];
+	var _hoisted_13$8 = ["textContent"];
 	var _hoisted_14$7 = {
 		href: "https://github.com/GodExious/Colorforces/issues",
 		target: "_blank",
@@ -10629,7 +10692,7 @@ PERFORMANCE OF THIS SOFTWARE.
 	var _hoisted_16$7 = ["textContent"];
 	var _hoisted_17$6 = { class: "cf-footer-bottom-row" };
 	var _hoisted_18$6 = ["textContent"];
-	var _sfc_main$28 = {
+	var _sfc_main$36 = {
 		__name: "MenuFooter",
 		setup(__props) {
 			const tick = ref(0), progress = ref(currentClistSyncProgress);
@@ -10667,7 +10730,7 @@ PERFORMANCE OF THIS SOFTWARE.
 					class: "cf-modal-footer",
 					bottom: ""
 				}, {
-					default: withCtx(() => [createBaseVNode("div", _hoisted_1$23, [createBaseVNode("div", _hoisted_2$19, [createVNode$1(Transition, { name: "cf-footer-swap" }, {
+					default: withCtx(() => [createBaseVNode("div", _hoisted_1$28, [createBaseVNode("div", _hoisted_2$21, [createVNode$1(Transition, { name: "cf-footer-swap" }, {
 						default: withCtx(() => [!syncing.value ? (openBlock(), createElementBlock("div", {
 							key: unref(appSettings).clist.enabled ? "clist" : "cf",
 							class: "cf-footer-status"
@@ -10697,11 +10760,11 @@ PERFORMANCE OF THIS SOFTWARE.
 									"border-radius": "2px"
 								},
 								alt: "CList"
-							}, null, 8, _hoisted_4$17)) : (openBlock(), createBlock(_sfc_main$37, {
+							}, null, 8, _hoisted_4$19)) : (openBlock(), createBlock(_sfc_main$45, {
 								key: 1,
 								source: CF_ICON_SVG
-							}, null, 8, ["source"]))], 8, _hoisted_3$17),
-							createBaseVNode("span", _hoisted_5$15, toDisplayString(statusText.value), 1)
+							}, null, 8, ["source"]))], 8, _hoisted_3$19),
+							createBaseVNode("span", _hoisted_5$17, toDisplayString(statusText.value), 1)
 						])) : (openBlock(), createElementBlock("button", {
 							key: "syncing",
 							type: "button",
@@ -10710,18 +10773,18 @@ PERFORMANCE OF THIS SOFTWARE.
 							"data-tooltip": unref(translate$1)("footerMiniProgressTooltip"),
 							onClick: _cache[0] || (_cache[0] = ($event) => unref(openClistSyncProgress)())
 						}, [
-							createBaseVNode("span", _hoisted_7$14, [createVNode$1(_sfc_main$37, { source: loading_icon_default }, null, 8, ["source"])]),
+							createBaseVNode("span", _hoisted_7$15, [createVNode$1(_sfc_main$45, { source: loading_icon_default }, null, 8, ["source"])]),
 							createBaseVNode("span", _hoisted_8$13, [createBaseVNode("span", {
 								class: "cf-mini-progress-bar-fill",
 								style: normalizeStyle$1([{ "width": "0%" }, { width: (progress.value?.percent || 0) + "%" }])
 							}, null, 4)]),
-							createBaseVNode("span", _hoisted_9$13, toDisplayString(Math.floor(progress.value?.percent || 0)) + "%", 1)
-						], 8, _hoisted_6$15))]),
+							createBaseVNode("span", _hoisted_9$12, toDisplayString(Math.floor(progress.value?.percent || 0)) + "%", 1)
+						], 8, _hoisted_6$17))]),
 						_: 1
 					})]), createBaseVNode("div", _hoisted_10$11, [
-						createBaseVNode("a", _hoisted_11$10, [createBaseVNode("span", _hoisted_12$10, [createVNode$1(_sfc_main$37, { source: footer_github_icon_default }, null, 8, ["source"])]), createBaseVNode("span", { textContent: toDisplayString(unref(translate$1)().footerGithub) }, null, 8, _hoisted_13$9)]),
+						createBaseVNode("a", _hoisted_11$9, [createBaseVNode("span", _hoisted_12$9, [createVNode$1(_sfc_main$45, { source: footer_github_icon_default }, null, 8, ["source"])]), createBaseVNode("span", { textContent: toDisplayString(unref(translate$1)().footerGithub) }, null, 8, _hoisted_13$8)]),
 						_cache[1] || (_cache[1] = createBaseVNode("span", { class: "cf-footer-divider" }, "·", -1)),
-						createBaseVNode("a", _hoisted_14$7, [createBaseVNode("span", _hoisted_15$7, [createVNode$1(_sfc_main$37, { source: idea_bulb_default }, null, 8, ["source"])]), createBaseVNode("span", {
+						createBaseVNode("a", _hoisted_14$7, [createBaseVNode("span", _hoisted_15$7, [createVNode$1(_sfc_main$45, { source: idea_bulb_default }, null, 8, ["source"])]), createBaseVNode("span", {
 							"data-cf-language-text": "",
 							textContent: toDisplayString(unref(translate$1)().footerIssue)
 						}, null, 8, _hoisted_16$7)])
@@ -10735,7 +10798,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			};
 		}
 	};
-	var _hoisted_1$22 = [
+	var _hoisted_1$27 = [
 		"aria-label",
 		"aria-valuemax",
 		"aria-valuenow",
@@ -10928,20 +10991,21 @@ PERFORMANCE OF THIS SOFTWARE.
 					onPointercancel: endDrag,
 					onLostpointercapture: endDrag,
 					onKeydown
-				}, null, 40, _hoisted_1$22)], 34);
+				}, null, 40, _hoisted_1$27)], 34);
 			};
 		}
 	}, [["__scopeId", "data-v-153fa333"]]);
-	var _hoisted_1$21 = [
+	var _hoisted_1$26 = [
 		"aria-expanded",
 		"aria-label",
 		"aria-describedby",
 		"onKeydown"
 	];
-	var _sfc_main$26 = {
+	var _sfc_main$34 = {
 		__name: "MenuLauncher",
 		props: {
 			open: Boolean,
+			dragging: Boolean,
 			appearance: {
 				type: String,
 				default: "flower",
@@ -10955,7 +11019,38 @@ PERFORMANCE OF THIS SOFTWARE.
 			const button = ref(null);
 			const resting = ref(document.hidden);
 			const transitions = new Set();
+			const flowerReturns = new Set();
 			let motionPreference;
+			function stopFlowerReturn() {
+				flowerReturns.forEach((animation) => animation.cancel());
+				flowerReturns.clear();
+			}
+			function restoreFlowerPose(open) {
+				const art = button.value?.querySelector(".cf-launcher-art");
+				if (!art) return;
+				const layers = [art, ...art.querySelectorAll(".cf-launcher-motion")];
+				const poses = layers.map((layer) => getComputedStyle(layer).transform);
+				stopFlowerReturn();
+				if (open) {
+					const matrix = new DOMMatrixReadOnly(poses[0] === "none" ? void 0 : poses[0]);
+					const angle = Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+					art.style.setProperty("--cf-launcher-turn-start", `${angle}deg`);
+					return;
+				}
+				if (document.hidden || motionPreference?.matches) return;
+				layers.forEach((layer, index) => {
+					if (poses[index] === "none") return;
+					const animation = layer.animate([{ transform: poses[index] }, { transform: "none" }], {
+						duration: 780,
+						easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+					});
+					flowerReturns.add(animation);
+					animation.finished.then(() => {
+						animation.cancel();
+						flowerReturns.delete(animation);
+					}, () => {});
+				});
+			}
 			function stopPetalTransition() {
 				transitions.forEach((animation) => animation.cancel());
 				transitions.clear();
@@ -11018,6 +11113,7 @@ PERFORMANCE OF THIS SOFTWARE.
 				});
 			}
 			function showHint() {
+				if (props.dragging) return;
 				tooltip.show(button.value, translate$1(props.open ? "launcherCloseHint" : "launcherOpenHint"), { variant: "launcher" });
 			}
 			function toggle() {
@@ -11028,9 +11124,14 @@ PERFORMANCE OF THIS SOFTWARE.
 				resting.value = document.hidden;
 				if (resting.value) {
 					stopPetalTransition();
+					stopFlowerReturn();
 					tooltip.hide();
 				}
 			}
+			watch(() => [props.open, props.appearance], ([open, appearance]) => {
+				if (appearance === "flower") restoreFlowerPose(open);
+				else stopFlowerReturn();
+			}, { flush: "pre" });
 			watch(() => [props.open, props.appearance], ([open, appearance]) => {
 				tooltip.hide();
 				if (appearance === "aurora") animatePetals(open);
@@ -11039,11 +11140,14 @@ PERFORMANCE OF THIS SOFTWARE.
 			onMounted(() => {
 				motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
 				motionPreference.addEventListener("change", stopPetalTransition);
+				motionPreference.addEventListener("change", stopFlowerReturn);
 				document.addEventListener("visibilitychange", updateVisibility);
 			});
 			onBeforeUnmount(() => {
 				stopPetalTransition();
+				stopFlowerReturn();
 				motionPreference?.removeEventListener("change", stopPetalTransition);
+				motionPreference?.removeEventListener("change", stopFlowerReturn);
 				document.removeEventListener("visibilitychange", updateVisibility);
 			});
 			return (_ctx, _cache) => {
@@ -11071,103 +11175,535 @@ PERFORMANCE OF THIS SOFTWARE.
 						withKeys(withModifiers(toggle, ["prevent"]), ["space"])
 					],
 					onClick: toggle
-				}, [createVNode$1(_sfc_main$37, {
+				}, [createVNode$1(_sfc_main$45, {
 					source: __props.appearance === "aurora" ? unref(colorforces_aurora_default) : unref(colorforces_default),
 					"id-prefix": "cf-launcher"
-				}, null, 8, ["source"])], 42, _hoisted_1$21);
+				}, null, 8, ["source"])], 42, _hoisted_1$26);
 			};
 		}
 	};
-	var _hoisted_1$20 = { class: "cf-expand-region" };
-	var _hoisted_2$18 = { class: "cf-expand-content" };
-	var ExpandTransition_default = _plugin_vue_export_helper_default({
-		__name: "ExpandTransition",
-		props: { show: {
-			type: Boolean,
-			default: true
-		} },
+	var _hoisted_1$25 = ["data-resize-edge", "onPointerdown"];
+	var MenuResizeHandles_default = _plugin_vue_export_helper_default({
+		__name: "MenuResizeHandles",
+		props: {
+			controller: {
+				type: Object,
+				required: true
+			},
+			open: Boolean
+		},
 		setup(__props) {
-			const holdPosition = inject("cf-collapse-anchor", () => () => {});
-			const running = new Map();
-			const interrupted = new WeakMap();
-			const fields = ["height", "marginBottom"];
-			function cancel(element) {
-				const state = running.get(element);
-				if (!state) return;
-				const style = getComputedStyle(element);
-				interrupted.set(element, Object.fromEntries(fields.map((key) => [key, style[key]])));
-				state.animation.cancel();
-				element.style.overflow = state.overflow;
-				element.style.transition = state.transition;
-				element.inert = state.inert;
-				delete element.dataset.cfExpanding;
-				running.delete(element);
-				state.release();
-			}
-			function animate(element, done, entering) {
-				const release = element.closest(".cf-tab-panel.active:not([aria-hidden=\"true\"])") ? holdPosition() : () => {};
-				if (!element.getClientRects().length || !element.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) {
-					interrupted.delete(element);
-					done();
-					release();
-					return;
-				}
-				const expanded = {
-					height: element.firstElementChild.getBoundingClientRect().height + "px",
-					marginBottom: "0px"
-				};
-				const collapsed = {
-					height: "0px",
-					marginBottom: "0px"
-				};
-				collapsed.marginBottom = -(parseFloat(getComputedStyle(element.parentElement).rowGap) || 0) + "px";
-				const start = interrupted.get(element) || (entering ? collapsed : expanded);
-				interrupted.delete(element);
-				const overflow = element.style.overflow;
-				const transition = element.style.transition;
-				const inert = element.inert;
-				element.inert = !entering;
-				element.style.overflow = "hidden";
-				element.style.transition = "none";
-				element.dataset.cfExpanding = "";
-				const animation = element.animate([start, entering ? expanded : collapsed], {
-					duration: 260,
-					easing: "cubic-bezier(.22,1,.36,1)",
-					fill: "both"
-				});
-				running.set(element, {
-					animation,
-					overflow,
-					transition,
-					inert,
-					release
-				});
-				animation.onfinish = () => {
-					done();
-					animation.cancel();
-					element.style.overflow = overflow;
-					element.style.transition = transition;
-					element.inert = inert;
-					delete element.dataset.cfExpanding;
-					running.delete(element);
-					release();
-				};
-			}
-			onBeforeUnmount(() => [...running.keys()].forEach(cancel));
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(Transition, {
-					css: false,
-					onEnter: _cache[0] || (_cache[0] = (element, done) => animate(element, done, true)),
-					onLeave: _cache[1] || (_cache[1] = (element, done) => animate(element, done, false)),
-					onEnterCancelled: cancel,
-					onLeaveCancelled: cancel
-				}, {
-					default: withCtx(() => [withDirectives(createBaseVNode("div", _hoisted_1$20, [createBaseVNode("div", _hoisted_2$18, [renderSlot(_ctx.$slots, "default", {}, void 0, true)])], 512), [[vShow, __props.show]])]),
-					_: 3
-				});
+				return __props.open && __props.controller.size.enabled ? (openBlock(true), createElementBlock(Fragment, { key: 0 }, renderList(__props.controller.edges, (edge) => {
+					return openBlock(), createElementBlock("div", {
+						key: edge,
+						class: normalizeClass(["cf-menu-resize-handle", ["cf-menu-resize-" + edge, { "is-dragging": __props.controller.resizing }]]),
+						"data-resize-edge": edge,
+						"aria-hidden": "true",
+						onPointerdown: ($event) => __props.controller.startResize($event, edge),
+						onPointermove: _cache[0] || (_cache[0] = (...args) => __props.controller.moveDrag && __props.controller.moveDrag(...args)),
+						onPointerup: _cache[1] || (_cache[1] = (...args) => __props.controller.finishDrag && __props.controller.finishDrag(...args)),
+						onPointercancel: _cache[2] || (_cache[2] = (...args) => __props.controller.finishDrag && __props.controller.finishDrag(...args)),
+						onLostpointercapture: _cache[3] || (_cache[3] = (...args) => __props.controller.finishDrag && __props.controller.finishDrag(...args))
+					}, null, 42, _hoisted_1$25);
+				}), 128)) : createCommentVNode("", true);
 			};
 		}
-	}, [["__scopeId", "data-v-9bacab14"]]);
+	}, [["__scopeId", "data-v-07a72e58"]]);
+	var margin = 20;
+	var gap = 11;
+	var duration = 280;
+	var defaultSize = {
+		width: 680,
+		minHeight: 440,
+		heightRatio: .56
+	};
+	var dimensions = [
+		"x",
+		"y",
+		"width",
+		"height",
+		"offsetX",
+		"offsetY"
+	];
+	var clamp = (value, min, max) => Math.min(Math.max(min, max), Math.max(min, value));
+	function useMenuLayout(root, visible) {
+		const viewport = reactive({
+			width: document.documentElement.clientWidth,
+			height: document.documentElement.clientHeight,
+			buttonWidth: 44,
+			buttonHeight: 44
+		});
+		const moving = ref(false), resizing = ref(false), animating = ref(false);
+		const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+		const tracks = computed(() => ({
+			x: Math.max(0, viewport.width - 40 - viewport.buttonWidth),
+			y: Math.max(0, viewport.height - 40 - viewport.buttonHeight)
+		}));
+		const panelAnchored = computed(() => appSettings.menuPosition.enabled && appSettings.menuPosition.reference === "panel");
+		const buttonAnchor = computed(() => {
+			const position = appSettings.menuPosition;
+			const x = margin + tracks.value.x * (position.enabled ? (position.x ?? 100) / 100 : 1);
+			const y = position.enabled ? margin + tracks.value.y * ((position.y ?? defaultVertical()) / 100) : clamp(70, margin, margin + tracks.value.y);
+			return {
+				x,
+				y,
+				right: !position.enabled || x + viewport.buttonWidth / 2 >= viewport.width / 2,
+				bottom: position.enabled && y + viewport.buttonHeight / 2 >= viewport.height / 2
+			};
+		});
+		const heldPanelSize = computed(() => {
+			const saved = appSettings.menuPosition.panelSize;
+			return panelAnchored.value && saved?.viewportWidth === viewport.width && saved?.viewportHeight === viewport.height ? saved : null;
+		});
+		const limits = computed(() => {
+			if (panelAnchored.value) {
+				const width = Math.max(1, viewport.width - 40);
+				const height = Math.max(1, viewport.height - 40 - (viewport.buttonHeight + gap) * 2);
+				return {
+					minWidth: Math.min(560, width, heldPanelSize.value?.width ?? Infinity),
+					minHeight: Math.min(360, height, heldPanelSize.value?.height ?? Infinity),
+					maxWidth: width,
+					maxHeight: height
+				};
+			}
+			const a = buttonAnchor.value;
+			const width = Math.max(1, appSettings.menuPosition.enabled ? a.right ? a.x + viewport.buttonWidth - margin : viewport.width - margin - a.x : viewport.width - 40);
+			const height = Math.max(1, a.bottom ? a.y - gap - margin : viewport.height - margin - a.y - viewport.buttonHeight - gap);
+			return {
+				minWidth: Math.min(560, Math.floor(width)),
+				minHeight: Math.min(360, Math.floor(height)),
+				maxWidth: Math.floor(width),
+				maxHeight: Math.floor(height)
+			};
+		});
+		const automaticSize = computed(() => ({
+			width: defaultSize.width,
+			height: Math.max(defaultSize.minHeight, viewport.height * defaultSize.heightRatio)
+		}));
+		const target = computed(() => {
+			const a = buttonAnchor.value, settings = appSettings.menuSize;
+			const { width: defaultWidth, height: defaultHeight } = automaticSize.value;
+			let width = settings.enabled ? settings.width ?? defaultWidth : defaultWidth;
+			let height = settings.enabled ? settings.height ?? defaultHeight : defaultHeight;
+			if (settings.enabled || appSettings.menuPosition.enabled) {
+				width = clamp(width, limits.value.minWidth, limits.value.maxWidth);
+				height = clamp(height, limits.value.minHeight, limits.value.maxHeight);
+			}
+			if (panelAnchored.value) {
+				if (heldPanelSize.value) {
+					width = Math.min(width, heldPanelSize.value.width);
+					height = Math.min(height, heldPanelSize.value.height);
+				}
+				const travel = panelTracks(width, height);
+				const left = margin + travel.x * ((appSettings.menuPosition.x ?? 100) / 100);
+				const top = margin + travel.y * ((appSettings.menuPosition.y ?? 0) / 100);
+				const right = left + width / 2 >= viewport.width / 2;
+				const above = top - margin, below = viewport.height - margin - top - height;
+				let bottom = top + height / 2 >= viewport.height / 2;
+				if (bottom && below < viewport.buttonHeight + gap) bottom = false;
+				else if (!bottom && above < viewport.buttonHeight + gap) bottom = true;
+				const x = right ? left + width - viewport.buttonWidth : left;
+				const y = bottom ? top + height + gap : top - viewport.buttonHeight - gap;
+				return {
+					x,
+					y,
+					width,
+					height,
+					offsetX: left - x,
+					offsetY: top - y,
+					right,
+					bottom
+				};
+			}
+			return {
+				x: a.x,
+				y: a.y,
+				width,
+				height,
+				offsetX: a.right ? viewport.buttonWidth - width : 0,
+				offsetY: a.bottom ? -height - gap : viewport.buttonHeight + gap,
+				right: a.right,
+				bottom: a.bottom
+			};
+		});
+		const anchor = computed(() => ({
+			right: target.value.right,
+			bottom: target.value.bottom
+		}));
+		const rendered = reactive({ ...target.value });
+		let lastTarget = JSON.stringify(target.value), lastCorner = `${anchor.value.right}:${anchor.value.bottom}`;
+		let motion = null, motionFrame = 0, pointerFrame = 0, viewportFrame = 0;
+		let panelPin = null;
+		let drag = null, point = null, suppressClickUntil = 0, suppressedClickTarget = null;
+		function defaultVertical() {
+			return tracks.value.y ? clamp(50 / tracks.value.y * 100, 0, 100) : 0;
+		}
+		function panelTracks(width, height) {
+			return {
+				x: Math.max(0, viewport.width - 40 - width),
+				y: Math.max(0, viewport.height - 40 - height)
+			};
+		}
+		function followPanel() {
+			if (!panelPin) return;
+			rendered.x = clamp(panelPin.left - rendered.offsetX, margin, viewport.width - margin - viewport.buttonWidth);
+			rendered.y = clamp(panelPin.top - rendered.offsetY, margin, viewport.height - margin - viewport.buttonHeight);
+			rendered.offsetX = panelPin.left - rendered.x;
+			rendered.offsetY = panelPin.top - rendered.y;
+		}
+		function rememberPanelSize(size = rendered) {
+			appSettings.menuPosition.panelSize = {
+				width: size.width,
+				height: size.height,
+				viewportWidth: viewport.width,
+				viewportHeight: viewport.height
+			};
+		}
+		function draw(time) {
+			motionFrame = 0;
+			if (!motion) return;
+			const progress = clamp((time - motion.start) / duration, 0, 1), eased = 1 - (1 - progress) ** 3;
+			for (const key of motion.kind === "flip" || motion.kind === "panel-flip" ? ["offsetX", "offsetY"] : dimensions) rendered[key] = motion.from[key] + (target.value[key] - motion.from[key]) * eased;
+			if (motion.kind === "panel-flip") followPanel();
+			if (progress < 1) motionFrame = requestAnimationFrame(draw);
+			else {
+				motion = null;
+				animating.value = false;
+			}
+		}
+		function retarget(mode = "smooth", force = false) {
+			const next = target.value, key = JSON.stringify(next);
+			if (!force && key === lastTarget) return;
+			lastTarget = key;
+			const corner = `${anchor.value.right}:${anchor.value.bottom}`, flipped = corner !== lastCorner;
+			lastCorner = corner;
+			if (mode === "instant" || reducedMotion.matches) {
+				cancelAnimationFrame(motionFrame);
+				motionFrame = 0;
+				motion = null;
+				animating.value = false;
+				Object.assign(rendered, next);
+				return;
+			}
+			if (mode === "drag" || mode === "panel-drag") {
+				const panel = mode === "panel-drag";
+				const kind = panel ? "panel-flip" : "flip";
+				if (panel) panelPin = {
+					left: next.x + next.offsetX,
+					top: next.y + next.offsetY
+				};
+				for (const name of panel ? ["width", "height"] : [
+					"x",
+					"y",
+					"width",
+					"height"
+				]) rendered[name] = next[name];
+				if ((flipped || motion && motion.kind !== kind) && visible.value) motion = {
+					kind,
+					start: performance.now(),
+					from: { ...rendered }
+				};
+				else if (motion?.kind !== kind) {
+					motion = null;
+					rendered.offsetX = next.offsetX;
+					rendered.offsetY = next.offsetY;
+				}
+				if (panel) followPanel();
+			} else motion = {
+				kind: "layout",
+				start: performance.now(),
+				from: { ...rendered }
+			};
+			animating.value = Boolean(motion);
+			if (motion && !motionFrame) motionFrame = requestAnimationFrame(draw);
+		}
+		function setSize(next, persist = true) {
+			let changed = false;
+			for (const axis of ["width", "height"]) {
+				if (!Number.isFinite(next[axis])) continue;
+				const value = Math.round(clamp(next[axis], limits.value[axis === "width" ? "minWidth" : "minHeight"], limits.value[axis === "width" ? "maxWidth" : "maxHeight"]));
+				if (value === appSettings.menuSize[axis] && (!heldPanelSize.value || heldPanelSize.value[axis] === value)) continue;
+				appSettings.menuSize[axis] = value;
+				if (panelAnchored.value) {
+					if (!heldPanelSize.value) rememberPanelSize();
+					appSettings.menuPosition.panelSize[axis] = value;
+				}
+				changed = true;
+			}
+			retarget(persist ? "smooth" : "drag");
+			if (persist && changed) saveSettings();
+			return changed;
+		}
+		function setPosition(next, persist = true, reference = appSettings.menuPosition.reference) {
+			let changed = reference !== appSettings.menuPosition.reference;
+			appSettings.menuPosition.reference = reference;
+			if (reference === "button") appSettings.menuPosition.panelSize = null;
+			for (const axis of ["x", "y"]) {
+				if (!Number.isFinite(next[axis])) continue;
+				const precision = persist ? 10 : 1e6;
+				const value = Math.round(clamp(next[axis], 0, 100) * precision) / precision;
+				if (value === appSettings.menuPosition[axis]) continue;
+				appSettings.menuPosition[axis] = value;
+				changed = true;
+			}
+			retarget(persist ? "smooth" : reference === "panel" ? "panel-drag" : "drag");
+			if (persist && changed) saveSettings();
+			return changed;
+		}
+		function setEnabled(kind, enabled) {
+			const settings = appSettings[kind];
+			if (settings.enabled === Boolean(enabled)) return;
+			if (kind === "menuSize" && !enabled) appSettings.menuPosition.panelSize = null;
+			if (enabled) {
+				if (kind === "menuSize") {
+					settings.width ??= Math.round(rendered.width);
+					settings.height ??= Math.round(rendered.height);
+				} else {
+					settings.x ??= 100;
+					settings.y ??= Math.round(defaultVertical() * 10) / 10;
+				}
+			}
+			settings.enabled = Boolean(enabled);
+			retarget();
+			saveSettings();
+		}
+		function defaultValues(kind) {
+			if (kind === "menuPosition") return {
+				x: 100,
+				y: Math.round(defaultVertical() * 1e6) / 1e6,
+				reference: "button",
+				panelSize: null
+			};
+			return {
+				width: Math.round(clamp(automaticSize.value.width, limits.value.minWidth, limits.value.maxWidth)),
+				height: Math.round(clamp(automaticSize.value.height, limits.value.minHeight, limits.value.maxHeight))
+			};
+		}
+		function isDefault(kind) {
+			if (kind === "menuSize" && appSettings.menuPosition.panelSize) return false;
+			return Object.entries(defaultValues(kind)).every(([key, value]) => (appSettings[kind][key] ?? value) === value);
+		}
+		function resetLayout(kind) {
+			if (isDefault(kind)) return;
+			Object.assign(appSettings[kind], defaultValues(kind));
+			if (kind === "menuSize") appSettings.menuPosition.panelSize = null;
+			retarget();
+			saveSettings();
+		}
+		function startDrag(event, kind, edge = "", source = "button") {
+			if (event.button !== 0 || drag || (kind === "move" ? !appSettings.menuPosition.enabled : !appSettings.menuSize.enabled)) return;
+			if (kind === "move" && event.target.closest("button,a,input,select,textarea")) return;
+			drag = {
+				kind,
+				edge,
+				source,
+				node: event.currentTarget,
+				id: event.pointerId,
+				startX: event.clientX,
+				startY: event.clientY,
+				initial: { ...rendered },
+				panel: {
+					left: clamp(rendered.x + rendered.offsetX, margin, viewport.width - margin - rendered.width),
+					top: clamp(rendered.y + rendered.offsetY, margin, viewport.height - margin - rendered.height)
+				},
+				changed: false,
+				moved: false
+			};
+			event.currentTarget.setPointerCapture(event.pointerId);
+		}
+		function movePanel(left, top) {
+			const switched = appSettings.menuPosition.reference !== "panel";
+			appSettings.menuPosition.reference = "panel";
+			const travel = panelTracks(target.value.width, target.value.height);
+			return setPosition({
+				x: travel.x ? (left - margin) / travel.x * 100 : 0,
+				y: travel.y ? (top - margin) / travel.y * 100 : 0
+			}, false, "panel") || switched;
+		}
+		function applyPointer() {
+			pointerFrame = 0;
+			if (!drag || !point) return;
+			const dx = point.x - drag.startX, dy = point.y - drag.startY;
+			point = null;
+			if (!drag.moved && Math.hypot(dx, dy) < 4) return;
+			if (!drag.moved) {
+				tooltip.hide();
+				if (drag.kind === "move" && drag.source === "panel") {
+					rememberPanelSize(drag.initial);
+					drag.changed = true;
+				}
+			}
+			drag.moved = true;
+			moving.value = drag.kind === "move";
+			resizing.value = drag.kind === "resize";
+			if (drag.kind === "move" && drag.source === "panel") drag.changed = movePanel(drag.panel.left + dx, drag.panel.top + dy) || drag.changed;
+			else if (drag.kind === "move") drag.changed = setPosition({
+				x: tracks.value.x ? (drag.initial.x + dx - margin) / tracks.value.x * 100 : 0,
+				y: tracks.value.y ? (drag.initial.y + dy - margin) / tracks.value.y * 100 : 0
+			}, false, "button") || drag.changed;
+			else {
+				const next = {};
+				if (drag.edge.includes("west")) next.width = drag.initial.width - dx;
+				if (drag.edge.includes("east")) next.width = drag.initial.width + dx;
+				if (drag.edge.includes("north")) next.height = drag.initial.height - dy;
+				if (drag.edge.includes("south")) next.height = drag.initial.height + dy;
+				drag.changed = setSize(next, false) || drag.changed;
+				if (panelAnchored.value) {
+					const left = drag.edge.includes("west") ? drag.panel.left + drag.initial.width - target.value.width : drag.panel.left;
+					const top = drag.edge.includes("north") ? drag.panel.top + drag.initial.height - target.value.height : drag.panel.top;
+					drag.changed = movePanel(left, top) || drag.changed;
+				}
+			}
+		}
+		function moveDrag(event) {
+			if (!drag || event.pointerId !== drag.id) return;
+			point = {
+				x: event.clientX,
+				y: event.clientY
+			};
+			if (!pointerFrame) pointerFrame = requestAnimationFrame(applyPointer);
+		}
+		function finishDrag(event) {
+			if (!drag || event?.pointerId !== void 0 && event.pointerId !== drag.id) return;
+			cancelAnimationFrame(pointerFrame);
+			applyPointer();
+			const finished = drag;
+			drag = null;
+			moving.value = resizing.value = false;
+			if (finished.node.hasPointerCapture(finished.id)) finished.node.releasePointerCapture(finished.id);
+			if (finished.moved) {
+				suppressClickUntil = performance.now() + 300;
+				suppressedClickTarget = finished.node;
+			}
+			if (finished.changed) saveSettings();
+		}
+		function suppressDragClick(event) {
+			if (event.detail === 0 || performance.now() >= suppressClickUntil || !suppressedClickTarget?.contains(event.target)) return;
+			suppressClickUntil = 0;
+			suppressedClickTarget = null;
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		}
+		function refreshViewport() {
+			viewportFrame = 0;
+			viewport.width = document.documentElement.clientWidth;
+			viewport.height = document.documentElement.clientHeight;
+			const button = root.value?.querySelector("#cf-ratings-settings-btn");
+			viewport.buttonWidth = button?.offsetWidth || 44;
+			viewport.buttonHeight = button?.offsetHeight || 44;
+			retarget("instant", true);
+		}
+		function scheduleViewport() {
+			if (!viewportFrame) viewportFrame = requestAnimationFrame(refreshViewport);
+		}
+		watch(target, () => retarget(drag?.moved ? panelAnchored.value ? "panel-drag" : "drag" : "smooth"));
+		watch(visible, () => {
+			finishDrag();
+			nextTick(refreshViewport);
+		});
+		watch(() => [appSettings.menuSize.enabled, appSettings.menuPosition.enabled], () => finishDrag());
+		onMounted(() => {
+			refreshViewport();
+			window.addEventListener("resize", scheduleViewport);
+			window.visualViewport?.addEventListener("resize", scheduleViewport);
+			window.addEventListener("blur", finishDrag);
+			reducedMotion.addEventListener("change", refreshViewport);
+		});
+		onBeforeUnmount(() => {
+			finishDrag();
+			cancelAnimationFrame(motionFrame);
+			cancelAnimationFrame(viewportFrame);
+			window.removeEventListener("resize", scheduleViewport);
+			window.visualViewport?.removeEventListener("resize", scheduleViewport);
+			window.removeEventListener("blur", finishDrag);
+			reducedMotion.removeEventListener("change", refreshViewport);
+		});
+		const size = reactive({
+			enabled: computed(() => appSettings.menuSize.enabled),
+			isDefault: computed(() => isDefault("menuSize")),
+			reset: () => resetLayout("menuSize"),
+			animating,
+			goal: computed(() => ({
+				width: Math.round(target.value.width),
+				height: Math.round(target.value.height)
+			})),
+			width: computed(() => Math.round(rendered.width)),
+			height: computed(() => Math.round(rendered.height)),
+			limits,
+			setEnabled: (enabled) => setEnabled("menuSize", enabled),
+			setSize
+		});
+		function positionPercent(axis) {
+			const travel = panelAnchored.value ? panelTracks(rendered.width, rendered.height)[axis] : tracks.value[axis];
+			const value = rendered[axis] + (panelAnchored.value ? rendered[axis === "x" ? "offsetX" : "offsetY"] : 0);
+			return travel ? Math.round(clamp((value - margin) / travel * 100, 0, 100) * 10) / 10 : 0;
+		}
+		return reactive({
+			size,
+			position: reactive({
+				enabled: computed(() => appSettings.menuPosition.enabled),
+				isDefault: computed(() => isDefault("menuPosition")),
+				reset: () => resetLayout("menuPosition"),
+				animating,
+				goal: computed(() => ({
+					x: appSettings.menuPosition.x ?? 100,
+					y: appSettings.menuPosition.y ?? defaultVertical()
+				})),
+				x: computed(() => positionPercent("x")),
+				y: computed(() => positionPercent("y")),
+				setEnabled: (enabled) => setEnabled("menuPosition", enabled),
+				setPosition
+			}),
+			moving,
+			resizing,
+			edges: computed(() => {
+				const x = anchor.value.right ? "west" : "east", y = anchor.value.bottom ? "north" : "south";
+				return [
+					x,
+					y,
+					y + x
+				];
+			}),
+			rootStyle: computed(() => ({
+				left: `${rendered.x}px`,
+				top: `${rendered.y}px`,
+				right: "auto"
+			})),
+			panelStyle: computed(() => ({
+				left: `${clamp(rendered.x + rendered.offsetX, margin, viewport.width - margin - rendered.width) - rendered.x}px`,
+				top: `${clamp(rendered.y + rendered.offsetY, margin, viewport.height - margin - rendered.height) - rendered.y}px`
+			})),
+			modalStyle: computed(() => ({
+				width: `${rendered.width}px`,
+				height: `${rendered.height}px`,
+				minHeight: "0px",
+				maxHeight: "none",
+				"--cf-menu-open-y": anchor.value.bottom ? "6px" : "-6px",
+				transformOrigin: `${anchor.value.right ? "right" : "left"} ${anchor.value.bottom ? "bottom" : "top"}`
+			})),
+			startMove: (event, source = "button") => startDrag(event, "move", "", source),
+			startResize: (event, edge) => startDrag(event, "resize", edge),
+			moveDrag,
+			finishDrag,
+			suppressDragClick
+		});
+	}
+	var _sfc_main$32 = {
+		__name: "MenuLayout",
+		props: { layout: {
+			type: Object,
+			required: true
+		} },
+		setup(__props) {
+			return (_ctx, _cache) => {
+				return openBlock(), createElementBlock("div", {
+					class: "cf-menu-placement",
+					style: normalizeStyle$1(__props.layout.panelStyle)
+				}, [renderSlot(_ctx.$slots, "default")], 4);
+			};
+		}
+	};
 	var REPOSITORY_RAW_URL = "https://raw.githubusercontent.com/GodExious/Colorforces/main";
 	var SCRIPT_UPDATE_URL = "https://github.com/GodExious/Colorforces/releases/latest/download/colorforces.user.js";
 	var SCRIPT_FALLBACK_UPDATE_URL = `${REPOSITORY_RAW_URL}/colorforces.user.js`;
@@ -11284,8 +11820,12 @@ PERFORMANCE OF THIS SOFTWARE.
 	function configureUpdateUI(callback) {
 		announceUpdate = callback;
 	}
-	var _hoisted_1$19 = ["data-control", "checked"];
-	var _sfc_main$24 = Object.assign({ inheritAttrs: false }, {
+	var _hoisted_1$24 = [
+		"id",
+		"data-control",
+		"checked"
+	];
+	var _sfc_main$31 = Object.assign({ inheritAttrs: false }, {
 		__name: "ToggleSwitch",
 		props: {
 			modelValue: Boolean,
@@ -11294,6 +11834,7 @@ PERFORMANCE OF THIS SOFTWARE.
 				default: "div"
 			},
 			inputClass: String,
+			inputId: String,
 			dataControl: String
 		},
 		emits: ["update:modelValue", "change"],
@@ -11307,19 +11848,20 @@ PERFORMANCE OF THIS SOFTWARE.
 				return openBlock(), createBlock(resolveDynamicComponent(__props.as), mergeProps({ class: "cf-toggle-switch" }, _ctx.$attrs), {
 					default: withCtx(() => [createBaseVNode("input", {
 						type: "checkbox",
+						id: __props.inputId,
 						class: normalizeClass(__props.inputClass),
 						"data-control": __props.dataControl,
 						checked: __props.modelValue,
 						onChange: change
-					}, null, 42, _hoisted_1$19), _cache[0] || (_cache[0] = createBaseVNode("span", { class: "cf-toggle-slider" }, null, -1))]),
+					}, null, 42, _hoisted_1$24), _cache[0] || (_cache[0] = createBaseVNode("span", { class: "cf-toggle-slider" }, null, -1))]),
 					_: 1
 				}, 16);
 			};
 		}
 	});
-	var _hoisted_1$18 = { class: "cf-segmented-switch" };
-	var _hoisted_2$17 = ["data-tooltip", "onClick"];
-	var _sfc_main$23 = {
+	var _hoisted_1$23 = { class: "cf-segmented-switch" };
+	var _hoisted_2$20 = ["data-tooltip", "onClick"];
+	var _sfc_main$30 = {
 		__name: "SegmentedSwitch",
 		props: {
 			modelValue: String,
@@ -11341,7 +11883,7 @@ PERFORMANCE OF THIS SOFTWARE.
 				...props.activeStyle
 			}));
 			return (_ctx, _cache) => {
-				return openBlock(), createElementBlock("div", _hoisted_1$18, [createBaseVNode("div", {
+				return openBlock(), createElementBlock("div", _hoisted_1$23, [createBaseVNode("div", {
 					class: "cf-segmented-slider",
 					style: normalizeStyle$1(sliderStyle.value)
 				}, null, 4), (openBlock(true), createElementBlock(Fragment, null, renderList(__props.options, (option) => {
@@ -11354,52 +11896,311 @@ PERFORMANCE OF THIS SOFTWARE.
 							fontWeight: __props.modelValue === option.value ? `bold` : `normal`
 						}),
 						onClick: ($event) => _ctx.$emit(`update:modelValue`, option.value)
-					}, toDisplayString(option.label), 15, _hoisted_2$17);
+					}, toDisplayString(option.label), 15, _hoisted_2$20);
 				}), 128))]);
 			};
 		}
 	};
-	var _hoisted_1$17 = { class: "cf-tab-panel" };
-	var _hoisted_2$16 = { class: "cf-setting-item" };
-	var _hoisted_3$16 = ["textContent"];
-	var _hoisted_4$16 = {
-		class: "cf-setting-item",
-		style: {
-			"cursor": "pointer",
-			"user-select": "none",
-			"margin": "0px"
+	var _hoisted_1$22 = { class: "cf-expand-region" };
+	var _hoisted_2$19 = { class: "cf-expand-content" };
+	var ExpandTransition_default = _plugin_vue_export_helper_default({
+		__name: "ExpandTransition",
+		props: { show: {
+			type: Boolean,
+			default: true
+		} },
+		setup(__props) {
+			const holdPosition = inject("cf-collapse-anchor", () => () => {});
+			const running = new Map();
+			const interrupted = new WeakMap();
+			const fields = ["height", "marginBottom"];
+			function cancel(element) {
+				const state = running.get(element);
+				if (!state) return;
+				const style = getComputedStyle(element);
+				interrupted.set(element, Object.fromEntries(fields.map((key) => [key, style[key]])));
+				state.animation.cancel();
+				element.style.overflow = state.overflow;
+				element.style.transition = state.transition;
+				element.inert = state.inert;
+				delete element.dataset.cfExpanding;
+				running.delete(element);
+				state.release();
+			}
+			function animate(element, done, entering) {
+				const release = element.closest(".cf-tab-panel.active:not([aria-hidden=\"true\"])") ? holdPosition() : () => {};
+				if (!element.getClientRects().length || !element.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+					interrupted.delete(element);
+					done();
+					release();
+					return;
+				}
+				const expanded = {
+					height: element.firstElementChild.getBoundingClientRect().height + "px",
+					marginBottom: "0px"
+				};
+				const collapsed = {
+					height: "0px",
+					marginBottom: "0px"
+				};
+				collapsed.marginBottom = -(parseFloat(getComputedStyle(element.parentElement).rowGap) || 0) + "px";
+				const start = interrupted.get(element) || (entering ? collapsed : expanded);
+				interrupted.delete(element);
+				const overflow = element.style.overflow;
+				const transition = element.style.transition;
+				const inert = element.inert;
+				element.inert = !entering;
+				element.style.overflow = "hidden";
+				element.style.transition = "none";
+				element.dataset.cfExpanding = "";
+				const animation = element.animate([start, entering ? expanded : collapsed], {
+					duration: 260,
+					easing: "cubic-bezier(.22,1,.36,1)",
+					fill: "both"
+				});
+				running.set(element, {
+					animation,
+					overflow,
+					transition,
+					inert,
+					release
+				});
+				animation.onfinish = () => {
+					done();
+					animation.cancel();
+					element.style.overflow = overflow;
+					element.style.transition = transition;
+					element.inert = inert;
+					delete element.dataset.cfExpanding;
+					running.delete(element);
+					release();
+				};
+			}
+			onBeforeUnmount(() => [...running.keys()].forEach(cancel));
+			return (_ctx, _cache) => {
+				return openBlock(), createBlock(Transition, {
+					css: false,
+					onEnter: _cache[0] || (_cache[0] = (element, done) => animate(element, done, true)),
+					onLeave: _cache[1] || (_cache[1] = (element, done) => animate(element, done, false)),
+					onEnterCancelled: cancel,
+					onLeaveCancelled: cancel
+				}, {
+					default: withCtx(() => [withDirectives(createBaseVNode("div", _hoisted_1$22, [createBaseVNode("div", _hoisted_2$19, [renderSlot(_ctx.$slots, "default", {}, void 0, true)])], 512), [[vShow, __props.show]])]),
+					_: 3
+				});
+			};
+		}
+	}, [["__scopeId", "data-v-9bacab14"]]);
+	var _hoisted_1$21 = ["aria-label"];
+	var InfoHint_default = _plugin_vue_export_helper_default({
+		__name: "InfoHint",
+		props: { text: {
+			type: String,
+			required: true
+		} },
+		setup(__props) {
+			return (_ctx, _cache) => {
+				return openBlock(), createElementBlock("button", {
+					type: "button",
+					class: "cf-info-hint",
+					"aria-label": __props.text,
+					onMouseenter: _cache[0] || (_cache[0] = ($event) => unref(tooltip).show($event.currentTarget, __props.text)),
+					onMouseleave: _cache[1] || (_cache[1] = (...args) => unref(tooltip).hide && unref(tooltip).hide(...args)),
+					onFocus: _cache[2] || (_cache[2] = ($event) => unref(tooltip).show($event.currentTarget, __props.text)),
+					onBlur: _cache[3] || (_cache[3] = (...args) => unref(tooltip).hide && unref(tooltip).hide(...args)),
+					onClick: _cache[4] || (_cache[4] = withModifiers(() => {}, ["stop", "prevent"])),
+					onKeydown: _cache[5] || (_cache[5] = withKeys((...args) => unref(tooltip).hide && unref(tooltip).hide(...args), ["escape"]))
+				}, [..._cache[6] || (_cache[6] = [createBaseVNode("span", { "aria-hidden": "true" }, "i", -1)])], 40, _hoisted_1$21);
+			};
+		}
+	}, [["__scopeId", "data-v-e38b89aa"]]);
+	var _hoisted_1$20 = { class: "cf-setting-item cf-menu-layout-toggle" };
+	var _hoisted_2$18 = { class: "cf-setting-label cf-menu-layout-label" };
+	var _hoisted_3$18 = ["for"];
+	var _hoisted_4$18 = { class: "cf-menu-layout-actions" };
+	var _hoisted_5$16 = { "data-cf-language-text": "" };
+	var _hoisted_6$16 = { class: "cf-menu-layout-fields" };
+	var _hoisted_7$14 = { "data-cf-language-text": "" };
+	var _hoisted_8$12 = { class: "cf-menu-layout-value" };
+	var _hoisted_9$11 = [
+		"onUpdate:modelValue",
+		"step",
+		"min",
+		"max",
+		"data-control",
+		"onFocus",
+		"onInput",
+		"onChange",
+		"onBlur"
+	];
+	var _hoisted_10$10 = { class: "cf-menu-layout-unit" };
+	var MenuLayoutControl_default = _plugin_vue_export_helper_default({
+		__name: "MenuLayoutControl",
+		props: {
+			controller: Object,
+			fields: Array,
+			titleKey: String,
+			hintKey: String,
+			control: String,
+			apply: Function
+		},
+		setup(__props) {
+			const props = __props;
+			const drafts = reactive({}), held = new Set(), editing = ref(null);
+			function syncDrafts() {
+				for (const field of props.fields) {
+					if (!props.controller.animating) held.delete(field.key);
+					if (editing.value !== field.key && !held.has(field.key)) drafts[field.key] = String(props.controller[field.key]);
+				}
+			}
+			watch(() => [props.fields.map((field) => props.controller[field.key]), props.controller.animating], syncDrafts, { immediate: true });
+			function commitDimension(key) {
+				if (editing.value !== key) return;
+				const raw = drafts[key], value = Number(raw);
+				editing.value = null;
+				if (String(raw).trim() && Number.isFinite(value)) {
+					props.apply({ [key]: value });
+					drafts[key] = String(props.controller.goal[key]);
+					if (props.controller.animating) held.add(key);
+				}
+				syncDrafts();
+			}
+			function resetLayout() {
+				tooltip.hide();
+				editing.value = null;
+				held.clear();
+				props.controller.reset();
+				syncDrafts();
+			}
+			return (_ctx, _cache) => {
+				return openBlock(), createElementBlock(Fragment, null, [createBaseVNode("div", _hoisted_1$20, [createBaseVNode("span", _hoisted_2$18, [createBaseVNode("label", {
+					for: __props.control,
+					"data-cf-language-text": ""
+				}, toDisplayString(unref(translate$1)(__props.titleKey)), 9, _hoisted_3$18), createVNode$1(InfoHint_default, { text: unref(translate$1)(__props.hintKey) }, null, 8, ["text"])]), createBaseVNode("div", _hoisted_4$18, [createVNode$1(_sfc_main$38, {
+					"aria-label": unref(translate$1)("menuLayoutReset"),
+					"data-tooltip": unref(translate$1)("menuLayoutReset"),
+					disabled: !__props.controller.enabled || __props.controller.isDefault,
+					"data-control": `${__props.control}Reset`,
+					onFocus: _cache[0] || (_cache[0] = ($event) => unref(tooltip).show($event.currentTarget, unref(translate$1)("menuLayoutReset"))),
+					onBlur: unref(tooltip).hide,
+					onClick: resetLayout
+				}, {
+					default: withCtx(() => [createVNode$1(_sfc_main$45, { source: unref(reset_icon_default) }, null, 8, ["source"]), createBaseVNode("span", _hoisted_5$16, toDisplayString(unref(translate$1)("menuLayoutResetAction")), 1)]),
+					_: 1
+				}, 8, [
+					"aria-label",
+					"data-tooltip",
+					"disabled",
+					"data-control",
+					"onBlur"
+				]), createVNode$1(_sfc_main$31, {
+					as: "label",
+					"input-id": __props.control,
+					"model-value": __props.controller.enabled,
+					"data-control": __props.control,
+					"onUpdate:modelValue": __props.controller.setEnabled
+				}, null, 8, [
+					"input-id",
+					"model-value",
+					"data-control",
+					"onUpdate:modelValue"
+				])])]), createVNode$1(ExpandTransition_default, { show: __props.controller.enabled }, {
+					default: withCtx(() => [createBaseVNode("div", _hoisted_6$16, [(openBlock(true), createElementBlock(Fragment, null, renderList(__props.fields, (field) => {
+						return openBlock(), createElementBlock("label", {
+							key: field.key,
+							class: "cf-menu-layout-field"
+						}, [createBaseVNode("span", _hoisted_7$14, toDisplayString(unref(translate$1)(field.label)), 1), createBaseVNode("span", _hoisted_8$12, [withDirectives(createBaseVNode("input", {
+							"onUpdate:modelValue": ($event) => drafts[field.key] = $event,
+							type: "number",
+							inputmode: "decimal",
+							step: field.step || 1,
+							min: field.min,
+							max: field.max,
+							"data-control": field.control,
+							onFocus: ($event) => editing.value = field.key,
+							onInput: ($event) => editing.value = field.key,
+							onChange: ($event) => commitDimension(field.key),
+							onBlur: ($event) => commitDimension(field.key),
+							onKeydown: _cache[1] || (_cache[1] = withKeys(withModifiers(($event) => $event.target.blur(), ["prevent"]), ["enter"]))
+						}, null, 40, _hoisted_9$11), [[vModelText, drafts[field.key]]]), createBaseVNode("span", _hoisted_10$10, toDisplayString(field.unit), 1)])]);
+					}), 128))])]),
+					_: 1
+				}, 8, ["show"])], 64);
+			};
+		}
+	}, [["__scopeId", "data-v-8ac521da"]]);
+	var _sfc_main$26 = {
+		__name: "MenuSizeSettings",
+		setup(__props) {
+			const sizing = inject("cf-menu-size");
+			const fields = computed(() => [{
+				key: "width",
+				label: "menuSizeWidth",
+				control: "menuWidthInput",
+				min: sizing.limits.minWidth,
+				max: sizing.limits.maxWidth,
+				unit: "px"
+			}, {
+				key: "height",
+				label: "menuSizeHeight",
+				control: "menuHeightInput",
+				min: sizing.limits.minHeight,
+				max: sizing.limits.maxHeight,
+				unit: "px"
+			}]);
+			return (_ctx, _cache) => {
+				return openBlock(), createBlock(MenuLayoutControl_default, {
+					controller: unref(sizing),
+					fields: fields.value,
+					apply: unref(sizing).setSize,
+					control: "cbCustomMenuSize",
+					"title-key": "menuSizeCustom",
+					"hint-key": "menuSizeHint"
+				}, null, 8, [
+					"controller",
+					"fields",
+					"apply"
+				]);
+			};
 		}
 	};
-	var _hoisted_5$14 = ["textContent"];
-	var _hoisted_6$14 = {
-		class: "cf-setting-item cf-sub-setting-item",
-		style: {
-			"align-items": "center",
-			"justify-content": "space-between",
-			"font-size": "12px",
-			"cursor": "pointer",
-			"user-select": "none",
-			"min-height": "28px",
-			"margin": "0px",
-			"padding-left": "14px"
+	var _sfc_main$25 = {
+		__name: "MenuPositionSettings",
+		setup(__props) {
+			const position = inject("cf-menu-position");
+			const fields = [{
+				key: "x",
+				label: "menuPositionX",
+				control: "menuPositionXInput",
+				min: 0,
+				max: 100,
+				step: .1,
+				unit: "%"
+			}, {
+				key: "y",
+				label: "menuPositionY",
+				control: "menuPositionYInput",
+				min: 0,
+				max: 100,
+				step: .1,
+				unit: "%"
+			}];
+			return (_ctx, _cache) => {
+				return openBlock(), createBlock(MenuLayoutControl_default, {
+					controller: unref(position),
+					fields,
+					apply: unref(position).setPosition,
+					control: "cbCustomMenuPosition",
+					"title-key": "menuPositionCustom",
+					"hint-key": "menuPositionHint"
+				}, null, 8, ["controller", "apply"]);
+			};
 		}
 	};
-	var _hoisted_7$13 = ["textContent"];
-	var _hoisted_8$12 = {
-		class: "cf-setting-item cf-sub-setting-item",
-		style: {
-			"align-items": "center",
-			"justify-content": "space-between",
-			"font-size": "12px",
-			"cursor": "pointer",
-			"user-select": "none",
-			"min-height": "28px",
-			"margin": "0px",
-			"padding-left": "14px"
-		}
-	};
-	var _hoisted_9$12 = ["textContent"];
-	var _hoisted_10$10 = {
+	var _hoisted_1$19 = { class: "cf-tab-panel" };
+	var _hoisted_2$17 = { class: "cf-setting-item" };
+	var _hoisted_3$17 = ["textContent"];
+	var _hoisted_4$17 = {
 		class: "cf-setting-item",
 		style: {
 			"display": "flex",
@@ -11409,14 +12210,14 @@ PERFORMANCE OF THIS SOFTWARE.
 			"margin": "0px"
 		}
 	};
-	var _hoisted_11$9 = ["textContent"];
-	var _hoisted_12$9 = { style: {
+	var _hoisted_5$15 = ["textContent"];
+	var _hoisted_6$15 = { style: {
 		"display": "inline-flex",
 		"align-items": "center",
 		"gap": "10px"
 	} };
-	var _hoisted_13$8 = { "data-cf-language-text": "" };
-	var _sfc_main$22 = {
+	var _hoisted_7$13 = { "data-cf-language-text": "" };
+	var _sfc_main$24 = {
 		__name: "GeneralPage",
 		setup(__props) {
 			const updateState = ref("");
@@ -11448,12 +12249,12 @@ PERFORMANCE OF THIS SOFTWARE.
 			}
 			onBeforeUnmount(() => clearTimeout(resetTimer));
 			return (_ctx, _cache) => {
-				return openBlock(), createElementBlock("div", _hoisted_1$17, [
-					createBaseVNode("div", _hoisted_2$16, [createBaseVNode("span", {
+				return openBlock(), createElementBlock("div", _hoisted_1$19, [
+					createBaseVNode("div", _hoisted_2$17, [createBaseVNode("span", {
 						class: "cf-setting-label",
 						"data-cf-language-text": "",
 						textContent: toDisplayString(unref(translate$1)().langLabel)
-					}, null, 8, _hoisted_3$16), createVNode$1(_sfc_main$23, {
+					}, null, 8, _hoisted_3$17), createVNode$1(_sfc_main$30, {
 						style: { "width": "140px" },
 						"model-value": unref(appSettings).lang,
 						"onUpdate:modelValue": unref(changeLanguage),
@@ -11463,71 +12264,33 @@ PERFORMANCE OF THIS SOFTWARE.
 						"onUpdate:modelValue",
 						"options"
 					])]),
-					createBaseVNode("label", _hoisted_4$16, [createBaseVNode("span", {
-						class: "cf-setting-label",
-						"data-cf-language-text": "",
-						textContent: toDisplayString(unref(translate$1)().locHideTags)
-					}, null, 8, _hoisted_5$14), createVNode$1(_sfc_main$24, {
-						as: "div",
-						modelValue: unref(appSettings).hideTags,
-						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => unref(appSettings).hideTags = $event),
-						"input-class": "cf-toggle-hide-tags",
-						"data-control": "cbHideTags",
-						onChange: _cache[1] || (_cache[1] = ($event) => unref(saveSettings)())
-					}, null, 8, ["modelValue"])]),
-					createVNode$1(ExpandTransition_default, { show: unref(appSettings).hideTags }, {
-						default: withCtx(() => [createBaseVNode("label", _hoisted_6$14, [createBaseVNode("span", {
-							class: "cf-setting-sublabel",
-							"data-cf-language-text": "",
-							textContent: toDisplayString(unref(translate$1)().locHideRatingTag)
-						}, null, 8, _hoisted_7$13), createVNode$1(_sfc_main$24, {
-							as: "div",
-							modelValue: unref(appSettings).hideRatingTag,
-							"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => unref(appSettings).hideRatingTag = $event),
-							"data-control": "cbHideRatingTag",
-							onChange: _cache[3] || (_cache[3] = ($event) => unref(saveSettings)())
-						}, null, 8, ["modelValue"])])]),
-						_: 1
-					}, 8, ["show"]),
-					createVNode$1(ExpandTransition_default, { show: unref(appSettings).hideTags }, {
-						default: withCtx(() => [createBaseVNode("label", _hoisted_8$12, [createBaseVNode("span", {
-							class: "cf-setting-sublabel",
-							"data-cf-language-text": "",
-							textContent: toDisplayString(unref(translate$1)().locNotHideAcTags)
-						}, null, 8, _hoisted_9$12), createVNode$1(_sfc_main$24, {
-							as: "div",
-							modelValue: unref(appSettings).notHideAcTags,
-							"onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => unref(appSettings).notHideAcTags = $event),
-							"data-control": "cbNotHideAcTags",
-							onChange: _cache[5] || (_cache[5] = ($event) => unref(saveSettings)())
-						}, null, 8, ["modelValue"])])]),
-						_: 1
-					}, 8, ["show"]),
-					createBaseVNode("div", _hoisted_10$10, [createBaseVNode("span", {
+					createVNode$1(_sfc_main$25),
+					createVNode$1(_sfc_main$26),
+					createBaseVNode("div", _hoisted_4$17, [createBaseVNode("span", {
 						class: "cf-setting-label",
 						"data-cf-language-text": "",
 						textContent: toDisplayString(unref(translate$1)().locAutoCheckUpdate)
-					}, null, 8, _hoisted_11$9), createBaseVNode("div", _hoisted_12$9, [createVNode$1(_sfc_main$30, {
+					}, null, 8, _hoisted_5$15), createBaseVNode("div", _hoisted_6$15, [createVNode$1(_sfc_main$38, {
 						class: "cf-update-check-btn",
 						status: updateState.value,
 						busy: updateState.value === "checking",
 						disabled: Boolean(updateState.value),
 						onClick: withModifiers(manualUpdate, ["stop", "prevent"])
 					}, {
-						default: withCtx(() => [createVNode$1(_sfc_main$37, { source: unref(sync_icon_default) }, null, 8, ["source"]), createBaseVNode("span", _hoisted_13$8, toDisplayString(updateLabel.value), 1)]),
+						default: withCtx(() => [createVNode$1(_sfc_main$45, { source: unref(sync_icon_default) }, null, 8, ["source"]), createBaseVNode("span", _hoisted_7$13, toDisplayString(updateLabel.value), 1)]),
 						_: 1
 					}, 8, [
 						"status",
 						"busy",
 						"disabled"
-					]), createVNode$1(_sfc_main$24, {
+					]), createVNode$1(_sfc_main$31, {
 						as: "label",
 						style: {
 							"margin": "0px",
 							"cursor": "pointer"
 						},
 						modelValue: unref(appSettings).disableAutoCheckUpdate,
-						"onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => unref(appSettings).disableAutoCheckUpdate = $event),
+						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => unref(appSettings).disableAutoCheckUpdate = $event),
 						"input-class": "cf-toggle-auto-check",
 						"data-control": "cbAutoCheckUpdate",
 						onChange: autoCheckChanged
@@ -11625,7 +12388,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			return tokens[match] !== void 0 ? tokens[match] : match;
 		});
 	}
-	var _sfc_main$21 = {
+	var _sfc_main$23 = {
 		__name: "ColorPicker",
 		setup(__props) {
 			const element = ref(null);
@@ -11671,11 +12434,66 @@ PERFORMANCE OF THIS SOFTWARE.
 			};
 		}
 	};
-	var _hoisted_1$16 = { class: "cf-clist-modal-header" };
+	var _hoisted_1$18 = { class: "cf-setting-item cf-tag-visibility-setting" };
+	var _hoisted_2$16 = ["textContent"];
+	var _hoisted_3$16 = { class: "cf-setting-item cf-sub-setting-item cf-tag-visibility-setting cf-tag-visibility-subitem" };
+	var _hoisted_4$16 = ["textContent"];
+	var _hoisted_5$14 = { class: "cf-setting-item cf-sub-setting-item cf-tag-visibility-setting cf-tag-visibility-subitem" };
+	var _hoisted_6$14 = ["textContent"];
+	var TagVisibilitySettings_default = _plugin_vue_export_helper_default({
+		__name: "TagVisibilitySettings",
+		setup(__props) {
+			return (_ctx, _cache) => {
+				return openBlock(), createElementBlock(Fragment, null, [
+					createBaseVNode("label", _hoisted_1$18, [createBaseVNode("span", {
+						class: "cf-setting-label",
+						"data-cf-language-text": "",
+						textContent: toDisplayString(unref(translate$1)().locHideTags)
+					}, null, 8, _hoisted_2$16), createVNode$1(_sfc_main$31, {
+						as: "div",
+						modelValue: unref(appSettings).hideTags,
+						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => unref(appSettings).hideTags = $event),
+						"input-class": "cf-toggle-hide-tags",
+						"data-control": "cbHideTags",
+						onChange: _cache[1] || (_cache[1] = ($event) => unref(saveSettings)())
+					}, null, 8, ["modelValue"])]),
+					createVNode$1(ExpandTransition_default, { show: unref(appSettings).hideTags }, {
+						default: withCtx(() => [createBaseVNode("label", _hoisted_3$16, [createBaseVNode("span", {
+							class: "cf-setting-sublabel",
+							"data-cf-language-text": "",
+							textContent: toDisplayString(unref(translate$1)().locHideRatingTag)
+						}, null, 8, _hoisted_4$16), createVNode$1(_sfc_main$31, {
+							as: "div",
+							modelValue: unref(appSettings).hideRatingTag,
+							"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => unref(appSettings).hideRatingTag = $event),
+							"data-control": "cbHideRatingTag",
+							onChange: _cache[3] || (_cache[3] = ($event) => unref(saveSettings)())
+						}, null, 8, ["modelValue"])])]),
+						_: 1
+					}, 8, ["show"]),
+					createVNode$1(ExpandTransition_default, { show: unref(appSettings).hideTags }, {
+						default: withCtx(() => [createBaseVNode("label", _hoisted_5$14, [createBaseVNode("span", {
+							class: "cf-setting-sublabel",
+							"data-cf-language-text": "",
+							textContent: toDisplayString(unref(translate$1)().locNotHideAcTags)
+						}, null, 8, _hoisted_6$14), createVNode$1(_sfc_main$31, {
+							as: "div",
+							modelValue: unref(appSettings).notHideAcTags,
+							"onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => unref(appSettings).notHideAcTags = $event),
+							"data-control": "cbNotHideAcTags",
+							onChange: _cache[5] || (_cache[5] = ($event) => unref(saveSettings)())
+						}, null, 8, ["modelValue"])])]),
+						_: 1
+					}, 8, ["show"])
+				], 64);
+			};
+		}
+	}, [["__scopeId", "data-v-60c221c8"]]);
+	var _hoisted_1$17 = { class: "cf-clist-modal-header" };
 	var _hoisted_2$15 = { class: "cf-clist-modal-title" };
 	var _hoisted_3$15 = ["innerHTML"];
 	var _hoisted_4$15 = { class: "cf-clist-modal-footer" };
-	var _sfc_main$20 = {
+	var _sfc_main$21 = {
 		__name: "GuideDialog",
 		props: {
 			options: {
@@ -11711,7 +12529,7 @@ PERFORMANCE OF THIS SOFTWARE.
 				if (node) preventScrollChaining(node);
 			});
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$35, { origin: __props.origin }, {
+				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$43, { origin: __props.origin }, {
 					default: withCtx(() => [__props.visible ? (openBlock(), createElementBlock("div", {
 						key: 0,
 						ref_key: "overlay",
@@ -11723,7 +12541,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						class: "cf-clist-modal-card",
 						style: normalizeStyle$1(cardStyle.value)
 					}, [
-						createBaseVNode("div", _hoisted_1$16, [createBaseVNode("div", _hoisted_2$15, [createVNode$1(_sfc_main$37, { source: __props.options.iconSvg }, null, 8, ["source"]), createBaseVNode("span", null, toDisplayString(__props.options.title), 1)]), createBaseVNode("button", {
+						createBaseVNode("div", _hoisted_1$17, [createBaseVNode("div", _hoisted_2$15, [createVNode$1(_sfc_main$45, { source: __props.options.iconSvg }, null, 8, ["source"]), createBaseVNode("span", null, toDisplayString(__props.options.title), 1)]), createBaseVNode("button", {
 							type: "button",
 							class: "cf-modal-close-btn",
 							style: {
@@ -11739,7 +12557,7 @@ PERFORMANCE OF THIS SOFTWARE.
 							class: "cf-clist-modal-body",
 							innerHTML: __props.options.bodyHtml
 						}, null, 8, _hoisted_3$15),
-						createBaseVNode("div", _hoisted_4$15, [createVNode$1(_sfc_main$30, {
+						createBaseVNode("div", _hoisted_4$15, [createVNode$1(_sfc_main$38, {
 							type: "button",
 							class: "cf-clist-sync-btn cf-guide-confirm-btn",
 							style: normalizeStyle$1(buttonStyle.value),
@@ -11760,7 +12578,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		origin$3.value = anchor?.getBoundingClientRect().toJSON();
 		visible$3.value = true;
 	}
-	var _sfc_main$19 = {
+	var _sfc_main$20 = {
 		__name: "TimeFormatGuide",
 		setup(__props) {
 			const guideOptions = (options) => options;
@@ -11884,7 +12702,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			}
 			const options = computed(() => showTimeFormatGuideModal(appSettings.lang));
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(_sfc_main$20, {
+				return openBlock(), createBlock(_sfc_main$21, {
 					visible: visible$3.value,
 					origin: origin$3.value,
 					options: options.value,
@@ -11903,7 +12721,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		origin$2.value = anchor?.getBoundingClientRect().toJSON();
 		visible$2.value = true;
 	}
-	var _sfc_main$18 = {
+	var _sfc_main$19 = {
 		__name: "VerdictGuide",
 		setup(__props) {
 			const guideOptions = (options) => options;
@@ -12008,7 +12826,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			}
 			const options = computed(() => showVerdictGuideModal(appSettings.lang));
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(_sfc_main$20, {
+				return openBlock(), createBlock(_sfc_main$21, {
 					visible: visible$2.value,
 					origin: origin$2.value,
 					options: options.value,
@@ -12021,7 +12839,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			};
 		}
 	};
-	var _hoisted_1$15 = { class: "cf-tab-panel" };
+	var _hoisted_1$16 = { class: "cf-tab-panel" };
 	var _hoisted_2$14 = {
 		class: "cf-setting-item",
 		style: {
@@ -12049,7 +12867,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		class: "cf-setting-item cf-row-lang-icon-size",
 		style: { "padding-left": "12px" }
 	};
-	var _hoisted_9$11 = ["textContent"];
+	var _hoisted_9$10 = ["textContent"];
 	var _hoisted_10$9 = { style: {
 		"display": "flex",
 		"align-items": "center",
@@ -12099,7 +12917,7 @@ PERFORMANCE OF THIS SOFTWARE.
 	var _hoisted_20$4 = ["data-tooltip"];
 	var _hoisted_21$4 = ["disabled"];
 	var _hoisted_22$4 = ["textContent"];
-	var _sfc_main$17 = {
+	var _sfc_main$18 = {
 		__name: "AppearancePage",
 		setup(__props) {
 			function openGuide(kind, event) {
@@ -12115,11 +12933,12 @@ PERFORMANCE OF THIS SOFTWARE.
 			], () => previewDate.value = new Date());
 			const timePreview = computed(() => appSettings.timeFormat.enabled ? translate$1().timeFormatPreview + customFormatTime(previewDate.value, appSettings.timeFormat.format || "YYYY/MM/DD HH:mm") : translate$1().timeFormatDisabled);
 			return (_ctx, _cache) => {
-				return openBlock(), createElementBlock("div", _hoisted_1$15, [
+				return openBlock(), createElementBlock("div", _hoisted_1$16, [
+					createVNode$1(TagVisibilitySettings_default),
 					createBaseVNode("label", _hoisted_2$14, [createBaseVNode("span", {
 						class: "cf-setting-label",
 						textContent: toDisplayString(unref(translate$1)("locAcHighlight"))
-					}, null, 8, _hoisted_3$14), createVNode$1(_sfc_main$24, {
+					}, null, 8, _hoisted_3$14), createVNode$1(_sfc_main$31, {
 						as: "div",
 						modelValue: unref(appSettings).show.acHighlight,
 						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => unref(appSettings).show.acHighlight = $event),
@@ -12130,13 +12949,13 @@ PERFORMANCE OF THIS SOFTWARE.
 						default: withCtx(() => [createBaseVNode("div", _hoisted_4$14, [createBaseVNode("span", {
 							class: "cf-setting-sublabel",
 							textContent: toDisplayString(unref(translate$1)().acColor)
-						}, null, 8, _hoisted_5$13), unref(appSettings).show.acHighlight ? (openBlock(), createBlock(_sfc_main$21, { key: 0 })) : createCommentVNode("", true)])]),
+						}, null, 8, _hoisted_5$13), unref(appSettings).show.acHighlight ? (openBlock(), createBlock(_sfc_main$23, { key: 0 })) : createCommentVNode("", true)])]),
 						_: 1
 					}, 8, ["show"]),
 					createBaseVNode("label", _hoisted_6$13, [createBaseVNode("span", {
 						class: "cf-setting-label",
 						textContent: toDisplayString(unref(translate$1)().locLangIcon)
-					}, null, 8, _hoisted_7$12), createVNode$1(_sfc_main$24, {
+					}, null, 8, _hoisted_7$12), createVNode$1(_sfc_main$31, {
 						as: "div",
 						modelValue: unref(appSettings).show.langIcon,
 						"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => unref(appSettings).show.langIcon = $event),
@@ -12148,7 +12967,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						default: withCtx(() => [createBaseVNode("div", _hoisted_8$11, [createBaseVNode("span", {
 							class: "cf-setting-sublabel",
 							textContent: toDisplayString(unref(translate$1)().locLangIconSize)
-						}, null, 8, _hoisted_9$11), createBaseVNode("div", _hoisted_10$9, [withDirectives(createBaseVNode("input", {
+						}, null, 8, _hoisted_9$10), createBaseVNode("div", _hoisted_10$9, [withDirectives(createBaseVNode("input", {
 							type: "range",
 							min: "0.8",
 							max: "3.0",
@@ -12185,7 +13004,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						class: "cf-clist-icon-btn cf-clist-icon-help",
 						"data-tooltip": unref(translate$1)("verdictHelpTooltip"),
 						onClick: _cache[6] || (_cache[6] = withModifiers(($event) => openGuide("verdict", $event), ["prevent", "stop"]))
-					}, "?", 8, _hoisted_15$6)]), createVNode$1(_sfc_main$24, {
+					}, "?", 8, _hoisted_15$6)]), createVNode$1(_sfc_main$31, {
 						as: "div",
 						style: { "margin": "0px" },
 						modelValue: unref(appSettings).show.shortVerdict,
@@ -12202,7 +13021,7 @@ PERFORMANCE OF THIS SOFTWARE.
 							class: "cf-clist-icon-btn cf-clist-icon-help",
 							"data-tooltip": unref(translate$1)("timeFormatHelpTooltip"),
 							onClick: _cache[9] || (_cache[9] = withModifiers(($event) => openGuide("time", $event), ["prevent", "stop"]))
-						}, "?", 8, _hoisted_20$4)]), createVNode$1(_sfc_main$24, {
+						}, "?", 8, _hoisted_20$4)]), createVNode$1(_sfc_main$31, {
 							as: "div",
 							style: { "margin": "0px" },
 							modelValue: unref(appSettings).timeFormat.enabled,
@@ -12248,7 +13067,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		origin$1.value = anchor?.getBoundingClientRect().toJSON();
 		visible$1.value = true;
 	}
-	var _sfc_main$16 = {
+	var _sfc_main$17 = {
 		__name: "ClistKeyGuide",
 		setup(__props) {
 			const guideOptions = (options) => options;
@@ -12299,7 +13118,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			}
 			const options = computed(() => showClistKeyGuideModal(appSettings.lang));
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(_sfc_main$20, {
+				return openBlock(), createBlock(_sfc_main$21, {
 					visible: visible$1.value,
 					origin: origin$1.value,
 					options: options.value,
@@ -12318,7 +13137,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		origin.value = anchor?.getBoundingClientRect().toJSON();
 		visible.value = true;
 	}
-	var _sfc_main$15 = {
+	var _sfc_main$16 = {
 		__name: "ClistSyncGuide",
 		setup(__props) {
 			const guideOptions = (options) => options;
@@ -12359,7 +13178,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			}
 			const options = computed(() => showClistSyncSpecModal(appSettings.lang));
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(_sfc_main$20, {
+				return openBlock(), createBlock(_sfc_main$21, {
 					visible: visible.value,
 					origin: origin.value,
 					options: options.value,
@@ -12372,7 +13191,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			};
 		}
 	};
-	var _hoisted_1$14 = { class: "cf-tab-panel" };
+	var _hoisted_1$15 = { class: "cf-tab-panel" };
 	var _hoisted_2$13 = { class: "cf-clist-section" };
 	var _hoisted_3$13 = {
 		class: "cf-setting-item",
@@ -12405,7 +13224,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		"flex-direction": "column",
 		"gap": "6px"
 	} };
-	var _hoisted_9$10 = { style: {
+	var _hoisted_9$9 = { style: {
 		"display": "flex",
 		"align-items": "center",
 		"justify-content": "space-between"
@@ -12445,7 +13264,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		style: { "padding-left": "12px" }
 	};
 	var _hoisted_22$3 = ["textContent"];
-	var _hoisted_23$3 = {
+	var _hoisted_23$2 = {
 		class: "cf-setting-item cf-row-tag-fill-cell",
 		style: {
 			"align-items": "center",
@@ -12574,7 +13393,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		}
 	};
 	var _hoisted_40$1 = { class: "cf-setting-sublabel" };
-	var _sfc_main$14 = {
+	var _sfc_main$15 = {
 		__name: "RatingsPage",
 		setup(__props) {
 			function openGuide(kind, event) {
@@ -12624,11 +13443,11 @@ PERFORMANCE OF THIS SOFTWARE.
 				};
 			});
 			return (_ctx, _cache) => {
-				return openBlock(), createElementBlock("div", _hoisted_1$14, [
+				return openBlock(), createElementBlock("div", _hoisted_1$15, [
 					createBaseVNode("div", _hoisted_2$13, [createBaseVNode("label", _hoisted_3$13, [createBaseVNode("span", {
 						class: "cf-setting-label",
 						textContent: toDisplayString(unref(translate$1)().clistEnable)
-					}, null, 8, _hoisted_4$13), createVNode$1(_sfc_main$24, {
+					}, null, 8, _hoisted_4$13), createVNode$1(_sfc_main$31, {
 						as: "div",
 						modelValue: unref(appSettings).clist.enabled,
 						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => unref(appSettings).clist.enabled = $event),
@@ -12640,7 +13459,7 @@ PERFORMANCE OF THIS SOFTWARE.
 							createBaseVNode("div", _hoisted_6$12, [createBaseVNode("span", {
 								class: "cf-setting-sublabel",
 								textContent: toDisplayString(unref(translate$1)().clistAuthMode)
-							}, null, 8, _hoisted_7$11), createVNode$1(_sfc_main$23, {
+							}, null, 8, _hoisted_7$11), createVNode$1(_sfc_main$30, {
 								style: { "width": "110px" },
 								"model-value": unref(appSettings).clist.authMode,
 								"onUpdate:modelValue": _cache[2] || (_cache[2] = (value) => unref(setSetting)("clist.authMode", value)),
@@ -12654,7 +13473,7 @@ PERFORMANCE OF THIS SOFTWARE.
 								}]
 							}, null, 8, ["model-value", "options"])]),
 							createVNode$1(ExpandTransition_default, { show: unref(appSettings).clist.authMode === "api" }, {
-								default: withCtx(() => [createBaseVNode("div", _hoisted_8$10, [createBaseVNode("div", _hoisted_9$10, [createBaseVNode("div", _hoisted_10$8, [createBaseVNode("span", {
+								default: withCtx(() => [createBaseVNode("div", _hoisted_8$10, [createBaseVNode("div", _hoisted_9$9, [createBaseVNode("div", _hoisted_10$8, [createBaseVNode("span", {
 									class: "cf-setting-sublabel",
 									textContent: toDisplayString(unref(translate$1)().clistApiKeyLabel)
 								}, null, 8, _hoisted_11$7), createBaseVNode("span", {
@@ -12683,7 +13502,7 @@ PERFORMANCE OF THIS SOFTWARE.
 								class: "cf-clist-icon-btn cf-clist-icon-warn",
 								"data-tooltip": unref(translate$1)("clistSyncTooltip"),
 								onClick: _cache[6] || (_cache[6] = withModifiers(($event) => openGuide("clist-sync", $event), ["prevent", "stop"]))
-							}, "!", 8, _hoisted_17$4)]), createVNode$1(_sfc_main$30, {
+							}, "!", 8, _hoisted_17$4)]), createVNode$1(_sfc_main$38, {
 								class: normalizeClass(["cf-clist-sync-btn", {
 									syncing: syncing.value,
 									cooldown: !syncing.value && syncDisabled.value
@@ -12692,7 +13511,7 @@ PERFORMANCE OF THIS SOFTWARE.
 								onClick: startSync,
 								disabled: syncDisabled.value
 							}, {
-								default: withCtx(() => [createVNode$1(_sfc_main$37, { source: sync_icon_default }, null, 8, ["source"]), createBaseVNode("span", { textContent: toDisplayString(syncLabel.value) }, null, 8, _hoisted_18$4)]),
+								default: withCtx(() => [createVNode$1(_sfc_main$45, { source: sync_icon_default }, null, 8, ["source"]), createBaseVNode("span", { textContent: toDisplayString(syncLabel.value) }, null, 8, _hoisted_18$4)]),
 								_: 1
 							}, 8, ["disabled", "class"])])
 						])]),
@@ -12701,7 +13520,7 @@ PERFORMANCE OF THIS SOFTWARE.
 					createBaseVNode("label", _hoisted_19$4, [createBaseVNode("span", {
 						class: "cf-setting-label",
 						textContent: toDisplayString(unref(translate$1)().masterColorRatings)
-					}, null, 8, _hoisted_20$3), createVNode$1(_sfc_main$24, {
+					}, null, 8, _hoisted_20$3), createVNode$1(_sfc_main$31, {
 						as: "div",
 						modelValue: unref(appSettings).colorRatings,
 						"onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => unref(appSettings).colorRatings = $event),
@@ -12713,7 +13532,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						default: withCtx(() => [createBaseVNode("div", _hoisted_21$3, [createBaseVNode("span", {
 							class: "cf-setting-sublabel",
 							textContent: toDisplayString(unref(translate$1)().displayStyleTitle)
-						}, null, 8, _hoisted_22$3), createVNode$1(_sfc_main$23, {
+						}, null, 8, _hoisted_22$3), createVNode$1(_sfc_main$30, {
 							style: { "width": "120px" },
 							"model-value": unref(appSettings).displayStyle,
 							"onUpdate:modelValue": _cache[9] || (_cache[9] = (value) => unref(setSetting)("displayStyle", value)),
@@ -12737,10 +13556,10 @@ PERFORMANCE OF THIS SOFTWARE.
 						_: 1
 					}, 8, ["show"]),
 					createVNode$1(ExpandTransition_default, { show: unref(appSettings).colorRatings && unref(appSettings).displayStyle === "tag" }, {
-						default: withCtx(() => [createBaseVNode("label", _hoisted_23$3, [createBaseVNode("span", {
+						default: withCtx(() => [createBaseVNode("label", _hoisted_23$2, [createBaseVNode("span", {
 							class: "cf-setting-sublabel",
 							textContent: toDisplayString(unref(translate$1)().locTagFillCell)
-						}, null, 8, _hoisted_24$2), createVNode$1(_sfc_main$24, {
+						}, null, 8, _hoisted_24$2), createVNode$1(_sfc_main$31, {
 							as: "div",
 							modelValue: unref(appSettings).tagFillCell,
 							"onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => unref(appSettings).tagFillCell = $event),
@@ -12756,43 +13575,43 @@ PERFORMANCE OF THIS SOFTWARE.
 								style: { "margin-bottom": "2px" },
 								textContent: toDisplayString(unref(translate$1)().locationsTitle)
 							}, null, 8, _hoisted_26$2),
-							createBaseVNode("label", _hoisted_27$2, [createBaseVNode("span", _hoisted_28$2, toDisplayString(unref(translate$1)("locSubmissions")), 1), createVNode$1(_sfc_main$24, {
+							createBaseVNode("label", _hoisted_27$2, [createBaseVNode("span", _hoisted_28$2, toDisplayString(unref(translate$1)("locSubmissions")), 1), createVNode$1(_sfc_main$31, {
 								as: "div",
 								modelValue: unref(appSettings).show.submissions,
 								"onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => unref(appSettings).show.submissions = $event),
 								onChange: _cache[13] || (_cache[13] = ($event) => unref(saveSettings)())
 							}, null, 8, ["modelValue"])]),
-							createBaseVNode("label", _hoisted_29$2, [createBaseVNode("span", _hoisted_30$2, toDisplayString(unref(translate$1)("locStatus")), 1), createVNode$1(_sfc_main$24, {
+							createBaseVNode("label", _hoisted_29$2, [createBaseVNode("span", _hoisted_30$2, toDisplayString(unref(translate$1)("locStatus")), 1), createVNode$1(_sfc_main$31, {
 								as: "div",
 								modelValue: unref(appSettings).show.status,
 								"onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => unref(appSettings).show.status = $event),
 								onChange: _cache[15] || (_cache[15] = ($event) => unref(saveSettings)())
 							}, null, 8, ["modelValue"])]),
-							createBaseVNode("label", _hoisted_31$2, [createBaseVNode("span", _hoisted_32$2, toDisplayString(unref(translate$1)("locHacks")), 1), createVNode$1(_sfc_main$24, {
+							createBaseVNode("label", _hoisted_31$2, [createBaseVNode("span", _hoisted_32$2, toDisplayString(unref(translate$1)("locHacks")), 1), createVNode$1(_sfc_main$31, {
 								as: "div",
 								modelValue: unref(appSettings).show.hacks,
 								"onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => unref(appSettings).show.hacks = $event),
 								onChange: _cache[17] || (_cache[17] = ($event) => unref(saveSettings)())
 							}, null, 8, ["modelValue"])]),
-							createBaseVNode("label", _hoisted_33$2, [createBaseVNode("span", _hoisted_34$2, toDisplayString(unref(translate$1)("locProblemset")), 1), createVNode$1(_sfc_main$24, {
+							createBaseVNode("label", _hoisted_33$2, [createBaseVNode("span", _hoisted_34$2, toDisplayString(unref(translate$1)("locProblemset")), 1), createVNode$1(_sfc_main$31, {
 								as: "div",
 								modelValue: unref(appSettings).show.problemset,
 								"onUpdate:modelValue": _cache[18] || (_cache[18] = ($event) => unref(appSettings).show.problemset = $event),
 								onChange: _cache[19] || (_cache[19] = ($event) => unref(saveSettings)())
 							}, null, 8, ["modelValue"])]),
-							createBaseVNode("label", _hoisted_35$2, [createBaseVNode("span", _hoisted_36$2, toDisplayString(unref(translate$1)("locContestProblems")), 1), createVNode$1(_sfc_main$24, {
+							createBaseVNode("label", _hoisted_35$2, [createBaseVNode("span", _hoisted_36$2, toDisplayString(unref(translate$1)("locContestProblems")), 1), createVNode$1(_sfc_main$31, {
 								as: "div",
 								modelValue: unref(appSettings).show.contestProblems,
 								"onUpdate:modelValue": _cache[20] || (_cache[20] = ($event) => unref(appSettings).show.contestProblems = $event),
 								onChange: _cache[21] || (_cache[21] = ($event) => unref(saveSettings)())
 							}, null, 8, ["modelValue"])]),
-							createBaseVNode("label", _hoisted_37$1, [createBaseVNode("span", _hoisted_38$1, toDisplayString(unref(translate$1)("locStandings")), 1), createVNode$1(_sfc_main$24, {
+							createBaseVNode("label", _hoisted_37$1, [createBaseVNode("span", _hoisted_38$1, toDisplayString(unref(translate$1)("locStandings")), 1), createVNode$1(_sfc_main$31, {
 								as: "div",
 								modelValue: unref(appSettings).show.standings,
 								"onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => unref(appSettings).show.standings = $event),
 								onChange: _cache[23] || (_cache[23] = ($event) => unref(saveSettings)())
 							}, null, 8, ["modelValue"])]),
-							createBaseVNode("label", _hoisted_39$1, [createBaseVNode("span", _hoisted_40$1, toDisplayString(unref(translate$1)("locProblemTags")), 1), createVNode$1(_sfc_main$24, {
+							createBaseVNode("label", _hoisted_39$1, [createBaseVNode("span", _hoisted_40$1, toDisplayString(unref(translate$1)("locProblemTags")), 1), createVNode$1(_sfc_main$31, {
 								as: "div",
 								modelValue: unref(appSettings).show.problemTags,
 								"onUpdate:modelValue": _cache[24] || (_cache[24] = ($event) => unref(appSettings).show.problemTags = $event),
@@ -12805,7 +13624,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			};
 		}
 	};
-	var _hoisted_1$13 = { class: "cf-tab-panel" };
+	var _hoisted_1$14 = { class: "cf-tab-panel" };
 	var _hoisted_2$12 = {
 		class: "cf-setting-item",
 		style: {
@@ -12835,16 +13654,16 @@ PERFORMANCE OF THIS SOFTWARE.
 			"margin": "0px"
 		}
 	};
-	var _hoisted_9$9 = ["textContent"];
-	var _sfc_main$13 = {
+	var _hoisted_9$8 = ["textContent"];
+	var _sfc_main$14 = {
 		__name: "UserPage",
 		setup(__props) {
 			return (_ctx, _cache) => {
-				return openBlock(), createElementBlock("div", _hoisted_1$13, [
+				return openBlock(), createElementBlock("div", _hoisted_1$14, [
 					createBaseVNode("label", _hoisted_2$12, [createBaseVNode("span", {
 						class: "cf-setting-label",
 						textContent: toDisplayString(unref(translate$1)().locUserAvatar)
-					}, null, 8, _hoisted_3$12), createVNode$1(_sfc_main$24, {
+					}, null, 8, _hoisted_3$12), createVNode$1(_sfc_main$31, {
 						as: "div",
 						modelValue: unref(appSettings).show.userAvatar,
 						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => unref(appSettings).show.userAvatar = $event),
@@ -12890,7 +13709,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						default: withCtx(() => [createBaseVNode("label", _hoisted_8$9, [createBaseVNode("span", {
 							class: "cf-setting-sublabel",
 							textContent: toDisplayString(unref(translate$1)().locFormatTeams)
-						}, null, 8, _hoisted_9$9), createVNode$1(_sfc_main$24, {
+						}, null, 8, _hoisted_9$8), createVNode$1(_sfc_main$31, {
 							as: "div",
 							modelValue: unref(appSettings).show.formatTeams,
 							"onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => unref(appSettings).show.formatTeams = $event),
@@ -12903,6 +13722,39 @@ PERFORMANCE OF THIS SOFTWARE.
 			};
 		}
 	};
+	var _hoisted_1$13 = [
+		"disabled",
+		"aria-label",
+		"data-tooltip"
+	];
+	var ResetButton_default = _plugin_vue_export_helper_default({
+		__name: "ResetButton",
+		props: {
+			label: {
+				type: String,
+				required: true
+			},
+			disabled: Boolean
+		},
+		emits: ["click"],
+		setup(__props) {
+			return (_ctx, _cache) => {
+				return openBlock(), createElementBlock("button", {
+					type: "button",
+					class: "cf-reset-button",
+					disabled: __props.disabled,
+					"aria-label": __props.label,
+					"data-tooltip": __props.label,
+					onFocus: _cache[0] || (_cache[0] = ($event) => unref(tooltip).show($event.currentTarget, __props.label)),
+					onBlur: _cache[1] || (_cache[1] = (...args) => unref(tooltip).hide && unref(tooltip).hide(...args)),
+					onClick: _cache[2] || (_cache[2] = ($event) => {
+						unref(tooltip).hide();
+						_ctx.$emit("click", $event);
+					})
+				}, [createVNode$1(_sfc_main$45, { source: unref(reset_icon_default) }, null, 8, ["source"])], 40, _hoisted_1$13);
+			};
+		}
+	}, [["__scopeId", "data-v-24e4211c"]]);
 	var _hoisted_1$12 = ["aria-hidden"];
 	var _hoisted_2$11 = {
 		key: 0,
@@ -12960,7 +13812,7 @@ PERFORMANCE OF THIS SOFTWARE.
 	var _hoisted_6$10 = ["textContent"];
 	var _hoisted_7$9 = ["textContent"];
 	var _hoisted_8$8 = { class: "cf-shortcuts-note" };
-	var _hoisted_9$8 = { class: "cf-shortcuts-note-icon" };
+	var _hoisted_9$7 = { class: "cf-shortcuts-note-icon" };
 	var _hoisted_10$7 = { class: "cf-shortcuts-note-body" };
 	var _hoisted_11$6 = ["textContent"];
 	var _hoisted_12$6 = { class: "cf-shortcuts-note-text" };
@@ -12978,8 +13830,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		"onClick"
 	];
 	var _hoisted_21$2 = ["data-tooltip", "onClick"];
-	var _hoisted_22$2 = ["data-tooltip", "onClick"];
-	var _hoisted_23$2 = { class: "btn-text" };
+	var _hoisted_22$2 = { class: "btn-text" };
 	var _sfc_main$11 = {
 		__name: "ShortcutsPage",
 		props: { active: Boolean },
@@ -13060,10 +13911,6 @@ PERFORMANCE OF THIS SOFTWARE.
 			const draftCombo = ref("");
 			const conflictingKeys = ref([]);
 			let release;
-			function showOverflowTip(event) {
-				const target = event.currentTarget;
-				if (target.scrollWidth > target.clientWidth) tooltip.show(target, target.textContent);
-			}
 			function stopRecording() {
 				release?.();
 				release = null;
@@ -13139,7 +13986,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			return (_ctx, _cache) => {
 				return openBlock(), createElementBlock("div", _hoisted_1$11, [
 					createBaseVNode("div", _hoisted_2$10, [
-						createBaseVNode("h3", _hoisted_3$10, [createBaseVNode("span", _hoisted_4$10, [createVNode$1(_sfc_main$37, { source: shortcuts_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$10, toDisplayString(unref(translate$1)("shortcutsSectionTitle")), 1)]),
+						createBaseVNode("h3", _hoisted_3$10, [createBaseVNode("span", _hoisted_4$10, [createVNode$1(_sfc_main$45, { source: shortcuts_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$10, toDisplayString(unref(translate$1)("shortcutsSectionTitle")), 1)]),
 						createBaseVNode("p", {
 							class: "cf-shortcuts-subtitle",
 							textContent: toDisplayString(unref(translate$1)().shortcutsSectionSubtitle)
@@ -13148,7 +13995,7 @@ PERFORMANCE OF THIS SOFTWARE.
 							class: "cf-shortcuts-subtitle",
 							textContent: toDisplayString(unref(translate$1)().shortcutsSectionTip)
 						}, null, 8, _hoisted_7$9),
-						createBaseVNode("div", _hoisted_8$8, [createBaseVNode("span", _hoisted_9$8, [createVNode$1(_sfc_main$37, { source: shortcut_info_icon_default }, null, 8, ["source"])]), createBaseVNode("div", _hoisted_10$7, [createBaseVNode("strong", {
+						createBaseVNode("div", _hoisted_8$8, [createBaseVNode("span", _hoisted_9$7, [createVNode$1(_sfc_main$45, { source: shortcut_info_icon_default }, null, 8, ["source"])]), createBaseVNode("div", _hoisted_10$7, [createBaseVNode("strong", {
 							class: "cf-shortcuts-note-label",
 							textContent: toDisplayString(unref(translate$1)("shortcutsSectionNoteLabel"))
 						}, null, 8, _hoisted_11$6), createBaseVNode("span", _hoisted_12$6, toDisplayString(unref(translate$1)("shortcutsSectionNote")), 1)])])
@@ -13157,7 +14004,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						return createBaseVNode("div", {
 							class: "cf-shortcut-group",
 							key: group.id
-						}, [createBaseVNode("div", _hoisted_14$4, [createBaseVNode("span", _hoisted_15$4, [createVNode$1(_sfc_main$37, { source: TAB_ICONS[group.id] }, null, 8, ["source"])]), createBaseVNode("span", {
+						}, [createBaseVNode("div", _hoisted_14$4, [createBaseVNode("span", _hoisted_15$4, [createVNode$1(_sfc_main$45, { source: TAB_ICONS[group.id] }, null, 8, ["source"])]), createBaseVNode("span", {
 							class: "cf-shortcut-group-title",
 							textContent: toDisplayString(unref(translate$1)(group.labelKey))
 						}, null, 8, _hoisted_16$4)]), createBaseVNode("div", _hoisted_17$3, [(openBlock(true), createElementBlock(Fragment, null, renderList(group.items, (item) => {
@@ -13167,8 +14014,8 @@ PERFORMANCE OF THIS SOFTWARE.
 							}, [createBaseVNode("div", {
 								class: "cf-shortcut-title",
 								textContent: toDisplayString(unref(translate$1)(item.titleKey)),
-								onMouseenter: showOverflowTip,
-								onMouseleave: _cache[0] || (_cache[0] = (...args) => unref(tooltip).hide && unref(tooltip).hide(...args))
+								onMouseenter: _cache[0] || (_cache[0] = (...args) => unref(tooltip).showIfTruncated && unref(tooltip).showIfTruncated(...args)),
+								onMouseleave: _cache[1] || (_cache[1] = (...args) => unref(tooltip).hide && unref(tooltip).hide(...args))
 							}, null, 40, _hoisted_18$3), createBaseVNode("div", _hoisted_19$3, [
 								createBaseVNode("button", {
 									type: "button",
@@ -13189,13 +14036,12 @@ PERFORMANCE OF THIS SOFTWARE.
 									class: "cf-shortcut-clear-btn",
 									"data-tooltip": unref(translate$1)("shortcutClearBtn"),
 									onClick: ($event) => clearShortcut(item.key)
-								}, [createVNode$1(_sfc_main$37, { source: shortcut_clear_icon_default }, null, 8, ["source"])], 8, _hoisted_21$2),
-								createBaseVNode("button", {
-									type: "button",
+								}, [createVNode$1(_sfc_main$45, { source: shortcut_clear_icon_default }, null, 8, ["source"])], 8, _hoisted_21$2),
+								createVNode$1(ResetButton_default, {
 									class: "cf-shortcut-reset-btn",
-									"data-tooltip": unref(translate$1)("shortcutResetBtn"),
+									label: unref(translate$1)("shortcutResetBtn"),
 									onClick: ($event) => resetShortcut(item.key, $event.currentTarget)
-								}, [createVNode$1(_sfc_main$37, { source: reset_icon_default }, null, 8, ["source"])], 8, _hoisted_22$2)
+								}, null, 8, ["label", "onClick"])
 							])]);
 						}), 128))])]);
 					}), 64))]),
@@ -13203,7 +14049,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						type: "button",
 						class: "cf-shortcut-reset-all-btn",
 						onClick: resetAll
-					}, [createVNode$1(_sfc_main$37, { source: shortcut_reset_all_icon_default }, null, 8, ["source"]), createBaseVNode("span", _hoisted_23$2, toDisplayString(unref(translate$1)("shortcutResetAllBtn")), 1)])
+					}, [createVNode$1(_sfc_main$45, { source: shortcut_reset_all_icon_default }, null, 8, ["source"]), createBaseVNode("span", _hoisted_22$2, toDisplayString(unref(translate$1)("shortcutResetAllBtn")), 1)])
 				]);
 			};
 		}
@@ -13355,7 +14201,7 @@ PERFORMANCE OF THIS SOFTWARE.
 		"margin-right": "6px",
 		"color": "#334155"
 	} };
-	var _hoisted_9$7 = {
+	var _hoisted_9$6 = {
 		class: "cf-storage-active-key",
 		style: {
 			"background": "#f1f5f9",
@@ -13504,7 +14350,7 @@ PERFORMANCE OF THIS SOFTWARE.
 				close();
 			});
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$35, null, {
+				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$43, null, {
 					default: withCtx(() => [request.value ? (openBlock(), createElementBlock("div", {
 						key: 0,
 						class: "cf-clist-modal-overlay cf-storage-json-modal",
@@ -13513,7 +14359,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						onClick: withModifiers(close, ["self"])
 					}, [createBaseVNode("div", _hoisted_1$10, [
 						createBaseVNode("div", _hoisted_2$9, [createBaseVNode("div", _hoisted_3$9, [
-							createVNode$1(_sfc_main$37, { source: json_document_default }, null, 8, ["source"]),
+							createVNode$1(_sfc_main$45, { source: json_document_default }, null, 8, ["source"]),
 							createBaseVNode("span", null, toDisplayString(displayed.value.title), 1),
 							createBaseVNode("span", _hoisted_4$9, toDisplayString(preview.value.badgeText), 1)
 						]), createBaseVNode("button", {
@@ -13536,7 +14382,7 @@ PERFORMANCE OF THIS SOFTWARE.
 							createBaseVNode("div", _hoisted_6$9, [createBaseVNode("div", _hoisted_7$8, [!displayed.value.document ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
 								createBaseVNode("span", _hoisted_8$7, toDisplayString(unref(translate$1)("storageKeyPrefix")) + ":", 1),
 								_cache[0] || (_cache[0] = createTextVNode(toDisplayString(" ") + " ", -1)),
-								createBaseVNode("code", _hoisted_9$7, toDisplayString(activeKey.value || "(none)"), 1)
+								createBaseVNode("code", _hoisted_9$6, toDisplayString(activeKey.value || "(none)"), 1)
 							], 64)) : createCommentVNode("", true)]), createBaseVNode("button", {
 								type: "button",
 								class: "cf-storage-copy-json-btn",
@@ -13546,7 +14392,7 @@ PERFORMANCE OF THIS SOFTWARE.
 									borderColor: "#a7f3d0",
 									color: "#059669"
 								} : {})
-							}, [createVNode$1(_sfc_main$37, { source: json_copy_default }, null, 8, ["source"]), createBaseVNode("span", _hoisted_10$6, toDisplayString(unref(translate$1)(copied.value ? "storageCopiedBtn" : "storageCopyBtn")), 1)], 4)]),
+							}, [createVNode$1(_sfc_main$45, { source: json_copy_default }, null, 8, ["source"]), createBaseVNode("span", _hoisted_10$6, toDisplayString(unref(translate$1)(copied.value ? "storageCopiedBtn" : "storageCopyBtn")), 1)], 4)]),
 							withDirectives(createBaseVNode("div", _hoisted_11$5, [(openBlock(true), createElementBlock(Fragment, null, renderList(displayed.value.keys, (key) => {
 								return openBlock(), createElementBlock("button", {
 									type: "button",
@@ -13626,7 +14472,7 @@ PERFORMANCE OF THIS SOFTWARE.
 	var _hoisted_6$8 = ["textContent"];
 	var _hoisted_7$7 = { class: "cf-storage-btn-group" };
 	var _hoisted_8$6 = ["textContent"];
-	var _hoisted_9$6 = ["textContent"];
+	var _hoisted_9$5 = ["textContent"];
 	var _hoisted_10$5 = { class: "cf-storage-item-meta" };
 	var _hoisted_11$4 = ["textContent"];
 	var _hoisted_12$4 = ["textContent"];
@@ -13649,7 +14495,7 @@ PERFORMANCE OF THIS SOFTWARE.
 					height: "18",
 					style: { "border-radius": "2px" },
 					alt: "CList"
-				}, null, 8, _hoisted_3$8)) : (openBlock(), createBlock(_sfc_main$37, {
+				}, null, 8, _hoisted_3$8)) : (openBlock(), createBlock(_sfc_main$45, {
 					key: 1,
 					source: STORAGE_ICONS[__props.group.id]
 				}, null, 8, ["source"]))], 2), createBaseVNode("div", _hoisted_4$8, [createBaseVNode("div", _hoisted_5$8, [createBaseVNode("span", {
@@ -13659,17 +14505,17 @@ PERFORMANCE OF THIS SOFTWARE.
 					type: "button",
 					class: "cf-storage-btn btn-view",
 					onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("view"))
-				}, [createVNode$1(_sfc_main$37, { source: storage_view_icon_default }, null, 8, ["source"]), createBaseVNode("span", {
+				}, [createVNode$1(_sfc_main$45, { source: storage_view_icon_default }, null, 8, ["source"]), createBaseVNode("span", {
 					class: "btn-text",
 					textContent: toDisplayString(unref(translate$1)("storageViewBtn"))
 				}, null, 8, _hoisted_8$6)]), createBaseVNode("button", {
 					type: "button",
 					class: normalizeClass(["cf-storage-btn", __props.group.id === "settings" ? "btn-reset" : "btn-clear"]),
 					onClick: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("clear"))
-				}, [createVNode$1(_sfc_main$37, { source: __props.group.id === "settings" ? reset_icon_default : storage_clear_icon_default }, null, 8, ["source"]), createBaseVNode("span", {
+				}, [createVNode$1(_sfc_main$45, { source: __props.group.id === "settings" ? reset_icon_default : storage_clear_icon_default }, null, 8, ["source"]), createBaseVNode("span", {
 					class: "btn-text",
 					textContent: toDisplayString(unref(translate$1)(__props.group.action))
-				}, null, 8, _hoisted_9$6)], 2)])]), createBaseVNode("div", _hoisted_10$5, [
+				}, null, 8, _hoisted_9$5)], 2)])]), createBaseVNode("div", _hoisted_10$5, [
 					createBaseVNode("span", {
 						class: "cf-storage-size-val",
 						textContent: toDisplayString(unref(formatStorageBytes)(__props.data.bytes))
@@ -41300,9 +42146,8 @@ PERFORMANCE OF THIS SOFTWARE.
 	var _hoisted_4$7 = { class: "cf-storage-pie-total" };
 	var _hoisted_5$7 = { class: "cf-storage-pie-legend" };
 	var _hoisted_6$7 = ["data-category"];
-	var _hoisted_7$6 = { class: "cf-storage-pie-name" };
-	var _hoisted_8$5 = { class: "cf-storage-pie-percentage" };
-	var _hoisted_9$5 = { class: "cf-storage-pie-size" };
+	var _hoisted_7$6 = { class: "cf-storage-pie-percentage" };
+	var _hoisted_8$5 = { class: "cf-storage-pie-size" };
 	var StorageUsageChart_default = _plugin_vue_export_helper_default({
 		__name: "StorageUsageChart",
 		props: {
@@ -41463,14 +42308,18 @@ PERFORMANCE OF THIS SOFTWARE.
 							style: normalizeStyle$1({ background: slice.color }),
 							"aria-hidden": "true"
 						}, null, 4),
-						createBaseVNode("span", _hoisted_7$6, toDisplayString(slice.name), 1),
-						createBaseVNode("span", _hoisted_8$5, toDisplayString(slice.percentage), 1),
-						createBaseVNode("span", _hoisted_9$5, toDisplayString(unref(formatStorageBytes)(slice.value)), 1)
+						createBaseVNode("span", {
+							class: "cf-storage-pie-name",
+							onMouseenter: _cache[0] || (_cache[0] = (...args) => unref(tooltip).showIfTruncated && unref(tooltip).showIfTruncated(...args)),
+							onMouseleave: _cache[1] || (_cache[1] = (...args) => unref(tooltip).hide && unref(tooltip).hide(...args))
+						}, toDisplayString(slice.name), 33),
+						createBaseVNode("span", _hoisted_7$6, toDisplayString(slice.percentage), 1),
+						createBaseVNode("span", _hoisted_8$5, toDisplayString(unref(formatStorageBytes)(slice.value)), 1)
 					], 8, _hoisted_6$7);
 				}), 128))])]);
 			};
 		}
-	}, [["__scopeId", "data-v-166560c6"]]);
+	}, [["__scopeId", "data-v-e3e59c57"]]);
 	var _hoisted_1$7 = { class: "cf-tab-panel" };
 	var _hoisted_2$6 = { class: "cf-storage-header" };
 	var _hoisted_3$6 = { class: "cf-storage-title" };
@@ -41612,7 +42461,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			});
 			return (_ctx, _cache) => {
 				return openBlock(), createElementBlock("div", _hoisted_1$7, [
-					createBaseVNode("div", _hoisted_2$6, [createBaseVNode("h3", _hoisted_3$6, [createBaseVNode("span", _hoisted_4$6, [createVNode$1(_sfc_main$37, { source: storage_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$6, toDisplayString(unref(translate$1)("storageSectionTitle")), 1)]), createBaseVNode("p", {
+					createBaseVNode("div", _hoisted_2$6, [createBaseVNode("h3", _hoisted_3$6, [createBaseVNode("span", _hoisted_4$6, [createVNode$1(_sfc_main$45, { source: storage_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$6, toDisplayString(unref(translate$1)("storageSectionTitle")), 1)]), createBaseVNode("p", {
 						class: "cf-storage-subtitle",
 						textContent: toDisplayString(unref(translate$1)().storageSectionSubtitle)
 					}, null, 8, _hoisted_6$6)]),
@@ -41621,9 +42470,9 @@ PERFORMANCE OF THIS SOFTWARE.
 						textContent: toDisplayString(unref(translate$1)().storageTotalTitle)
 					}, null, 8, _hoisted_10$4)]), createBaseVNode("button", {
 						type: "button",
-						class: "cf-storage-clear-all-btn",
+						class: "cf-storage-btn btn-clear cf-storage-clear-all-btn",
 						onClick: _cache[0] || (_cache[0] = ($event) => requestClear("all"))
-					}, [createVNode$1(_sfc_main$37, { source: storage_clear_icon_default }, null, 8, ["source"]), createBaseVNode("span", _hoisted_11$3, toDisplayString(unref(translate$1)("storageClearAllBtn")), 1)])]), createVNode$1(StorageUsageChart_default, {
+					}, [createVNode$1(_sfc_main$45, { source: storage_clear_icon_default }, null, 8, ["source"]), createBaseVNode("span", _hoisted_11$3, toDisplayString(unref(translate$1)("storageClearAllBtn")), 1)])]), createVNode$1(StorageUsageChart_default, {
 						overview: overview.value,
 						groups,
 						active: __props.active
@@ -41656,7 +42505,9 @@ PERFORMANCE OF THIS SOFTWARE.
 			"Bundled the menu title font to avoid reliance on remote font loading.",
 			"Moved distribution and updates to Releases, automated publishing, and retained the legacy update entry.",
 			"Added a separate solved-row highlighting toggle, with shortcuts for highlighting and menu language switching.",
-			"Improved real-time verdict abbreviations and extended them to submission history on problem pages."
+			"Improved real-time verdict abbreviations and extended them to submission history on problem pages.",
+			"Moved the algorithm-tag visibility settings to Appearance.",
+			"Users can customize the settings panel size and position, with drag-to-adjust support."
 		],
 		"v 1.6.0:1": [
 			"Explicitly request the official problemset in English and refresh older-language caches.",
@@ -41746,7 +42597,9 @@ PERFORMANCE OF THIS SOFTWARE.
 			"内置菜单标题字体，避免远程字体加载影响显示。",
 			"改用 Release 发布与更新，增加自动发布流程，并保留旧版兼容入口。",
 			"为已 AC 题目的整行高亮增加独立开关，并为其及菜单语言切换新增快捷键。",
-			"优化了判题状态的实时缩写，并支持题目页的提交历史。"
+			"优化了判题状态的实时缩写，并支持题目页的提交历史。",
+			"调整了隐藏算法标签功能的分类。",
+			"用户可以自定义设置面板大小及位置，并支持拖动调整。"
 		],
 		"v 1.6.0:1": [
 			"固定使用英文获取官方题库，并兼容刷新旧语言缓存。",
@@ -41829,7 +42682,7 @@ PERFORMANCE OF THIS SOFTWARE.
 	var data_default$1 = [
 		{
 			version: "v 1.6.0",
-			date: "2026-09-28 00:27",
+			date: "2026-09-30 09:07",
 			sections: [{
 				type: "optimized",
 				contentKey: "v 1.6.0:0"
@@ -42069,7 +42922,7 @@ PERFORMANCE OF THIS SOFTWARE.
 				return escaped;
 			}
 			return (_ctx, _cache) => {
-				return openBlock(), createElementBlock("div", _hoisted_1$6, [createBaseVNode("div", _hoisted_2$5, [createBaseVNode("h3", _hoisted_3$5, [createBaseVNode("span", _hoisted_4$5, [createVNode$1(_sfc_main$37, { source: changelog_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$5, toDisplayString(unref(translate$1)("changelogTitle")), 1)], 512), createBaseVNode("p", {
+				return openBlock(), createElementBlock("div", _hoisted_1$6, [createBaseVNode("div", _hoisted_2$5, [createBaseVNode("h3", _hoisted_3$5, [createBaseVNode("span", _hoisted_4$5, [createVNode$1(_sfc_main$45, { source: changelog_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$5, toDisplayString(unref(translate$1)("changelogTitle")), 1)], 512), createBaseVNode("p", {
 					class: "cf-changelog-subtitle",
 					textContent: toDisplayString(unref(translate$1)().changelogSubtitle),
 					ref: "changelogSubtitleEl"
@@ -42090,7 +42943,7 @@ PERFORMANCE OF THIS SOFTWARE.
 					}, null, 8, _hoisted_10$3), index === 0 ? (openBlock(), createElementBlock("span", _hoisted_11$2, toDisplayString(unref(translate$1)("changelogLatestBadge")), 1)) : createCommentVNode("", true)]), createBaseVNode("div", _hoisted_12$2, [createBaseVNode("span", {
 						class: "cf-changelog-date",
 						textContent: toDisplayString(entry.date)
-					}, null, 8, _hoisted_13$2), createBaseVNode("span", _hoisted_14$2, [createVNode$1(_sfc_main$37, { source: changelog_chevron_icon_default }, null, 8, ["source"])])])], 40, _hoisted_8$3), createVNode$1(ExpandTransition_default, { show: expanded.value.has(entry.version) }, {
+					}, null, 8, _hoisted_13$2), createBaseVNode("span", _hoisted_14$2, [createVNode$1(_sfc_main$45, { source: changelog_chevron_icon_default }, null, 8, ["source"])])])], 40, _hoisted_8$3), createVNode$1(ExpandTransition_default, { show: expanded.value.has(entry.version) }, {
 						default: withCtx(() => [createBaseVNode("div", _hoisted_15$2, [(openBlock(true), createElementBlock(Fragment, null, renderList(entry.sections, (section) => {
 							return openBlock(), createElementBlock("div", {
 								class: "cf-changelog-section",
@@ -42293,20 +43146,20 @@ PERFORMANCE OF THIS SOFTWARE.
 			});
 			const messages = computed(() => languageFiles["./locales/" + appSettings.lang + ".js"] || languageFiles["./locales/en.js"]);
 			return (_ctx, _cache) => {
-				return openBlock(), createElementBlock("div", _hoisted_1$5, [createBaseVNode("div", _hoisted_2$4, [createBaseVNode("h3", _hoisted_3$4, [createBaseVNode("span", _hoisted_4$4, [createVNode$1(_sfc_main$37, { source: roadmap_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$4, toDisplayString(unref(translate$1)("roadmapTitle")), 1)], 512), createBaseVNode("p", {
+				return openBlock(), createElementBlock("div", _hoisted_1$5, [createBaseVNode("div", _hoisted_2$4, [createBaseVNode("h3", _hoisted_3$4, [createBaseVNode("span", _hoisted_4$4, [createVNode$1(_sfc_main$45, { source: roadmap_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$4, toDisplayString(unref(translate$1)("roadmapTitle")), 1)], 512), createBaseVNode("p", {
 					class: "cf-roadmap-subtitle",
 					textContent: toDisplayString(unref(translate$1)().roadmapSubtitle),
 					ref: "roadmapSubtitleEl"
 				}, null, 8, _hoisted_6$4)], 512), createBaseVNode("div", _hoisted_7$3, [
-					createBaseVNode("div", _hoisted_8$2, [createBaseVNode("div", _hoisted_9$2, [createBaseVNode("div", _hoisted_10$2, [createBaseVNode("div", _hoisted_11$1, [createVNode$1(_sfc_main$37, { source: idea_bulb_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_12$1, toDisplayString(unref(translate$1)("roadmapProposalTitle")), 1)]), createBaseVNode("a", _hoisted_13$1, [createBaseVNode("span", null, toDisplayString(unref(translate$1)("roadmapProposalBtn")), 1), createVNode$1(_sfc_main$37, { source: roadmap_external_link_icon_default }, null, 8, ["source"])])]), createBaseVNode("p", _hoisted_14$1, toDisplayString(unref(translate$1)("roadmapProposalDesc")), 1)]),
-					createBaseVNode("div", _hoisted_15$1, [createBaseVNode("div", _hoisted_16$1, [createBaseVNode("div", _hoisted_17$1, [createVNode$1(_sfc_main$37, { source: roadmap_planned_header_icon_default }, null, 8, ["source"]), createBaseVNode("span", null, toDisplayString(unref(translate$1)("roadmapStatusPlanned")), 1)]), createBaseVNode("span", {
+					createBaseVNode("div", _hoisted_8$2, [createBaseVNode("div", _hoisted_9$2, [createBaseVNode("div", _hoisted_10$2, [createBaseVNode("div", _hoisted_11$1, [createVNode$1(_sfc_main$45, { source: idea_bulb_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_12$1, toDisplayString(unref(translate$1)("roadmapProposalTitle")), 1)]), createBaseVNode("a", _hoisted_13$1, [createBaseVNode("span", null, toDisplayString(unref(translate$1)("roadmapProposalBtn")), 1), createVNode$1(_sfc_main$45, { source: roadmap_external_link_icon_default }, null, 8, ["source"])])]), createBaseVNode("p", _hoisted_14$1, toDisplayString(unref(translate$1)("roadmapProposalDesc")), 1)]),
+					createBaseVNode("div", _hoisted_15$1, [createBaseVNode("div", _hoisted_16$1, [createBaseVNode("div", _hoisted_17$1, [createVNode$1(_sfc_main$45, { source: roadmap_planned_header_icon_default }, null, 8, ["source"]), createBaseVNode("span", null, toDisplayString(unref(translate$1)("roadmapStatusPlanned")), 1)]), createBaseVNode("span", {
 						class: "cf-roadmap-group-badge planned",
 						textContent: toDisplayString(unref(translate$1)("roadmapItemCount", unref(data_default).filter((item) => item.completed === false).length))
 					}, null, 8, _hoisted_18$1)]), createBaseVNode("div", _hoisted_19$1, [(openBlock(true), createElementBlock(Fragment, null, renderList(unref(data_default).filter((item) => item.completed === false), (item) => {
 						return openBlock(), createElementBlock("div", {
 							class: "cf-roadmap-card planned",
 							key: item.id
-						}, [createBaseVNode("div", _hoisted_20$1, [createBaseVNode("div", _hoisted_21$1, [createBaseVNode("div", _hoisted_22$1, [createVNode$1(_sfc_main$37, { source: roadmap_planned_icon_default }, null, 8, ["source"])]), createBaseVNode("span", {
+						}, [createBaseVNode("div", _hoisted_20$1, [createBaseVNode("div", _hoisted_21$1, [createBaseVNode("div", _hoisted_22$1, [createVNode$1(_sfc_main$45, { source: roadmap_planned_icon_default }, null, 8, ["source"])]), createBaseVNode("span", {
 							class: "cf-roadmap-item-title-text",
 							textContent: toDisplayString(messages.value[item.id]?.title)
 						}, null, 8, _hoisted_23$1)]), createBaseVNode("span", _hoisted_24$1, toDisplayString(unref(translate$1)("roadmapStatusPlanned")), 1)]), createBaseVNode("p", {
@@ -42314,14 +43167,14 @@ PERFORMANCE OF THIS SOFTWARE.
 							textContent: toDisplayString(messages.value[item.id]?.desc)
 						}, null, 8, _hoisted_25$1)]);
 					}), 128))])]),
-					createBaseVNode("div", _hoisted_26$1, [createBaseVNode("div", _hoisted_27$1, [createBaseVNode("div", _hoisted_28$1, [createVNode$1(_sfc_main$37, { source: roadmap_completed_header_icon_default }, null, 8, ["source"]), createBaseVNode("span", null, toDisplayString(unref(translate$1)("roadmapSectionCompleted")), 1)]), createBaseVNode("span", {
+					createBaseVNode("div", _hoisted_26$1, [createBaseVNode("div", _hoisted_27$1, [createBaseVNode("div", _hoisted_28$1, [createVNode$1(_sfc_main$45, { source: roadmap_completed_header_icon_default }, null, 8, ["source"]), createBaseVNode("span", null, toDisplayString(unref(translate$1)("roadmapSectionCompleted")), 1)]), createBaseVNode("span", {
 						class: "cf-roadmap-group-badge completed",
 						textContent: toDisplayString(unref(translate$1)("roadmapItemCount", unref(data_default).filter((item) => item.completed === true).length))
 					}, null, 8, _hoisted_29$1)]), createBaseVNode("div", _hoisted_30$1, [(openBlock(true), createElementBlock(Fragment, null, renderList(unref(data_default).filter((item) => item.completed === true), (item) => {
 						return openBlock(), createElementBlock("div", {
 							class: "cf-roadmap-card completed",
 							key: item.id
-						}, [createBaseVNode("div", _hoisted_31$1, [createBaseVNode("div", _hoisted_32$1, [createBaseVNode("div", _hoisted_33$1, [createVNode$1(_sfc_main$37, { source: roadmap_completed_icon_default }, null, 8, ["source"])]), createBaseVNode("span", {
+						}, [createBaseVNode("div", _hoisted_31$1, [createBaseVNode("div", _hoisted_32$1, [createBaseVNode("div", _hoisted_33$1, [createVNode$1(_sfc_main$45, { source: roadmap_completed_icon_default }, null, 8, ["source"])]), createBaseVNode("span", {
 							class: "cf-roadmap-item-title-text",
 							textContent: toDisplayString(messages.value[item.id]?.title)
 						}, null, 8, _hoisted_34$1)]), createBaseVNode("span", _hoisted_35$1, toDisplayString(unref(translate$1)("syncBtnDone")), 1)]), createBaseVNode("p", {
@@ -42366,7 +43219,7 @@ PERFORMANCE OF THIS SOFTWARE.
 				return openBlock(), createElementBlock("span", {
 					class: "cf-ack-project-type",
 					"data-project-type": __props.type
-				}, [createVNode$1(_sfc_main$37, { source: item.value.icon }, null, 8, ["source"]), createBaseVNode("span", null, toDisplayString(unref(translate$1)(item.value.label)), 1)], 8, _hoisted_1$4);
+				}, [createVNode$1(_sfc_main$45, { source: item.value.icon }, null, 8, ["source"]), createBaseVNode("span", null, toDisplayString(unref(translate$1)(item.value.label)), 1)], 8, _hoisted_1$4);
 			};
 		}
 	};
@@ -42517,7 +43370,7 @@ PERFORMANCE OF THIS SOFTWARE.
 							href: link.href,
 							target: "_blank",
 							rel: "noopener noreferrer"
-						}, [createVNode$1(_sfc_main$37, { source: link.icon }, null, 8, ["source"]), createBaseVNode("span", _hoisted_6$3, toDisplayString(unref(translate$1)(link.labelKey)), 1)], 8, _hoisted_5$3)]);
+						}, [createVNode$1(_sfc_main$45, { source: link.icon }, null, 8, ["source"]), createBaseVNode("span", _hoisted_6$3, toDisplayString(unref(translate$1)(link.labelKey)), 1)], 8, _hoisted_5$3)]);
 					}), 128))], 10, _hoisted_4$3)) : createCommentVNode("", true)]),
 					_: 1
 				})], 40, _hoisted_1$3);
@@ -42690,7 +43543,7 @@ PERFORMANCE OF THIS SOFTWARE.
 			}];
 			return (_ctx, _cache) => {
 				return openBlock(), createElementBlock("div", _hoisted_1$2, [
-					createBaseVNode("div", _hoisted_2$2, [createBaseVNode("h3", _hoisted_3$2, [createBaseVNode("span", _hoisted_4$2, [createVNode$1(_sfc_main$37, { source: acknowledgments_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$2, toDisplayString(unref(translate$1)("ackSectionTitle")), 1)], 512), createBaseVNode("p", {
+					createBaseVNode("div", _hoisted_2$2, [createBaseVNode("h3", _hoisted_3$2, [createBaseVNode("span", _hoisted_4$2, [createVNode$1(_sfc_main$45, { source: acknowledgments_default }, null, 8, ["source"])]), createBaseVNode("span", _hoisted_5$2, toDisplayString(unref(translate$1)("ackSectionTitle")), 1)], 512), createBaseVNode("p", {
 						class: "cf-ack-subtitle",
 						textContent: toDisplayString(unref(translate$1)().ackSectionSubtitle),
 						ref: "ackSubtitleEl"
@@ -42717,7 +43570,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						createBaseVNode("div", _hoisted_14, [createVNode$1(_sfc_main$4, { type: "extension" }), createBaseVNode("a", _hoisted_15, [createBaseVNode("span", {
 							textContent: toDisplayString(unref(translate$1)().ackHelperLinkText),
 							ref: "helperBtnText"
-						}, null, 8, _hoisted_16), createVNode$1(_sfc_main$37, { source: brand_external_link_icon_default }, null, 8, ["source"])], 512)], 512)
+						}, null, 8, _hoisted_16), createVNode$1(_sfc_main$45, { source: brand_external_link_icon_default }, null, 8, ["source"])], 512)], 512)
 					], 512),
 					createBaseVNode("div", _hoisted_17, [
 						createBaseVNode("div", _hoisted_18, [createBaseVNode("div", _hoisted_19, [createBaseVNode("div", _hoisted_20, [createBaseVNode("img", {
@@ -42741,10 +43594,10 @@ PERFORMANCE OF THIS SOFTWARE.
 						createBaseVNode("div", _hoisted_24, [createVNode$1(_sfc_main$4, { type: "website" }), createBaseVNode("a", _hoisted_25, [createBaseVNode("span", {
 							textContent: toDisplayString(unref(translate$1)().ackClistLinkText),
 							ref: "clistBtnText"
-						}, null, 8, _hoisted_26), createVNode$1(_sfc_main$37, { source: brand_external_link_icon_default }, null, 8, ["source"])], 512)], 512)
+						}, null, 8, _hoisted_26), createVNode$1(_sfc_main$45, { source: brand_external_link_icon_default }, null, 8, ["source"])], 512)], 512)
 					], 512),
 					createBaseVNode("div", _hoisted_27, [
-						createBaseVNode("div", _hoisted_28, [createBaseVNode("div", _hoisted_29, [createBaseVNode("div", _hoisted_30, [createVNode$1(_sfc_main$37, { source: oj_better_icon_default }, null, 8, ["source"])], 512), createBaseVNode("span", {
+						createBaseVNode("div", _hoisted_28, [createBaseVNode("div", _hoisted_29, [createBaseVNode("div", _hoisted_30, [createVNode$1(_sfc_main$45, { source: oj_better_icon_default }, null, 8, ["source"])], 512), createBaseVNode("span", {
 							class: "cf-ack-project-name",
 							ref: "ojBetterName"
 						}, toDisplayString(unref(translate$1)("ackOjBetterTitle")), 513)], 512), createBaseVNode("span", {
@@ -42760,7 +43613,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						createBaseVNode("div", _hoisted_33, [createVNode$1(_sfc_main$4, { type: "userscript" }), createBaseVNode("a", _hoisted_34, [createBaseVNode("span", {
 							textContent: toDisplayString(unref(translate$1)().ackOjBetterLinkText),
 							ref: "ojBetterBtnText"
-						}, null, 8, _hoisted_35), createVNode$1(_sfc_main$37, { source: brand_external_link_icon_default }, null, 8, ["source"])], 512)], 512)
+						}, null, 8, _hoisted_35), createVNode$1(_sfc_main$45, { source: brand_external_link_icon_default }, null, 8, ["source"])], 512)], 512)
 					], 512),
 					createBaseVNode("div", _hoisted_36, [
 						createBaseVNode("div", _hoisted_37, [createBaseVNode("div", _hoisted_38, [createBaseVNode("div", _hoisted_39, [createBaseVNode("img", {
@@ -42784,7 +43637,7 @@ PERFORMANCE OF THIS SOFTWARE.
 						createBaseVNode("div", _hoisted_43, [createVNode$1(_sfc_main$4, { type: "extension" }), createBaseVNode("a", _hoisted_44, [createBaseVNode("span", {
 							textContent: toDisplayString(unref(translate$1)().ackCarrotLinkText),
 							ref: "carrotBtnText"
-						}, null, 8, _hoisted_45), createVNode$1(_sfc_main$37, { source: brand_external_link_icon_default }, null, 8, ["source"])], 512)], 512)
+						}, null, 8, _hoisted_45), createVNode$1(_sfc_main$45, { source: brand_external_link_icon_default }, null, 8, ["source"])], 512)], 512)
 					], 512),
 					createBaseVNode("div", _hoisted_46, [
 						createBaseVNode("div", _hoisted_47, [createBaseVNode("div", _hoisted_48, [createBaseVNode("div", _hoisted_49, [createBaseVNode("img", {
@@ -42873,7 +43726,7 @@ PERFORMANCE OF THIS SOFTWARE.
 				if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) remoteVersion.value = null;
 			}
 			return (_ctx, _cache) => {
-				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$35, null, {
+				return openBlock(), createBlock(Teleport, { to: "body" }, [createVNode$1(_sfc_main$43, null, {
 					default: withCtx(() => [remoteVersion.value ? (openBlock(), createElementBlock("div", _hoisted_1$1, [createBaseVNode("div", { style: normalizeStyle$1([{
 						"background": "rgb(30, 32, 34)",
 						"color": "rgb(224, 224, 224)",
@@ -42999,6 +43852,10 @@ PERFORMANCE OF THIS SOFTWARE.
 			const theme = ref({});
 			provide("cf-menu-theme", theme);
 			const contentArea = ref(null), panelHost = ref(null), scrollbar = ref(null), navigation = ref(null), modal = ref(null);
+			const menuRoot = ref(null);
+			const menuLayout = useMenuLayout(menuRoot, visible);
+			provide("cf-menu-size", menuLayout.size);
+			provide("cf-menu-position", menuLayout.position);
 			const ids = [
 				"general",
 				"appearance",
@@ -43285,84 +44142,126 @@ PERFORMANCE OF THIS SOFTWARE.
 				return openBlock(), createElementBlock(Fragment, null, [
 					createBaseVNode("div", {
 						class: "cf-menu-theme",
-						style: normalizeStyle$1([theme.value, {
+						ref_key: "menuRoot",
+						ref: menuRoot,
+						style: normalizeStyle$1([[theme.value, unref(menuLayout).rootStyle], {
 							"position": "fixed",
-							"top": "70px",
-							"right": "20px",
 							"z-index": "999999",
 							"font-family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
-						}])
-					}, [withDirectives(createBaseVNode("div", {
-						class: "cf-settings-modal",
-						style: { "display": "flex" },
-						ref_key: "modal",
-						ref: modal
-					}, [
-						createVNode$1(MenuGlassSurface_default, { class: "cf-modal-header" }, {
-							default: withCtx(() => [createBaseVNode("div", _hoisted_1, [createBaseVNode("span", _hoisted_2, [createVNode$1(_sfc_main$37, {
-								source: colorforces_default,
-								layer: "cf-launcher-flower",
-								"id-prefix": "cf-header-logo"
-							}, null, 8, ["source"])]), createBaseVNode("div", _hoisted_3, [_cache[1] || (_cache[1] = createTextVNode(" Colorforces ", -1)), createBaseVNode("span", _hoisted_4, "v" + toDisplayString(unref(CURRENT_VERSION)), 1)])]), createBaseVNode("button", {
-								type: "button",
-								class: "cf-close-btn",
-								title: "Close",
-								onClick: closeMenu
-							}, [createVNode$1(_sfc_main$37, { source: close_icon_default }, null, 8, ["source"])])]),
-							_: 1
-						}),
-						createBaseVNode("div", _hoisted_5, [createVNode$1(_sfc_main$33, {
-							ref_key: "navigation",
-							ref: navigation,
-							active: activeTab.value,
-							onSelect: switchTab,
-							onTheme: _cache[0] || (_cache[0] = ($event) => theme.value = $event)
-						}, null, 8, ["active"]), createBaseVNode("div", _hoisted_6, [createBaseVNode("div", {
-							class: "cf-content-area",
-							id: "cf-menu-content",
-							ref_key: "contentArea",
-							ref: contentArea,
-							onScrollPassive: trimScrollFloor,
-							tabindex: "0",
-							"aria-label": unref(translate$1)("menuContentLabel")
-						}, [createBaseVNode("div", {
-							class: "cf-content-panels",
-							ref_key: "panelHost",
-							ref: panelHost
+						}]),
+						onClickCapture: _cache[3] || (_cache[3] = (...args) => unref(menuLayout).suppressDragClick && unref(menuLayout).suppressDragClick(...args))
+					}, [createVNode$1(_sfc_main$32, { layout: unref(menuLayout) }, {
+						default: withCtx(() => [withDirectives(createBaseVNode("div", {
+							class: "cf-settings-modal",
+							style: normalizeStyle$1([{ "display": "flex" }, unref(menuLayout).modalStyle]),
+							ref_key: "modal",
+							ref: modal
 						}, [
-							createVNode$1(_sfc_main$22, { active: activeTab.value === "general" }, null, 8, ["active"]),
-							createVNode$1(_sfc_main$17, { active: activeTab.value === "appearance" }, null, 8, ["active"]),
-							createVNode$1(_sfc_main$14, { active: activeTab.value === "ratings" }, null, 8, ["active"]),
-							createVNode$1(_sfc_main$13, { active: activeTab.value === "user" }, null, 8, ["active"]),
-							createVNode$1(_sfc_main$11, { active: visible.value && activeTab.value === "shortcuts" }, null, 8, ["active"]),
-							createVNode$1(_sfc_main$7, { active: visible.value && activeTab.value === "storage" }, null, 8, ["active"]),
-							createVNode$1(_sfc_main$6, { active: activeTab.value === "changelog" }, null, 8, ["active"]),
-							createVNode$1(_sfc_main$5, { active: activeTab.value === "roadmap" }, null, 8, ["active"]),
-							createVNode$1(_sfc_main$2, { active: visible.value && activeTab.value === "acknowledgments" }, null, 8, ["active"])
-						], 512)], 40, _hoisted_7), createVNode$1(MenuScrollbar_default, {
-							ref_key: "scrollbar",
-							ref: scrollbar,
-							viewport: contentArea.value,
-							content: panelHost.value,
-							visible: visible.value
-						}, null, 8, [
-							"viewport",
-							"content",
-							"visible"
-						])])]),
-						createVNode$1(_sfc_main$28)
-					], 512), [[vShow, visible.value]]), createVNode$1(_sfc_main$26, {
+							createVNode$1(MenuGlassSurface_default, {
+								class: normalizeClass(["cf-modal-header", {
+									"is-positionable": unref(menuLayout).position.enabled,
+									"is-position-dragging": unref(menuLayout).moving
+								}]),
+								onPointerdown: _cache[0] || (_cache[0] = ($event) => unref(menuLayout).startMove($event, "panel")),
+								onPointermove: unref(menuLayout).moveDrag,
+								onPointerup: unref(menuLayout).finishDrag,
+								onPointercancel: unref(menuLayout).finishDrag,
+								onLostpointercapture: unref(menuLayout).finishDrag
+							}, {
+								default: withCtx(() => [createBaseVNode("div", _hoisted_1, [createBaseVNode("span", _hoisted_2, [createVNode$1(_sfc_main$45, {
+									source: colorforces_default,
+									layer: "cf-launcher-flower",
+									"id-prefix": "cf-header-logo"
+								}, null, 8, ["source"])]), createBaseVNode("div", _hoisted_3, [_cache[4] || (_cache[4] = createTextVNode(" Colorforces ", -1)), createBaseVNode("span", _hoisted_4, "v" + toDisplayString(unref(CURRENT_VERSION)), 1)])]), createBaseVNode("button", {
+									type: "button",
+									class: "cf-close-btn",
+									title: "Close",
+									onClick: closeMenu
+								}, [createVNode$1(_sfc_main$45, { source: close_icon_default }, null, 8, ["source"])])]),
+								_: 1
+							}, 8, [
+								"class",
+								"onPointermove",
+								"onPointerup",
+								"onPointercancel",
+								"onLostpointercapture"
+							]),
+							createBaseVNode("div", _hoisted_5, [createVNode$1(_sfc_main$41, {
+								ref_key: "navigation",
+								ref: navigation,
+								active: activeTab.value,
+								onSelect: switchTab,
+								onTheme: _cache[1] || (_cache[1] = ($event) => theme.value = $event)
+							}, null, 8, ["active"]), createBaseVNode("div", _hoisted_6, [createBaseVNode("div", {
+								class: "cf-content-area",
+								id: "cf-menu-content",
+								ref_key: "contentArea",
+								ref: contentArea,
+								onScrollPassive: trimScrollFloor,
+								tabindex: "0",
+								"aria-label": unref(translate$1)("menuContentLabel")
+							}, [createBaseVNode("div", {
+								class: "cf-content-panels",
+								ref_key: "panelHost",
+								ref: panelHost
+							}, [
+								createVNode$1(_sfc_main$24, { active: activeTab.value === "general" }, null, 8, ["active"]),
+								createVNode$1(_sfc_main$18, { active: activeTab.value === "appearance" }, null, 8, ["active"]),
+								createVNode$1(_sfc_main$15, { active: activeTab.value === "ratings" }, null, 8, ["active"]),
+								createVNode$1(_sfc_main$14, { active: activeTab.value === "user" }, null, 8, ["active"]),
+								createVNode$1(_sfc_main$11, { active: visible.value && activeTab.value === "shortcuts" }, null, 8, ["active"]),
+								createVNode$1(_sfc_main$7, { active: visible.value && activeTab.value === "storage" }, null, 8, ["active"]),
+								createVNode$1(_sfc_main$6, { active: activeTab.value === "changelog" }, null, 8, ["active"]),
+								createVNode$1(_sfc_main$5, { active: activeTab.value === "roadmap" }, null, 8, ["active"]),
+								createVNode$1(_sfc_main$2, { active: visible.value && activeTab.value === "acknowledgments" }, null, 8, ["active"])
+							], 512)], 40, _hoisted_7), createVNode$1(MenuScrollbar_default, {
+								ref_key: "scrollbar",
+								ref: scrollbar,
+								viewport: contentArea.value,
+								content: panelHost.value,
+								visible: visible.value
+							}, null, 8, [
+								"viewport",
+								"content",
+								"visible"
+							])])]),
+							createVNode$1(_sfc_main$36),
+							createVNode$1(MenuResizeHandles_default, {
+								controller: unref(menuLayout),
+								open: visible.value
+							}, null, 8, ["controller", "open"])
+						], 4), [[vShow, visible.value]])]),
+						_: 1
+					}, 8, ["layout"]), createVNode$1(_sfc_main$34, {
 						open: visible.value,
-						onToggle: toggleMenu
-					}, null, 8, ["open"])], 4),
-					createVNode$1(_sfc_main$36),
-					createVNode$1(_sfc_main$34),
+						dragging: unref(menuLayout).moving,
+						onToggle: toggleMenu,
+						class: normalizeClass({
+							"is-positionable": unref(menuLayout).position.enabled,
+							"is-position-dragging": unref(menuLayout).moving
+						}),
+						onPointerdown: _cache[2] || (_cache[2] = ($event) => unref(menuLayout).startMove($event, "button")),
+						onPointermove: unref(menuLayout).moveDrag,
+						onPointerup: unref(menuLayout).finishDrag,
+						onPointercancel: unref(menuLayout).finishDrag,
+						onLostpointercapture: unref(menuLayout).finishDrag
+					}, null, 8, [
+						"open",
+						"dragging",
+						"class",
+						"onPointermove",
+						"onPointerup",
+						"onPointercancel",
+						"onLostpointercapture"
+					])], 36),
+					createVNode$1(_sfc_main$44),
+					createVNode$1(_sfc_main$42),
 					createVNode$1(_sfc_main$1),
-					createVNode$1(_sfc_main$29),
+					createVNode$1(_sfc_main$37),
+					createVNode$1(_sfc_main$17),
 					createVNode$1(_sfc_main$16),
-					createVNode$1(_sfc_main$15),
+					createVNode$1(_sfc_main$20),
 					createVNode$1(_sfc_main$19),
-					createVNode$1(_sfc_main$18),
 					createVNode$1(_sfc_main$10)
 				], 64);
 			};

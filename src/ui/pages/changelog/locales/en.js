@@ -9,6 +9,8 @@ export default {
     'Moved distribution and updates to Releases, automated publishing, and retained the legacy update entry.',
     'Added a separate solved-row highlighting toggle, with shortcuts for highlighting and menu language switching.',
     'Improved real-time verdict abbreviations and extended them to submission history on problem pages.',
+    'Moved the algorithm-tag visibility settings to Appearance.',
+    'Users can customize the settings panel size and position, with drag-to-adjust support.',
   ],
   'v 1.6.0:1': [
     'Explicitly request the official problemset in English and refresh older-language caches.',

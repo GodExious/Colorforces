@@ -321,12 +321,13 @@ onBeforeUnmount(() => {
   object-fit: contain;
 }
 
+/* 身份标签紧随姓名自然排列，空间不足时允许换行。 */
 .cf-contributor-info {
   grid-column: 2;
   grid-row: 1;
   display: flex;
-  align-items: baseline;
   flex-wrap: wrap;
+  align-items: baseline;
   gap: 2px 8px;
   min-width: 0;
 }

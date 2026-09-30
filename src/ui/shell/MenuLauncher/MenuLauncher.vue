@@ -7,6 +7,7 @@ import { tooltip } from '../../components/tooltips/FloatingTooltip/FloatingToolt
 // 旧版轻纱效果保留为 aurora；默认同色花瓣，不新增用户设置。
 const props = defineProps({
   open: Boolean,
+  dragging: Boolean,
   appearance: {
     type: String,
     default: 'flower',
@@ -17,7 +18,43 @@ const emit = defineEmits(['toggle']);
 const button = ref(null);
 const resting = ref(document.hidden);
 const transitions = new Set();
+const flowerReturns = new Set();
 let motionPreference;
+// 清理尚未结束的归位动画，避免连续开合叠加旧角度。
+function stopFlowerReturn() {
+  flowerReturns.forEach((animation) => animation.cancel());
+  flowerReturns.clear();
+}
+// 收起后恢复 Logo 原姿态；归位中再次展开则从当前角度继续转动。
+function restoreFlowerPose(open) {
+  const art = button.value?.querySelector('.cf-launcher-art');
+  if (!art) return;
+  const layers = [art, ...art.querySelectorAll('.cf-launcher-motion')];
+  const poses = layers.map((layer) => getComputedStyle(layer).transform);
+  stopFlowerReturn();
+  if (open) {
+    const matrix = new DOMMatrixReadOnly(poses[0] === 'none' ? undefined : poses[0]);
+    const angle = (Math.atan2(matrix.b, matrix.a) * 180) / Math.PI;
+    art.style.setProperty('--cf-launcher-turn-start', `${angle}deg`);
+    return;
+  }
+  if (document.hidden || motionPreference?.matches) return;
+  layers.forEach((layer, index) => {
+    if (poses[index] === 'none') return;
+    const animation = layer.animate([{ transform: poses[index] }, { transform: 'none' }], {
+      duration: 780,
+      easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+    });
+    flowerReturns.add(animation);
+    animation.finished.then(
+      () => {
+        animation.cancel();
+        flowerReturns.delete(animation);
+      },
+      () => {},
+    );
+  });
+}
 // 取消尚未结束的收放动画，释放动画对节点样式的占用。
 function stopPetalTransition() {
   transitions.forEach((animation) => animation.cancel());
@@ -75,6 +112,7 @@ function animatePetals(open) {
 }
 // 复用现有提示控制器，仅给入口使用轻量侧边胶囊。
 function showHint() {
+  if (props.dragging) return;
   tooltip.show(button.value, t(props.open ? 'launcherCloseHint' : 'launcherOpenHint'), {
     variant: 'launcher',
   });
@@ -89,9 +127,19 @@ function updateVisibility() {
   resting.value = document.hidden;
   if (resting.value) {
     stopPetalTransition();
+    stopFlowerReturn();
     tooltip.hide();
   }
 }
+// 在开合类名更新前读取旧姿态，避免先归零再补动画造成闪跳。
+watch(
+  () => [props.open, props.appearance],
+  ([open, appearance]) => {
+    if (appearance === 'flower') restoreFlowerPose(open);
+    else stopFlowerReturn();
+  },
+  { flush: 'pre' },
+);
 watch(
   () => [props.open, props.appearance],
   ([open, appearance]) => {
@@ -104,11 +152,14 @@ watch(
 onMounted(() => {
   motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
   motionPreference.addEventListener('change', stopPetalTransition);
+  motionPreference.addEventListener('change', stopFlowerReturn);
   document.addEventListener('visibilitychange', updateVisibility);
 });
 onBeforeUnmount(() => {
   stopPetalTransition();
+  stopFlowerReturn();
   motionPreference?.removeEventListener('change', stopPetalTransition);
+  motionPreference?.removeEventListener('change', stopFlowerReturn);
   document.removeEventListener('visibilitychange', updateVisibility);
 });
 </script>
@@ -421,13 +472,17 @@ onBeforeUnmount(() => {
 #cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower .cf-launcher-motion {
   animation-play-state: running;
 }
-/* 外层慢转与内层悬停、开合互不覆盖；收起时停在当前角度。 */
+/* 外层只在展开时慢转；收起后回到标准姿态，不累积到内层悬停旋转。 */
 #cf-ratings-settings-btn.is-flower .cf-launcher-art {
   transform-origin: 50% 50%;
-  animation: cf-launcher-flower-turn 24s linear infinite paused;
+  transform: rotate(0deg);
 }
 #cf-ratings-settings-btn.is-flower.is-open .cf-launcher-art {
-  animation-play-state: running;
+  animation: cf-launcher-flower-turn 24s linear infinite;
+}
+#cf-ratings-settings-btn.is-flower:not(.is-open) .cf-launcher-motion {
+  animation: none;
+  transform: none;
 }
 #cf-ratings-settings-btn.is-flower.is-resting .cf-launcher-art,
 #cf-ratings-settings-btn.is-flower.is-resting .cf-launcher-flower .cf-launcher-motion {
@@ -435,10 +490,10 @@ onBeforeUnmount(() => {
 }
 @keyframes cf-launcher-flower-turn {
   from {
-    transform: rotate(0deg);
+    transform: rotate(var(--cf-launcher-turn-start, 0deg));
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate(calc(var(--cf-launcher-turn-start, 0deg) + 360deg));
   }
 }
 @keyframes cf-flower-sway {
@@ -488,7 +543,8 @@ onBeforeUnmount(() => {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  #cf-ratings-settings-btn.is-flower .cf-launcher-art {
+  #cf-ratings-settings-btn.is-flower .cf-launcher-art,
+  #cf-ratings-settings-btn.is-flower.is-open .cf-launcher-art {
     animation: none;
   }
   #cf-ratings-settings-btn.is-flower,

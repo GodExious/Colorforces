@@ -1,3 +1,4 @@
+/* 原页面的标签显示与隐藏样式，随界面功能分类维护。 */
 .cf-tags-moving .tag-box {
   pointer-events: none;
   transform-origin: center;

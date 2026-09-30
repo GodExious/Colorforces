@@ -1,7 +1,7 @@
 import { applyRatings } from '../ratings/enhance.js';
 import { formatStandingsCells } from '../user/avatars/standings.js';
 import { applyUserAvatars } from '../user/avatars/enhance.js';
-import { applyProblemTagsVisibility } from '../general/problem-tags.js';
+import { applyProblemTagsVisibility } from '../appearance/problem-tags.js';
 import { wrapVirtualParticipationTime, applyTimeFormatting } from '../appearance/time.js';
 import { walkAndReplaceVerdict, VERDICT_SELECTOR } from '../appearance/verdicts.js';
 

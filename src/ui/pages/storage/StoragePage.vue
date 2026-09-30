@@ -168,7 +168,11 @@ watch(
         <div class="cf-storage-overview-info">
           <span class="cf-storage-overview-label" v-text="t().storageTotalTitle"></span>
         </div>
-        <button type="button" class="cf-storage-clear-all-btn" v-on:click="requestClear('all')">
+        <button
+          type="button"
+          class="cf-storage-btn btn-clear cf-storage-clear-all-btn"
+          v-on:click="requestClear('all')"
+        >
           <inline-svg v-bind:source="assets.storageClearIcon"></inline-svg
           ><span class="btn-text">{{ t('storageClearAllBtn') }}</span>
         </button>
@@ -250,42 +254,14 @@ watch(
   letter-spacing: 0.3px;
 }
 
-.cf-storage-clear-all-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 5px 8px;
-  font-size: 11.5px;
-  line-height: 16px;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 1px solid color-mix(in srgb, #e11d48 25%, var(--cf-surface-border));
-  background: color-mix(in srgb, #e11d48 5%, var(--cf-control-surface));
-  color: #be123c;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease;
-}
-
 /* 固定图标与文字的对齐尺寸，不随页面的通用 SVG 规则伸缩。 */
-.cf-storage-clear-all-btn > svg {
-  width: 14px;
-  height: 14px;
-  flex: 0 0 14px;
+.cf-storage-btn > svg {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
 }
 
-.cf-storage-clear-all-btn:hover {
-  background: color-mix(in srgb, #e11d48 11%, var(--cf-control-surface));
-  border-color: #e8798f;
-  color: #9f1239;
-}
-
-.cf-storage-clear-all-btn:focus-visible {
+.cf-storage-btn:focus-visible {
   outline: 2px solid #e8798f;
   outline-offset: 2px;
 }

@@ -17,6 +17,8 @@ import MenuFooter from './shell/MenuFooter/MenuFooter.vue';
 import MenuScrollbar from './shell/MenuScrollbar/MenuScrollbar.vue';
 import MenuLauncher from './shell/MenuLauncher/MenuLauncher.vue';
 import MenuGlassSurface from './shell/MenuGlassSurface/MenuGlassSurface.vue';
+import MenuResizeHandles from './shell/MenuResizeHandles/MenuResizeHandles.vue';
+import MenuLayout, { useMenuLayout } from './shell/MenuLayout/MenuLayout.vue';
 import GeneralPage from './pages/general/GeneralPage.vue';
 import AppearancePage from './pages/appearance/AppearancePage.vue';
 import RatingsPage from './pages/ratings/RatingsPage.vue';
@@ -49,6 +51,10 @@ const contentArea = ref(null),
   scrollbar = ref(null),
   navigation = ref(null),
   modal = ref(null);
+const menuRoot = ref(null);
+const menuLayout = useMenuLayout(menuRoot, visible);
+provide('cf-menu-size', menuLayout.size);
+provide('cf-menu-position', menuLayout.position);
 const ids = [
   'general',
   'appearance',
@@ -388,75 +394,108 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="cf-menu-theme"
-    :style="theme"
+    ref="menuRoot"
+    :style="[theme, menuLayout.rootStyle]"
+    @click.capture="menuLayout.suppressDragClick"
     style="
       position: fixed;
-      top: 70px;
-      right: 20px;
       z-index: 999999;
       font-family:
         -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     "
   >
-    <div class="cf-settings-modal" style="display: flex" ref="modal" v-show="visible">
-      <MenuGlassSurface class="cf-modal-header">
-        <div class="cf-header-left">
-          <span class="cf-header-logo" aria-hidden="true">
-            <InlineSvg
-              :source="assets.colorforcesMark"
-              layer="cf-launcher-flower"
-              id-prefix="cf-header-logo"
-            />
-          </span>
-          <div class="cf-header-title">
-            Colorforces <span class="cf-title-version">v{{ CURRENT_VERSION }}</span>
-          </div>
-        </div>
-        <button type="button" class="cf-close-btn" title="Close" @click="closeMenu">
-          <inline-svg v-bind:source="assets.closeIcon"></inline-svg>
-        </button>
-      </MenuGlassSurface>
-      <div class="cf-modal-body">
-        <menu-nav
-          ref="navigation"
-          :active="activeTab"
-          @select="switchTab"
-          @theme="theme = $event"
-        ></menu-nav>
-        <div class="cf-content-viewport">
-          <div
-            class="cf-content-area"
-            id="cf-menu-content"
-            ref="contentArea"
-            @scroll.passive="trimScrollFloor"
-            tabindex="0"
-            :aria-label="t('menuContentLabel')"
-          >
-            <div class="cf-content-panels" ref="panelHost">
-              <general-page :active="activeTab === 'general'"></general-page
-              ><appearance-page :active="activeTab === 'appearance'"></appearance-page
-              ><ratings-page :active="activeTab === 'ratings'"></ratings-page
-              ><user-page :active="activeTab === 'user'"></user-page
-              ><shortcuts-page :active="visible && activeTab === 'shortcuts'"></shortcuts-page
-              ><storage-page :active="visible && activeTab === 'storage'"></storage-page
-              ><changelog-page :active="activeTab === 'changelog'"></changelog-page
-              ><roadmap-page :active="activeTab === 'roadmap'"></roadmap-page
-              ><acknowledgments-page
-                :active="visible && activeTab === 'acknowledgments'"
-              ></acknowledgments-page>
+    <MenuLayout :layout="menuLayout">
+      <div
+        class="cf-settings-modal"
+        style="display: flex"
+        :style="menuLayout.modalStyle"
+        ref="modal"
+        v-show="visible"
+      >
+        <MenuGlassSurface
+          class="cf-modal-header"
+          :class="{
+            'is-positionable': menuLayout.position.enabled,
+            'is-position-dragging': menuLayout.moving,
+          }"
+          @pointerdown="menuLayout.startMove($event, 'panel')"
+          @pointermove="menuLayout.moveDrag"
+          @pointerup="menuLayout.finishDrag"
+          @pointercancel="menuLayout.finishDrag"
+          @lostpointercapture="menuLayout.finishDrag"
+        >
+          <div class="cf-header-left">
+            <span class="cf-header-logo" aria-hidden="true">
+              <InlineSvg
+                :source="assets.colorforcesMark"
+                layer="cf-launcher-flower"
+                id-prefix="cf-header-logo"
+              />
+            </span>
+            <div class="cf-header-title">
+              Colorforces <span class="cf-title-version">v{{ CURRENT_VERSION }}</span>
             </div>
           </div>
-          <MenuScrollbar
-            ref="scrollbar"
-            :viewport="contentArea"
-            :content="panelHost"
-            :visible="visible"
-          />
+          <button type="button" class="cf-close-btn" title="Close" @click="closeMenu">
+            <inline-svg v-bind:source="assets.closeIcon"></inline-svg>
+          </button>
+        </MenuGlassSurface>
+        <div class="cf-modal-body">
+          <menu-nav
+            ref="navigation"
+            :active="activeTab"
+            @select="switchTab"
+            @theme="theme = $event"
+          ></menu-nav>
+          <div class="cf-content-viewport">
+            <div
+              class="cf-content-area"
+              id="cf-menu-content"
+              ref="contentArea"
+              @scroll.passive="trimScrollFloor"
+              tabindex="0"
+              :aria-label="t('menuContentLabel')"
+            >
+              <div class="cf-content-panels" ref="panelHost">
+                <general-page :active="activeTab === 'general'"></general-page
+                ><appearance-page :active="activeTab === 'appearance'"></appearance-page
+                ><ratings-page :active="activeTab === 'ratings'"></ratings-page
+                ><user-page :active="activeTab === 'user'"></user-page
+                ><shortcuts-page :active="visible && activeTab === 'shortcuts'"></shortcuts-page
+                ><storage-page :active="visible && activeTab === 'storage'"></storage-page
+                ><changelog-page :active="activeTab === 'changelog'"></changelog-page
+                ><roadmap-page :active="activeTab === 'roadmap'"></roadmap-page
+                ><acknowledgments-page
+                  :active="visible && activeTab === 'acknowledgments'"
+                ></acknowledgments-page>
+              </div>
+            </div>
+            <MenuScrollbar
+              ref="scrollbar"
+              :viewport="contentArea"
+              :content="panelHost"
+              :visible="visible"
+            />
+          </div>
         </div>
+        <menu-footer></menu-footer>
+        <MenuResizeHandles :controller="menuLayout" :open="visible" />
       </div>
-      <menu-footer></menu-footer>
-    </div>
-    <menu-launcher :open="visible" @toggle="toggleMenu"></menu-launcher>
+    </MenuLayout>
+    <menu-launcher
+      :open="visible"
+      :dragging="menuLayout.moving"
+      @toggle="toggleMenu"
+      :class="{
+        'is-positionable': menuLayout.position.enabled,
+        'is-position-dragging': menuLayout.moving,
+      }"
+      @pointerdown="menuLayout.startMove($event, 'button')"
+      @pointermove="menuLayout.moveDrag"
+      @pointerup="menuLayout.finishDrag"
+      @pointercancel="menuLayout.finishDrag"
+      @lostpointercapture="menuLayout.finishDrag"
+    ></menu-launcher>
   </div>
   <FloatingTooltip /><ConfirmDialog /><UpdateDialog /><ClistSyncDialog /><ClistKeyGuide /><ClistSyncGuide /><TimeFormatGuide /><VerdictGuide /><StorageJsonDialog />
 </template>
@@ -556,13 +595,7 @@ onBeforeUnmount(() => {
 }
 
 .cf-settings-modal {
-  position: absolute;
-  top: 55px;
-  right: 0;
-  width: 680px;
-  height: 56vh;
-  max-height: 56vh;
-  min-height: 440px;
+  position: relative;
   background: transparent;
   border: 1px solid color-mix(in srgb, var(--cf-menu-accent) 18%, #e2e8f0);
   border-radius: 14px;
@@ -578,19 +611,18 @@ onBeforeUnmount(() => {
   overscroll-behavior: contain;
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  animation: cf-fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  /* 玻璃祖先层保持不透明，避免淡入期间无法采样并模糊原网页。 */
+  animation: cf-menu-open 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   transition:
     border-color 480ms ease,
     box-shadow 480ms ease;
 }
 
-@keyframes cf-fadeIn {
+@keyframes cf-menu-open {
   from {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.98);
+    transform: translateY(var(--cf-menu-open-y, -6px)) scale(0.98);
   }
   to {
-    opacity: 1;
     transform: translateY(0) scale(1);
   }
 }

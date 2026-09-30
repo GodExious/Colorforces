@@ -97,6 +97,11 @@ export function createTooltipController() {
       state.visible = true;
     }
   }
+  // 仅为被省略的文字显示完整内容，供快捷键和存储图注共用。
+  function showIfTruncated(event) {
+    const target = event.currentTarget;
+    if (target.scrollWidth > target.clientWidth) show(target, target.textContent);
+  }
   // 委托绑定动态提示节点，避免重复注册逐元素监听。
   function bind(root = document) {
     const enter = (event) => {
@@ -133,6 +138,7 @@ export function createTooltipController() {
   return {
     state,
     show,
+    showIfTruncated,
     hide,
     bind,
     dispose,

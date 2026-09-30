@@ -1,7 +1,7 @@
 import { fetchUserStatus } from '../../api/codeforces.js';
 import { appStorage } from '../../storage/gm.js';
 import { sortProblemIds, extractProblemKey } from '../../utils/problem.js';
-import { applyProblemTagsVisibility } from './problem-tags.js';
+import { applyProblemTagsVisibility } from '../appearance/problem-tags.js';
 
 // 当前账号已解决题目的内存副本。
 export let userSolvedCache = null;
