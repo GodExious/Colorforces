@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="docs/CHANGELOG.md">
-    <img src="https://img.shields.io/badge/Version-1.6.0-d77c9d?style=flat&amp;logo=github&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="Version 1.6.0">
+    <img src="https://img.shields.io/badge/Version-1.7.0-d77c9d?style=flat&amp;logo=github&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="Version 1.7.0">
   </a>
   <a href="https://github.com/GodExious/Colorforces/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-c5ab77?style=flat&amp;logo=opensourceinitiative&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="MIT License">
@@ -81,7 +81,7 @@ npm ci
 npm run build
 ```
 
-Install the generated `dist/colorforces.user.js` in Tampermonkey. For the v1.6.0 root compatibility copy, use `npm run build:compat`.
+Install the generated `dist/colorforces.user.js` in Tampermonkey. To also update the root compatibility copy, use `npm run build:compat`.
 
 ## 💡 Feedback
 

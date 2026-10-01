@@ -2,7 +2,7 @@
 export default [
   {
     id: 'rating-prediction',
-    completed: false,
+    completed: true,
   },
   {
     id: 'data-analytics',

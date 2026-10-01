@@ -1,21 +1,26 @@
 <script setup>
 import { tooltip } from '../FloatingTooltip/FloatingTooltip.vue';
-defineProps({ text: { type: String, required: true } });
+defineProps({
+  text: { type: String, required: true },
+  symbol: { type: String, default: 'i' },
+  variant: { type: String, default: 'info' },
+  clickable: { type: Boolean, default: false },
+});
+const emit = defineEmits(['click']);
 </script>
 
 <template>
   <button
     type="button"
     class="cf-info-hint"
+    :class="[`cf-info-hint--${variant}`, { 'cf-info-hint--clickable': clickable }]"
     :aria-label="text"
-    @mouseenter="tooltip.show($event.currentTarget, text)"
-    @mouseleave="tooltip.hide"
-    @focus="tooltip.show($event.currentTarget, text)"
-    @blur="tooltip.hide"
-    @click.stop.prevent
+    :aria-haspopup="clickable ? 'dialog' : undefined"
+    :data-tooltip="text"
+    @click.stop.prevent="emit('click', $event)"
     @keydown.escape="tooltip.hide"
   >
-    <span aria-hidden="true">i</span>
+    <span aria-hidden="true">{{ symbol }}</span>
   </button>
 </template>
 
@@ -27,6 +32,7 @@ defineProps({ text: { type: String, required: true } });
   flex: 0 0 16px;
   width: 16px;
   height: 16px;
+  margin-left: 4px;
   padding: 0;
   border: 1px solid #a8c1dd;
   border-radius: 50%;
@@ -45,5 +51,33 @@ defineProps({ text: { type: String, required: true } });
   background: #dceafa;
   border-color: #759ac3;
   outline: none;
+}
+.cf-info-hint--clickable {
+  cursor: pointer;
+  font-style: normal;
+}
+.cf-info-hint:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.cf-info-hint--question {
+  border-color: #c3b4e7;
+  background: #f1edff;
+  color: #765ca4;
+}
+.cf-info-hint--question:hover,
+.cf-info-hint--question:focus-visible {
+  border-color: #a995d2;
+  background: #e8e0ff;
+}
+.cf-info-hint--warning {
+  border-color: #e7c58b;
+  background: #fff6df;
+  color: #a06c22;
+}
+.cf-info-hint--warning:hover,
+.cf-info-hint--warning:focus-visible {
+  border-color: #d7a95d;
+  background: #ffefc5;
 }
 </style>

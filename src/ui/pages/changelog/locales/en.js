@@ -1,4 +1,13 @@
 export default {
+  'v 1.7.0:0': [
+    'Added a Rating Prediction panel with rating changes, performance, rank progression, and single-user target simulations and refinement.',
+    'Added rated / unrated tags indicating whether a participant is rated in the current contest.',
+  ],
+  'v 1.7.0:1': [
+    'Grouped avatars and solved-problem records under CF user data, with separate viewing and clearing.',
+    'Replaced the userscript icon with the Colorforces logo.',
+    'Improved and expanded contest-page time-format styling compatibility.',
+  ],
   'v 1.6.0:0': [
     'With help from Codex, decoupled and standardized the project structure and component organization, adding extensive concise Chinese function-level comments to improve readability and maintainability.',
     'Further polished the menu interface.',

@@ -1,4 +1,5 @@
 @import './fonts.css';
+@import './codeforces/contest/rating-prediction.css';
 @import './codeforces/page/tables.css';
 @import './codeforces/appearance/time.css';
 @import './codeforces/user/avatars/standings.css';

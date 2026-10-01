@@ -4,8 +4,8 @@ import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
 import { shallowRef } from 'vue';
 const request = shallowRef(null);
 // 提供同文件调用入口，查看器始终只保留一个实例。
-export function showStorageJsonModal(title, keys, getContent) {
-  request.value = { title, keys: [...keys], getContent };
+export function showStorageJsonModal(title, keys, getContent, options = {}) {
+  request.value = { title, keys: [...keys], getContent, ...options };
 }
 // 将多个存储键作为一份快照展示，不合并或写入底层存储。
 export function showStorageJsonDocument(title, content, bytes) {
@@ -64,6 +64,13 @@ function selectKey(key, initial = false) {
   };
   if (initial) render();
   else frame = requestAnimationFrame(render);
+}
+// 关闭查看器后交给原确认流程清理当前分类，不静默扩大清理范围。
+function clearActive() {
+  const action = request.value?.onClear,
+    key = activeKey.value;
+  close();
+  action?.(key);
 }
 // 复制完整数据，而不是经过裁剪和着色的预览。
 function copyFull() {
@@ -270,7 +277,15 @@ onBeforeUnmount(() => {
                   fontWeight: activeKey === key ? '600' : '500',
                 }"
               >
-                {{ key }}
+                {{ displayed.keyLabels?.[key] || key }}
+              </button>
+              <button
+                v-if="displayed.onClear"
+                type="button"
+                class="cf-storage-btn btn-clear"
+                @click="clearActive"
+              >
+                {{ t('storageClearSection') }}
               </button>
             </div>
             <div style="flex: 1; min-height: 0; position: relative">

@@ -8,7 +8,7 @@ import { clearStorageGroup, subscribeStorageChanges } from '../../../features/st
 import { appStorage, subscribeStorageWrites } from '../../../storage/gm.js';
 import { latestRatingsMap, parallelContestsCache } from '../../../features/ratings/data.js';
 import { sortProblemKeys } from '../../../utils/problem.js';
-import { CACHE_KEY, PARALLEL_CONTESTS_KEY } from '../../../storage/keys.js';
+import { CACHE_KEY, PARALLEL_CONTESTS_KEY, AVATAR_CACHE_KEY } from '../../../storage/keys.js';
 import { showConfirmPop } from '../../components/dialogs/ConfirmDialog/ConfirmDialog.vue';
 import {
   showStorageJsonModal,
@@ -51,20 +51,20 @@ const groups = [
     bar: 'storageBarClist',
   },
   {
-    id: 'avatar',
-    title: 'storageAvatarTitle',
-    description: 'storageAvatarDesc',
-    action: 'storageAvatarClearBtn',
-    confirm: 'storageAvatarClearConfirm',
-    bar: 'storageBarAvatar',
+    id: 'user',
+    title: 'storageUserTitle',
+    description: 'storageUserDesc',
+    action: 'storageUserClearBtn',
+    confirm: 'storageUserClearConfirm',
+    bar: 'storageUserTitle',
   },
   {
-    id: 'solved',
-    title: 'storageSolvedTitle',
-    description: 'storageSolvedDesc',
-    action: 'storageSolvedClearBtn',
-    confirm: 'storageSolvedClearConfirm',
-    bar: 'storageBarSolved',
+    id: 'prediction',
+    title: 'storagePredictionTitle',
+    description: 'storagePredictionDesc',
+    action: 'storagePredictionClearBtn',
+    confirm: 'storagePredictionClearConfirm',
+    bar: 'storagePredictionTitle',
   },
   {
     id: 'local',
@@ -84,8 +84,17 @@ function refresh() {
 // 确认后按功能清理，保留其他组和原有存储键格式。
 function requestClear(id) {
   refresh();
-  const group = groups.find((group) => group.id === id);
-  if (['local', 'solved'].includes(id) && !overview.value.items[id].keys.length) {
+  const group =
+    groups.find((group) => group.id === id) ||
+    (id === 'avatar' || id === 'solved'
+      ? {
+          title: id === 'avatar' ? 'storageAvatarTitle' : 'storageSolvedTitle',
+          action: id === 'avatar' ? 'storageAvatarClearBtn' : 'storageSolvedClearBtn',
+          confirm: id === 'avatar' ? 'storageAvatarClearConfirm' : 'storageSolvedClearConfirm',
+        }
+      : null);
+  const item = overview.value.items[id] || overview.value.userParts[id];
+  if (['local', 'solved'].includes(id) && !item.keys.length) {
     showConfirmPop({
       title: t(group.title),
       type: 'info',
@@ -114,17 +123,39 @@ function view(group) {
     showStorageJsonDocument(t(group.title), item.dataMap, item.bytes);
     return;
   }
-  showStorageJsonModal(t(group.title), item.keys, (key) => {
-    if (item.dataMap && key in item.dataMap) return item.dataMap[key];
-    if (group.id === 'cf' && key === CACHE_KEY)
-      return sortProblemKeys(
-        Object.keys(latestRatingsMap).length ? latestRatingsMap : appStorage.getJSON(key, {}),
-      );
-    if (group.id === 'cf' && key === PARALLEL_CONTESTS_KEY)
-      return parallelContestsCache || appStorage.getJSON(key, []);
-    const value = appStorage.getJSON(key, null);
-    return group.id === 'clist' ? sortProblemKeys(value) : value;
-  });
+  const keyLabels =
+    group.id === 'user'
+      ? Object.fromEntries(
+          item.keys.map((key) => [
+            key,
+            key === AVATAR_CACHE_KEY
+              ? t('storageAvatarTitle')
+              : t('storageSolvedTitle') + ' · ' + key.slice('cf_user_solved_'.length),
+          ]),
+        )
+      : {};
+  showStorageJsonModal(
+    t(group.title),
+    item.keys,
+    (key) => {
+      if (item.dataMap && key in item.dataMap) return item.dataMap[key];
+      if (group.id === 'cf' && key === CACHE_KEY)
+        return sortProblemKeys(
+          Object.keys(latestRatingsMap).length ? latestRatingsMap : appStorage.getJSON(key, {}),
+        );
+      if (group.id === 'cf' && key === PARALLEL_CONTESTS_KEY)
+        return parallelContestsCache || appStorage.getJSON(key, []);
+      const value = appStorage.getJSON(key, null);
+      return group.id === 'clist' ? sortProblemKeys(value) : value;
+    },
+    {
+      keyLabels,
+      onClear:
+        group.id === 'user'
+          ? (key) => requestClear(key === AVATAR_CACHE_KEY ? 'avatar' : 'solved')
+          : null,
+    },
+  );
 }
 let stopStorage, stopWrites, refreshTimer;
 // 可见时合并密集缓存写入；持续写入也按短窗口刷新，关闭菜单后不扫描。
@@ -337,11 +368,13 @@ watch(
   --cf-storage-tone: #438caa;
 }
 
-.cf-storage-icon-box.icon-avatar {
+.cf-storage-icon-box.icon-avatar,
+.cf-storage-icon-box.icon-user {
   --cf-storage-tone: #8869b5;
 }
 
-.cf-storage-icon-box.icon-solved {
+.cf-storage-icon-box.icon-solved,
+.cf-storage-icon-box.icon-prediction {
   --cf-storage-tone: #36979d;
 }
 

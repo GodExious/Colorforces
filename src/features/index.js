@@ -1,4 +1,5 @@
 import { appSettings, subscribeSettings } from '../settings.js';
+import { startPredictionFeature } from './contest/rating-prediction/index.js';
 import { updateDynamicStyle } from './appearance/ac-highlight.js';
 import { refreshVerdicts } from './appearance/verdicts.js';
 import { applyTimeFormatting, wrapVirtualParticipationTime } from './appearance/time.js';
@@ -56,8 +57,7 @@ export function connectSettingsEffects() {
     },
     {
       read: () => [appSettings.show.userAvatar, appSettings.show.formatTeams],
-      selector:
-        '.status-party-cell, table.standings .contestant-cell, .cf-avatar-inline-user, .second-level-menu-list a[href*="/profile/"]',
+      selector: '.status-party-cell, table.standings .contestant-cell, a[href*="/profile/"]',
       apply: refreshUserAvatarsAndStandings,
       style: true,
     },
@@ -105,6 +105,7 @@ export function connectSettingsEffects() {
 }
 // 保持原版启动顺序，并仅启动一个全页观察器。
 export async function startFeatures() {
+  startPredictionFeature();
   connectSettingsEffects();
   startShortcuts();
   updateDynamicStyle();

@@ -14,6 +14,7 @@ const tabs = [
   { id: 'general', label: 'tabGeneral' },
   { id: 'appearance', label: 'tabAppearance' },
   { id: 'ratings', label: 'tabRatings' },
+  { id: 'prediction', label: 'tabPrediction' },
   { id: 'user', label: 'tabUser' },
   { id: 'shortcuts', label: 'tabShortcuts' },
   { id: 'storage', label: 'tabStorage' },

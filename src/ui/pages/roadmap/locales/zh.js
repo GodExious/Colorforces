@@ -4,8 +4,8 @@ export default {
     desc: '可视化解题趋势、难度与算法标签分布。',
   },
   'rating-prediction': {
-    title: '表现分变化预测',
-    desc: '集成类似 Carrot-Plus 的实时测算逻辑，在榜单中实时计算选手的表现分与预估 Rating 增减（Δ）。',
+    title: '比赛评分预测',
+    desc: '支持涨跌分、表现分、单用户目标模拟与按需精算。',
   },
   'ui-themes': {
     title: '提供多种 UI 样式的主题',

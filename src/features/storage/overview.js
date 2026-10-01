@@ -7,6 +7,8 @@ import {
   PARALLEL_CONTESTS_KEY,
   CLIST_STORAGE_KEY,
   AVATAR_CACHE_KEY,
+  PREDICTION_STORAGE_KEYS,
+  PREDICTION_CACHE_KEY,
   RUNTIME_STORAGE_KEYS,
 } from '../../storage/keys.js';
 import { getCurrentUserHandle } from '../general/solved.js';
@@ -24,6 +26,7 @@ export const getStorageItemBytes = (key) => {
 };
 // 读取原版当前有效键列表。
 export const ACTIVE_STORAGE_KEYS = [
+  ...PREDICTION_STORAGE_KEYS,
   SETTINGS_KEY,
   CACHE_KEY,
   PARALLEL_CONTESTS_KEY,
@@ -212,5 +215,30 @@ export function readStorageOverview() {
       countKey: 'storageItemCount',
     },
   };
-  return { items, total: Object.values(items).reduce((total, item) => total + item.bytes, 0) };
+  // 合并管理入口，不改旧存储结构；数量分项保留，不能把头像人数与题数相加。
+  const userParts = { avatar: items.avatar, solved: items.solved };
+  items.user = {
+    bytes: items.avatar.bytes + items.solved.bytes,
+    count: 2,
+    countKey: 'storageCategoryCount',
+    keys: [...items.avatar.keys, ...items.solved.keys],
+    dataMap: {
+      ...items.solved.dataMap,
+      [AVATAR_CACHE_KEY]: appStorage.getJSON(AVATAR_CACHE_KEY, {}),
+    },
+  };
+  delete items.avatar;
+  delete items.solved;
+  const predictionKeys = PREDICTION_STORAGE_KEYS.filter((key) => appStorage.getItem(key) != null);
+  items.prediction = {
+    bytes: predictionKeys.reduce((sum, key) => sum + getStorageItemBytes(key), 0),
+    count: Object.keys(appStorage.getJSON(PREDICTION_CACHE_KEY, {})?.contests || {}).length,
+    keys: predictionKeys,
+    countKey: 'storageContestCount',
+  };
+  return {
+    items,
+    userParts,
+    total: Object.values(items).reduce((total, item) => total + item.bytes, 0),
+  };
 }

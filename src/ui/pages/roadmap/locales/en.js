@@ -4,8 +4,8 @@ export default {
     desc: 'Visualize solving trends, difficulty levels, and topic distributions.',
   },
   'rating-prediction': {
-    title: 'Performance Rating Predictor',
-    desc: 'Integrate Carrot-Plus real-time prediction algorithms to estimate performance ratings and rating deltas (Δ) directly in standings.',
+    title: 'Contest Rating Prediction',
+    desc: 'Rating changes, performance ratings, single-user target simulations, and on-demand refinement.',
   },
   'ui-themes': {
     title: 'Multiple UI Styles & Color Themes',

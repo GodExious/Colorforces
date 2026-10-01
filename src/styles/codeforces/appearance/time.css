@@ -9,14 +9,45 @@ th.cf-table-time-header {
 :root.cf-hide-timeFormat .cf-time-timezone-label {
   display: none !important;
 }
+/* 只约束纯时间容器，长偏移量不单独掉到下一行，也不改变 UTC 自身样式。 */
+:root:not(.cf-hide-timeFormat) .cf-time-with-zone {
+  white-space: nowrap;
+}
 
 /* 静态容器按原文占位，不裁掉原站伸出行框的上标时区。 */
 .cf-time-slot {
   display: inline-block;
-  vertical-align: middle;
+  vertical-align: baseline;
   overflow: visible;
 }
 .cf-time-value {
-  display: block;
+  display: inline;
   font-variant-numeric: tabular-nums;
+}
+.cf-time-link-value {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: auto;
+}
+/* Start 表头统一标注时区，正文按原列宽换行，不强撑成一整行。 */
+.cf-contest-time-zone {
+  display: block;
+  font-size: 9px;
+  line-height: 1.4;
+  font-weight: normal;
+  color: #77838d;
+}
+:root:not(.cf-hide-timeFormat) .cf-contest-start-cell sup.tz-superscript {
+  display: none;
+}
+:root:not(.cf-hide-timeFormat) .cf-contest-start-cell,
+:root:not(.cf-hide-timeFormat) .cf-contest-start-cell .cf-time-with-zone {
+  white-space: normal;
+}
+:root:not(.cf-hide-timeFormat) .cf-contest-start-cell .cf-time-slot {
+  max-width: 14ch;
+}
+:root:not(.cf-hide-timeFormat) .cf-contest-start-cell .cf-time-value {
+  white-space: normal;
+  line-height: 1.35;
 }

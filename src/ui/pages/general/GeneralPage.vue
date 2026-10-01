@@ -10,6 +10,7 @@ import SegmentedSwitch from '../../components/forms/SegmentedSwitch/SegmentedSwi
 import ActionButton from '../../components/forms/ActionButton/ActionButton.vue';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
 import { syncIcon } from '../../../assets/index.js';
+import { toggleFromRow } from '../../../utils/row-toggle.js';
 import MenuSizeSettings from './components/MenuSizeSettings/MenuSizeSettings.vue';
 import MenuPositionSettings from './components/MenuPositionSettings/MenuPositionSettings.vue';
 const updateState = ref('');
@@ -80,9 +81,11 @@ onBeforeUnmount(() => clearTimeout(resetTimer));
         display: flex;
         align-items: center;
         justify-content: space-between;
+        cursor: pointer;
         user-select: none;
         margin: 0px;
       "
+      @click="toggleFromRow"
     >
       <span class="cf-setting-label" data-cf-language-text v-text="t().locAutoCheckUpdate"></span>
       <div style="display: inline-flex; align-items: center; gap: 10px">

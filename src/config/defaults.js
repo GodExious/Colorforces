@@ -1,6 +1,16 @@
 // 原版默认设置；组件不得另行维护默认值副本。
 export const DEFAULT_SETTINGS = {
   disableAutoCheckUpdate: false,
+  prediction: {
+    enabled: false,
+    delta: true,
+    performance: true,
+    rankChange: true,
+    ratedRank: false,
+    analysis: true,
+    followRatingStyle: true,
+  },
+  participationTags: { enabled: false, rated: false, unrated: true, virtual: true },
   menuSize: { enabled: false, width: null, height: null },
   menuPosition: { enabled: false, x: null, y: null, reference: 'button', panelSize: null },
   acBgColor: '#d4edc9',

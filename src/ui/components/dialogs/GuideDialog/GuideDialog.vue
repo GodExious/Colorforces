@@ -1,7 +1,7 @@
 <script setup>
 import ActionButton from '../../forms/ActionButton/ActionButton.vue';
 import DialogTransition from '../../transitions/DialogTransition/DialogTransition.vue';
-import { computed, inject, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { preventScrollChaining } from '../../../../utils/scroll.js';
 import InlineSvg from '../../icons/InlineSvg/InlineSvg.vue';
 const props = defineProps({
@@ -11,10 +11,8 @@ const props = defineProps({
 });
 defineEmits(['close']);
 const overlay = ref(null);
-const theme = inject('cf-menu-theme', {});
 const classes = computed(() => [
   'cf-clist-modal-overlay',
-  'cf-menu-theme',
   'cf-guide-theme',
   props.options.className,
 ]);
@@ -36,13 +34,7 @@ watch(overlay, (node) => {
 <template>
   <Teleport to="body">
     <DialogTransition :origin="origin"
-      ><div
-        v-if="visible"
-        ref="overlay"
-        :class="classes"
-        :style="theme"
-        @click.self="$emit(`close`)"
-      >
+      ><div v-if="visible" ref="overlay" :class="classes" @click.self="$emit(`close`)">
         <div class="cf-clist-modal-card" :style="cardStyle">
           <div class="cf-clist-modal-header">
             <div class="cf-clist-modal-title">
@@ -215,8 +207,58 @@ watch(overlay, (node) => {
   transition: width 0.3s ease;
 }
 .cf-guide-theme {
-  --cf-guide-code-bg: color-mix(in srgb, var(--cf-menu-accent) 18%, #172536);
-  --cf-guide-code-ink: color-mix(in srgb, var(--cf-menu-secondary) 26%, #f2f7fb);
+  --cf-menu-accent: #c999d8;
+  --cf-menu-secondary: #8fc8c1;
+  --cf-card-surface: #fbf9ff;
+  --cf-control-surface: #f4f1fa;
+  --cf-control-active: #f2e8f3;
+  --cf-surface-border: #e1d8ec;
+  --cf-control-ink: #5a5872;
+  --cf-guide-code-bg: #3e435d;
+  --cf-guide-code-ink: #d9f2ef;
+  background: rgba(65, 57, 91, 0.38);
+}
+.cf-guide-theme .cf-clist-modal-card {
+  background:
+    radial-gradient(ellipse at 0% 0%, #e7e2ffcc, transparent 63%),
+    radial-gradient(ellipse at 100% 22%, #ffe2efc4, transparent 58%),
+    radial-gradient(ellipse at 72% 100%, #dff5edc4, transparent 64%), #fbf9ff;
+}
+/* 幻彩说明框内的表格：不用斑马纹，仅以加深的幻彩表头区分结构。 */
+.cf-guide-theme .cf-guide-table-wrap {
+  border: 1px solid var(--cf-surface-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffffa8;
+  box-shadow:
+    0 1px 3px #5a587212,
+    inset 0 1px 0 #ffffffd9;
+}
+.cf-guide-theme .cf-guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.cf-guide-theme .cf-guide-table thead tr {
+  background: linear-gradient(90deg, #e7daf2, #e2e2f4 52%, #d8ede9);
+  border-bottom: 1px solid #d2c4e4;
+}
+.cf-guide-theme .cf-guide-table th {
+  background: transparent;
+  color: #4d4a68;
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+.cf-guide-theme .cf-guide-table tbody tr,
+.cf-guide-theme .cf-guide-table tbody td {
+  background: transparent;
+}
+.cf-guide-theme .cf-guide-table tbody tr {
+  transition: background-color 140ms ease;
+}
+.cf-guide-theme .cf-guide-table tbody tr:hover {
+  background: #f3edfa8c;
 }
 .cf-guide-theme a:link,
 .cf-guide-theme a:visited {

@@ -1,6 +1,15 @@
 .cf-team-layout {
   overflow: hidden;
 }
+table.standings td.contestant-cell.cf-single-user-cell {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+table.standings .cf-single-user-cell .cf-avatar-line-wrapper {
+  max-width: none !important;
+  flex-wrap: nowrap !important;
+}
 .cf-team-moving a:not(.cf-avatar-container) {
   display: inline-block;
 }

@@ -75,10 +75,9 @@ export function openClistSyncProgress() {
 <script setup>
 import DialogTransition from '../../../../components/transitions/DialogTransition/DialogTransition.vue';
 import ActionButton from '../../../../components/forms/ActionButton/ActionButton.vue';
-import { computed, inject, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { preventScrollChaining } from '../../../../../utils/scroll.js';
 const overlay = ref(null);
-const theme = inject('cf-menu-theme', {});
 const eta = computed(etaText);
 const finished = computed(() => ['success', 'error'].includes(sync.status));
 const percent = computed(() => (sync.status === 'success' ? 100 : sync.percent));
@@ -148,13 +147,12 @@ watch(overlay, (node) => {
   <Teleport to="body"
     ><DialogTransition
       ><div
-        class="cf-clist-modal-overlay cf-clist-progress-modal cf-menu-theme"
+        class="cf-clist-modal-overlay cf-clist-progress-modal"
         :class="{
           'is-syncing': !finished,
           'is-success': sync.status === 'success',
           'is-error': sync.status === 'error',
         }"
-        :style="theme"
         v-if="sync.exists"
         v-show="sync.visible"
         ref="overlay"
@@ -256,9 +254,25 @@ watch(overlay, (node) => {
 </template>
 
 <style>
+.cf-clist-progress-modal {
+  --cf-menu-accent: #c999d8;
+  --cf-menu-secondary: #8fc8c1;
+  --cf-card-surface: #fbf9ff;
+  --cf-control-surface: #f4f1fa;
+  --cf-control-active: #f2e8f3;
+  --cf-surface-border: #e1d8ec;
+  --cf-control-ink: #5a5872;
+  background: rgba(65, 57, 91, 0.38);
+}
 .cf-clist-progress-modal .cf-clist-modal-body {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+.cf-clist-progress-modal .cf-clist-modal-card {
+  background:
+    radial-gradient(ellipse at 0% 0%, #e7e2ffcc, transparent 63%),
+    radial-gradient(ellipse at 100% 22%, #ffe2efc4, transparent 58%),
+    radial-gradient(ellipse at 72% 100%, #dff5edc4, transparent 64%), #fbf9ff;
 }
 .cf-clist-progress-modal .cf-progress-status {
   min-width: 0;

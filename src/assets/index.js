@@ -2,6 +2,7 @@
 import menuGeneralIcon from './icons/menu/general.svg?raw';
 import menuAppearanceIcon from './icons/menu/appearance.svg?raw';
 import menuRatingsIcon from './icons/menu/ratings.svg?raw';
+import menuPredictionIcon from './icons/menu/prediction.svg?raw';
 import menuUserIcon from './icons/menu/user.svg?raw';
 import menuShortcutsIcon from './icons/menu/shortcuts.svg?raw';
 import menuStorageIcon from './icons/menu/storage.svg?raw';
@@ -52,6 +53,7 @@ export {
   menuGeneralIcon,
   menuAppearanceIcon,
   menuRatingsIcon,
+  menuPredictionIcon,
   menuUserIcon,
   menuShortcutsIcon,
   menuStorageIcon,
@@ -97,6 +99,7 @@ export const TAB_ICONS = {
   general: menuGeneralIcon,
   appearance: menuAppearanceIcon,
   ratings: menuRatingsIcon,
+  prediction: menuPredictionIcon,
   user: menuUserIcon,
   shortcuts: menuShortcutsIcon,
   storage: menuStorageIcon,
@@ -105,6 +108,8 @@ export const TAB_ICONS = {
   acknowledgments: menuAcknowledgmentsIcon,
 };
 export const STORAGE_ICONS = {
+  user: storageAvatarIcon,
+  prediction: menuPredictionIcon,
   settings: storageSettingsIcon,
   runtime: storageRuntimeIcon,
   cf: storageCodeforcesIcon,

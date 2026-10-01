@@ -8,6 +8,7 @@ import {
   CLIST_STORAGE_KEY,
   CLIST_LAST_SYNC_KEY,
   AVATAR_CACHE_KEY,
+  PREDICTION_STORAGE_KEYS,
   RUNTIME_STORAGE_KEYS,
 } from '../../storage/keys.js';
 import { clearRatingsMemory } from '../ratings/data.js';
@@ -36,13 +37,16 @@ export function clearStorageGroup(group) {
     [CLIST_STORAGE_KEY, CLIST_LAST_SYNC_KEY].forEach((key) => appStorage.removeItem(key));
     clearClistMemory();
   }
-  if (group === 'avatar' || group === 'all') appStorage.removeItem(AVATAR_CACHE_KEY);
-  if (group === 'solved' || group === 'all') {
+  if (group === 'avatar' || group === 'user' || group === 'all')
+    appStorage.removeItem(AVATAR_CACHE_KEY);
+  if (group === 'solved' || group === 'user' || group === 'all') {
     getUserSolvedStorageDetails().keys.forEach((key) => appStorage.removeItem(key));
     clearSolvedMemory();
   }
+  if (group === 'prediction' || group === 'all')
+    PREDICTION_STORAGE_KEYS.forEach((key) => appStorage.removeItem(key));
   if (group === 'local' || group === 'all')
     getLocalStorageDetails().keys.forEach((key) => appStorage.removeItem(key));
   if (group === 'all') resetSettings();
-  listeners.forEach((listener) => listener());
+  listeners.forEach((listener) => listener(group));
 }

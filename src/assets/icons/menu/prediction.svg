@@ -1,0 +1,6 @@
+<svg data-cf-icon="navigation" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='var(--cf-icon-ink, var(--cf-icon-primary))' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: #c58a52; --cf-icon-secondary: #dfb36f'>
+  <circle cx='12' cy='10' r='7.2' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/>
+  <path d='M7.7 17.3h8.6l2 3.7H5.7Z' fill='var(--cf-icon-secondary)' fill-opacity='0.28'/>
+  <path d='M8 6.8a5 5 0 0 0-1.2 3.1' stroke='var(--cf-icon-detail, var(--cf-icon-secondary))'/>
+  <path d='m13.1 5.5.9 2.8 2.8.9-2.8.9-.9 2.8-.9-2.8-2.8-.9 2.8-.9Z' fill='var(--cf-icon-secondary)' fill-opacity='0.42' stroke='var(--cf-icon-detail, var(--cf-icon-secondary))' stroke-width='1.2'/>
+</svg>

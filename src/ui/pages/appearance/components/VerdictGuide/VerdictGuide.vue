@@ -30,10 +30,10 @@ function showVerdictGuideModal(lang) {
                     ${t('verdictGuideDesc', l)}
                 </div>
 
-                <div style="margin-bottom: 14px; border: 1px solid var(--cf-surface-border); border-radius: 8px; overflow: hidden;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                <div class="cf-guide-table-wrap" style="margin-bottom: 14px;">
+                    <table class="cf-guide-table">
                         <thead>
-                            <tr style="background: var(--cf-control-surface); border-bottom: 1px solid var(--cf-surface-border); color: #475569;">
+                            <tr>
                                 <th style="padding: 7px 10px; text-align: left; font-weight: 600;">${t('verdictGuideColStatus', l)}</th>
                                 <th style="padding: 7px 10px; text-align: center; font-weight: 600;">${t('verdictGuideColAbbr', l)}</th>
                                 <th style="padding: 7px 10px; text-align: left; font-weight: 600;">${t('verdictGuideColMeaning', l)}</th>
@@ -49,7 +49,7 @@ function showVerdictGuideModal(lang) {
                                 <td style="padding: 6px 10px;"><span style="color: #00aa00; font-weight: bold;">Accepted</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #00aa00; font-weight: bold;">AC</span></td>
                             </tr>
-                            <tr style="border-bottom: 1px solid var(--cf-surface-border); background: var(--cf-control-surface);">
+                            <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: 500; color: #334155;">Wrong answer</td>
                                 <td style="padding: 6px 10px; text-align: center;"><code style="background: #fee2e2; color: #b91c1c; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 11.5px;">WA</code></td>
                                 <td style="padding: 6px 10px; color: #475569;">${t('verdictWaMeaning', l)}</td>
@@ -63,7 +63,7 @@ function showVerdictGuideModal(lang) {
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;">Time limit exceeded on test 5</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;"><b>TLE</b> on test 5</span></td>
                             </tr>
-                            <tr style="border-bottom: 1px solid var(--cf-surface-border); background: var(--cf-control-surface);">
+                            <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: 500; color: #334155;">Memory limit exceeded</td>
                                 <td style="padding: 6px 10px; text-align: center;"><code style="background: #fef3c7; color: #b45309; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 11.5px;">MLE</code></td>
                                 <td style="padding: 6px 10px; color: #475569;">${t('verdictMleMeaning', l)}</td>
@@ -77,7 +77,7 @@ function showVerdictGuideModal(lang) {
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;">Runtime error on test 1</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;"><b>RE</b> on test 1</span></td>
                             </tr>
-                            <tr style="border-bottom: 1px solid var(--cf-surface-border); background: var(--cf-control-surface);">
+                            <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: 500; color: #334155;">Compilation error</td>
                                 <td style="padding: 6px 10px; text-align: center;"><code style="background: var(--cf-control-surface); color: #475569; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 11.5px;">CE</code></td>
                                 <td style="padding: 6px 10px; color: #475569;">${t('verdictCeMeaning', l)}</td>
@@ -91,7 +91,7 @@ function showVerdictGuideModal(lang) {
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;">Idleness limit exceeded on test 4</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;"><b>ILE</b> on test 4</span></td>
                             </tr>
-                            <tr style="border-bottom: 1px solid var(--cf-surface-border); background: var(--cf-control-surface);">
+                            <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: 500; color: #334155;">Presentation error</td>
                                 <td style="padding: 6px 10px; text-align: center;"><code style="background: #e0f2fe; color: #0369a1; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 11.5px;">PE</code></td>
                                 <td style="padding: 6px 10px; color: #475569;">${t('verdictPeMeaning', l)}</td>

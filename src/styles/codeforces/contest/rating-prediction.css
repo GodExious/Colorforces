@@ -1,0 +1,273 @@
+/* 预测列沿用原生榜单条纹与网格，标签仅控制自己的右侧预留空间。 */
+.cf-prediction-bar {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  contain: paint;
+  gap: 8px;
+  padding: 4px 6px;
+  margin: 0;
+  border-bottom: 1px solid #e1e1e1;
+  background: transparent;
+  color: #777;
+  font:
+    11px/1.5 Arial,
+    sans-serif;
+  flex-wrap: nowrap;
+}
+.cf-prediction-status,
+.cf-prediction-note {
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.cf-prediction-status {
+  flex: 0 1 auto;
+}
+.cf-prediction-note {
+  color: #748594;
+  font-size: 11px;
+  /* 空余宽度交给刷新按钮的外边距，提示锚点只覆盖可见的快照文字。 */
+  flex: 0 1 auto;
+}
+.cf-prediction-refresh {
+  box-sizing: border-box;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  margin-left: auto;
+  border: 1px solid #ccc;
+  background: linear-gradient(#fff, #f4f4f4);
+  color: #555;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font: inherit;
+  cursor: pointer;
+}
+.cf-prediction-refresh:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+table.standings .cf-prediction-cell {
+  width: 4.5em;
+  min-width: 42px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.18s;
+}
+table.standings .cf-prediction-cell[data-prediction-column='rank'] {
+  width: 6.5em;
+  min-width: 62px;
+}
+/* 原站右边缘格没有边线，追加列从自己的左边补齐分界。 */
+table.standings .cf-prediction-cell.cf-prediction-first {
+  border-left: 1px solid #e1e1e1 !important;
+}
+table.standings th.cf-prediction-cell {
+  position: relative;
+}
+.cf-prediction-rated-r-mark,
+.cf-prediction-final {
+  position: absolute;
+  right: 3px;
+  top: 2px;
+  color: #548278;
+  background: #edf5f1;
+  border-radius: 3px;
+  padding: 0 2px;
+  font:
+    600 8px/12px Arial,
+    sans-serif;
+}
+.cf-prediction-rated-r-mark {
+  pointer-events: none;
+}
+table.standings .cf-prediction-cell[data-prediction-column='actions'] {
+  width: 3.5em;
+  min-width: 38px;
+}
+table.standings .cf-prediction-cell .cf-rating-value,
+.cf-prediction-number {
+  font-weight: bold;
+}
+/* 新增预测列独立保留条纹和评分底色，不继承原站自己的选中行高亮。 */
+table.standings .highlighted-row .cf-prediction-cell {
+  background-color: #fff !important;
+}
+table.standings .highlighted-row .cf-prediction-cell.dark {
+  background-color: #f8f8f8 !important;
+}
+.cf-prediction-unavailable {
+  color: #aaa;
+  font-size: 0.9em;
+}
+.cf-prediction-rank-change {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: bold;
+}
+.cf-prediction-rank-gradient {
+  position: relative;
+  isolation: isolate;
+}
+.cf-prediction-rank-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    color-mix(in srgb, var(--cf-rank-from) var(--cf-rank-wash), transparent),
+    color-mix(in srgb, var(--cf-rank-to) var(--cf-rank-wash), transparent)
+  );
+}
+.cf-prediction-tier {
+  display: inline-block;
+}
+.cf-prediction-rank-arrow {
+  display: inline-flex;
+  color: #808080;
+}
+.cf-prediction-rank-arrow[data-direction='up'],
+.cf-prediction-rank-needed {
+  color: #008000;
+}
+.cf-prediction-cell svg {
+  width: 12px;
+  height: 12px;
+  vertical-align: middle;
+}
+.cf-prediction-legendary .cf-rating-value::first-letter,
+.cf-prediction-tier-legendary::first-letter {
+  color: #000;
+}
+/* 动画直接作用于原生 padding，表格列宽随预留空间平滑变化，退出后恢复原值。 */
+table.standings td.contestant-cell[data-cf-participation-host] {
+  position: relative;
+  padding-right: calc(var(--cf-participation-padding) + 0px) !important;
+  transition: padding-right 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+table.standings td.contestant-cell[data-cf-participation-visible='true'] {
+  padding-right: calc(var(--cf-participation-padding) + 60px) !important;
+}
+.cf-participation-tag {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translate(5px, -50%);
+  clip-path: inset(0 0 0 100%);
+  opacity: 0;
+  transition:
+    clip-path 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 160ms ease;
+  display: inline-flex;
+  vertical-align: middle;
+  white-space: nowrap;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid #b8d8cb;
+  background: linear-gradient(135deg, #f3faf6, #e1f0e9);
+  color: #397460;
+  font:
+    10px/1.4 Arial,
+    sans-serif;
+  font-weight: normal;
+}
+[data-cf-participation-visible='true'] > .cf-participation-tag {
+  clip-path: inset(0);
+  transform: translate(0, -50%);
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  table.standings td.contestant-cell[data-cf-participation-host],
+  .cf-participation-tag {
+    transition: none;
+  }
+}
+.cf-participation-tag[data-status='unrated'] {
+  background: linear-gradient(135deg, #f8f7fb, #eeebf4);
+  border-color: #d4cadd;
+  color: #776386;
+}
+.cf-participation-tag[data-status='virtual'] {
+  background: linear-gradient(135deg, #f1f7fc, #e4eef7);
+  border-color: #bcd1e2;
+  color: #527995;
+}
+.cf-prediction-open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccd9e3;
+  border-radius: 7px;
+  background: linear-gradient(145deg, #f7faff, #eaf0f7);
+  color: #597792;
+  font:
+    bold 15px/1 Arial,
+    sans-serif;
+  cursor: pointer;
+  vertical-align: middle;
+  transition:
+    background 0.18s,
+    border-color 0.18s;
+}
+.cf-prediction-open:hover,
+.cf-prediction-open:focus-visible {
+  background: linear-gradient(145deg, #edf6ff, #e4ebf7);
+  border-color: #9bb4cc;
+  color: #3c6284;
+  outline-offset: 2px;
+}
+.cf-prediction-cell .cf-prediction-open svg {
+  width: 17px;
+  height: 17px;
+}
+/* 与现有评分列相同的布局型进度，不用透明度掩盖瞬间增删。 */
+@property --cf-prediction-column-progress {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+table.standings .cf-prediction-cell.cf-prediction-column-moving {
+  width: calc(var(--cf-prediction-column-width) * var(--cf-prediction-column-progress)) !important;
+  min-width: calc(
+    var(--cf-prediction-column-width) * var(--cf-prediction-column-progress)
+  ) !important;
+  max-width: calc(
+    var(--cf-prediction-column-width) * var(--cf-prediction-column-progress)
+  ) !important;
+  padding-left: calc(
+    var(--cf-prediction-column-left) * var(--cf-prediction-column-progress)
+  ) !important;
+  padding-right: calc(
+    var(--cf-prediction-column-right) * var(--cf-prediction-column-progress)
+  ) !important;
+  border-left-width: calc(
+    var(--cf-prediction-column-borderLeft) * var(--cf-prediction-column-progress)
+  ) !important;
+  border-right-width: calc(
+    var(--cf-prediction-column-borderRight) * var(--cf-prediction-column-progress)
+  ) !important;
+  overflow: hidden;
+}
+.cf-prediction-column-moving > .cf-prediction-column-clip {
+  display: block;
+  width: calc(var(--cf-prediction-column-width) * var(--cf-prediction-column-progress));
+  height: calc(var(--cf-prediction-column-height) * var(--cf-prediction-column-progress));
+  overflow: hidden;
+  white-space: nowrap;
+}

@@ -14,6 +14,16 @@ export const CLIST_LAST_SYNC_KEY = 'cf_clist_last_sync_time';
 
 export const AVATAR_CACHE_KEY = 'cf_user_avatars_v2';
 
+// 比赛快照与短租约独立于用户设置和头像数据。
+export const PREDICTION_CACHE_KEY = 'cf_contest_prediction_v1';
+export const PREDICTION_RATINGS_KEY = 'cf_prediction_ratings_v1';
+export const PREDICTION_LOCK_KEY = 'cf_prediction_request_lease_v1';
+export const PREDICTION_STORAGE_KEYS = [
+  PREDICTION_CACHE_KEY,
+  PREDICTION_RATINGS_KEY,
+  PREDICTION_LOCK_KEY,
+];
+
 export const UPDATE_CHECK_KEY = 'cf_update_check_state';
 
 export const SETTINGS_KEY = 'cf_submissions_settings';

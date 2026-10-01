@@ -25,6 +25,12 @@ function getSettings() {
 
       settings.acBgColor = parsed.acBgColor || settings.acBgColor;
       if (parsed.show) Object.assign(settings.show, parsed.show);
+      // 新功能默认关闭，升级时只接受已知的布尔配置。
+      for (const group of ['prediction', 'participationTags']) {
+        for (const key of Object.keys(settings[group])) {
+          if (typeof parsed[group]?.[key] === 'boolean') settings[group][key] = parsed[group][key];
+        }
+      }
       settings.avatarSize =
         parsed.avatarSize !== undefined ? parsed.avatarSize : settings.avatarSize;
       settings.langIconSize =

@@ -20,8 +20,8 @@ let reducedMotion;
 const categories = [
   ['clist', '#9dc5eb'],
   ['cf', '#a8d5c2'],
-  ['avatar', '#c4b5e4'],
-  ['solved', '#f1c3a9'],
+  ['user', '#c4b5e4'],
+  ['prediction', '#f1c3a9'],
   ['settings', '#e9b5cc'],
   ['runtime', '#ebd59f'],
   ['local', '#c4cbdc'],
@@ -173,6 +173,11 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 20px;
   min-width: 0;
+}
+/* ECharts 首次显示前尚未设置定位；提示节点不能先占据网格行再移出。 */
+.cf-storage-usage :deep(.cf-storage-chart-tooltip) {
+  position: absolute;
+  pointer-events: none;
 }
 .cf-storage-pie-summary {
   min-width: 0;

@@ -22,7 +22,9 @@ import MenuLayout, { useMenuLayout } from './shell/MenuLayout/MenuLayout.vue';
 import GeneralPage from './pages/general/GeneralPage.vue';
 import AppearancePage from './pages/appearance/AppearancePage.vue';
 import RatingsPage from './pages/ratings/RatingsPage.vue';
+import PredictionPage from './pages/prediction/PredictionPage.vue';
 import UserPage from './pages/user/UserPage.vue';
+import PredictionAnalysisDialog from './pages/prediction/components/PredictionAnalysisDialog/PredictionAnalysisDialog.vue';
 import ShortcutsPage from './pages/shortcuts/ShortcutsPage.vue';
 import StoragePage from './pages/storage/StoragePage.vue';
 import ChangelogPage from './pages/changelog/ChangelogPage.vue';
@@ -59,6 +61,7 @@ const ids = [
   'general',
   'appearance',
   'ratings',
+  'prediction',
   'user',
   'shortcuts',
   'storage',
@@ -460,6 +463,7 @@ onBeforeUnmount(() => {
                 <general-page :active="activeTab === 'general'"></general-page
                 ><appearance-page :active="activeTab === 'appearance'"></appearance-page
                 ><ratings-page :active="activeTab === 'ratings'"></ratings-page
+                ><prediction-page :active="activeTab === 'prediction'"></prediction-page
                 ><user-page :active="activeTab === 'user'"></user-page
                 ><shortcuts-page :active="visible && activeTab === 'shortcuts'"></shortcuts-page
                 ><storage-page :active="visible && activeTab === 'storage'"></storage-page
@@ -497,6 +501,7 @@ onBeforeUnmount(() => {
       @lostpointercapture="menuLayout.finishDrag"
     ></menu-launcher>
   </div>
+  <PredictionAnalysisDialog />
   <FloatingTooltip /><ConfirmDialog /><UpdateDialog /><ClistSyncDialog /><ClistKeyGuide /><ClistSyncGuide /><TimeFormatGuide /><VerdictGuide /><StorageJsonDialog />
 </template>
 <style>

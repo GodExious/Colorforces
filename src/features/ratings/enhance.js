@@ -12,55 +12,8 @@ import { walkAndReplaceVerdict } from '../appearance/verdicts.js';
 import { formatStandingsCells } from '../user/avatars/standings.js';
 import { isTeamCell } from '../user/avatars/structure.js';
 import { updateRatingValue } from './value-motion.js';
-
-// 按当前显示模式绘制评分单元格。
-export function applyRatingStyle(cell, rating) {
-  const hasRating = typeof rating === 'number' && Number.isFinite(rating);
-  if (hasRating) cell.dataset.rating = rating;
-  else delete cell.dataset.rating;
-  cell.dataset.cfRatingEmpty = String(!hasRating);
-  cell.style.textAlign = 'center';
-  cell.style.verticalAlign = 'middle';
-  let value = cell.querySelector('.cf-rating-value');
-  if (!value) {
-    value = document.createElement('span');
-    value.className = 'cf-rating-value';
-    cell.replaceChildren(value);
-  }
-  updateRatingValue(value, hasRating ? rating : null);
-  if (!hasRating) {
-    // 保留同一块底板及上一种模式，空值仅收起，不拆掉动画节点。
-    cell.dataset.cfRatingMode ||= 'plain';
-    return;
-  }
-  const enabled = appSettings.colorRatings;
-  const tag = appSettings.displayStyle === 'tag';
-  const compact = tag && appSettings.tagFillCell === false;
-  const palette = getRatingTagStyle(rating);
-  cell.dataset.cfRatingMode = !enabled ? 'plain' : compact ? 'compact' : tag ? 'filled' : 'block';
-  cell.style.setProperty(
-    '--cf-rating-bg',
-    !enabled ? 'transparent' : tag ? palette.bg : getRatingBgColor(rating),
-  );
-  cell.style.setProperty(
-    '--cf-rating-color',
-    !enabled
-      ? 'inherit'
-      : tag
-        ? palette.text
-        : isDarkTheme()
-          ? '#EEEEEE'
-          : rating >= 1600
-            ? 'white'
-            : 'black',
-  );
-  cell.style.setProperty('--cf-rating-border', compact && enabled ? palette.border : 'transparent');
-  cell.style.setProperty('--cf-rating-digits', String(rating).length + 'ch');
-  cell.style.setProperty('background-color', 'transparent', 'important');
-  cell.style.removeProperty('color');
-  cell.style.removeProperty('font-weight');
-  cell.style.removeProperty('box-shadow');
-}
+import { applyRatingStyle } from './cell-style.js';
+export { applyRatingStyle } from './cell-style.js';
 
 // 取出可恢复的原始样式，过滤增强产生的样式项。
 export function getCleanCssText(el) {
@@ -905,6 +858,12 @@ export function applyRatings(ratingsMap) {
     Array.from(headerRow.cells).forEach((cell) => {
       const newCell = document.createElement('th');
       newCell.style.padding = '0.3em'; // minimal padding
+      // 预测列的占位格也保留归属，关闭预测时不留下多余空列。
+      if (cell.dataset.predictionColumn) {
+        newCell.dataset.cfPrediction = '';
+        newCell.dataset.predictionColumn = cell.dataset.predictionColumn;
+        newCell.className = 'cf-prediction-cell cf-prediction-placeholder';
+      }
 
       const link = cell.querySelector('a[href*="/problem/"]');
       if (link) {

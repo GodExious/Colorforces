@@ -13,12 +13,14 @@ export function displayTime(host, html) {
     slot.className = 'cf-time-slot';
     const value = document.createElement('span');
     value.className = 'cf-time-value';
+    value.classList.toggle('cf-time-link-value', Boolean(host.closest('a')));
     value.innerHTML = html;
     slot.appendChild(value);
     host.replaceChildren(slot);
     return;
   }
   const value = slot.firstElementChild;
+  value.classList.toggle('cf-time-link-value', Boolean(host.closest('a')));
   if (value.innerHTML === html) return;
   if (
     document.hidden ||

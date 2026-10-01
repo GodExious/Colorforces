@@ -103,23 +103,91 @@ export function createTooltipController() {
     if (target.scrollWidth > target.clientWidth) show(target, target.textContent);
   }
   // 委托绑定动态提示节点，避免重复注册逐元素监听。
-  function bind(root = document) {
-    const enter = (event) => {
-      const target = event.target.closest?.('[data-tooltip]');
-      if (target && !target.contains(event.relatedTarget))
-        show(target, target.getAttribute('data-tooltip'));
+  function bind(root = document, { native = false } = {}) {
+    let active = null,
+      borrowed = null,
+      activeObserver = null;
+    // 只查当前事件路径，原生 title 在离开时恢复，不扫描页面或批量改写属性。
+    const targetFor = (node) => {
+      const element = node?.nodeType === 1 ? node : node?.parentElement;
+      if (!element || !root.contains(element)) return null;
+      const target = element.closest(
+        native ? '[data-tooltip], [title], [data-cf-native-tooltip]' : '[data-tooltip]',
+      );
+      if (!target || !root.contains(target)) return null;
+      if (target.hasAttribute('data-tooltip')) return target.dataset.tooltip ? target : null;
+      return native &&
+        target.closest('#header, #body, #pageContent, #sidebar, #footer') &&
+        !target.closest('.cf-settings-modal, .cf-prediction-overlay, #cf-floating-tooltip') &&
+        (target.getAttribute('title') || target.hasAttribute('data-cf-native-tooltip'))
+        ? target
+        : null;
     };
-    const leave = (event) => {
-      const target = event.target.closest?.('[data-tooltip]');
-      if (target && !target.contains(event.relatedTarget)) hide();
+    const restore = () => {
+      if (!borrowed) return;
+      if (!borrowed.element.hasAttribute('title'))
+        borrowed.element.setAttribute('title', borrowed.text);
+      borrowed.element.removeAttribute('data-cf-native-tooltip');
+      borrowed = null;
     };
+    const observeActive = (target) => {
+      activeObserver?.disconnect();
+      activeObserver = null;
+      if (!target) return;
+      activeObserver = new MutationObserver(() => {
+        if (target !== active) return;
+        const text =
+          target.getAttribute('data-tooltip') ??
+          target.getAttribute('data-cf-native-tooltip') ??
+          target.getAttribute('title');
+        if (text) show(target, text, { variant: target.dataset.tooltipVariant || '' });
+      });
+      activeObserver.observe(target, {
+        attributes: true,
+        attributeFilter: [
+          'data-tooltip',
+          'data-tooltip-variant',
+          'title',
+          'data-cf-native-tooltip',
+        ],
+      });
+    };
+    const activate = (target) => {
+      if (target === active) return;
+      activeObserver?.disconnect();
+      activeObserver = null;
+      restore();
+      active = target;
+      if (!target) {
+        hide();
+        return;
+      }
+      let text = target.getAttribute('data-tooltip');
+      if (text === null) {
+        text = target.getAttribute('title');
+        borrowed = { element: target, text };
+        target.setAttribute('data-cf-native-tooltip', text);
+        target.removeAttribute('title');
+      }
+      observeActive(target);
+      show(target, text, { variant: target.dataset.tooltipVariant || '' });
+    };
+    const enter = (event) => activate(targetFor(event.target));
+    const leave = (event) => activate(targetFor(event.relatedTarget));
     root.addEventListener('mouseover', enter);
     root.addEventListener('mouseout', leave);
+    root.addEventListener('focusin', enter);
+    root.addEventListener('focusout', leave);
     window.addEventListener('scroll', hide, true);
     window.addEventListener('resize', hide);
     const release = () => {
+      activeObserver?.disconnect();
+      activeObserver = null;
+      restore();
       root.removeEventListener('mouseover', enter);
       root.removeEventListener('mouseout', leave);
+      root.removeEventListener('focusin', enter);
+      root.removeEventListener('focusout', leave);
       window.removeEventListener('scroll', hide, true);
       window.removeEventListener('resize', hide);
       releases.delete(release);
@@ -160,6 +228,7 @@ const classes = computed(() => [
     visible: state.visible,
     'cf-menu-theme': state.themed,
     'cf-tip-launcher': state.variant === 'launcher',
+    'cf-tip-prediction-rank': state.variant === 'prediction-rank',
   },
 ]);
 const styles = computed(() => ({
@@ -177,8 +246,7 @@ const styles = computed(() => ({
 }));
 onMounted(() => {
   tooltip.attach(element.value);
-  const menu = document.querySelector('.cf-settings-modal');
-  if (menu) tooltip.bind(menu);
+  tooltip.bind(document, { native: true });
 });
 onBeforeUnmount(tooltip.dispose);
 </script>
@@ -192,7 +260,15 @@ onBeforeUnmount(tooltip.dispose);
       :class="classes"
       :style="styles"
     >
-      {{ state.text }}
+      <template v-if="state.variant === 'prediction-rank'">
+        <span
+          v-for="(line, index) in state.text.split('\n')"
+          :key="index"
+          class="cf-tip-rank-line"
+          >{{ line }}</span
+        >
+      </template>
+      <template v-else>{{ state.text }}</template>
     </div></Teleport
   >
 </template>
@@ -227,6 +303,32 @@ onBeforeUnmount(tooltip.dispose);
 .cf-floating-tooltip.visible {
   visibility: visible;
   clip-path: circle(var(--tip-radius) at var(--tip-x) var(--tip-y));
+}
+
+.cf-floating-tooltip.cf-tip-prediction-rank {
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(420px, calc(100vw - 24px));
+  padding: 8px 12px;
+  line-height: 1.55;
+  white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+.cf-tip-rank-line {
+  display: block;
+}
+.cf-tip-rank-line:first-child {
+  font-weight: 600;
+}
+.cf-tip-rank-line:nth-child(2) {
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+  color: #d8e6f4;
+}
+.cf-tip-rank-line:last-child {
+  margin-top: 2px;
+  color: #b8c7d9;
 }
 
 .cf-floating-tooltip::after {

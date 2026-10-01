@@ -36,24 +36,33 @@ export async function applyUserAvatars() {
 
     const handle = decodeURIComponent(match[1]);
     if (link.textContent.trim().toLowerCase() === handle.toLowerCase()) {
-      link.setAttribute('data-cf-avatar-processed', 'true');
+      link.setAttribute('data-cf-avatar-processed', 'pending');
       handlesToFetch.add(handle);
-      if (!handleToElements[handle]) handleToElements[handle] = [];
-      handleToElements[handle].push(link);
+      const key = handle.toLowerCase();
+      if (!handleToElements[key]) handleToElements[key] = [];
+      handleToElements[key].push(link);
     }
   });
 
   if (handlesToFetch.size === 0) return;
 
   let avatarCache = appStorage.getJSON(AVATAR_CACHE_KEY, {}) || {};
+  const cachedByHandle = new Map(
+    Object.entries(avatarCache).map(([handle, value]) => [handle.toLowerCase(), value]),
+  );
 
   const now = Date.now();
   let missingHandles = [];
 
   for (const handle of handlesToFetch) {
-    const cachedData = avatarCache[handle];
+    const cachedData = cachedByHandle.get(handle.toLowerCase());
     if (cachedData && now - cachedData.time < CACHE_EXPIRY) {
-      injectAvatar(handleToElements[handle], cachedData.url, cachedData.fallbackUrl, handle);
+      injectAvatar(
+        handleToElements[handle.toLowerCase()],
+        cachedData.url,
+        cachedData.fallbackUrl,
+        handle,
+      );
     } else {
       missingHandles.push(handle);
     }
@@ -71,7 +80,12 @@ export async function applyUserAvatars() {
             const avatarUrl = normalizeAvatarUrl(user.avatar);
             const titlePhotoUrl = normalizeAvatarUrl(user.titlePhoto);
             avatarCache[handle] = { url: avatarUrl, fallbackUrl: titlePhotoUrl, time: now };
-            injectAvatar(handleToElements[handle] || [], avatarUrl, titlePhotoUrl, handle);
+            injectAvatar(
+              handleToElements[handle.toLowerCase()] || [],
+              avatarUrl,
+              titlePhotoUrl,
+              handle,
+            );
           }
           appStorage.setJSON(AVATAR_CACHE_KEY, avatarCache);
           break;
@@ -83,7 +97,12 @@ export async function applyUserAvatars() {
               (h) => h.toLowerCase() !== missing.toLowerCase(),
             );
             avatarCache[missing] = { url: DEFAULT_AVATAR_URL, fallbackUrl: '', time: now };
-            injectAvatar(handleToElements[missing] || [], DEFAULT_AVATAR_URL, '', missing);
+            injectAvatar(
+              handleToElements[missing.toLowerCase()] || [],
+              DEFAULT_AVATAR_URL,
+              '',
+              missing,
+            );
           } else {
             break;
           }
@@ -95,6 +114,11 @@ export async function applyUserAvatars() {
       console.error('Codeforces Rating Helper: Failed to fetch user avatars', e);
     }
   }
+  // 失败不伪装成已完成；仅在下次手动刷新头像设置时重试，避免观察器请求风暴。
+  for (const elements of Object.values(handleToElements))
+    for (const element of elements)
+      if (element.dataset.cfAvatarProcessed === 'pending')
+        element.dataset.cfAvatarProcessed = 'failed';
 }
 
 // 在用户链接旁插入头像，处理默认图与加载回退。
@@ -133,7 +157,9 @@ export function injectAvatar(elements, url, fallbackUrl, handle) {
 
     const isTableLayout =
       td &&
-      el.closest('table.status-frame-datatable, div.datatable table, table.rtable') &&
+      el.closest(
+        'table.standings, table.status-frame-datatable, div.datatable table, table.rtable',
+      ) &&
       !el.closest('.ttypography');
 
     if (isTableLayout) {
@@ -155,6 +181,7 @@ export function injectAvatar(elements, url, fallbackUrl, handle) {
       while (currentStart.previousSibling) {
         let prev = currentStart.previousSibling;
         if (prev.tagName === 'BR') break;
+        if (prev.nodeType === Node.ELEMENT_NODE && prev.hasAttribute('data-cf-prediction')) break;
 
         if (prev.nodeType === Node.TEXT_NODE) {
           if (/^[\s*]*$/.test(prev.textContent)) {
@@ -185,6 +212,8 @@ export function injectAvatar(elements, url, fallbackUrl, handle) {
       while (currentEnd.nextSibling) {
         let next = currentEnd.nextSibling;
         if (next.tagName === 'BR') break;
+        // 评级标签与分析控件属于整个单元格，不能被当作昵称附属标记收进头像行。
+        if (next.nodeType === Node.ELEMENT_NODE && next.hasAttribute('data-cf-prediction')) break;
 
         if (next.nodeType === Node.TEXT_NODE) {
           if (/^[\s*]*$/.test(next.textContent)) {
@@ -235,6 +264,7 @@ export function injectAvatar(elements, url, fallbackUrl, handle) {
     }
     // 图片就绪后展开槽位，姓名始终留在原节点内并被自然推向右侧。
     const ready = () => slot.classList.remove('cf-avatar-loading');
+    el.dataset.cfAvatarProcessed = 'true';
     if (img.complete && img.naturalWidth) ready();
     else img.addEventListener('load', ready, { once: true });
   });

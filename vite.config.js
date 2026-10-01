@@ -18,6 +18,11 @@ const chartLicenses = ['echarts/NOTICE', 'echarts/LICENSE', 'zrender/LICENSE', '
   )
   .join('\n\n');
 
+const predictionLicense = readFileSync(
+  new URL('./src/features/contest/rating-prediction/LICENSE', import.meta.url),
+  'utf8',
+);
+
 // 由单一构建链编译 Vue、内联资源并生成可直接安装的脚本。
 export default defineConfig({
   define: { __CF_VERSION__: JSON.stringify(userscript.version) },
@@ -35,6 +40,9 @@ ${fontLicense.trim()}
 
 Bundled chart dependencies (licenses apply to the respective libraries):
 ${chartLicenses}
+
+Rating prediction adapted from Carrot (TLE / algmyr / Mike Mirzayanov; performance with ffao):
+${predictionLicense}
 */`,
       },
     },

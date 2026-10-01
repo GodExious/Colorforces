@@ -10,6 +10,8 @@ import TagVisibilitySettings from './components/TagVisibilitySettings/TagVisibil
 import { openTimeFormatGuide } from './components/TimeFormatGuide/TimeFormatGuide.vue';
 import { openVerdictGuide } from './components/VerdictGuide/VerdictGuide.vue';
 import ToggleSwitch from '../../components/forms/ToggleSwitch/ToggleSwitch.vue';
+import InfoHint from '../../components/tooltips/InfoHint/InfoHint.vue';
+import { toggleFromRow } from '../../../utils/row-toggle.js';
 // 打开外观页面专用指南。
 function openGuide(kind, event) {
   tooltip.hide();
@@ -82,7 +84,7 @@ const timePreview = computed(() =>
           ></span>
         </div></div
     ></ExpandTransition>
-    <label
+    <div
       class="cf-setting-item"
       style="
         display: flex;
@@ -92,14 +94,17 @@ const timePreview = computed(() =>
         user-select: none;
         margin: 0px;
       "
-      ><div style="display: flex; align-items: center; margin: 0px">
+      @click="toggleFromRow"
+    >
+      <div style="display: flex; align-items: center; margin: 0px">
         <span class="cf-setting-label" v-text="t().locShortVerdict"></span
-        ><span
-          class="cf-clist-icon-btn cf-clist-icon-help"
-          v-bind:data-tooltip="t('verdictHelpTooltip')"
-          v-on:click.prevent.stop="openGuide('verdict', $event)"
-          >?</span
-        >
+        ><InfoHint
+          :text="t('verdictHelpTooltip')"
+          symbol="?"
+          variant="question"
+          :clickable="true"
+          @click="openGuide('verdict', $event)"
+        />
       </div>
       <toggle-switch
         as="div"
@@ -108,10 +113,10 @@ const timePreview = computed(() =>
         input-class="cf-toggle-short-verdict"
         data-control="cbShortVerdict"
         @change="saveSettings()"
-      ></toggle-switch
-    ></label>
+      ></toggle-switch>
+    </div>
     <div style="display: flex; flex-direction: column; gap: 8px">
-      <label
+      <div
         class="cf-setting-item"
         style="
           display: flex;
@@ -121,14 +126,17 @@ const timePreview = computed(() =>
           user-select: none;
           margin: 0px;
         "
-        ><div style="display: flex; align-items: center; margin: 0px">
+        @click="toggleFromRow"
+      >
+        <div style="display: flex; align-items: center; margin: 0px">
           <span class="cf-setting-label" v-text="t().timeFormatTitle"></span
-          ><span
-            class="cf-clist-icon-btn cf-clist-icon-help"
-            v-bind:data-tooltip="t('timeFormatHelpTooltip')"
-            v-on:click.prevent.stop="openGuide('time', $event)"
-            >?</span
-          >
+          ><InfoHint
+            :text="t('timeFormatHelpTooltip')"
+            symbol="?"
+            variant="question"
+            :clickable="true"
+            @click="openGuide('time', $event)"
+          />
         </div>
         <toggle-switch
           as="div"
@@ -137,8 +145,9 @@ const timePreview = computed(() =>
           input-class="cf-toggle-time-format"
           data-control="timeToggle"
           @change="saveSettings()"
-        ></toggle-switch></label
-      ><input
+        ></toggle-switch>
+      </div>
+      <input
         type="text"
         placeholder="YYYY/MM/DD HH:mm"
         style="

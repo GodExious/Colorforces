@@ -1,6 +1,14 @@
 // 版本、日期与顺序只维护一次；译文在 locales 下。
 export default [
   {
+    version: 'v 1.7.0',
+    date: '2026-09-30 19:02',
+    sections: [
+      { type: 'added', contentKey: 'v 1.7.0:0' },
+      { type: 'optimized', contentKey: 'v 1.7.0:1' },
+    ],
+  },
+  {
     version: 'v 1.6.0',
     date: '2026-09-30 09:07',
     sections: [

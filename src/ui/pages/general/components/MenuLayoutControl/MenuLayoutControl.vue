@@ -8,6 +8,7 @@ import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
 import ExpandTransition from '../../../../components/transitions/ExpandTransition/ExpandTransition.vue';
 import InfoHint from '../../../../components/tooltips/InfoHint/InfoHint.vue';
 import { tooltip } from '../../../../components/tooltips/FloatingTooltip/FloatingTooltip.vue';
+import { toggleFromRow } from '../../../../../utils/row-toggle.js';
 const props = defineProps({
   controller: Object,
   fields: Array,
@@ -55,7 +56,7 @@ function resetLayout() {
 }
 </script>
 <template>
-  <div class="cf-setting-item cf-menu-layout-toggle">
+  <div class="cf-setting-item cf-menu-layout-toggle" @click="toggleFromRow">
     <span class="cf-setting-label cf-menu-layout-label"
       ><label :for="control" data-cf-language-text>{{ t(titleKey) }}</label
       ><InfoHint :text="t(hintKey)"

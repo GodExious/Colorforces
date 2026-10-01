@@ -11,7 +11,7 @@ function tick(now) {
       if (progress === 1) element.textContent = '';
     } else {
       const value = Math.round(state.from + (state.to - state.from) * (1 - (1 - progress) ** 3));
-      element.textContent = state.prefix + value;
+      element.textContent = (state.prefix === '+' && value <= 0 ? '' : state.prefix) + value;
     }
     if (progress === 1 || !element.isConnected) pending.delete(element);
   }
@@ -28,6 +28,11 @@ export function updateRatingValue(element, rating, prefix = '') {
     element.isConnected &&
     !document.hidden &&
     !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 无穷是有效评级边界，直接显示符号，不能参与数值插值。
+  if (rating === Infinity) {
+    element.textContent = '+∞';
+    return;
+  }
   if (rating === null) {
     if (!animated || !element.textContent) {
       element.textContent = '';

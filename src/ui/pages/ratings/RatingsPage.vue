@@ -18,6 +18,7 @@ import {
 } from '../../../features/ratings/clist.js';
 import ToggleSwitch from '../../components/forms/ToggleSwitch/ToggleSwitch.vue';
 import SegmentedSwitch from '../../components/forms/SegmentedSwitch/SegmentedSwitch.vue';
+import InfoHint from '../../components/tooltips/InfoHint/InfoHint.vue';
 import { getRatingBgColor, getRatingTagStyle } from '../../../features/ratings/rules.js';
 // 打开评分页面专用指南。
 function openGuide(kind, event) {
@@ -130,12 +131,13 @@ const ratingSliderStyle = computed(() => {
               <div style="display: flex; align-items: center; justify-content: space-between">
                 <div style="display: flex; align-items: center; font-size: 12px">
                   <span class="cf-setting-sublabel" v-text="t().clistApiKeyLabel"></span
-                  ><span
-                    class="cf-clist-icon-btn cf-clist-icon-help"
-                    v-bind:data-tooltip="t('clistHelpTooltip')"
-                    v-on:click.prevent.stop="openGuide('clist-key', $event)"
-                    >?</span
-                  >
+                  ><InfoHint
+                    :text="t('clistHelpTooltip')"
+                    symbol="?"
+                    variant="question"
+                    :clickable="true"
+                    @click="openGuide('clist-key', $event)"
+                  />
                 </div>
               </div>
               <input
@@ -157,12 +159,13 @@ const ratingSliderStyle = computed(() => {
           >
             <div style="display: inline-flex; align-items: center">
               <span class="cf-setting-sublabel" v-text="t().clistSyncTitle"></span
-              ><span
-                class="cf-clist-icon-btn cf-clist-icon-warn"
-                v-bind:data-tooltip="t('clistSyncTooltip')"
-                v-on:click.prevent.stop="openGuide('clist-sync', $event)"
-                >!</span
-              >
+              ><InfoHint
+                :text="t('clistSyncTooltip')"
+                symbol="!"
+                variant="warning"
+                :clickable="true"
+                @click="openGuide('clist-sync', $event)"
+              />
             </div>
             <ActionButton
               class="cf-clist-sync-btn"

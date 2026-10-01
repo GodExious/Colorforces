@@ -17,6 +17,13 @@ export function unformatTeamCell(cell) {
 
 // 头像开启时整理榜单和提交记录中的队伍信息。
 export function formatStandingsCells() {
+  // 单用户姓名与国旗始终保持一行，不依赖头像是否开启；队伍仍可自然换行。
+  document.querySelectorAll('table.standings td.contestant-cell').forEach((cell) => {
+    cell.classList.toggle(
+      'cf-single-user-cell',
+      !isTeamCell(cell) && getProfileLinks(cell).length === 1,
+    );
+  });
   if (!appSettings.show.userAvatar) return;
   const formatTeams = appSettings.show.formatTeams !== false;
   const cells = document.querySelectorAll(`
@@ -200,6 +207,9 @@ export function formatStandingsCells() {
 
 // 设置变化后刷新头像及依赖头像的榜单格式。
 export function refreshUserAvatarsAndStandings() {
+  document
+    .querySelectorAll('a[data-cf-avatar-processed=failed]')
+    .forEach((link) => link.removeAttribute('data-cf-avatar-processed'));
   const snapshots = [];
   const cells = document.querySelectorAll('table.standings .contestant-cell, .status-party-cell');
   cells.forEach((cell) => {
