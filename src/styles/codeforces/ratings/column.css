@@ -1,3 +1,4 @@
+/* 评分列的宽度，以及按页面开关隐藏评分列或榜单评分行。 */
 .cf-rating-col {
   width: 52px !important;
   min-width: 52px !important;

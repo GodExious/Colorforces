@@ -1,11 +1,11 @@
-import { appSettings } from '../../../settings.js';
-import { translate as t } from '../../../i18n/index.js';
-import { applyRatingStyle } from '../../ratings/cell-style.js';
-import { rankForRating, rankProgress } from './ranks.js';
-import { getRatingTagStyle, getRatingBgColor } from '../../ratings/rules.js';
-import upIcon from '../../../assets/icons/prediction/rank-up.svg?raw';
-import downIcon from '../../../assets/icons/prediction/rank-down.svg?raw';
-import steadyIcon from '../../../assets/icons/prediction/rank-steady.svg?raw';
+import { appSettings } from '../../../../settings.js';
+import { translate as t } from '../../../../i18n/index.js';
+import { applyRatingStyle } from '../../../ratings/cells/style.js';
+import { rankForRating, rankProgress } from '../algorithm/ranks.js';
+import { getRatingTagStyle, getRatingBgColor } from '../../../ratings/rules.js';
+import upIcon from '../../../../assets/icons/prediction/rank-up.svg?raw';
+import downIcon from '../../../../assets/icons/prediction/rank-down.svg?raw';
+import steadyIcon from '../../../../assets/icons/prediction/rank-steady.svg?raw';
 const icons = { up: upIcon, down: downIcon, same: steadyIcon };
 
 // 浅色分析面板按评分档位着色，实心块模式取色块色而非白色反字。

@@ -12,7 +12,7 @@ import {
 import DialogTransition from '../../../../components/transitions/DialogTransition/DialogTransition.vue';
 import ActionButton from '../../../../components/forms/ActionButton/ActionButton.vue';
 import analyzeIcon from '../../../../../assets/icons/prediction/analyze.svg?raw';
-import { predictionNumberColor } from '../../../../../features/contest/rating-prediction/presentation.js';
+import { predictionNumberColor } from '../../../../../features/contest/rating-prediction/standings/presentation.js';
 import {
   normalizeAvatarUrl,
   DEFAULT_AVATAR_URL,
@@ -385,7 +385,13 @@ onBeforeUnmount(() => {
                     >
                     <template v-else
                       ><span
-                        >{{ t('predictionEstimatedRank') }}
+                        >{{
+                          t(
+                            state.analysisResult.mode === 'rank'
+                              ? 'predictionTargetRankInput'
+                              : 'predictionEstimatedRank',
+                          )
+                        }}
                         <strong>#{{ state.analysisResult.rank }}</strong></span
                       ><span
                         >Δ

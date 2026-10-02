@@ -1,8 +1,8 @@
-import { appSettings } from '../../../settings.js';
-import { translate as t } from '../../../i18n/index.js';
+import { appSettings } from '../../../../settings.js';
+import { translate as t } from '../../../../i18n/index.js';
 import { renderScore, renderRankProgress, setRankIcon } from './presentation.js';
 import { updateParticipationTag, clearParticipationTags } from './participation-tags.js';
-import analyzeIcon from '../../../assets/icons/prediction/analyze.svg?raw';
+import analyzeIcon from '../../../../assets/icons/prediction/analyze.svg?raw';
 import { syncPredictionColumns } from './column-motion.js';
 let observer = null,
   updateTimer = null;

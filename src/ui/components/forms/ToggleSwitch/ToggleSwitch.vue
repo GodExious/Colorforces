@@ -68,8 +68,9 @@ function change(event) {
   border-radius: 50%;
 }
 
+/* 开启状态跟随当前页面的主题色，切页时随滑块自身的过渡平滑换色。 */
 .cf-toggle-switch input:checked + .cf-toggle-slider {
-  background-color: #1890ff;
+  background-color: var(--cf-menu-accent, #1890ff);
 }
 
 .cf-toggle-switch input:checked + .cf-toggle-slider:before {

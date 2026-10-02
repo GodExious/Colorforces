@@ -1,3 +1,4 @@
+/* 头像占位、尺寸变量，以及加载与显隐过渡。 */
 :root {
   --cf-avatar-size: var(--cf-avatar-em);
   --cf-lang-icon-size: var(--cf-lang-px);

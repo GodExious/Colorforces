@@ -1,4 +1,4 @@
-import { languageC, languageD, languageDelphi } from '../../assets/index.js';
+import { languageC, languageD, languageIo } from '../../assets/index.js';
 import { getDeviconUrl } from '../../assets/remote.js';
 
 // 将 Codeforces 编程语言名称映射到图标标识。
@@ -62,7 +62,7 @@ export function enhanceLanguageCell(langCell) {
           customSrc = languageD;
         }
         if (iconName === 'io') {
-          customSrc = languageDelphi;
+          customSrc = languageIo;
         }
         img.src = customSrc || getDeviconUrl(iconName, svgName);
         img.className = 'cf-lang-icon';

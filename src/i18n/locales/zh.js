@@ -289,6 +289,7 @@ export default {
   footerContributorAuthorDetail: '创意构思 · 代码审查 · 功能测试',
   footerContributorAntigravityDetail: '初期构建 · 界面设计 · 视觉打磨',
   footerContributorCodexDetail: '架构重构 · 后续开发 · 项目维护',
+  footerContributorClaudeDetail: '功能迭代 · 体验优化 · 质量把关',
 
   // CList Settings UI
   clistSectionTitle: 'CList 分数扩展',

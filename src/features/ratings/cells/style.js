@@ -1,6 +1,6 @@
-import { appSettings } from '../../settings.js';
-import { isDarkTheme } from '../page/theme.js';
-import { getRatingTagStyle, getRatingBgColor } from './rules.js';
+import { appSettings } from '../../../settings.js';
+import { isDarkTheme } from '../../page/theme.js';
+import { getRatingTagStyle, getRatingBgColor } from '../rules.js';
 import { updateRatingValue } from './value-motion.js';
 
 // 共用评分底板与数字过渡，允许涨跌分独立提供显示值和方向色。

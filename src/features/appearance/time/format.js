@@ -1,6 +1,6 @@
-import { appSettings } from '../../settings.js';
-import { customFormatTime } from '../../utils/time.js';
-import { displayTime } from './time-motion.js';
+import { appSettings } from '../../../settings.js';
+import { customFormatTime } from '../../../utils/time.js';
+import { displayTime } from './motion.js';
 
 // 识别页面中的时间文本，并按用户格式转换。
 export function formatTimeStr(text) {

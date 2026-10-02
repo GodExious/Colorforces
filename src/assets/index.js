@@ -19,6 +19,7 @@ import carrotImage from './images/brands/carrot-icon.png?inline';
 import godexiousAvatar from './images/brands/godexious-avatar.png?inline';
 import antigravityLogo from './images/brands/antigravity-logo.png?inline';
 import chatgptLogo from './icons/brands/chatgpt.svg?inline';
+import claudeLogo from './icons/brands/claude.svg?inline';
 import closeIcon from './icons/actions/close-icon.svg?raw';
 import syncIcon from './icons/actions/sync-icon.svg?raw';
 import shortcutInfoIcon from './icons/actions/shortcut-info-icon.svg?raw';
@@ -69,6 +70,7 @@ export {
   godexiousAvatar,
   antigravityLogo,
   chatgptLogo,
+  claudeLogo,
   closeIcon,
   syncIcon,
   shortcutInfoIcon,
@@ -136,4 +138,4 @@ export { default as jsonDocumentIcon } from './icons/actions/json-document.svg?r
 export { default as jsonCopyIcon } from './icons/actions/json-copy.svg?raw';
 export { default as languageC } from './icons/languages/c.svg?inline';
 export { default as languageD } from './icons/languages/d.svg?inline';
-export { default as languageDelphi } from './icons/languages/delphi.svg?inline';
+export { default as languageIo } from './icons/languages/io.svg?inline';

@@ -1,17 +1,17 @@
 import { appSettings, subscribeSettings } from '../settings.js';
 import { startPredictionFeature } from './contest/rating-prediction/index.js';
-import { updateDynamicStyle } from './appearance/ac-highlight.js';
+import { updateDynamicStyle } from './appearance/dynamic-style.js';
 import { refreshVerdicts } from './appearance/verdicts.js';
-import { applyTimeFormatting, wrapVirtualParticipationTime } from './appearance/time.js';
-import { applyProblemTagsVisibility } from './appearance/problem-tags.js';
+import { applyTimeFormatting, wrapVirtualParticipationTime } from './appearance/time/format.js';
+import { applyProblemTagsVisibility } from './appearance/problem-tags/visibility.js';
 import { getRatings } from './ratings/data.js';
 import { applyRatings, refreshRatingsOnPage } from './ratings/enhance.js';
 import { applyUserAvatars } from './user/avatars/enhance.js';
-import { formatStandingsCells, refreshUserAvatarsAndStandings } from './user/avatars/standings.js';
+import { formatStandingsCells, refreshUserAvatarsAndStandings } from './user/avatars/teams.js';
 import { syncSecondLevelMenuLava, observeSecondLevelMenu } from './page/navigation.js';
 import { setupObserver, updateWithoutObservation } from './page/observer.js';
 import { startShortcuts } from './shortcuts/index.js';
-import { transitionRatingVisibility } from './ratings/visibility-motion.js';
+import { transitionRatingVisibility } from './ratings/cells/visibility-motion.js';
 // 按功能依赖分发设置变化，不再因保存任意配置而重建整页增强。
 export function connectSettingsEffects() {
   let queued = false;

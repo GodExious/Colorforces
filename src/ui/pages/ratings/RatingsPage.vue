@@ -15,7 +15,7 @@ import {
   subscribeClistProgress,
   currentClistSyncProgress,
   getClistCooldownRemaining,
-} from '../../../features/ratings/clist.js';
+} from '../../../features/ratings/clist/sync.js';
 import ToggleSwitch from '../../components/forms/ToggleSwitch/ToggleSwitch.vue';
 import SegmentedSwitch from '../../components/forms/SegmentedSwitch/SegmentedSwitch.vue';
 import InfoHint from '../../components/tooltips/InfoHint/InfoHint.vue';

@@ -27,9 +27,16 @@ const contributors = [
     image: assets.chatgptLogo,
     url: 'https://openai.com/codex/',
   },
+  {
+    name: 'Claude',
+    role: 'footerContributorAI',
+    description: 'footerContributorClaudeDetail',
+    image: assets.claudeLogo,
+    url: 'https://claude.com/claude-code',
+  },
 ];
-// 头像组最多展示三位，后续扩展名单也不会继续拉长页脚。
-const avatarPreview = contributors.slice(0, 3);
+// 头像组最多展示四位，后续扩展名单也不会继续拉长页脚。
+const avatarPreview = contributors.slice(0, 4);
 const root = ref(null);
 const opened = ref(false);
 const renderOpen = ref(false);

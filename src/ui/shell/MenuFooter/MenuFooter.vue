@@ -12,7 +12,7 @@ import { subscribeStorageChanges } from '../../../features/storage/cleanup.js';
 import {
   subscribeClistProgress,
   currentClistSyncProgress,
-} from '../../../features/ratings/clist.js';
+} from '../../../features/ratings/clist/sync.js';
 import { openClistSyncProgress } from '../../pages/ratings/components/ClistSyncDialog/ClistSyncDialog.vue';
 const tick = ref(0),
   progress = ref(currentClistSyncProgress);

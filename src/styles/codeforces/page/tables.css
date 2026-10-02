@@ -1,3 +1,4 @@
+/* 提交记录表的通用调整：横向滚动、单元格内边距，以及编号、耗时、内存列的宽度。 */
 .datatable > div[style*='background-color: white'],
 .datatable > div[style*='background-color:white'],
 .datatable > div:has(> table.status-frame-datatable) {

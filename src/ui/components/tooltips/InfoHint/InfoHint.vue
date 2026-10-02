@@ -52,9 +52,11 @@ const emit = defineEmits(['click']);
   border-color: #759ac3;
   outline: none;
 }
+/* 圆形只是悬停提示；点击会打开说明弹窗的用圆角方形，从形状上区分。 */
 .cf-info-hint--clickable {
   cursor: pointer;
   font-style: normal;
+  border-radius: 5px;
 }
 .cf-info-hint:focus-visible {
   outline: 2px solid currentColor;

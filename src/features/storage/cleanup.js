@@ -12,7 +12,7 @@ import {
   RUNTIME_STORAGE_KEYS,
 } from '../../storage/keys.js';
 import { clearRatingsMemory } from '../ratings/data.js';
-import { clearClistMemory } from '../ratings/clist.js';
+import { clearClistMemory } from '../ratings/clist/sync.js';
 import { clearSolvedMemory } from '../general/solved.js';
 import { getUserSolvedStorageDetails, getLocalStorageDetails } from './overview.js';
 const listeners = new Set();

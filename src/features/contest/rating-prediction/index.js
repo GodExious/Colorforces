@@ -2,7 +2,7 @@ import RatingWorker from './worker.js?worker&inline';
 import { appSettings, subscribeSettings } from '../../../settings.js';
 import { predictionState as state } from './state.js';
 import { loadSnapshot, readSnapshot, snapshotLifetime } from './data.js';
-import { renderPrediction, clearPrediction, observePredictionTable } from './standings.js';
+import { renderPrediction, clearPrediction, observePredictionTable } from './standings/render.js';
 import { subscribeStorageChanges } from '../../storage/cleanup.js';
 
 let contestId = null,

@@ -306,6 +306,7 @@ export default {
   footerContributorAuthorDetail: 'Ideas & direction · Code review · Testing',
   footerContributorAntigravityDetail: 'Initial build · UI design · Visual polish',
   footerContributorCodexDetail: 'Refactoring · Development · Maintenance',
+  footerContributorClaudeDetail: 'Feature iteration · UX polish · Quality assurance',
 
   // CList Settings UI
   clistSectionTitle: 'CList Ratings Extension',

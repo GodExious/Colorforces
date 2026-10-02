@@ -1,13 +1,32 @@
-@import './fonts.css';
-@import './codeforces/contest/rating-prediction.css';
-@import './codeforces/page/tables.css';
-@import './codeforces/appearance/time.css';
-@import './codeforces/user/avatars/standings.css';
-@import './codeforces/appearance/language-icons.css';
-@import './codeforces/appearance/verdicts.css';
-@import './codeforces/ratings/tables.css';
-@import './codeforces/ratings/transitions.css';
-@import './codeforces/user/avatars/avatars.css';
-@import './codeforces/appearance/ac-highlight.css';
+/*
+ * 样式总入口，按功能域分组。
+ * 以下几对文件有共用的选择器，先后顺序不能调换：
+ * rating-prediction 先于 ratings/transitions 与 user/avatars/teams；
+ * ratings/column 先于 ratings/transitions；
+ * ratings/transitions 先于 appearance/problem-tags；
+ * user/avatars/teams 先于 user/avatars/avatars。
+ */
 
+/* 字体 */
+@import './fonts.css';
+
+/* 比赛 */
+@import './codeforces/contest/rating-prediction.css';
+
+/* 页面通用 */
+@import './codeforces/page/tables.css';
+
+/* 评分 */
+@import './codeforces/ratings/column.css';
+@import './codeforces/ratings/transitions.css';
+
+/* 外观 */
+@import './codeforces/appearance/ac-highlight.css';
+@import './codeforces/appearance/language-icons.css';
 @import './codeforces/appearance/problem-tags.css';
+@import './codeforces/appearance/time.css';
+@import './codeforces/appearance/verdicts.css';
+
+/* 用户 */
+@import './codeforces/user/avatars/teams.css';
+@import './codeforces/user/avatars/avatars.css';

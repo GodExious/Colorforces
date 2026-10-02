@@ -1,4 +1,9 @@
-import { calculateSnapshot, analyzeTarget, refinePerformance, targetBounds } from './analysis.js';
+import {
+  calculateSnapshot,
+  analyzeTarget,
+  refinePerformance,
+  targetBounds,
+} from './algorithm/analysis.js';
 
 // 纯计算任务与 DOM、存储隔离，终止 Worker 即可取消尚未完成的昂贵计算。
 self.onmessage = ({ data }) => {

@@ -1,8 +1,8 @@
 import { applyRatings } from '../ratings/enhance.js';
-import { formatStandingsCells } from '../user/avatars/standings.js';
+import { formatStandingsCells } from '../user/avatars/teams.js';
 import { applyUserAvatars } from '../user/avatars/enhance.js';
-import { applyProblemTagsVisibility } from '../appearance/problem-tags.js';
-import { wrapVirtualParticipationTime, applyTimeFormatting } from '../appearance/time.js';
+import { applyProblemTagsVisibility } from '../appearance/problem-tags/visibility.js';
+import { wrapVirtualParticipationTime, applyTimeFormatting } from '../appearance/time/format.js';
 import { walkAndReplaceVerdict, VERDICT_SELECTOR } from '../appearance/verdicts.js';
 
 // 阻止页面增强过程中递归处理自身 DOM 变更。

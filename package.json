@@ -15,8 +15,9 @@
     "build:compat": "npm run build:release && node --input-type=module -e \"import { copyFileSync } from 'node:fs'; copyFileSync('dist/colorforces.user.js', 'colorforces.user.js');\"",
     "preview": "vite preview",
     "release:prepare": "node scripts/prepare-release.mjs",
-    "format": "prettier --write src scripts .github/workflows/release.yml vite.config.js userscript.config.js package.json .prettierrc.json",
-    "format:check": "prettier --check src scripts .github/workflows/release.yml vite.config.js userscript.config.js package.json .prettierrc.json"
+    "test": "node --test",
+    "format": "prettier --write src tests scripts .github/workflows/release.yml vite.config.js userscript.config.js package.json .prettierrc.json",
+    "format:check": "prettier --check src tests scripts .github/workflows/release.yml vite.config.js userscript.config.js package.json .prettierrc.json"
   },
   "dependencies": {
     "echarts": "6.1.0",

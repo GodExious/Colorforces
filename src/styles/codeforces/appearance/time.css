@@ -1,3 +1,4 @@
+/* 时间列的宽度、时区标注，以及格式切换时的文字容器。 */
 .cf-table-time-cell,
 th.cf-table-time-header {
   white-space: nowrap !important;

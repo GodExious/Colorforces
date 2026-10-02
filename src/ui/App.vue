@@ -582,6 +582,11 @@ onBeforeUnmount(() => {
   outline: none;
 }
 
+/* 滑块与开关一致，跟随当前页面的主题色。 */
+.cf-menu-theme input[type='range'] {
+  accent-color: var(--cf-menu-accent);
+}
+
 .cf-version-tag {
   background-color: #e6f7ff;
   color: #1890ff;

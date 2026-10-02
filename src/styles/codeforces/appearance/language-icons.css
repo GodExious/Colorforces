@@ -1,3 +1,4 @@
+/* 语言列的宽度，以及语言图标与文字的排布和显隐过渡。 */
 td[data-cf-lang-icon-processed],
 th.cf-table-lang-header {
   white-space: nowrap !important;

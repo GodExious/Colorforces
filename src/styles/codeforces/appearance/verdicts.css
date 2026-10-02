@@ -1,3 +1,4 @@
+/* 判题结果列的宽度，以及简写与原文切换时的文字交接。 */
 .status-verdict-cell {
   white-space: normal !important;
   word-break: normal !important;

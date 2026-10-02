@@ -1,3 +1,4 @@
+/* 已通过题目行的底色，颜色由脚本写入的 CSS 变量提供。 */
 html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.act,
 html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.id,
 html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td,

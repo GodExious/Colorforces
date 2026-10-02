@@ -2,18 +2,18 @@ import { appSettings } from '../../settings.js';
 import { isDarkTheme } from '../page/theme.js';
 import { getRatingTagStyle, getRatingBgColor, getRatingBorderColor } from './rules.js';
 import { isCurrentPageProblemAccepted } from '../general/solved.js';
-import { getClistProblems } from './clist.js';
+import { getClistProblems } from './clist/sync.js';
 import { latestRatingsMap, getPeerContests, getProblemsByContest } from './data.js';
 import { cleanProblemTitle } from '../../utils/problem.js';
-import { applyProblemTagsVisibility } from '../appearance/problem-tags.js';
-import { beginTagMotion, finishTagMotion } from '../appearance/problem-tags-motion.js';
+import { applyProblemTagsVisibility } from '../appearance/problem-tags/visibility.js';
+import { beginTagMotion, finishTagMotion } from '../appearance/problem-tags/motion.js';
 import { enhanceLanguageCell } from '../appearance/language-icons.js';
 import { walkAndReplaceVerdict } from '../appearance/verdicts.js';
-import { formatStandingsCells } from '../user/avatars/standings.js';
+import { formatStandingsCells } from '../user/avatars/teams.js';
 import { isTeamCell } from '../user/avatars/structure.js';
-import { updateRatingValue } from './value-motion.js';
-import { applyRatingStyle } from './cell-style.js';
-export { applyRatingStyle } from './cell-style.js';
+import { updateRatingValue } from './cells/value-motion.js';
+import { applyRatingStyle } from './cells/style.js';
+export { applyRatingStyle } from './cells/style.js';
 
 // 取出可恢复的原始样式，过滤增强产生的样式项。
 export function getCleanCssText(el) {

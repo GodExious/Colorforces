@@ -1,12 +1,12 @@
-import { appSettings } from '../../settings.js';
+import { appSettings } from '../../../settings.js';
 import {
   checkAndFetchUserSolved,
   isCurrentPageProblemAccepted,
   getUserSolvedProblems,
-} from '../general/solved.js';
-import { t } from '../../i18n/index.js';
-import { extractProblemKey } from '../../utils/problem.js';
-import { beginTagMotion, finishTagMotion } from './problem-tags-motion.js';
+} from '../../general/solved.js';
+import { t } from '../../../i18n/index.js';
+import { extractProblemKey } from '../../../utils/problem.js';
+import { beginTagMotion, finishTagMotion } from './motion.js';
 
 // 按隐藏设置和通过状态控制算法标签、难度标签及占位提示。
 export function applyProblemTagsVisibility({ animate = true } = {}) {

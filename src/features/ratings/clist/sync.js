@@ -1,12 +1,12 @@
-import { appStorage } from '../../storage/gm.js';
-import { CLIST_STORAGE_KEY, CLIST_LAST_SYNC_KEY } from '../../storage/keys.js';
-import { sortProblemKeys } from '../../utils/problem.js';
-import { appSettings } from '../../settings.js';
-import { CLIST_SYNC_COOLDOWN } from '../../config/cache-policy.js';
-import { t } from '../../i18n/index.js';
-import { clistRequest } from '../../api/clist.js';
-import { refreshRatingsOnPage } from './enhance.js';
-import { createClistSyncEstimate } from './clist-sync-estimate.js';
+import { appStorage } from '../../../storage/gm.js';
+import { CLIST_STORAGE_KEY, CLIST_LAST_SYNC_KEY } from '../../../storage/keys.js';
+import { sortProblemKeys } from '../../../utils/problem.js';
+import { appSettings } from '../../../settings.js';
+import { CLIST_SYNC_COOLDOWN } from '../../../config/cache-policy.js';
+import { t } from '../../../i18n/index.js';
+import { clistRequest } from '../../../api/clist.js';
+import { refreshRatingsOnPage } from '../enhance.js';
+import { createClistSyncEstimate } from './estimate.js';
 
 // Clist 题目难度的内存映射。
 export let clistProblemsCache = null;
