@@ -15,6 +15,10 @@ export function applyRatingStyle(cell, rating, options = {}) {
   cell.dataset.cfRatingEmpty = String(!hasRating);
   cell.style.textAlign = 'center';
   cell.style.verticalAlign = 'middle';
+  // 先定好底板与文字颜色，再放进数字。顺序反过来的话，新建的数字会先按继承来的黑色算一次样式，
+  // 之后才过渡到评分色；页面忙的时候这段过渡停在起点，看起来就是颜色迟迟不出现。
+  if (hasRating) paintRatingCell(cell, rating, displayValue, prefix, options);
+  else cell.dataset.cfRatingMode ||= 'plain';
   let value = cell.querySelector('.cf-rating-value');
   if (!value) {
     value = document.createElement('span');
@@ -22,10 +26,10 @@ export function applyRatingStyle(cell, rating, options = {}) {
     cell.replaceChildren(value);
   }
   updateRatingValue(value, hasRating ? displayValue : null, prefix);
-  if (!hasRating) {
-    cell.dataset.cfRatingMode ||= 'plain';
-    return;
-  }
+}
+
+// 按评分与当前样式写入底板、文字、描边的颜色和数字宽度。
+function paintRatingCell(cell, rating, displayValue, prefix, options) {
   const enabled = options.enabled ?? appSettings.colorRatings;
   const tag = appSettings.displayStyle === 'tag';
   const compact = tag && appSettings.tagFillCell === false;

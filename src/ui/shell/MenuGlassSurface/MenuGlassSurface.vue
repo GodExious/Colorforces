@@ -18,9 +18,10 @@ const active = inject('cf-menu-motion-active', true);
 .cf-menu-glass-light::before {
   --cf-paint-accent: var(--cf-menu-accent);
   --cf-paint-secondary: var(--cf-menu-secondary);
+  /* 与侧栏指示条的位移同一个时长和缓动，指示条停下时玻璃的颜色也正好变完。 */
   transition:
-    --cf-paint-accent 480ms ease,
-    --cf-paint-secondary 480ms ease;
+    --cf-paint-accent 480ms cubic-bezier(0.16, 1, 0.3, 1),
+    --cf-paint-secondary 480ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* 内容可向上弹出；只有独立的装饰层裁切，不截断贡献者名单。 */
@@ -49,6 +50,8 @@ const active = inject('cf-menu-motion-active', true);
   inset: 0;
   z-index: -1;
   overflow: hidden;
+  /* 跟随玻璃自身的圆角，光效不会在圆角外露出直角。 */
+  border-radius: inherit;
   pointer-events: none;
 }
 .cf-menu-glass-light::before {
@@ -129,7 +132,7 @@ const active = inject('cf-menu-motion-active', true);
 }
 @supports not (backdrop-filter: blur(1px)) {
   .cf-menu-glass-surface {
-    background: color-mix(in srgb, var(--cf-paint-accent) 14%, #f8fafc);
+    background: color-mix(in srgb, var(--cf-paint-accent) 14%, var(--cf-gray-50));
   }
 }
 </style>

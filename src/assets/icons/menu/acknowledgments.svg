@@ -1,4 +1,4 @@
-<svg data-cf-icon="navigation" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='var(--cf-icon-ink, var(--cf-icon-primary))' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: #399abd; --cf-icon-secondary: #79bdcf'>
+<svg data-cf-icon="navigation" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='var(--cf-icon-ink, var(--cf-icon-primary))' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: #c576bc; --cf-icon-secondary: #dcadd7'>
   <path d='m7.5 14-2 7 6.5-3 6.5 3-2-7' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/>
   <circle cx='12' cy='9' r='6.5' fill='var(--cf-card-surface, #f3f8f7)' stroke='var(--cf-icon-detail, var(--cf-icon-secondary))'/>
   <path d='m12 5.5 1.1 2.2 2.4.4-1.7 1.7.4 2.4-2.2-1.1-2.2 1.1.4-2.4-1.7-1.7 2.4-.4Z' fill='var(--cf-icon-secondary)' stroke='none'/>

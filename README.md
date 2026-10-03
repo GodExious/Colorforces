@@ -19,14 +19,21 @@
   </a>
 </p>
 
-Colorforces is a userscript that makes Codeforces problem ratings, submissions, and user information easier to read and customize. The primary target environment is **Chrome + Tampermonkey**.
+Colorforces is a userscript that makes Codeforces problem ratings, submissions, and user information easier to read and customize, and adds contest rating prediction. The primary target environment is **Chrome + Tampermonkey**.
 
 > Previously [CF-Submissions-Ratings](https://github.com/GodExious/CF-Submissions-Ratings), renamed as its scope expanded beyond problem ratings.
+
+## ✨ Features
+
+- Problem ratings from Codeforces and CList, shown as colored blocks or tags
+- Contest rating prediction with single-user rating analysis
+- Participant tags, user avatars, language icons, short verdicts, and custom time formats
+- Shortcuts, storage management, and a bilingual (English / Chinese) menu
 
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="imgs/settings.png" alt="Colorforces v1.6.0 settings on Codeforces">
+  <img src="imgs/settings.png" alt="Colorforces settings on Codeforces">
   <br>
   <em>Settings menu in English and Chinese</em>
 </p>
@@ -53,7 +60,12 @@ Colorforces is a userscript that makes Codeforces problem ratings, submissions, 
 <p align="center">
   <img src="imgs/contest-standings.png" alt="Contest Standings">
   <br>
-  <em>Difficulty rating display on the Contest standings page</em>
+  <em>Problem ratings, participant tags, and rating prediction columns on the Contest standings page</em>
+</p>
+<p align="center">
+  <img src="imgs/contest-ratings-analyze-en.png" alt="Single-user Rating Analysis">
+  <br>
+  <em>Single-user rating analysis: drag or enter a target rating or rank to see the outcome</em>
 </p>
 <p align="center">
   <img src="imgs/blogs.png" alt="Blogs">
@@ -68,20 +80,37 @@ Colorforces is a userscript that makes Codeforces problem ratings, submissions, 
 
    👉 **[Install Colorforces](https://github.com/GodExious/Colorforces/releases/latest/download/colorforces.user.js)**
 
-   Before the first Release is available, use the [compatibility installer](https://raw.githubusercontent.com/GodExious/Colorforces/main/colorforces.user.js).
-
-3. Open or refresh a Codeforces page. Click the flower button near the upper-right corner to open settings.
+3. Open or refresh a Codeforces page. Click the flower button near the upper-right corner to open settings. Common toggles also have keyboard shortcuts, which you can view and change on the Shortcuts page of the menu.
 
 ## 🛠️ Build from Source
 
-Requires Node.js 20.x (20.19.0 or later) or 22.12.0 or later, and npm.
+Requirements:
+
+- Node.js: 20.x at 20.19.0 or later, or 22.12.0 or later
+- npm
+
+Install dependencies and build:
 
 ```sh
 npm ci
 npm run build
 ```
 
-Install the generated `dist/colorforces.user.js` in Tampermonkey. To also update the root compatibility copy, use `npm run build:compat`.
+Install the generated `dist/colorforces.user.js` in Tampermonkey.
+
+---
+
+To also update the root compatibility copy:
+
+```sh
+npm run build:compat
+```
+
+To run the unit tests:
+
+```sh
+npm test
+```
 
 ## 💡 Feedback
 
@@ -89,11 +118,13 @@ If you have any suggestions, feature requests, or find any bugs, please feel fre
 
 ## 👏 Acknowledgments
 
-- [Codeforces-Helper](https://chromewebstore.google.com/detail/codeforces-helper/ahoeafmlmoohkkalcickdnkifpfnolpj): the original inspiration for this project.
-- [CList](https://clist.by/): the additional problem-rating data source.
-- [OJ Better](https://github.com/beijixiaohu/OJBetter): inspiration for page-enhancement features.
-- [Carrot-Plus](https://github.com/wuyuqian114514/carrot-plus): a reference for planned rating-change prediction.
-- **CF Analytics Pro Max** ([browser extension](https://chromewebstore.google.com/detail/codeforces-analytics-pro/gfoledimnmjchddncmedpcieiccnagcj) · [userscript](https://greasyfork.org/zh-CN/scripts/465176-cf%E8%A7%A3%E9%A2%98%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96-pro-max)): Colorforces plans to offer similar built-in data analytics in future versions.
+| Project | Contribution | Links |
+| :--- | :--- | :--- |
+| Codeforces-Helper | The original inspiration for this project. | <a href="https://chromewebstore.google.com/detail/codeforces-helper/ahoeafmlmoohkkalcickdnkifpfnolpj"><img src="https://img.shields.io/badge/Chrome-709dc6?style=flat&amp;logo=chromewebstore&amp;logoColor=white" height="20" alt="Chrome Web Store"></a> |
+| CList | The additional problem-rating data source. | <a href="https://clist.by/"><img src="https://img.shields.io/badge/Website-c5ab77?style=flat&amp;logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjkiLz48cGF0aCBkPSJNMyAxMmgxOE0xMiAzYzMgMy4yIDMgMTQuOCAwIDE4TTEyIDNjLTMgMy4yLTMgMTQuOCAwIDE4Ii8%2BPC9zdmc%2B" height="20" alt="Website"></a> |
+| OJ Better | Inspiration for page-enhancement features. | <a href="https://github.com/beijixiaohu/OJBetter"><img src="https://img.shields.io/badge/GitHub-343b49?style=flat&amp;logo=github&amp;logoColor=white" height="20" alt="GitHub"></a> |
+| Carrot-Plus | The reference for the built-in contest rating prediction. | <a href="https://github.com/wuyuqian114514/carrot-plus"><img src="https://img.shields.io/badge/GitHub-343b49?style=flat&amp;logo=github&amp;logoColor=white" height="20" alt="GitHub"></a> |
+| CF Analytics Pro Max | Colorforces plans to offer similar built-in data analytics in future versions. | <a href="https://chromewebstore.google.com/detail/codeforces-analytics-pro/gfoledimnmjchddncmedpcieiccnagcj"><img src="https://img.shields.io/badge/Chrome-709dc6?style=flat&amp;logo=chromewebstore&amp;logoColor=white" height="20" alt="Chrome Web Store"></a> <a href="https://greasyfork.org/zh-CN/scripts/465176-cf%E8%A7%A3%E9%A2%98%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96-pro-max"><img src="https://img.shields.io/badge/Greasy_Fork-78ac98?style=flat&amp;logo=greasyfork&amp;logoColor=white" height="20" alt="Greasy Fork"></a> |
 
 ## 📄 License
 

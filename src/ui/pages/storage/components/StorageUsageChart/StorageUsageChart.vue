@@ -92,7 +92,8 @@ function renderChart(replay = false) {
       backgroundColor: 'var(--cf-card-surface, #fff9fc)',
       borderColor: 'var(--cf-surface-border, #e7d5e3)',
       textStyle: { color: 'var(--cf-control-ink, #615570)', fontSize: 11, lineHeight: 18 },
-      extraCssText: 'box-shadow:0 4px 16px #5643651c;border-radius:8px;pointer-events:none;',
+      extraCssText:
+        'box-shadow:0 4px 16px #5643651c;border-radius:var(--cf-radius-md);pointer-events:none;',
       formatter: formatSliceTooltip,
       position: positionSliceTooltip,
     },
@@ -103,6 +104,9 @@ function renderChart(replay = false) {
         startAngle: 90,
         endAngle: 'auto',
         animation: animate,
+        // 饼图自带「首次展开 1000ms」的默认值，写在系列上，会盖过上面全局的 360ms；
+        // 这里在系列上再写一遍，第一次展开才和之后每次重新进入时一样快。
+        animationDuration: 360,
         animationDurationUpdate: replay === true ? 360 : 280,
         radius: [0, '87%'],
         center: ['50%', '50%'],
@@ -194,11 +198,11 @@ onBeforeUnmount(() => {
   gap: 2px 5px;
   margin-top: 2px;
   color: var(--cf-control-ink);
-  font-size: 10px;
+  font-size: var(--cf-font-size-2xs);
   line-height: 17px;
 }
 .cf-storage-pie-total strong {
-  font-size: 11px;
+  font-size: var(--cf-font-size-xs);
   font-weight: 650;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -214,7 +218,7 @@ onBeforeUnmount(() => {
   grid-template-columns: 7px minmax(0, max-content) 44px 60px;
   gap: 2px 7px;
   list-style: none;
-  font-size: 11px;
+  font-size: var(--cf-font-size-xs);
   line-height: 17px;
 }
 .cf-storage-pie-legend li {
@@ -241,7 +245,7 @@ onBeforeUnmount(() => {
 .cf-storage-pie-percentage {
   text-align: right;
   color: var(--cf-control-ink);
-  font-weight: 600;
+  font-weight: var(--cf-font-weight-semibold);
   font-variant-numeric: tabular-nums;
 }
 
@@ -249,7 +253,7 @@ onBeforeUnmount(() => {
   color: color-mix(in srgb, var(--cf-control-ink) 70%, #718096);
   text-align: right;
   white-space: nowrap;
-  font-size: 10px;
+  font-size: var(--cf-font-size-2xs);
   font-variant-numeric: tabular-nums;
 }
 </style>

@@ -12,6 +12,8 @@ import FloatingTooltip, {
 } from './components/tooltips/FloatingTooltip/FloatingTooltip.vue';
 import ConfirmDialog from './components/dialogs/ConfirmDialog/ConfirmDialog.vue';
 import { preventScrollChaining } from '../utils/scroll.js';
+import { petalPosition } from '../utils/petal-palette.js';
+import { MENU_TAB_IDS } from '../config/menu-tabs.js';
 import MenuNav from './shell/MenuNav/MenuNav.vue';
 import MenuFooter from './shell/MenuFooter/MenuFooter.vue';
 import MenuScrollbar from './shell/MenuScrollbar/MenuScrollbar.vue';
@@ -57,18 +59,9 @@ const menuRoot = ref(null);
 const menuLayout = useMenuLayout(menuRoot, visible);
 provide('cf-menu-size', menuLayout.size);
 provide('cf-menu-position', menuLayout.position);
-const ids = [
-  'general',
-  'appearance',
-  'ratings',
-  'prediction',
-  'user',
-  'shortcuts',
-  'storage',
-  'changelog',
-  'roadmap',
-  'acknowledgments',
-];
+const ids = MENU_TAB_IDS;
+// 当前页在花瓣色环上的位置，设置按钮据此决定点亮哪片花瓣、转到哪个角度。
+const menuSpot = computed(() => petalPosition(ids.indexOf(activeTab.value), ids.length));
 let cleanup;
 let scrollFloor = 0;
 // 仅保留当前位置必需的底部空间；用户向上滚动后立即回收，不强制回滚。
@@ -289,12 +282,12 @@ function switchTab(id) {
     old.setAttribute('aria-hidden', 'true');
     next.classList.add('active');
     next.inert = false;
-    // 新页使用菜单同色底层，避免旧标题和控件透过透明间隙持续重叠。
+    // 内容区是磨砂玻璃，新页不能再垫一层不透明底色（切换结束撤掉时会闪一下）；
+    // 新旧两页靠各自的淡入淡出错开，旧页在新页完全显现前已经淡去。
     Object.assign(next.style, {
       position: 'relative',
       zIndex: '2',
       minHeight: panelHost.value.style.minHeight,
-      backgroundColor: 'var(--cf-content-surface)',
     });
     contentArea.value.scrollTop = 0;
     scrollbar.value?.sync(true);
@@ -341,14 +334,7 @@ function switchTab(id) {
         'transform',
       ])
         old.style[key] = '';
-      for (const key of [
-        'position',
-        'zIndex',
-        'opacity',
-        'transform',
-        'minHeight',
-        'backgroundColor',
-      ])
+      for (const key of ['position', 'zIndex', 'opacity', 'transform', 'minHeight'])
         next.style[key] = '';
       cleanup = null;
     };
@@ -488,6 +474,7 @@ onBeforeUnmount(() => {
     </MenuLayout>
     <menu-launcher
       :open="visible"
+      :spot="menuSpot"
       :dragging="menuLayout.moving"
       @toggle="toggleMenu"
       :class="{
@@ -544,8 +531,9 @@ onBeforeUnmount(() => {
 }
 
 /* 中性表面共用主题层次；评分、品牌、提示与警告仍保留各自语义色。 */
+/* 内容区本身是磨砂玻璃；这里的内容底色是它的不透明近似值，供卡片等需要实底的元素推导用。 */
 .cf-menu-theme {
-  --cf-content-surface: color-mix(in srgb, var(--cf-menu-accent) 9%, #fafcfe);
+  --cf-content-surface: color-mix(in srgb, var(--cf-menu-accent) 6%, #fcfdfe);
   --cf-card-surface: color-mix(in srgb, var(--cf-menu-accent) 4%, var(--cf-content-surface));
   --cf-card-hover: color-mix(in srgb, var(--cf-menu-accent) 9%, var(--cf-content-surface));
   --cf-control-surface: color-mix(in srgb, var(--cf-menu-accent) 5%, var(--cf-content-surface));
@@ -554,19 +542,23 @@ onBeforeUnmount(() => {
   --cf-surface-border: color-mix(in srgb, var(--cf-menu-accent) 18%, #dde5ee);
 }
 
-/* 只给实际绘制背景的节点插值，颜色动画不向整棵菜单继承。 */
-.cf-sidebar-nav {
+/*
+ * 只给实际绘制背景的节点插值，颜色动画不向整棵菜单继承。
+ * 时长与缓动和侧栏指示条的位移相同：指示条停下时，底色也正好变完。
+ */
+.cf-sidebar-nav,
+.cf-content-viewport {
   --cf-paint-accent: var(--cf-menu-accent);
   --cf-paint-secondary: var(--cf-menu-secondary);
   transition:
-    --cf-paint-accent 480ms ease,
-    --cf-paint-secondary 480ms ease;
+    --cf-paint-accent 480ms cubic-bezier(0.16, 1, 0.3, 1),
+    --cf-paint-secondary 480ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .cf-menu-theme
   :is(input[type='text'], input[type='password'], input[type='number'], textarea, select) {
   background: var(--cf-control-surface);
-  color: #334155;
+  color: var(--cf-gray-700);
   border: 1px solid var(--cf-surface-border);
   transition:
     background-color 220ms ease,
@@ -591,10 +583,10 @@ onBeforeUnmount(() => {
   background-color: #e6f7ff;
   color: #1890ff;
   border: 1px solid #91d5ff;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--cf-font-size-base);
+  font-weight: var(--cf-font-weight-bold);
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   margin-left: 8px;
   display: inline-flex;
   align-items: center;
@@ -607,7 +599,7 @@ onBeforeUnmount(() => {
 .cf-settings-modal {
   position: relative;
   background: transparent;
-  border: 1px solid color-mix(in srgb, var(--cf-menu-accent) 18%, #e2e8f0);
+  border: 1px solid color-mix(in srgb, var(--cf-menu-accent) 18%, var(--cf-gray-200));
   border-radius: 14px;
   box-shadow:
     0 12px 35px rgba(0, 0, 0, 0.14),
@@ -615,7 +607,7 @@ onBeforeUnmount(() => {
     0 0 28px color-mix(in srgb, var(--cf-menu-accent) 9%, transparent);
   display: none;
   flex-direction: column;
-  color: #1e293b;
+  color: var(--cf-gray-800);
   box-sizing: border-box;
   overflow: hidden;
   overscroll-behavior: contain;
@@ -624,8 +616,8 @@ onBeforeUnmount(() => {
   /* 玻璃祖先层保持不透明，避免淡入期间无法采样并模糊原网页。 */
   animation: cf-menu-open 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   transition:
-    border-color 480ms ease,
-    box-shadow 480ms ease;
+    border-color 480ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 480ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes cf-menu-open {
@@ -645,6 +637,8 @@ onBeforeUnmount(() => {
   padding: 16px 20px;
   border-bottom-width: 1px;
   border-bottom-style: solid;
+  /* 玻璃自己带上与菜单外框对应的圆角：只靠外层裁切时，模糊区域仍是直角，四角会露出一小块方形的模糊。 */
+  border-radius: 13px 13px 0 0;
 }
 
 .cf-header-left {
@@ -700,7 +694,7 @@ onBeforeUnmount(() => {
 .cf-header-title {
   font-family: 'Kaushan Script', 'Satisfy', 'Segoe Script', 'Brush Script MT', cursive, sans-serif;
   font-size: 26px;
-  font-weight: 700;
+  font-weight: var(--cf-font-weight-bold);
   letter-spacing: 0.6px;
   background: linear-gradient(
     90deg,
@@ -736,7 +730,7 @@ onBeforeUnmount(() => {
 .cf-title-version {
   font-family: inherit;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: var(--cf-font-weight-bold);
   letter-spacing: 0.5px;
   opacity: 0.95;
   padding-right: 6px;
@@ -751,8 +745,8 @@ onBeforeUnmount(() => {
   height: 28px;
   border: none;
   background: transparent;
-  border-radius: 8px;
-  color: #94a3b8;
+  border-radius: var(--cf-radius-md);
+  color: var(--cf-gray-400);
   cursor: pointer;
   transition: color 0.15s ease;
   padding: 0;
@@ -770,7 +764,8 @@ onBeforeUnmount(() => {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  background: #ffffff;
+  /* 不垫底色：侧栏和内容区都是玻璃，要透过这一层采样到菜单背后的页面。 */
+  background: transparent;
   overscroll-behavior: contain;
 }
 
@@ -790,15 +785,26 @@ onBeforeUnmount(() => {
   display: block;
 }
 
+/*
+ * 内容区是一层薄的磨砂玻璃：七成不透明的白，叠 6% 的主题色，把底下的页面模糊掉。
+ * 颜色取 --cf-paint-accent，换页时随它一起过渡。
+ */
 .cf-content-viewport {
-  background: var(--cf-content-surface);
-  transition: background-color 480ms ease;
+  background: color-mix(in srgb, var(--cf-paint-accent) 6%, rgb(255 255 255 / 70%));
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
   display: flex;
   flex: 1;
   min-width: 0;
   min-height: 0;
   position: relative;
   padding-right: 6px;
+}
+/* 不支持背景模糊时退回不透明底色，保证文字底下是纯色。 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cf-content-viewport {
+    background: color-mix(in srgb, var(--cf-paint-accent) 6%, #fcfdfe);
+  }
 }
 
 .cf-content-area {
@@ -851,15 +857,15 @@ onBeforeUnmount(() => {
 }
 
 .cf-setting-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #334155;
+  font-size: var(--cf-font-size-lg);
+  font-weight: var(--cf-font-weight-semibold);
+  color: var(--cf-gray-700);
   user-select: none;
 }
 
 .cf-setting-sublabel {
-  font-size: 12px;
-  color: #64748b;
+  font-size: var(--cf-font-size-base);
+  color: var(--cf-gray-500);
   user-select: none;
 }
 

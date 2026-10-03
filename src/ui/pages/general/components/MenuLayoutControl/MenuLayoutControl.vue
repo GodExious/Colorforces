@@ -137,8 +137,8 @@ function resetLayout() {
   display: grid;
   gap: 5px;
   min-width: 0;
-  color: #64748b;
-  font-size: 12px;
+  color: var(--cf-gray-500);
+  font-size: var(--cf-font-size-base);
 }
 .cf-menu-layout-value {
   display: flex;
@@ -153,8 +153,8 @@ function resetLayout() {
   padding: 6px 8px;
   border: 1px solid color-mix(in srgb, var(--cf-menu-accent) 24%, #dce2eb);
   border-radius: 7px;
-  background: color-mix(in srgb, var(--cf-menu-accent) 9%, #f8fafc);
-  color: #334155;
+  background: color-mix(in srgb, var(--cf-menu-accent) 9%, var(--cf-gray-50));
+  color: var(--cf-gray-700);
   font: inherit;
   font-variant-numeric: tabular-nums;
   line-height: 18px;
@@ -175,6 +175,6 @@ function resetLayout() {
 }
 .cf-menu-layout-unit {
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: var(--cf-font-size-xs);
 }
 </style>

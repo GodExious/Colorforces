@@ -8,12 +8,19 @@ import { clearStorageGroup, subscribeStorageChanges } from '../../../features/st
 import { appStorage, subscribeStorageWrites } from '../../../storage/gm.js';
 import { latestRatingsMap, parallelContestsCache } from '../../../features/ratings/data.js';
 import { sortProblemKeys } from '../../../utils/problem.js';
-import { CACHE_KEY, PARALLEL_CONTESTS_KEY, AVATAR_CACHE_KEY } from '../../../storage/keys.js';
-import { showConfirmPop } from '../../components/dialogs/ConfirmDialog/ConfirmDialog.vue';
 import {
-  showStorageJsonModal,
-  showStorageJsonDocument,
-} from './components/StorageJsonDialog/StorageJsonDialog.vue';
+  SETTINGS_KEY,
+  CACHE_KEY,
+  PARALLEL_CONTESTS_KEY,
+  CLIST_STORAGE_KEY,
+  AVATAR_CACHE_KEY,
+  PREDICTION_CACHE_KEY,
+  PREDICTION_RATINGS_KEY,
+  PREDICTION_LOCK_KEY,
+  RUNTIME_DATA_KEY,
+} from '../../../storage/keys.js';
+import { showConfirmPop } from '../../components/dialogs/ConfirmDialog/ConfirmDialog.vue';
+import { showStorageJsonModal } from './components/StorageJsonDialog/StorageJsonDialog.vue';
 import StorageCard from './components/StorageCard/StorageCard.vue';
 import StorageUsageChart from './components/StorageUsageChart/StorageUsageChart.vue';
 const props = defineProps({ active: Boolean });
@@ -75,6 +82,25 @@ const groups = [
     bar: 'storageBarLegacy',
   },
 ];
+// 查看数据时，页签上显示的是存储键的说明文字，实际键名在页签上方单独标出。
+const KEY_LABELS = {
+  [SETTINGS_KEY]: 'storageSettingsTitle',
+  [RUNTIME_DATA_KEY]: 'storageRuntimeTitle',
+  [CACHE_KEY]: 'storageKeyRatings',
+  [PARALLEL_CONTESTS_KEY]: 'storageKeyParallel',
+  [CLIST_STORAGE_KEY]: 'storageKeyClist',
+  [AVATAR_CACHE_KEY]: 'storageAvatarTitle',
+  [PREDICTION_CACHE_KEY]: 'storageKeySnapshots',
+  [PREDICTION_RATINGS_KEY]: 'storageKeyRatingSources',
+  [PREDICTION_LOCK_KEY]: 'storageKeyRequestLease',
+};
+const SOLVED_PREFIX = 'cf_user_solved_';
+// 每次渲染时现取文案，切换语言后页签跟着变。已弃用的缓存里是不认识的旧键，原样显示键名。
+function keyLabel(key) {
+  if (key.startsWith(SOLVED_PREFIX))
+    return t('storageSolvedTitle') + ' · ' + key.slice(SOLVED_PREFIX.length);
+  return KEY_LABELS[key] ? t(KEY_LABELS[key]) : key;
+}
 const overview = ref(readStorageOverview());
 // 重新枚举实际存储，不在模板中重复解析大对象。
 function refresh() {
@@ -84,21 +110,12 @@ function refresh() {
 // 确认后按功能清理，保留其他组和原有存储键格式。
 function requestClear(id) {
   refresh();
-  const group =
-    groups.find((group) => group.id === id) ||
-    (id === 'avatar' || id === 'solved'
-      ? {
-          title: id === 'avatar' ? 'storageAvatarTitle' : 'storageSolvedTitle',
-          action: id === 'avatar' ? 'storageAvatarClearBtn' : 'storageSolvedClearBtn',
-          confirm: id === 'avatar' ? 'storageAvatarClearConfirm' : 'storageSolvedClearConfirm',
-        }
-      : null);
-  const item = overview.value.items[id] || overview.value.userParts[id];
-  if (['local', 'solved'].includes(id) && !item.keys.length) {
+  const group = groups.find((group) => group.id === id);
+  if (id === 'local' && !overview.value.items.local.keys.length) {
     showConfirmPop({
       title: t(group.title),
       type: 'info',
-      message: t(id === 'local' ? 'storageLegacyNoneTip' : 'storageSolvedNoneTip'),
+      message: t('storageLegacyNoneTip'),
       confirmText: t('popGotItBtn'),
     });
     return;
@@ -118,24 +135,8 @@ function requestClear(id) {
 function view(group) {
   refresh();
   const item = overview.value.items[group.id];
-  // 插件数据统一查看和复制，实际存储键与清理边界保持不变。
-  if (group.id === 'runtime') {
-    showStorageJsonDocument(t(group.title), item.dataMap, item.bytes);
-    return;
-  }
-  const keyLabels =
-    group.id === 'user'
-      ? Object.fromEntries(
-          item.keys.map((key) => [
-            key,
-            key === AVATAR_CACHE_KEY
-              ? t('storageAvatarTitle')
-              : t('storageSolvedTitle') + ' · ' + key.slice('cf_user_solved_'.length),
-          ]),
-        )
-      : {};
   showStorageJsonModal(
-    t(group.title),
+    group.title,
     item.keys,
     (key) => {
       if (item.dataMap && key in item.dataMap) return item.dataMap[key];
@@ -148,13 +149,7 @@ function view(group) {
       const value = appStorage.getJSON(key, null);
       return group.id === 'clist' ? sortProblemKeys(value) : value;
     },
-    {
-      keyLabels,
-      onClear:
-        group.id === 'user'
-          ? (key) => requestClear(key === AVATAR_CACHE_KEY ? 'avatar' : 'solved')
-          : null,
-    },
+    { keyLabel },
   );
 }
 let stopStorage, stopWrites, refreshTimer;
@@ -234,9 +229,9 @@ watch(
 }
 
 .cf-storage-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: var(--cf-font-size-xl);
+  font-weight: var(--cf-font-weight-bold);
+  color: var(--cf-gray-900);
   margin: 0 0 4px 0;
   display: flex;
   align-items: center;
@@ -244,16 +239,16 @@ watch(
 }
 
 .cf-storage-subtitle {
-  font-size: 12px;
-  color: #64748b;
+  font-size: var(--cf-font-size-base);
+  color: var(--cf-gray-500);
   margin: 0;
   line-height: 1.5;
 }
 
 .cf-storage-overview {
   background: linear-gradient(135deg, var(--cf-control-surface), var(--cf-control-active));
-  border: 1px solid var(--cf-surface-border, #e2e8f0);
-  border-radius: 12px;
+  border: 1px solid var(--cf-surface-border, var(--cf-gray-200));
+  border-radius: var(--cf-radius-xl);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -278,8 +273,8 @@ watch(
 }
 
 .cf-storage-overview-label {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-semibold);
   color: var(--cf-control-ink);
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -305,8 +300,8 @@ watch(
 
 .cf-storage-item {
   background: var(--cf-card-surface, #fff);
-  border: 1px solid var(--cf-surface-border, #e2e8f0);
-  border-radius: 10px;
+  border: 1px solid var(--cf-surface-border, var(--cf-gray-200));
+  border-radius: var(--cf-radius-lg);
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
@@ -317,7 +312,7 @@ watch(
 }
 
 .cf-storage-item:hover {
-  border-color: #cbd5e1;
+  border-color: var(--cf-gray-300);
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
 }
 
@@ -329,13 +324,13 @@ watch(
 }
 
 .cf-storage-icon-box {
-  --cf-storage-tone: #64748b;
+  --cf-storage-tone: var(--cf-gray-500);
   background: color-mix(in srgb, var(--cf-storage-tone) 10%, var(--cf-card-surface));
   color: color-mix(in srgb, var(--cf-storage-tone) 78%, #354458);
   border: 1px solid color-mix(in srgb, var(--cf-storage-tone) 24%, var(--cf-surface-border));
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--cf-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -395,9 +390,9 @@ watch(
 }
 
 .cf-storage-item-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #0f172a;
+  font-size: var(--cf-font-size-lg);
+  font-weight: var(--cf-font-weight-semibold);
+  color: var(--cf-gray-900);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -411,26 +406,26 @@ watch(
 }
 
 .cf-storage-size-val {
-  font-size: 12px;
-  font-weight: 600;
-  color: #334155;
+  font-size: var(--cf-font-size-base);
+  font-weight: var(--cf-font-weight-semibold);
+  color: var(--cf-gray-700);
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   white-space: nowrap;
 }
 
 .cf-storage-meta-dot {
-  color: #cbd5e1;
-  font-size: 11px;
+  color: var(--cf-gray-300);
+  font-size: var(--cf-font-size-xs);
   line-height: 1;
   user-select: none;
 }
 
 .cf-storage-count-tag {
   font-size: 10.5px;
-  font-weight: 600;
+  font-weight: var(--cf-font-weight-semibold);
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: var(--cf-radius-xs);
   background: color-mix(in srgb, var(--cf-menu-accent) 24%, var(--cf-card-surface));
   color: color-mix(in srgb, var(--cf-menu-accent) 38%, #26374b);
   border: 1px solid color-mix(in srgb, var(--cf-menu-accent) 40%, var(--cf-card-surface));
@@ -439,8 +434,8 @@ watch(
 }
 
 .cf-storage-item-desc {
-  font-size: 11px;
-  color: #64748b;
+  font-size: var(--cf-font-size-xs);
+  color: var(--cf-gray-500);
   line-height: 1.45;
   margin: 0;
   white-space: normal;
@@ -459,9 +454,9 @@ watch(
   align-items: center;
   gap: 4px;
   padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
+  border-radius: var(--cf-radius-sm);
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-semibold);
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;

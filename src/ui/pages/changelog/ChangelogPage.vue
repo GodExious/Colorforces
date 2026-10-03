@@ -5,7 +5,22 @@ import { translate as t } from '../../../i18n/index.js';
 import * as assets from '../../../assets/index.js';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
 import ExpandTransition from '../../components/transitions/ExpandTransition/ExpandTransition.vue';
+import { customFormatTime, utcOffsetLabel } from '../../../utils/time.js';
 import entries from './data.js';
+// 发布时间存的是时间戳，这里换成查看者的本地时间，并标出本机时区。
+// 时区按那一天实际的偏移算，有夏令时的地区冬夏两季标注不同。
+const released = new Map(
+  entries.map(({ version, time }) => {
+    const date = new Date(time);
+    return [
+      version,
+      {
+        text: customFormatTime(date, 'YYYY-MM-DD HH:mm'),
+        zone: utcOffsetLabel(-date.getTimezoneOffset()),
+      },
+    ];
+  }),
+);
 const languageFiles = import.meta.glob('./locales/*.js', { eager: true, import: 'default' });
 const messages = computed(
   () => languageFiles['./locales/' + appSettings.lang + '.js'] || languageFiles['./locales/en.js'],
@@ -78,7 +93,9 @@ function formatChangelogText(text) {
             }}</span>
           </div>
           <div class="cf-changelog-card-right">
-            <span class="cf-changelog-date" v-text="entry.date"></span
+            <span class="cf-changelog-date"
+              >{{ released.get(entry.version).text
+              }}<sup class="cf-changelog-zone">{{ released.get(entry.version).zone }}</sup></span
             ><span class="cf-changelog-chevron"
               ><inline-svg v-bind:source="assets.changelogChevronIcon"></inline-svg
             ></span>
@@ -119,9 +136,9 @@ function formatChangelogText(text) {
 }
 
 .cf-changelog-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: var(--cf-font-size-xl);
+  font-weight: var(--cf-font-weight-bold);
+  color: var(--cf-gray-900);
   margin: 0 0 4px 0;
   display: flex;
   align-items: center;
@@ -129,8 +146,8 @@ function formatChangelogText(text) {
 }
 
 .cf-changelog-subtitle {
-  font-size: 12px;
-  color: #64748b;
+  font-size: var(--cf-font-size-base);
+  color: var(--cf-gray-500);
   margin: 0;
   line-height: 1.5;
 }
@@ -143,8 +160,8 @@ function formatChangelogText(text) {
 
 .cf-changelog-card {
   background: var(--cf-card-surface, #fff);
-  border: 1px solid var(--cf-surface-border, #e2e8f0);
-  border-radius: 10px;
+  border: 1px solid var(--cf-surface-border, var(--cf-gray-200));
+  border-radius: var(--cf-radius-lg);
   overflow: hidden;
   transition:
     border-color 0.2s ease,
@@ -191,8 +208,8 @@ function formatChangelogText(text) {
 
 .cf-changelog-version {
   font-size: 13.5px;
-  font-weight: 700;
-  color: #0f172a;
+  font-weight: var(--cf-font-weight-bold);
+  color: var(--cf-gray-900);
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   letter-spacing: -0.01em;
@@ -200,8 +217,8 @@ function formatChangelogText(text) {
 }
 
 .cf-changelog-badge-latest {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-bold);
   color: #fff;
   background: color-mix(in srgb, var(--cf-menu-accent) 55%, #174338);
   border: 1px solid color-mix(in srgb, var(--cf-menu-accent) 48%, #174338);
@@ -212,16 +229,24 @@ function formatChangelogText(text) {
 }
 
 .cf-changelog-date {
-  font-size: 11.5px;
-  color: #94a3b8;
+  font-size: var(--cf-font-size-sm);
+  color: var(--cf-gray-400);
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   white-space: nowrap;
   font-feature-settings: 'tnum';
 }
 
+/* 时区：排成上标小字，与榜单快照时间旁的标注一致；行高为 0，不撑高这一行。 */
+.cf-changelog-zone {
+  margin-left: 1px;
+  vertical-align: super;
+  font-size: 9px;
+  line-height: 0;
+}
+
 .cf-changelog-chevron {
-  color: #94a3b8;
+  color: var(--cf-gray-400);
   transition: transform 0.2s ease;
   display: flex;
   align-items: center;
@@ -235,8 +260,8 @@ function formatChangelogText(text) {
   padding: 12px 16px 14px 16px;
   border-top: 1px solid var(--cf-surface-border);
   background: transparent;
-  font-size: 12.5px;
-  color: #334155;
+  font-size: var(--cf-font-size-md);
+  color: var(--cf-gray-700);
   line-height: 1.6;
 }
 
@@ -251,10 +276,10 @@ function formatChangelogText(text) {
 .cf-changelog-section-badge {
   --cf-section-hue: #658078;
   display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-semibold);
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   margin-bottom: 8px;
   line-height: 1.4;
   letter-spacing: 0.2px;
@@ -292,15 +317,15 @@ function formatChangelogText(text) {
   display: flex;
   align-items: flex-start;
   gap: 6px;
-  font-size: 12.5px;
-  color: #334155;
+  font-size: var(--cf-font-size-md);
+  color: var(--cf-gray-700);
   line-height: 1.6;
 }
 
 .cf-changelog-item-index {
-  font-size: 12px;
-  font-weight: 600;
-  color: #64748b;
+  font-size: var(--cf-font-size-base);
+  font-weight: var(--cf-font-weight-semibold);
+  color: var(--cf-gray-500);
   min-width: 18px;
   text-align: right;
   flex-shrink: 0;
@@ -320,7 +345,7 @@ function formatChangelogText(text) {
 .cf-changelog-link {
   color: #0284c7 !important;
   text-decoration: none !important;
-  font-weight: 500;
+  font-weight: var(--cf-font-weight-medium);
 }
 
 .cf-changelog-link:hover {
@@ -330,10 +355,10 @@ function formatChangelogText(text) {
 .cf-changelog-code {
   background: var(--cf-control-surface);
   padding: 1px 5px;
-  border-radius: 4px;
+  border-radius: var(--cf-radius-xs);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  color: #0f172a;
-  border: 1px solid var(--cf-surface-border, #e2e8f0);
+  font-size: var(--cf-font-size-xs);
+  color: var(--cf-gray-900);
+  border: 1px solid var(--cf-surface-border, var(--cf-gray-200));
 }
 </style>

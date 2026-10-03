@@ -173,9 +173,9 @@ const analyticsLinks = [
 }
 
 .cf-ack-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: var(--cf-font-size-xl);
+  font-weight: var(--cf-font-weight-bold);
+  color: var(--cf-gray-900);
   margin: 0 0 4px 0;
   display: flex;
   align-items: center;
@@ -183,8 +183,8 @@ const analyticsLinks = [
 }
 
 .cf-ack-subtitle {
-  font-size: 12px;
-  color: #64748b;
+  font-size: var(--cf-font-size-base);
+  color: var(--cf-gray-500);
   margin: 0;
   line-height: 1.5;
 }
@@ -198,7 +198,7 @@ const analyticsLinks = [
     color-mix(in srgb, var(--cf-ack-accent) 5%, var(--cf-content-surface))
   );
   border: 1px solid color-mix(in srgb, var(--cf-ack-accent) 28%, var(--cf-surface-border));
-  border-radius: 12px;
+  border-radius: var(--cf-radius-xl);
   padding: 13px 15px;
   display: flex;
   flex-direction: column;
@@ -267,7 +267,7 @@ const analyticsLinks = [
 .cf-ack-icon-box {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--cf-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -292,16 +292,16 @@ const analyticsLinks = [
 
 .cf-ack-project-name {
   font-size: 13.5px;
-  font-weight: 700;
-  color: #1e293b;
+  font-weight: var(--cf-font-weight-bold);
+  color: var(--cf-gray-800);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .cf-ack-badge {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-semibold);
   padding: 3px 8px;
   border-radius: 9999px;
   white-space: nowrap;
@@ -312,8 +312,8 @@ const analyticsLinks = [
 }
 
 .cf-ack-desc {
-  font-size: 12.5px;
-  color: #475569;
+  font-size: var(--cf-font-size-md);
+  color: var(--cf-gray-600);
   line-height: 1.6;
   margin: 0;
   display: flex;
@@ -341,9 +341,9 @@ const analyticsLinks = [
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  border-radius: var(--cf-radius-sm);
+  font-size: var(--cf-font-size-base);
+  font-weight: var(--cf-font-weight-semibold);
   text-decoration: none !important;
   transition:
     color 0.2s ease,

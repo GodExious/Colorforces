@@ -193,7 +193,7 @@ onBeforeUnmount(() => {
   padding: 5px;
   list-style: none;
   border: 1px solid color-mix(in srgb, var(--cf-ack-accent) 42%, var(--cf-card-surface));
-  border-radius: 10px;
+  border-radius: var(--cf-radius-lg);
   background: var(--cf-card-surface);
   box-shadow: 0 6px 20px #26374b26;
   transform-origin: top right;
@@ -213,12 +213,12 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   color: var(--cf-ack-ink);
   text-decoration: none;
-  font-size: 12px;
+  font-size: var(--cf-font-size-base);
   line-height: 20px;
-  font-weight: 500;
+  font-weight: var(--cf-font-weight-medium);
   white-space: nowrap;
   transition: background-color 160ms ease;
 }

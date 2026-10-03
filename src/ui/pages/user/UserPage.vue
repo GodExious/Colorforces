@@ -31,12 +31,12 @@ import ToggleSwitch from '../../components/forms/ToggleSwitch/ToggleSwitch.vue';
             data-control="avatarSizeInput"
           /><span
             style="
-              font-size: 12px;
+              font-size: var(--cf-font-size-base);
               width: 28px;
               text-align: right;
               display: inline-block;
               color: rgb(100, 116, 139);
-              font-weight: 500;
+              font-weight: var(--cf-font-weight-medium);
             "
             v-text="parseFloat(appSettings.avatarSize).toFixed(1) + 'x'"
           ></span>

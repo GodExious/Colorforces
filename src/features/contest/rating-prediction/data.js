@@ -52,6 +52,9 @@ export function snapshotLifetime(snapshot) {
 export function readSnapshot(contestId) {
   const cache = appStorage.getJSON(PREDICTION_CACHE_KEY, {}) || {};
   const snapshot = cache.version === 1 ? cache.contests?.[contestId] : null;
+  // 「有首场账号」的提醒已停用；旧版本存下的快照里可能还带着，读取时去掉。
+  if (Array.isArray(snapshot?.warnings))
+    snapshot.warnings = snapshot.warnings.filter((key) => key !== 'predictionInitialRating');
   return snapshot &&
     (snapshot.phase !== 'final' || snapshot.ratingSource === 'official-rating-changes') &&
     Array.isArray(snapshot.participants) &&
@@ -371,8 +374,6 @@ export async function loadSnapshot(contestId, { signal, force = false, progress 
         officialDelta: null,
       });
     }
-    if (participants.some((p) => p.status === 'rated' && p.initial))
-      warnings.push('predictionInitialRating');
     if (
       participants.some((p) => p.status === 'rated' && !p.valid) ||
       participants.some((p) => p.status === 'unknown')

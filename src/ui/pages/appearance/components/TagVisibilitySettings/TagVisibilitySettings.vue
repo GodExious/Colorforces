@@ -53,7 +53,7 @@ import ExpandTransition from '../../../../components/transitions/ExpandTransitio
 .cf-tag-visibility-subitem {
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: var(--cf-font-size-base);
   min-height: 28px;
   padding-left: 14px;
 }

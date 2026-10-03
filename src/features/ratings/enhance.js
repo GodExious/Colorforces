@@ -13,6 +13,7 @@ import { formatStandingsCells } from '../user/avatars/teams.js';
 import { isTeamCell } from '../user/avatars/structure.js';
 import { updateRatingValue } from './cells/value-motion.js';
 import { applyRatingStyle } from './cells/style.js';
+import { followParticipantRowHeight } from './cells/standings-row-height.js';
 export { applyRatingStyle } from './cells/style.js';
 
 // 取出可恢复的原始样式，过滤增强产生的样式项。
@@ -539,12 +540,6 @@ export function refreshRatingsOnPage() {
         const probName = link.getAttribute('title') || th.getAttribute('title') || link.textContent;
         const rating = getProblemRating(link.href, probName);
         applyRatingStyle(ratingCell, rating);
-        if (typeof rating === 'number') {
-          if (appSettings.displayStyle === 'block') {
-            ratingCell.style.setProperty('font-size', '0.9em', 'important');
-            ratingCell.style.setProperty('padding', '0.2em', 'important');
-          }
-        }
       }
     });
   });
@@ -857,7 +852,7 @@ export function applyRatings(ratingsMap) {
 
     Array.from(headerRow.cells).forEach((cell) => {
       const newCell = document.createElement('th');
-      newCell.style.padding = '0.3em'; // minimal padding
+      // 不另设内边距和字号，沿用原站单元格的，评分行才与表头行等高。
       // 预测列的占位格也保留归属，关闭预测时不留下多余空列。
       if (cell.dataset.predictionColumn) {
         newCell.dataset.cfPrediction = '';
@@ -873,10 +868,6 @@ export function applyRatings(ratingsMap) {
         applyRatingStyle(newCell, info?.rating);
         if (info && typeof info.rating === 'number') {
           hasRatings = true;
-          if (appSettings.displayStyle === 'block') {
-            newCell.style.setProperty('font-size', '0.9em', 'important');
-            newCell.style.setProperty('padding', '0.2em', 'important');
-          }
 
           // Mark the link so it's skipped by standalone processor
           link.setAttribute('data-cf-rating-added', 'true');
@@ -888,6 +879,7 @@ export function applyRatings(ratingsMap) {
     if (hasRatings) {
       // Insert the new rating row right below the header row
       headerRow.parentNode.insertBefore(ratingRow, headerRow.nextSibling);
+      followParticipantRowHeight(table, ratingRow);
     }
   });
 

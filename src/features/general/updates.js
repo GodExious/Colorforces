@@ -1,15 +1,17 @@
-import { appStorage } from '../../storage/gm.js';
-import { UPDATE_CHECK_KEY } from '../../storage/keys.js';
+import { getRuntimeValue, setRuntimeValues } from '../../storage/runtime.js';
 import { appSettings } from '../../settings.js';
 import { UPDATE_CHECK_COOLDOWN } from '../../config/cache-policy.js';
 import { fetchRemoteRelease } from '../../api/updates.js';
 import { CURRENT_VERSION } from '../../config/runtime.js';
 
+// 读出更新检查状态：上次检查时间与最近已知版本。
+function readCheckState() {
+  return { lastCheckTime: 0, latestKnownVersion: '', ...getRuntimeValue('updateCheck') };
+}
+
 // 清除版本检查冷却时间，保留最近已知版本。
 export function resetUpdateCooldown() {
-  const state = appStorage.getJSON(UPDATE_CHECK_KEY, { lastCheckTime: 0, latestKnownVersion: '' });
-  state.lastCheckTime = 0;
-  appStorage.setJSON(UPDATE_CHECK_KEY, state);
+  setRuntimeValues({ updateCheck: { ...readCheckState(), lastCheckTime: 0 } });
 }
 
 // 逐段比较数字版本号，判断升级或预览版本。
@@ -38,7 +40,7 @@ export async function checkScriptUpdate(force = false) {
     return { success: true, skipped: true, reason: 'disabled' };
   }
 
-  const state = appStorage.getJSON(UPDATE_CHECK_KEY, { lastCheckTime: 0, latestKnownVersion: '' });
+  const state = readCheckState();
   const now = Date.now();
   if (!force && state.lastCheckTime && now - state.lastCheckTime < UPDATE_CHECK_COOLDOWN) {
     return { success: true, skipped: true, reason: 'cooldown' };
@@ -50,9 +52,7 @@ export async function checkScriptUpdate(force = false) {
   }
   const { version: remoteVersion, url: downloadUrl } = release;
 
-  state.lastCheckTime = now;
-  state.latestKnownVersion = remoteVersion;
-  appStorage.setJSON(UPDATE_CHECK_KEY, state);
+  setRuntimeValues({ updateCheck: { lastCheckTime: now, latestKnownVersion: remoteVersion } });
 
   const comp = compareVersions(remoteVersion, CURRENT_VERSION);
   const hasUpdate = comp > 0;

@@ -84,8 +84,8 @@ const ratingSliderStyle = computed(() => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          font-size: 13px;
-          font-weight: 600;
+          font-size: var(--cf-font-size-lg);
+          font-weight: var(--cf-font-weight-semibold);
           cursor: pointer;
           user-select: none;
           margin: 0px;
@@ -129,11 +129,12 @@ const ratingSliderStyle = computed(() => {
           <ExpandTransition :show="appSettings.clist.authMode === 'api'"
             ><div style="display: flex; flex-direction: column; gap: 6px">
               <div style="display: flex; align-items: center; justify-content: space-between">
-                <div style="display: flex; align-items: center; font-size: 12px">
+                <div
+                  style="display: flex; align-items: center; font-size: var(--cf-font-size-base)"
+                >
                   <span class="cf-setting-sublabel" v-text="t().clistApiKeyLabel"></span
                   ><InfoHint
                     :text="t('clistHelpTooltip')"
-                    symbol="?"
                     variant="question"
                     :clickable="true"
                     @click="openGuide('clist-key', $event)"
@@ -161,7 +162,6 @@ const ratingSliderStyle = computed(() => {
               <span class="cf-setting-sublabel" v-text="t().clistSyncTitle"></span
               ><InfoHint
                 :text="t('clistSyncTooltip')"
-                symbol="!"
                 variant="warning"
                 :clickable="true"
                 @click="openGuide('clist-sync', $event)"
@@ -213,7 +213,7 @@ const ratingSliderStyle = computed(() => {
         style="
           align-items: center;
           justify-content: space-between;
-          font-size: 12px;
+          font-size: var(--cf-font-size-base);
           cursor: pointer;
           user-select: none;
           min-height: 28px;
@@ -244,7 +244,7 @@ const ratingSliderStyle = computed(() => {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: var(--cf-font-size-base);
             cursor: pointer;
             user-select: none;
             min-height: 28px;
@@ -263,7 +263,7 @@ const ratingSliderStyle = computed(() => {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: var(--cf-font-size-base);
             cursor: pointer;
             user-select: none;
             min-height: 28px;
@@ -282,7 +282,7 @@ const ratingSliderStyle = computed(() => {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: var(--cf-font-size-base);
             cursor: pointer;
             user-select: none;
             min-height: 28px;
@@ -301,7 +301,7 @@ const ratingSliderStyle = computed(() => {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: var(--cf-font-size-base);
             cursor: pointer;
             user-select: none;
             min-height: 28px;
@@ -320,7 +320,7 @@ const ratingSliderStyle = computed(() => {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: var(--cf-font-size-base);
             cursor: pointer;
             user-select: none;
             min-height: 28px;
@@ -339,7 +339,7 @@ const ratingSliderStyle = computed(() => {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: var(--cf-font-size-base);
             cursor: pointer;
             user-select: none;
             min-height: 28px;
@@ -358,7 +358,7 @@ const ratingSliderStyle = computed(() => {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: var(--cf-font-size-base);
             cursor: pointer;
             user-select: none;
             min-height: 28px;
@@ -384,9 +384,9 @@ const ratingSliderStyle = computed(() => {
 }
 
 .cf-clist-section-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #334155;
+  font-size: var(--cf-font-size-lg);
+  font-weight: var(--cf-font-weight-semibold);
+  color: var(--cf-gray-700);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -412,8 +412,8 @@ const ratingSliderStyle = computed(() => {
   position: relative;
   flex-shrink: 0;
   margin-left: 6px;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: var(--cf-font-size-2xs);
+  font-weight: var(--cf-font-weight-bold);
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1;

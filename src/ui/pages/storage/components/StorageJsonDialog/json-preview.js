@@ -50,8 +50,8 @@ const formatJsonSyntaxHighlight = (json, forceTruncated = false) => {
 
   return highlighted;
 };
-// 仅裁剪展示内容；targetKey 为 null 时直接展示整份文档，不套额外存储键。
-export function buildPreview(targetKey, getContentForKeyFn, bytes) {
+// 仅裁剪展示内容，展示时把数据套在它的存储键下面。
+export function buildPreview(targetKey, getContentForKeyFn) {
   let content;
   try {
     content =
@@ -69,7 +69,7 @@ export function buildPreview(targetKey, getContentForKeyFn, bytes) {
       : content !== null && content !== undefined
         ? 1
         : 0;
-  let storageBytes = bytes ?? (targetKey === null ? 0 : getStorageItemBytes(targetKey));
+  let storageBytes = getStorageItemBytes(targetKey);
 
   // 2. 切片构建轻量预览数据，彻底杜绝超大对象全量序列化造成的卡顿
   const PREVIEW_LIMIT = 60;
@@ -117,12 +117,9 @@ export function buildPreview(targetKey, getContentForKeyFn, bytes) {
     }
   }
 
-  const displayPreviewObj =
-    targetKey === null
-      ? previewContent
-      : {
-          [targetKey]: previewContent !== undefined ? previewContent : null,
-        };
+  const displayPreviewObj = {
+    [targetKey]: previewContent !== undefined ? previewContent : null,
+  };
 
   let previewJsonStr = JSON.stringify(displayPreviewObj, null, 2);
   if (isTruncated) {
@@ -143,7 +140,7 @@ export function buildPreview(targetKey, getContentForKeyFn, bytes) {
     });
   }
 
-  if (bytes === undefined && (!storageBytes || storageBytes <= 0)) {
+  if (!storageBytes || storageBytes <= 0) {
     storageBytes = new Blob([previewJsonStr]).size;
   }
 

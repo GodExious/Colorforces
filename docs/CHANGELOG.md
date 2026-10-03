@@ -9,16 +9,22 @@ All notable changes to this project will be documented in this file.
 ---
 
 ### v1.7.0
-`2026-09-30 19:02`
+`2026-10-04 03:59 UTC+8`
 
 **Added**
-1. Added a Rating Prediction panel with rating changes, performance, rank progression, and single-user target simulations and refinement.
-2. Added rated / unrated tags indicating whether a participant is rated in the current contest.
+1. Added contest rating prediction with rating changes, performance, rank progression and single-user rating analysis, plus a shortcut to toggle it.
+2. Added rated/unrated/virtual participant tags indicating how each participant takes part in the contest.
 
 **Optimized**
-1. Grouped avatars and solved-problem records under CF user data, with separate viewing and clearing.
+1. Improved the storage structure of the storage categories and the labelling of displayed fields.
 2. Replaced the userscript icon with the Colorforces logo.
 3. Improved and expanded contest-page time-format styling compatibility.
+4. With help from Claude, redesigned and refined the UI of the menu and some pages.
+5. Reorganized the code directory structure and added unit tests.
+
+**Fixed**
+1. Fixed dialogs closing when a text selection drag ended outside the dialog.
+2. Fixed several cases of interface jitter, misalignment, and text not following language changes.
 
 ---
 

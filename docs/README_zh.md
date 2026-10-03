@@ -19,14 +19,21 @@
   </a>
 </p>
 
-Colorforces 是一个 Codeforces 页面增强油猴脚本，让题目难度、提交状态和用户信息更直观，并提供可自定义的展示方式。主要使用环境为 **Chrome + Tampermonkey（油猴）**。
+Colorforces 是一个 Codeforces 页面增强油猴脚本，让题目难度、提交状态和用户信息更直观，提供比赛评分预测，并支持自定义展示方式。主要使用环境为 **Chrome + Tampermonkey（油猴）**。
 
 > 本项目由 [CF-Submissions-Ratings](https://github.com/GodExious/CF-Submissions-Ratings) 更名而来，功能已从题目难度分展示扩展为 Codeforces 页面增强。
+
+## ✨ 功能特性
+
+- 题目难度分着色：支持 CF 官方与 CList 数据，色块、标签两种样式
+- 比赛评分预测与单用户评级分析
+- 选手参赛类型标签、用户头像、语言图标、判题缩写与自定义时间格式
+- 快捷键、存储管理与中英双语菜单
 
 ## 📸 效果预览
 
 <p align="center">
-  <img src="../imgs/settings.png" alt="Codeforces 网页中的 Colorforces v1.6.0 设置菜单">
+  <img src="../imgs/settings.png" alt="Codeforces 网页中的 Colorforces 设置菜单">
   <br>
   <em>中英文设置菜单</em>
 </p>
@@ -53,7 +60,12 @@ Colorforces 是一个 Codeforces 页面增强油猴脚本，让题目难度、�
 <p align="center">
   <img src="../imgs/contest-standings.png" alt="Contest Standings">
   <br>
-  <em>Contest 排名页面的难度分展示</em>
+  <em>Contest 排名页面的难度分、选手标签与评分预测列展示</em>
+</p>
+<p align="center">
+  <img src="../imgs/contest-ratings-analyze-zh.png" alt="Single-user Rating Analysis">
+  <br>
+  <em>单用户评级分析：拖动或输入目标评级、目标名次，查看对应结果</em>
 </p>
 <p align="center">
   <img src="../imgs/blogs.png" alt="Blogs">
@@ -68,22 +80,39 @@ Colorforces 是一个 Codeforces 页面增强油猴脚本，让题目难度、�
 
    👉 **[点击安装 Colorforces](https://github.com/GodExious/Colorforces/releases/latest/download/colorforces.user.js)**
 
-   首个 Release 发布前，可以使用[旧版兼容安装入口](https://raw.githubusercontent.com/GodExious/Colorforces/main/colorforces.user.js)。
-
    > _注：也可以按下方指南本地构建，将生成的 `dist/colorforces.user.js` 安装到油猴。_
 
-3. 打开或刷新 Codeforces 页面，点击页面右上方附近的花瓣按钮进入设置。
+3. 打开或刷新 Codeforces 页面，点击页面右上方附近的花瓣按钮进入设置。常用开关支持快捷键，可在菜单的「快捷键」页查看和修改。
 
 ## 🛠️ 从源码构建
 
-环境：Node.js 20.x（≥20.19.0）或 ≥22.12.0，以及 npm。
+环境要求：
+
+- Node.js：20.19.0 及以上的 20.x 版本，或 22.12.0 及以上
+- npm
+
+安装依赖并构建：
 
 ```sh
 npm ci
 npm run build
 ```
 
-将生成的 `dist/colorforces.user.js` 安装到油猴即可。如需同步根目录兼容副本，使用 `npm run build:compat`。
+将生成的 `dist/colorforces.user.js` 安装到油猴即可。
+
+---
+
+如需同步根目录兼容副本：
+
+```sh
+npm run build:compat
+```
+
+运行单元测试：
+
+```sh
+npm test
+```
 
 ## 💡 意见与反馈
 
@@ -91,11 +120,13 @@ npm run build
 
 ## 👏 致谢
 
-- [Codeforces-Helper](https://chromewebstore.google.com/detail/codeforces-helper/ahoeafmlmoohkkalcickdnkifpfnolpj)：本项目最初的灵感来源。
-- [CList](https://clist.by/)：提供额外的题目难度数据。
-- [OJ Better](https://github.com/beijixiaohu/OJBetter)：提供页面增强功能的启发。
-- [Carrot-Plus](https://github.com/wuyuqian114514/carrot-plus)：为计划中的表现分变化预测功能提供参考。
-- **CF Analytics Pro Max**（[浏览器扩展](https://chromewebstore.google.com/detail/codeforces-analytics-pro/gfoledimnmjchddncmedpcieiccnagcj) · [油猴脚本](https://greasyfork.org/zh-CN/scripts/465176-cf%E8%A7%A3%E9%A2%98%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96-pro-max)）：本插件计划在后续版本提供类似的内置数据分析功能。
+| 项目 | 说明 | 链接 |
+| :--- | :--- | :--- |
+| Codeforces-Helper | 本项目最初的灵感来源。 | <a href="https://chromewebstore.google.com/detail/codeforces-helper/ahoeafmlmoohkkalcickdnkifpfnolpj"><img src="https://img.shields.io/badge/Chrome-709dc6?style=flat&amp;logo=chromewebstore&amp;logoColor=white" height="20" alt="Chrome 网上应用店"></a> |
+| CList | 提供额外的题目难度数据。 | <a href="https://clist.by/"><img src="https://img.shields.io/badge/%E5%AE%98%E7%BD%91-c5ab77?style=flat&amp;logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjkiLz48cGF0aCBkPSJNMyAxMmgxOE0xMiAzYzMgMy4yIDMgMTQuOCAwIDE4TTEyIDNjLTMgMy4yLTMgMTQuOCAwIDE4Ii8%2BPC9zdmc%2B" height="20" alt="官网"></a> |
+| OJ Better | 提供页面增强功能的启发。 | <a href="https://github.com/beijixiaohu/OJBetter"><img src="https://img.shields.io/badge/GitHub-343b49?style=flat&amp;logo=github&amp;logoColor=white" height="20" alt="GitHub"></a> |
+| Carrot-Plus | 为内置的比赛评分预测功能提供算法参考。 | <a href="https://github.com/wuyuqian114514/carrot-plus"><img src="https://img.shields.io/badge/GitHub-343b49?style=flat&amp;logo=github&amp;logoColor=white" height="20" alt="GitHub"></a> |
+| CF Analytics Pro Max | 本插件计划在后续版本提供类似的内置数据分析功能。 | <a href="https://chromewebstore.google.com/detail/codeforces-analytics-pro/gfoledimnmjchddncmedpcieiccnagcj"><img src="https://img.shields.io/badge/Chrome-709dc6?style=flat&amp;logo=chromewebstore&amp;logoColor=white" height="20" alt="Chrome 网上应用店"></a> <a href="https://greasyfork.org/zh-CN/scripts/465176-cf%E8%A7%A3%E9%A2%98%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96-pro-max"><img src="https://img.shields.io/badge/Greasy_Fork-78ac98?style=flat&amp;logo=greasyfork&amp;logoColor=white" height="20" alt="Greasy Fork"></a> |
 
 ## 📄 License
 

@@ -1,12 +1,31 @@
 import { appSettings } from '../../../../settings.js';
 import { translate as t } from '../../../../i18n/index.js';
-import { renderScore, renderRankProgress, setRankIcon } from './presentation.js';
+import {
+  renderScore,
+  renderRankProgress,
+  setRankIcon,
+  snapshotTime,
+  predictionNumberColor,
+} from './presentation.js';
 import { updateParticipationTag, clearParticipationTags } from './participation-tags.js';
-import analyzeIcon from '../../../../assets/icons/prediction/analyze.svg?raw';
 import { syncPredictionColumns } from './column-motion.js';
 let observer = null,
   updateTimer = null;
 const toolbarAnimations = new WeakMap();
+let flowerSerial = 0;
+
+// 分析入口是一朵五片花瓣的小花，每片由花心处的原色向花瓣尖变浅；颜色由按钮上的变量给出。
+// 渐变靠编号引用，每个按钮各用各的编号，否则整页的花都会指到第一朵的渐变上、变成同一种颜色。
+function flowerIcon() {
+  const id = `cf-prediction-flower-${++flowerSerial}`;
+  const petals = [0, 1, 2, 3, 4]
+    .map(
+      (index) =>
+        `<ellipse class="cf-prediction-petal" cx="12" cy="6.2" rx="3.1" ry="5" transform="rotate(${index * 72} 12 12)" fill="url(#${id})"/>`,
+    )
+    .join('');
+  return `<svg class="cf-prediction-flower" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="12" cy="12" r="11.5"><stop class="cf-prediction-flower-inner" offset=".2"/><stop class="cf-prediction-flower-outer" offset="1"/></radialGradient></defs>${petals}<circle class="cf-prediction-flower-core" cx="12" cy="12" r="2.2"/></svg>`;
+}
 
 // 根据主页地址识别用户，图片链接无文字也能正常匹配。
 export function handleForCell(cell) {
@@ -30,15 +49,32 @@ function node(tag, className) {
 function text(el, value) {
   if (el.textContent !== value) el.textContent = value;
 }
+// 填入工具栏文字。带时区时，时区排成原站那种上标小字，后面还可以再接一段文字（如提醒符号）。
+// 上标节点建好后只改其中的文字，不反复增删元素。
+function fillToolbarText(el, value, zone, tail) {
+  if (!zone) {
+    el.textContent = value + tail;
+    return;
+  }
+  let mark = el.querySelector(':scope > sup');
+  if (!mark) {
+    mark = node('sup', 'tz-superscript cf-prediction-zone');
+    el.replaceChildren(document.createTextNode(''), mark, document.createTextNode(''));
+  }
+  el.firstChild.nodeValue = value;
+  text(mark, zone);
+  el.lastChild.nodeValue = tail;
+}
 // 语言切换时只插值文字项宽度，工具栏保持单行，避免内容变长触发高度突变。
-function toolbarText(el, value) {
-  if (!el || el.dataset.cfToolbarText === value) return;
+function toolbarText(el, value, zone = '', tail = '') {
+  const key = zone || tail ? [value, zone, tail].join('\n') : value;
+  if (!el || el.dataset.cfToolbarText === key) return;
   const initialized = el.hasAttribute('data-cf-toolbar-text');
   const before = el.getBoundingClientRect();
   toolbarAnimations.get(el)?.cancel();
   toolbarAnimations.delete(el);
-  el.dataset.cfToolbarText = value;
-  el.textContent = value;
+  el.dataset.cfToolbarText = key;
+  fillToolbarText(el, value, zone, tail);
   const after = el.getBoundingClientRect();
   if (
     !initialized ||
@@ -48,7 +84,16 @@ function toolbarText(el, value) {
     matchMedia('(prefers-reduced-motion: reduce)').matches
   )
     return;
-  const animation = el.animate([{ width: before.width + 'px' }, { width: after.width + 'px' }], {
+  animateWidth(el, before.width, after.width);
+}
+// 宽度从旧值过渡到新值，结束后撤掉动画，交还给样式表。
+// 表格单元格要同时压住最小和最大宽度，否则列宽会被新文字直接撑开，过渡不起作用。
+function animateWidth(el, from, to, cell = false) {
+  const frame = (width) =>
+    cell
+      ? { width: width + 'px', minWidth: width + 'px', maxWidth: width + 'px' }
+      : { width: width + 'px' };
+  const animation = el.animate([frame(from), frame(to)], {
     duration: 220,
     easing: 'cubic-bezier(.22,1,.36,1)',
     fill: 'both',
@@ -62,6 +107,43 @@ function toolbarText(el, value) {
     },
     () => {},
   );
+}
+// 单元格内容区的宽度（不含内边距和边框），与样式里 width 的含义一致。
+function contentWidth(el) {
+  const style = getComputedStyle(el);
+  return (
+    el.getBoundingClientRect().width -
+    ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].reduce(
+      (sum, key) => sum + (parseFloat(style[key]) || 0),
+      0,
+    )
+  );
+}
+// 表头里随语言变化的文字（如「操作」与 Actions）：两种语言宽度不同，
+// 切换时列宽平滑过渡、新文字淡入，不让整张表突然变宽或变窄。
+function headerText(el, value) {
+  let label = el.querySelector('.cf-prediction-head-text');
+  if (!label) {
+    label = node('span', 'cf-prediction-head-text');
+    el.replaceChildren(label);
+  }
+  if (label.textContent === value) return;
+  // 首次填入、列正在收放、页面不可见或用户关闭了动效时，直接替换。
+  const animated =
+    label.textContent &&
+    el.isConnected &&
+    !document.hidden &&
+    !el.classList.contains('cf-prediction-column-moving') &&
+    !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 连续切换时从当前画面的宽度接续。
+  const before = animated ? contentWidth(el) : 0;
+  toolbarAnimations.get(el)?.cancel();
+  toolbarAnimations.delete(el);
+  label.textContent = value;
+  if (!animated) return;
+  const after = contentWidth(el);
+  if (Math.abs(after - before) > 0.5) animateWidth(el, before, after, true);
+  label.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
 }
 // 仅清理本功能的节点。
 export function clearPrediction() {
@@ -163,15 +245,19 @@ function renderRow(cell, record, result, columns, state, analyze) {
       continue;
     }
     renderScore(output, key, value);
-    output.dataset.tooltip =
-      (Number.isInteger(result?.rank) ? t('predictionRankHint', result.rank) + ' ' : '') +
-      (record ? t('predictionReason' + record.reason) : t('predictionUnknown'));
-    if (!Number.isFinite(value) && value !== Infinity && record?.status === 'rated')
+    // 表现分与涨跌分有数值时不带提示；只有显示 N/A 时才说明原因。
+    const available = Number.isFinite(value) || value === Infinity;
+    if (available) delete output.dataset.tooltip;
+    else if (record?.status === 'rated')
       output.dataset.tooltip = state.error
         ? t(state.error)
         : state.snapshot?.warnings.includes('predictionIncompleteData')
           ? t('predictionIncompleteData')
           : t('predictionNotApplicable');
+    else
+      output.dataset.tooltip = record
+        ? t('predictionReason' + record.reason)
+        : t('predictionUnknown');
   }
   const show =
     appSettings.participationTags.enabled &&
@@ -200,9 +286,14 @@ function renderAnalysisAction(output, record, result, state, analyze) {
     if (!button) {
       button = node('button', 'cf-prediction-open');
       button.type = 'button';
-      button.innerHTML = analyzeIcon;
+      button.innerHTML = flowerIcon();
       output.replaceChildren(button);
     }
+    // 花的颜色跟随这一行的表现分；没有表现分时退回赛前评级的颜色。
+    const color =
+      predictionNumberColor(result.performance) || predictionNumberColor(record.rating) || '';
+    if (button.style.getPropertyValue('--cf-flower-color') !== color)
+      button.style.setProperty('--cf-flower-color', color);
     delete output.dataset.tooltip;
     button.dataset.tooltip = t('predictionAnalyze');
     button.setAttribute('aria-label', t('predictionAnalyze') + ' ' + record.handle);
@@ -269,24 +360,12 @@ export function renderPrediction(state, actions) {
             : t('predictionWaiting'),
     );
     const note = bar.querySelector('.cf-prediction-note');
+    const taken = snapshotTime(state.snapshot?.fetchedAt);
     toolbarText(
       note,
-      state.snapshot
-        ? t('predictionDataTime') +
-            ' ' +
-            new Date(state.snapshot.fetchedAt).toLocaleString(
-              appSettings.lang === 'zh' ? 'zh-CN' : 'en-US',
-              {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-              },
-            ) +
-            (state.snapshot.warnings.length ? ' ⚠' : '')
-        : '',
+      state.snapshot ? t('predictionDataTime') + ' ' + taken.text : '',
+      state.snapshot ? taken.zone : '',
+      state.snapshot?.warnings.length ? ' ⚠' : '',
     );
     note.dataset.tooltip = (state.snapshot?.warnings || []).map((key) => t(key)).join(' · ');
     const refresh = bar.querySelector('button');
@@ -321,7 +400,7 @@ export function renderPrediction(state, actions) {
         el.dataset.tooltip = t('predictionRankChange');
         el.setAttribute('aria-label', el.dataset.tooltip);
       } else if (key === 'actions') {
-        text(el, t('predictionActions'));
+        headerText(el, t('predictionActions'));
       } else if (key === 'ratedRank') {
         el.replaceChildren(document.createTextNode('#'));
         const ratedMark = node('span', 'cf-prediction-rated-r-mark');

@@ -99,6 +99,10 @@
 .cf-rating-col.cf-rating-moving .cf-rating-clip {
   width: calc(var(--cf-rating-content-size) * var(--cf-rating-progress));
 }
+/* 收放期间行高交给单元格的进度，否则行上固定的高度会顶住，收不下去。 */
+.cf-rating-standings-row.cf-rating-moving {
+  height: auto !important;
+}
 .cf-rating-standings-row.cf-rating-moving > :is(td, th) {
   height: calc(var(--cf-rating-base-height) * var(--cf-rating-progress)) !important;
   min-height: 0 !important;

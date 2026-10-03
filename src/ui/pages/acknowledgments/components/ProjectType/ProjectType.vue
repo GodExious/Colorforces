@@ -33,13 +33,13 @@ const item = computed(() => types[props.type]);
   align-items: center;
   gap: 5px;
   padding: 3px 7px;
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   border: 1px solid color-mix(in srgb, var(--cf-ack-accent) 40%, var(--cf-content-surface));
   background: color-mix(in srgb, var(--cf-ack-accent) 24%, var(--cf-content-surface));
   color: color-mix(in srgb, var(--cf-ack-accent) 38%, #26374b);
-  font-size: 11px;
+  font-size: var(--cf-font-size-xs);
   line-height: 18px;
-  font-weight: 600;
+  font-weight: var(--cf-font-weight-semibold);
   white-space: nowrap;
 }
 .cf-ack-project-type svg {

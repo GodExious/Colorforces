@@ -10,6 +10,7 @@ function clipContents(cell) {
   clip.dataset.cfPrediction = '';
   while (cell.firstChild) clip.append(cell.firstChild);
   cell.append(clip);
+  return clip;
 }
 
 // 只解除本功能的裁剪层，保留评分、按钮及原站行的节点身份。
@@ -49,20 +50,8 @@ export function syncPredictionColumns(table, columns) {
         : 1;
     jobs.push({ cell, visible, from: Number.isFinite(from) ? from : 0, previous });
   }
-  const repairSizes = repairs.map((cell) => {
-    const style = getComputedStyle(cell);
-    const height =
-      cell.getBoundingClientRect().height -
-      ['paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth'].reduce(
-        (sum, key) => sum + (parseFloat(style[key]) || 0),
-        0,
-      );
-    return { cell, height };
-  });
-  repairSizes.forEach(({ cell, height }) => {
-    clipContents(cell);
-    cell.style.setProperty('--cf-prediction-column-height', Math.max(0, height) + 'px');
-  });
+  // 收放途中内容被整格重画时裁剪层会丢，补回即可；裁剪层不定高，无需重新测量。
+  repairs.forEach(clipContents);
   // 先统一复位，再统一测量，避免逐格读写触发布局抖动。
   jobs.forEach(({ cell, previous }) => {
     previous?.cancel();
@@ -82,14 +71,6 @@ export function syncPredictionColumns(table, columns) {
             number('paddingRight') -
             number('borderLeftWidth') -
             number('borderRightWidth'),
-        ),
-        height: Math.max(
-          0,
-          rect.height -
-            number('paddingTop') -
-            number('paddingBottom') -
-            number('borderTopWidth') -
-            number('borderBottomWidth'),
         ),
         left: number('paddingLeft'),
         right: number('paddingRight'),

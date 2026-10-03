@@ -4,10 +4,13 @@ import { colorforcesMark, colorforcesAuroraMark } from '../../../assets/index.js
 import { translate as t } from '../../../i18n/index.js';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
 import { tooltip } from '../../components/tooltips/FloatingTooltip/FloatingTooltip.vue';
-// 旧版轻纱效果保留为 aurora；默认同色花瓣，不新增用户设置。
+import { PETAL_COLORS, petalColor } from '../../../utils/petal-palette.js';
+// 旧版轻纱效果保留为 aurora；默认是花瓣聚光，不新增用户设置。
 const props = defineProps({
   open: Boolean,
   dragging: Boolean,
+  // 当前页在花瓣色环上的位置（第几片花瓣，可以是小数）。
+  spot: { type: Number, default: 0 },
   appearance: {
     type: String,
     default: 'flower',
@@ -18,42 +21,33 @@ const emit = defineEmits(['toggle']);
 const button = ref(null);
 const resting = ref(document.hidden);
 const transitions = new Set();
-const flowerReturns = new Set();
 let motionPreference;
-// 清理尚未结束的归位动画，避免连续开合叠加旧角度。
-function stopFlowerReturn() {
-  flowerReturns.forEach((animation) => animation.cancel());
-  flowerReturns.clear();
-}
-// 收起后恢复 Logo 原姿态；归位中再次展开则从当前角度继续转动。
-function restoreFlowerPose(open) {
-  const art = button.value?.querySelector('.cf-launcher-art');
-  if (!art) return;
-  const layers = [art, ...art.querySelectorAll('.cf-launcher-motion')];
-  const poses = layers.map((layer) => getComputedStyle(layer).transform);
-  stopFlowerReturn();
-  if (open) {
-    const matrix = new DOMMatrixReadOnly(poses[0] === 'none' ? undefined : poses[0]);
-    const angle = (Math.atan2(matrix.b, matrix.a) * 180) / Math.PI;
-    art.style.setProperty('--cf-launcher-turn-start', `${angle}deg`);
-    return;
-  }
-  if (document.hidden || motionPreference?.matches) return;
-  layers.forEach((layer, index) => {
-    if (poses[index] === 'none') return;
-    const animation = layer.animate([{ transform: poses[index] }, { transform: 'none' }], {
-      duration: 780,
-      easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-    });
-    flowerReturns.add(animation);
-    animation.finished.then(
-      () => {
-        animation.cancel();
-        flowerReturns.delete(animation);
-      },
-      () => {},
-    );
+// 窄扇形聚光：亮度向两侧延伸约一片半花瓣，其余花瓣只留一成多的不透明度，紧邻的两片也压得较暗。
+const FAN_SPREAD = 1.4;
+const FAN_FLOOR = 0.13;
+const FAN_CURVE = 1.5;
+let turn = 0;
+// 菜单展开时，花用明暗指出当前页：离当前位置最近的那片最亮，并直接换成当前页的准确颜色；
+// 整朵花再转动，把最亮的那片转到正上方。这里只算好每片的亮度和转角，交给样式在展开时生效。
+function lightPetals() {
+  const root = button.value;
+  if (!root) return;
+  const size = PETAL_COLORS.length;
+  const lead = Math.round(props.spot) % size;
+  root.querySelectorAll('.cf-flower-petal').forEach((petal, index) => {
+    const gap = Math.abs(index - props.spot) % size;
+    const lit = Math.max(0, 1 - Math.min(gap, size - gap) / FAN_SPREAD);
+    const light = index === lead ? 1 : FAN_FLOOR + (1 - FAN_FLOOR) * Math.pow(lit, FAN_CURVE);
+    petal.style.setProperty('--cf-petal-light', light.toFixed(3));
+    // 最亮的那片用当前页的准确颜色，是个固定值，不取正在渐变的主题色，免得两段过渡叠在一起。
+    if (index === lead) petal.style.setProperty('--cf-petal-lit', petalColor(props.spot));
+    else petal.style.removeProperty('--cf-petal-lit');
+    petal.toggleAttribute('data-cf-lead', index === lead);
   });
+  // 走最近的方向，避免从最后一页回到第一页时倒转一整圈。
+  const target = -props.spot * (360 / size);
+  turn = target + Math.round((turn - target) / 360) * 360;
+  root.style.setProperty('--cf-launcher-turn', `${turn}deg`);
 }
 // 取消尚未结束的收放动画，释放动画对节点样式的占用。
 function stopPetalTransition() {
@@ -127,19 +121,11 @@ function updateVisibility() {
   resting.value = document.hidden;
   if (resting.value) {
     stopPetalTransition();
-    stopFlowerReturn();
     tooltip.hide();
   }
 }
-// 在开合类名更新前读取旧姿态，避免先归零再补动画造成闪跳。
-watch(
-  () => [props.open, props.appearance],
-  ([open, appearance]) => {
-    if (appearance === 'flower') restoreFlowerPose(open);
-    else stopFlowerReturn();
-  },
-  { flush: 'pre' },
-);
+// 换页或换图案后重新计算花瓣的明暗和转角；换图案后要等新的花瓣节点渲染出来。
+watch(() => [props.spot, props.appearance], lightPetals, { flush: 'post' });
 watch(
   () => [props.open, props.appearance],
   ([open, appearance]) => {
@@ -152,14 +138,12 @@ watch(
 onMounted(() => {
   motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
   motionPreference.addEventListener('change', stopPetalTransition);
-  motionPreference.addEventListener('change', stopFlowerReturn);
   document.addEventListener('visibilitychange', updateVisibility);
+  lightPetals();
 });
 onBeforeUnmount(() => {
   stopPetalTransition();
-  stopFlowerReturn();
   motionPreference?.removeEventListener('change', stopPetalTransition);
-  motionPreference?.removeEventListener('change', stopFlowerReturn);
   document.removeEventListener('visibilitychange', updateVisibility);
 });
 </script>
@@ -193,11 +177,6 @@ onBeforeUnmount(() => {
   </div>
 </template>
 <style>
-@property --cf-launcher-open {
-  syntax: '<percentage>';
-  inherits: true;
-  initial-value: 0%;
-}
 @property --cf-wind-phase {
   syntax: '<angle>';
   inherits: true;
@@ -239,7 +218,7 @@ onBeforeUnmount(() => {
   cursor: pointer !important;
   user-select: none !important;
   transition:
-    --cf-launcher-accent 480ms ease,
+    --cf-launcher-accent 480ms cubic-bezier(0.16, 1, 0.3, 1),
     transform 240ms ease,
     box-shadow 480ms ease;
 }
@@ -445,56 +424,35 @@ onBeforeUnmount(() => {
 #cf-ratings-settings-btn.is-resting .cf-launcher-motion {
   animation-play-state: paused;
 }
-/* 新版只给原八瓣染色，不交叉淡化，也不切换成另一套图案。 */
-#cf-ratings-settings-btn.is-flower {
-  --cf-launcher-open: 0%;
-  transition:
-    --cf-launcher-open 680ms cubic-bezier(0.22, 0.7, 0.2, 1),
-    --cf-launcher-accent 480ms ease,
-    transform 240ms ease,
-    box-shadow 480ms ease;
-}
-#cf-ratings-settings-btn.is-flower.is-open {
-  --cf-launcher-open: 100%;
-}
-#cf-ratings-settings-btn.is-flower .cf-flower-petal > use:first-child {
-  fill: color-mix(
-    in srgb,
-    var(--cf-petal-color),
-    var(--cf-launcher-accent) var(--cf-launcher-open)
-  );
-}
-#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower {
-  opacity: 1;
-  transform: scale(1) rotate(360deg);
-  transition: transform 780ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower .cf-launcher-motion {
-  animation-play-state: running;
-}
-/* 外层只在展开时慢转；收起后回到标准姿态，不累积到内层悬停旋转。 */
-#cf-ratings-settings-btn.is-flower .cf-launcher-art {
-  transform-origin: 50% 50%;
-  transform: rotate(0deg);
-}
-#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-art {
-  animation: cf-launcher-flower-turn 24s linear infinite;
-}
-#cf-ratings-settings-btn.is-flower:not(.is-open) .cf-launcher-motion {
+/*
+ * 花瓣聚光：收起时是原样的花。展开后用明暗指出当前页——
+ * 对应的那片花瓣最亮，并换成当前页的准确颜色；紧邻的两片稍亮，其余很淡；
+ * 整朵花转动，把最亮的那片转到正上方，换页时跟着转过去。花瓣的大小始终不变。
+ * 每片的亮度（--cf-petal-light）、最亮那片的颜色（--cf-petal-lit）和转角（--cf-launcher-turn）由脚本算好。
+ */
+#cf-ratings-settings-btn.is-flower .cf-launcher-motion {
   animation: none;
   transform: none;
 }
-#cf-ratings-settings-btn.is-flower.is-resting .cf-launcher-art,
-#cf-ratings-settings-btn.is-flower.is-resting .cf-launcher-flower .cf-launcher-motion {
-  animation-play-state: paused;
+#cf-ratings-settings-btn.is-flower .cf-flower-petal {
+  opacity: 1;
+  transition: opacity 480ms ease;
 }
-@keyframes cf-launcher-flower-turn {
-  from {
-    transform: rotate(var(--cf-launcher-turn-start, 0deg));
-  }
-  to {
-    transform: rotate(calc(var(--cf-launcher-turn-start, 0deg) + 360deg));
-  }
+#cf-ratings-settings-btn.is-flower .cf-flower-petal > use:first-child {
+  fill: var(--cf-petal-color);
+  transition: fill 480ms ease;
+}
+#cf-ratings-settings-btn.is-flower.is-open .cf-flower-petal {
+  opacity: var(--cf-petal-light, 1);
+}
+#cf-ratings-settings-btn.is-flower.is-open .cf-flower-petal[data-cf-lead] > use:first-child {
+  fill: var(--cf-petal-lit, var(--cf-petal-color));
+}
+/* 展开时先转满一圈再停到指向当前页的角度；之后换页只转过相差的那一段。 */
+#cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower {
+  opacity: 1;
+  transform: scale(1) rotate(calc(360deg + var(--cf-launcher-turn, 0deg)));
+  transition: transform 780ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 @keyframes cf-flower-sway {
   0%,
@@ -543,16 +501,15 @@ onBeforeUnmount(() => {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  #cf-ratings-settings-btn.is-flower .cf-launcher-art,
-  #cf-ratings-settings-btn.is-flower.is-open .cf-launcher-art {
-    animation: none;
-  }
   #cf-ratings-settings-btn.is-flower,
+  #cf-ratings-settings-btn.is-flower .cf-flower-petal,
+  #cf-ratings-settings-btn.is-flower .cf-flower-petal > use:first-child,
   #cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower {
     transition: none;
   }
+  /* 关闭动效时不再先转一圈，直接停在指向当前页的角度。 */
   #cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower {
-    transform: none;
+    transform: rotate(var(--cf-launcher-turn, 0deg));
   }
   #cf-ratings-settings-btn .cf-launcher-motion {
     animation: none;

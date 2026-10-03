@@ -6,8 +6,7 @@ import * as assets from '../../../assets/index.js';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
 import ContributorsMenu from './components/ContributorsMenu/ContributorsMenu.vue';
 import MenuGlassSurface from '../MenuGlassSurface/MenuGlassSurface.vue';
-import { appStorage } from '../../../storage/gm.js';
-import { CACHE_TIME_KEY, CLIST_LAST_SYNC_KEY } from '../../../storage/keys.js';
+import { getRuntimeValue } from '../../../storage/runtime.js';
 import { subscribeStorageChanges } from '../../../features/storage/cleanup.js';
 import {
   subscribeClistProgress,
@@ -19,10 +18,8 @@ const tick = ref(0),
 const syncing = computed(() => progress.value && !progress.value.done);
 const lastTime = computed(() => {
   tick.value;
-  const value = appSettings.clist.enabled
-    ? appStorage.getItem(CLIST_LAST_SYNC_KEY)
-    : appStorage.getItem(CACHE_TIME_KEY);
-  const timestamp = parseInt(value || '0', 10);
+  const timestamp =
+    Number(getRuntimeValue(appSettings.clist.enabled ? 'clistSyncTime' : 'ratingsTime')) || 0;
   return timestamp > 0 && !isNaN(new Date(timestamp).getTime()) ? timestamp : 0;
 });
 const dotStyle = computed(() => ({
@@ -187,21 +184,23 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* 与标题栏相同：玻璃自己带上菜单外框对应的圆角，四角不会露出方形的模糊。 */
+  border-radius: 0 0 13px 13px;
 }
 
 .cf-footer-top-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  font-size: var(--cf-font-size-base);
 }
 
 .cf-footer-status {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #64748b;
-  font-size: 12px;
+  color: var(--cf-gray-500);
+  font-size: var(--cf-font-size-base);
   user-select: none;
 }
 
@@ -223,12 +222,12 @@ onBeforeUnmount(() => {
 .cf-footer-link,
 .cf-footer-link:link,
 .cf-footer-link:visited {
-  color: #64748b !important;
+  color: var(--cf-gray-500) !important;
   text-decoration: none !important;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: var(--cf-font-size-base);
   transition: color 0.15s ease;
   cursor: pointer;
   user-select: none;
@@ -241,8 +240,8 @@ onBeforeUnmount(() => {
 }
 
 .cf-footer-divider {
-  color: #cbd5e1;
-  font-size: 12px;
+  color: var(--cf-gray-300);
+  font-size: var(--cf-font-size-base);
   user-select: none;
 }
 
@@ -252,13 +251,13 @@ onBeforeUnmount(() => {
   align-items: center;
   border-top: 1px dashed #edf2f7;
   padding-top: 5px;
-  font-size: 11px;
-  color: #94a3b8;
+  font-size: var(--cf-font-size-xs);
+  color: var(--cf-gray-400);
   user-select: none;
 }
 
 .cf-footer-motto {
-  color: #94a3b8;
+  color: var(--cf-gray-400);
 }
 
 .cf-footer-mini-progress {
@@ -274,8 +273,8 @@ onBeforeUnmount(() => {
   gap: 8px;
   padding: 2px 7px;
   margin: -2px -7px;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: var(--cf-radius-sm);
+  font-size: var(--cf-font-size-base);
   user-select: none;
   cursor: pointer;
   transition:
@@ -296,7 +295,7 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
   width: 76px;
   height: 6px;
-  background: #e2e8f0;
+  background: var(--cf-gray-200);
   border-radius: 3px;
   overflow: hidden;
   position: relative;
@@ -317,10 +316,10 @@ onBeforeUnmount(() => {
 }
 
 .cf-mini-progress-text {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-semibold);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  color: #334155;
+  color: var(--cf-gray-700);
   transition: color 0.2s ease;
 }
 

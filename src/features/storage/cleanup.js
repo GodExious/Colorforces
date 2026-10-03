@@ -1,15 +1,12 @@
 import { appStorage } from '../../storage/gm.js';
 import { resetSettings } from '../../settings.js';
+import { clearRuntimeData, removeRuntimeValues } from '../../storage/runtime.js';
 import {
   CACHE_KEY,
-  CACHE_TIME_KEY,
-  CACHE_LOCALE_KEY,
   PARALLEL_CONTESTS_KEY,
   CLIST_STORAGE_KEY,
-  CLIST_LAST_SYNC_KEY,
   AVATAR_CACHE_KEY,
   PREDICTION_STORAGE_KEYS,
-  RUNTIME_STORAGE_KEYS,
 } from '../../storage/keys.js';
 import { clearRatingsMemory } from '../ratings/data.js';
 import { clearClistMemory } from '../ratings/clist/sync.js';
@@ -24,22 +21,20 @@ export function subscribeStorageChanges(listener) {
 // 仅按原有功能范围清理 GM 键；不清空站点 localStorage。
 export function clearStorageGroup(group) {
   if (group === 'settings') resetSettings();
-  if (group === 'runtime' || group === 'all') {
-    RUNTIME_STORAGE_KEYS.forEach((key) => appStorage.removeItem(key));
-  }
+  if (group === 'runtime' || group === 'all') clearRuntimeData();
+  // 题库缓存清掉后，插件数据里对应的更新时间和语言标记也一并去掉，下次访问会重新拉取。
   if (group === 'cf' || group === 'all') {
-    [CACHE_KEY, CACHE_TIME_KEY, CACHE_LOCALE_KEY, PARALLEL_CONTESTS_KEY].forEach((key) =>
-      appStorage.removeItem(key),
-    );
+    [CACHE_KEY, PARALLEL_CONTESTS_KEY].forEach((key) => appStorage.removeItem(key));
+    removeRuntimeValues(['ratingsTime', 'ratingsLocale']);
     clearRatingsMemory();
   }
   if (group === 'clist' || group === 'all') {
-    [CLIST_STORAGE_KEY, CLIST_LAST_SYNC_KEY].forEach((key) => appStorage.removeItem(key));
+    appStorage.removeItem(CLIST_STORAGE_KEY);
+    removeRuntimeValues(['clistSyncTime']);
     clearClistMemory();
   }
-  if (group === 'avatar' || group === 'user' || group === 'all')
+  if (group === 'user' || group === 'all') {
     appStorage.removeItem(AVATAR_CACHE_KEY);
-  if (group === 'solved' || group === 'user' || group === 'all') {
     getUserSolvedStorageDetails().keys.forEach((key) => appStorage.removeItem(key));
     clearSolvedMemory();
   }

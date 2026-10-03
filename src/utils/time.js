@@ -1,3 +1,9 @@
+// 把相对 UTC 的偏移（分钟，东区为正）写成 UTC+8、UTC-3 这样的时区标注。只按整小时标注，不处理半小时时区。
+export function utcOffsetLabel(minutes) {
+  if (!Number.isFinite(minutes)) return '';
+  return `UTC${minutes < 0 ? '-' : '+'}${Math.floor(Math.abs(minutes) / 60)}`;
+}
+
 // 按原有占位符规则生成时间文本。
 export function customFormatTime(d, formatStr) {
   if (!formatStr || typeof formatStr !== 'string') return '';

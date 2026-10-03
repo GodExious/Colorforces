@@ -6,7 +6,26 @@ import { getRatingTagStyle, getRatingBgColor } from '../../../ratings/rules.js';
 import upIcon from '../../../../assets/icons/prediction/rank-up.svg?raw';
 import downIcon from '../../../../assets/icons/prediction/rank-down.svg?raw';
 import steadyIcon from '../../../../assets/icons/prediction/rank-steady.svg?raw';
+import { utcOffsetLabel } from '../../../../utils/time.js';
 const icons = { up: upIcon, down: downIcon, same: steadyIcon };
+
+// 榜单快照的抓取时间：text 是按界面语言格式化的本地时间，zone 是本机时区。
+// 两者分开给出，界面把时区排成原站比赛时间旁边那种上标小字。
+export function snapshotTime(fetchedAt) {
+  const date = new Date(fetchedAt);
+  if (Number.isNaN(date.getTime())) return { text: '', zone: '' };
+  return {
+    text: date.toLocaleString(appSettings.lang === 'zh' ? 'zh-CN' : 'en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }),
+    zone: utcOffsetLabel(-date.getTimezoneOffset()),
+  };
+}
 
 // 浅色分析面板按评分档位着色，实心块模式取色块色而非白色反字。
 export function predictionNumberColor(value, delta = false) {
@@ -86,34 +105,64 @@ function rankLabel(rank) {
   return span;
 }
 
+const rankCellsToMeasure = new Set();
+let rankMeasureFrame = 0;
+// 紧凑标签的底板要贴着内容，宽度只能量出来。整张榜单的格子攒到同一帧里先全部读、再全部写，
+// 避免逐格读写造成反复重排。
+function measureRankContent(cell) {
+  rankCellsToMeasure.add(cell);
+  if (rankMeasureFrame) return;
+  rankMeasureFrame = requestAnimationFrame(() => {
+    rankMeasureFrame = 0;
+    const widths = [...rankCellsToMeasure].map((item) => [
+      item,
+      item.querySelector('.cf-prediction-rank-change')?.offsetWidth,
+    ]);
+    rankCellsToMeasure.clear();
+    for (const [item, width] of widths)
+      if (width) item.style.setProperty('--cf-rank-content', width + 'px');
+  });
+}
+
 // 历史包含 P → P 之类的持平；实时显示到下一评级档位所需的增分。
 export function renderRankProgress(cell, record, result, phase) {
   const progress = rankProgress(record, result?.delta, phase);
-  // 以实际分数作渐变端点，缺值或分数完全持平时保留原站斑马纹。
+  // 以实际分数作渐变端点；分数持平时两端同色，照样有底色。只有缺值时保留原站斑马纹。
   const before = progress?.final ? progress.before : record?.rating;
   const after = progress?.final
     ? progress.after
     : Number.isFinite(result?.delta)
       ? before + result.delta
       : null;
-  const gradient =
-    progress && Number.isFinite(before) && Number.isFinite(after) && before !== after;
-  cell.classList.toggle('cf-prediction-rank-gradient', Boolean(gradient));
+  // 底色与表现分、涨跌分一致：只有「沿用难度分样式」开启时才有，并跟随难度分的三种样式。
+  const styled = appSettings.prediction.followRatingStyle && appSettings.colorRatings;
+  const gradient = styled && progress && Number.isFinite(before) && Number.isFinite(after);
+  const tag = appSettings.displayStyle === 'tag';
+  // 标签且不铺满时底板收成内容四周的小标签，否则铺满整个单元格。
+  const compact = tag && appSettings.tagFillCell === false;
+  // 显隐与形状分开记：关闭底色时底板在原来的形状上淡出，不会边淡出边变形。
+  cell.dataset.cfRankMode = gradient ? 'tinted' : 'plain';
+  cell.dataset.cfRankShape = compact ? 'compact' : 'full';
+  // 没有底色时不清掉颜色，让底板带着原来的颜色淡出。
   if (gradient) {
-    const solid =
-      appSettings.prediction.followRatingStyle &&
-      appSettings.colorRatings &&
-      appSettings.displayStyle === 'block';
-    const color = (rating) => (solid ? getRatingBgColor(rating) : getRatingTagStyle(rating).bg);
-    cell.style.setProperty('--cf-rank-from', color(before));
-    cell.style.setProperty('--cf-rank-to', color(after));
-    cell.style.setProperty('--cf-rank-wash', solid ? '24%' : '75%');
-  } else {
-    cell.style.removeProperty('--cf-rank-from');
-    cell.style.removeProperty('--cf-rank-to');
-    cell.style.removeProperty('--cf-rank-wash');
+    const wash = (color, share) => `color-mix(in srgb, ${color} ${share}%, transparent)`;
+    const fill = (rating) =>
+      compact
+        ? getRatingTagStyle(rating).bg
+        : tag
+          ? wash(getRatingTagStyle(rating).bg, 75)
+          : wash(getRatingBgColor(rating), 24);
+    // 铺满时边框与底色同色，等于没有边框；紧凑标签才用标签的描边色。
+    const edge = (rating) => (compact ? getRatingTagStyle(rating).border : fill(rating));
+    cell.style.setProperty('--cf-rank-from', fill(before));
+    cell.style.setProperty('--cf-rank-to', fill(after));
+    cell.style.setProperty('--cf-rank-border-from', edge(before));
+    cell.style.setProperty('--cf-rank-border-to', edge(after));
   }
-  const signature = JSON.stringify([progress, appSettings.lang]);
+  measureRankContent(cell);
+  // 提示里带计评级名次，名次变了也要重画。
+  const ratedRank = Number.isInteger(result?.rank) ? result.rank : null;
+  const signature = JSON.stringify([progress, appSettings.lang, ratedRank]);
   if (cell.dataset.rankSignature === signature) return;
   cell.dataset.rankSignature = signature;
   cell.removeAttribute('data-tooltip-variant');
@@ -139,7 +188,7 @@ export function renderRankProgress(cell, record, result, phase) {
           : 'predictionRankSame';
     cell.dataset.tooltip = [
       `${current.name} → ${next.name}`,
-      `${progress.before} → ${progress.after}`,
+      `${progress.before} → ${progress.after}` + (ratedRank === null ? '' : ` (#${ratedRank})`),
       t(key),
     ].join('\n');
     cell.dataset.tooltipVariant = 'prediction-rank';

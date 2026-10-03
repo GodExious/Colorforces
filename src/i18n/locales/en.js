@@ -17,10 +17,10 @@ export default {
     `${n} rating points above the model starting rating are needed for ${name}.`,
   predictionTopRank: 'Already in the highest rating tier',
   predictionAnalyze: 'Single-user rating analysis',
-  predictionActions: 'Actions',
+  predictionActions: 'Analyze',
   predictionFinalMarker: 'Final · Official rating results; performance remains calculated',
   predictionSettingsHint:
-    'Official participation only. Use the analysis button in the Actions column for targets or refined performance. Classic colors are used when problem-rating colors are disabled.',
+    'Official participation only. Use the flower button in the Analyze column to simulate a target rank or target rating. Classic colors are used when problem-rating colors are disabled.',
   participationEnable: 'Show user participation identity tags',
   participationRated: 'Show rated tags',
   participationUnrated: 'Show unrated tags',
@@ -67,8 +67,6 @@ export default {
   predictionReasoncontestRules: 'Based on contest rules and official submissions',
   predictionLateRatings:
     'No verified pre-contest rating snapshot. Ratings were fetched after the contest began and predictions may differ.',
-  predictionInitialRating:
-    'Some new or zero-rating records use the reference model’s 1400 initial value. Refined results apply to these inputs, not necessarily official initialization rules.',
   predictionIncompleteData:
     'Participant or rating data is incomplete. Prediction and performance calculation are paused.',
   predictionNetworkError: 'Could not fetch contest data. Please retry later.',
@@ -83,28 +81,22 @@ export default {
   predictionSnapshotChanged: 'The contest snapshot changed. Please calculate again.',
   predictionClose: 'Close analysis',
   predictionModelRating: 'Model starting rating',
-  predictionMode: 'Analysis mode',
-  predictionTargetRating: 'Rank needed for target Rating',
-  predictionTargetRank: 'Estimated rank score',
   predictionTargetRatingInput: 'Target post-contest Rating',
   predictionTargetRankInput: 'Target rank',
-  predictionTargetRatingPlaceholder: (min, max) =>
-    min == null ? 'Enter a reachable target Rating' : `Enter a target Rating from ${min} to ${max}`,
-  predictionTargetRankPlaceholder: (min, max) =>
-    min == null ? 'Enter a reachable target rank' : `Enter a rank from ${min} to ${max}`,
-  predictionEstimateRating: 'Estimate post-contest Rating',
-  predictionEstimateRank: 'Estimate required rank',
-  predictionCalculate: 'Calculate target',
-  predictionRefine: 'Refine performance',
-  predictionRefineHint:
-    'Independently solve for the zero-change performance boundary under this snapshot.',
+  predictionCurrentRank: 'Current rank',
+  predictionEstimateRank: 'Required rank',
+  predictionEstimateHint: 'Estimate, not final yet',
+  predictionFlagCurrent: 'Now',
+  predictionFlagBefore: 'Before',
+  predictionQuickCurrent: 'Back to current standings',
+  predictionQuickKeep: 'No rating loss',
+  predictionQuickPromote: (name) => `Reach ${name}`,
   predictionComputing: 'Calculating in a separate worker…',
-  predictionUnreachable: 'This target is unreachable under the current snapshot and field.',
-  predictionRefined: 'Performance boundary under the current model',
-  predictionEstimatedRank: 'Rank needed for target Rating',
-  predictionRankHint: (n) => `Estimated rank #${n}.`,
-  predictionResultRating: 'Model ending rating',
-  predictionInputHint: 'Enter a target to explore a scenario under this snapshot',
+  predictionRatingChange: 'Model rating change',
+  predictionInputHint: 'Drag a slider or enter a value to explore a scenario under this snapshot',
+  predictionTips: 'Tips',
+  predictionBiasHint:
+    'For accounts in their 2nd–6th rated contest, the shown rating is lower than the one Codeforces actually uses, and only the shown rating is available here. In rounds with many such accounts (e.g. Div. 2, Div. 3), predictions run low, by about 10–25 points in our tests.',
   predictionScenarioHint:
     'Ranks include rated participants only and may differ from the visible standings. All adjustments are recalculated; this is not a guaranteed final result or attainable rank.',
   storageUserTitle: 'CF user data',
@@ -114,13 +106,18 @@ export default {
     'Clear avatars and solved-problem data for all cached accounts? User settings will be preserved.',
   storagePredictionTitle: 'Contest prediction data',
   storagePredictionDesc:
-    'Contest snapshots, rating sources and request coordination. Disabling the feature preserves these caches.',
+    'Contest snapshots (only the 3 most recently predicted contests are kept), rating sources and request coordination. Disabling the feature preserves these caches.',
   storagePredictionClearBtn: 'Clear Cache',
   storagePredictionClearConfirm:
     'Clear contest and rating caches and cancel current calculations? Settings are preserved; later refreshes will fetch data again.',
   storageCategoryCount: (n) => `${n} categories`,
   storageContestCount: (n) => `${n} contests`,
-  storageClearSection: 'Clear this category',
+  storageKeyRatings: 'Ratings & Titles',
+  storageKeyParallel: 'Parallel Contests',
+  storageKeyClist: 'CList Data',
+  storageKeySnapshots: 'Contest Snapshots',
+  storageKeyRatingSources: 'Rating Sources',
+  storageKeyRequestLease: 'Request Coordination',
   // Settings Panel - General & Navigation
   title: 'Plugin Settings',
   launcherOpenHint: 'Open plugin settings',
@@ -128,13 +125,11 @@ export default {
   tabGeneral: 'General',
   tabAppearance: 'Appearance',
   tabRatings: 'Ratings',
-  tabPrediction: 'Rating Prediction',
+  tabPrediction: 'Contest',
   tabUser: 'Users',
   tabShortcuts: 'Shortcuts',
   tabStorage: 'Storage',
-  tabChangelog: 'Changelog',
   tabRoadmap: 'Roadmap',
-  tabAcknowledgments: 'Acknowledgments',
   changelogTitle: 'Changelog',
   changelogSubtitle: 'Notable changes and release history for Colorforces',
   changelogLatestBadge: 'Latest',
@@ -144,10 +139,8 @@ export default {
   changelogBadgeAnnouncement: 'Announcement',
   roadmapTitle: 'Development Roadmap',
   roadmapSubtitle: 'Upcoming feature plans and development milestones for Colorforces',
-  roadmapSectionPlanned: 'Planned',
   roadmapSectionCompleted: 'Completed',
   roadmapStatusPlanned: 'Planned',
-  roadmapStatusCompleted: 'Done',
   roadmapItemCount: (count) => `${count} ${count === 1 ? 'item' : 'items'}`,
   roadmapProposalTitle: 'Have a Feature Proposal?',
   roadmapProposalDesc:
@@ -179,7 +172,7 @@ export default {
   statusUpdateFailed: 'Check failed',
   updateModalTitle: '🔔 New Version Available',
   updateModalDesc: (remoteVer, curVer) =>
-    `A new version of Colorforces is available: <span style="font-weight: 700; color: #1890ff;">v${remoteVer}</span> (current installed version is v${curVer}).`,
+    `A new version of Colorforces is available: <span class="cf-update-version">v${remoteVer}</span> (current installed version is v${curVer}).`,
   updateModalSubDesc: 'Updating is recommended to experience the latest features and improvements.',
   updateModalStopCheck: 'Do not check for updates automatically',
   updateModalBtnUpdate: 'Update Now',
@@ -213,6 +206,9 @@ export default {
     'Master switch to toggle rank-color difficulty styling across the site.',
   shortcutDisplayStyleTitle: 'Toggle Ratings Display Format',
   shortcutDisplayStyleDesc: 'Switch between Block and Tag difficulty rating display formats.',
+  shortcutPredictionEnabledTitle: 'Toggle Contest Rating Prediction',
+  shortcutPredictionEnabledDesc:
+    'Turn the rating prediction columns on standings on or off. Default: Shift+P (Prediction).',
   shortcutUserAvatarTitle: 'Toggle User Avatars',
   shortcutUserAvatarDesc: 'Toggle visibility of user avatars in standings and status tables.',
   shortcutRecording: 'Press keys...',
@@ -288,7 +284,6 @@ export default {
   tokenMonthName: 'Full / short English month',
   tokenEscape: 'Escaped literal text',
   tokenEscapeExample: '[at], [T]',
-  saveBtn: 'Save & Reload',
 
   // Footer & Metadata
   footerRatingStatus: (timeStr) => `Ratings Last Updated (${timeStr})`,
@@ -309,7 +304,6 @@ export default {
   footerContributorClaudeDetail: 'Feature iteration · UX polish · Quality assurance',
 
   // CList Settings UI
-  clistSectionTitle: 'CList Ratings Extension',
   clistEnable: 'Enable CList Ratings',
   clistAuthMode: 'Auth Mode',
   clistLoginHelpTooltip: 'Please log in at clist.by',
@@ -320,12 +314,10 @@ export default {
   clistHelpTooltip: 'Click to view detailed guide',
   clistSyncTitle: 'Sync CList Ratings Now',
   clistSyncTooltip:
-    'CList API rate limits apply (8s/req, ~24s total across 3 requests). Click for details',
+    'A sync takes 3 requests and about 30 seconds, then cools down for 10 minutes. Click for details',
   clistSyncBtn: 'Sync Now',
   clistSyncBtnSyncing: (pct) => `Syncing (${pct}%)`,
   clistSyncBtnCooldown: (min, sec) => `Cooldown (${min}:${sec})`,
-  clistNeedKeyOrLogin: 'Please provide a CList API Key or log in to CList in your browser',
-  clistInCooldown: (min, sec) => `Sync is on cooldown. Please wait ${min}m ${sec}s.`,
 
   // CList API Key Guide Modal
   guideModalTitle: 'CList API Key Guide',
@@ -346,36 +338,37 @@ export default {
   guideConfirmBtn: 'Got it',
 
   // CList Sync Specification Modal
-  specModalTitle: 'CList API Sync Specifications',
-  specRateLimitTitle: '1. API Rate Limits',
-  specRateLimitLabel: 'Rate Limit: ',
-  specRateLimitDesc:
-    'CList API allows up to 10 requests per 60 seconds; exceeding triggers HTTP 429.',
-  specPageLimitLabel: 'Page Limit: ',
-  specPageLimitDesc:
-    'Up to 1,000 contests per request (with with_problems returning embedded problem datasets).',
-  specBatchStrategyTitle: '2. Batch Sync Strategy',
-  specDatasetLabel: 'Data Scope: ',
-  specDatasetDesc:
-    'Codeforces has ~2,100+ contests (covering 13,000+ problems), fully fetched across only 3 requests.',
-  specPacemakerLabel: 'Pacemaker: ',
-  specPacemakerDesc:
-    'Requests are sent every 8 seconds (~24s total across 3 requests), well within rate limits.',
-  specProgressLabel: 'Progress: ',
-  specProgressDesc: 'Displays current page, pulled count, and estimated time remaining.',
-  specCooldownTitle: '3. Cooldown Protection',
-  specCooldownLabel: '10-Min Cooldown: ',
-  specCooldownDesc:
-    'Enters a 10-minute cooldown after successful full sync to avoid frequent requests.',
-  specErrorCooldownLabel: 'No Cooldown on Error: ',
-  specErrorCooldownDesc:
-    'If aborted due to network or invalid credentials, cooldown is not applied.',
+  specModalTitle: 'How CList sync works',
+  specFactRequestsValue: '3',
+  specFactRequestsLabel: 'requests fetch every rating',
+  specFactDurationValue: '~30 s',
+  specFactDurationLabel: 'for one full sync',
+  specFactCooldownValue: '10 min',
+  specFactCooldownLabel: 'cooldown after success',
+  specStepsTitle: 'What happens',
+  specStepFetchTitle: 'Fetch in batches',
+  specStepFetchDesc:
+    'Each request returns 1,000 contests with their problems. Codeforces has about 2,100 contests and 13,000 problems, so 3 requests cover everything.',
+  specStepWaitTitle: 'Wait 8 seconds between requests',
+  specStepWaitDesc:
+    'CList accepts at most 10 requests per minute. One request every 8 seconds stays within that limit.',
+  specStepSaveTitle: 'Save, then cool down',
+  specStepSaveDesc:
+    'Once everything is fetched it is saved locally and ratings on the page refresh right away. Syncing is then unavailable for 10 minutes.',
+  specNotesTitle: 'If something goes wrong',
+  specNoteRateLimitLabel: 'Too many requests',
+  specNoteRateLimitDesc: 'The script waits 60 seconds and continues on its own.',
+  specNoteFailureLabel: 'Network error or invalid key',
+  specNoteFailureDesc:
+    'Sync stops and shows the reason. A failed sync does not start the cooldown, so you can retry at once.',
+  specNoteBackgroundLabel: 'Want to keep working',
+  specNoteBackgroundDesc:
+    'Send the progress window to the background, but keep this page open until the sync finishes.',
   specConfirmBtn: 'Got it',
 
   // CList Sync Progress Modal
   syncModalTitle: 'Sync CList Ratings',
   syncInitConnecting: 'Connecting to CList API...',
-  syncLabelTotal: 'Total Problems',
   syncApproxCount: (count) => `~${count}`,
   syncLabelPulled: 'Fetched',
   syncLabelEta: 'Estimated Time',
@@ -410,11 +403,8 @@ export default {
     'Inspect Tampermonkey script storage usage, clear cached problem/avatar data, or restore factory default settings.',
   storageTotalTitle: 'Tampermonkey Storage Used',
   storageChartTotal: 'Total',
-  storageLimitText: (used) => `${used}`,
   storageBarClist: 'CList Problems',
   storageBarCf: 'CF Official',
-  storageBarAvatar: 'Avatars',
-  storageBarSolved: 'Solved',
   storageBarSettings: 'Settings',
   storageBarRuntime: 'Plugin Data',
   storageRuntimeTitle: 'Plugin Data',
@@ -433,36 +423,20 @@ export default {
   storageSettingsResetBtn: 'Restore Defaults',
   storageSettingsResetConfirm:
     'Reset all plugin settings to factory defaults? Cached problem ratings will not be affected.',
-  storageSettingsResetSuccess: 'Factory default settings restored',
   storageCfTitle: 'CF Official Problems',
   storageCfDesc:
     'Official rating and problem title index cache (will automatically re-fetch on next page visit).',
   storageCfClearBtn: 'Clear Cache',
   storageCfClearConfirm:
     'Clear Codeforces official problem ratings cache? It will be re-fetched automatically on next page load.',
-  storageCfClearSuccess: 'Codeforces problem cache cleared',
   storageClistTitle: 'CList Problem Data',
   storageClistDesc:
     'Fully synced CList fine-grained ratings, accepted counts, and submission totals.',
   storageClistClearBtn: 'Clear Cache',
   storageClistClearConfirm:
     'Clear CList problem ratings cache? You will need to click "Sync Now" to download again.',
-  storageClistClearSuccess: 'CList problem data cleared',
   storageAvatarTitle: 'User Avatars Cache',
-  storageAvatarDesc:
-    'Cached user avatar URLs and 503 error self-healing fallback records for standings and status lists.',
-  storageAvatarClearBtn: 'Clear Cache',
-  storageAvatarClearConfirm:
-    'Clear cached user avatar data? Avatars will be re-resolved when viewing standings.',
-  storageAvatarClearSuccess: 'User avatar cache cleared',
   storageSolvedTitle: 'User Solved Problems Cache',
-  storageSolvedDesc:
-    'Cached list of solved problem records for logged-in users, used for status matching and keeping tags on solved problems.',
-  storageSolvedClearBtn: 'Clear Cache',
-  storageSolvedClearConfirm:
-    'Clear local cache of user solved problems? It will be re-fetched from Codeforces when needed.',
-  storageSolvedClearSuccess: 'User solved problems cache cleared',
-  storageSolvedNoneTip: 'No solved problem cache records found.',
   storageSolvedCount: (count) => `${count.toLocaleString()} solved`,
   storageLegacyTitle: 'Deprecated Cache',
   storageLegacyDesc:
@@ -475,9 +449,7 @@ export default {
   storageProblemCount: (count) => `${count.toLocaleString()} problems`,
   storageAvatarCount: (count) => `${count.toLocaleString()} avatars`,
   storageClearedBadge: 'Cleared',
-  storageDefaultBadge: 'Default',
   storageViewBtn: 'View',
-  storageViewTitle: 'Storage JSON Data',
   storageCopyBtn: 'Copy JSON',
   storageCopiedBtn: 'Copied!',
   storageCloseBtn: 'Close',
@@ -512,9 +484,9 @@ export default {
     '<p>OJ Better is a modern online judge userscript, supporting multiple platforms, and offering UI enhancements and tools.</p><p>Thanks to OJ Better for inspiring our CList rating integration, providing valuable ideas for this feature.</p>',
   ackOjBetterLinkText: 'Visit GitHub Repository',
   ackCarrotTitle: 'Carrot-Plus',
-  ackCarrotBadge: 'Integration Coming Soon',
+  ackCarrotBadge: 'Prediction Reference',
   ackCarrotDesc:
-    '<p>Carrot-Plus is a classic contest prediction extension, tracking live standings, and dynamically estimating rating deltas.</p><p>Colorforces plans to integrate its prediction model in upcoming updates to provide built-in rating forecasts.</p>',
+    '<p>Carrot-Plus is a classic contest prediction extension, tracking live standings, and dynamically estimating rating deltas.</p><p>The built-in contest rating prediction in Colorforces is based on its prediction model.</p>',
   ackCarrotLinkText: 'Visit GitHub Repository',
   ackAnalyticsTitle: 'CF Analytics Pro Max',
   ackAnalyticsBadge: 'Data Analytics',

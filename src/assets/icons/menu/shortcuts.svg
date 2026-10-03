@@ -1,3 +1,3 @@
-<svg data-cf-icon="navigation" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='var(--cf-icon-ink, var(--cf-icon-primary))' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: #8b9f43; --cf-icon-secondary: #b1bc70'>
+<svg data-cf-icon="navigation" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='var(--cf-icon-ink, var(--cf-icon-primary))' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: #43b8af; --cf-icon-secondary: #8ed4cf'>
   <rect x='3' y='4' width='18' height='16' rx='4' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/><path d='m13 6.8-5 6h4l-1 4.4 5-6h-4Z' fill='var(--cf-icon-secondary)' stroke='var(--cf-icon-detail, var(--cf-icon-secondary))' stroke-width='1.2'/>
 </svg>

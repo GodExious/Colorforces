@@ -1,17 +1,10 @@
 import { Contestant, RatingCalculator, MIN_RATING_LIMIT, MAX_RATING_LIMIT } from './calculator.js';
+import { sampleRanks } from './curve.js';
 
 // 每次计算使用独立选手对象，防止原算法排序污染快照或页面次序。
-function calculator(rows, changedHandle, assumedRating) {
+function calculator(rows) {
   return new RatingCalculator(
-    rows.map(
-      (row) =>
-        new Contestant(
-          row.handle,
-          row.points,
-          row.penalty,
-          row.handle === changedHandle ? assumedRating : row.rating,
-        ),
-    ),
+    rows.map((row) => new Contestant(row.handle, row.points, row.penalty, row.rating)),
   );
 }
 
@@ -62,6 +55,25 @@ export function targetBounds(rows, handle) {
   };
 }
 
+// 沿名次取样，得到「名次 → 赛后评级」曲线，供滑杆着色和拖动时的即时估算。
+// 首尾两点就是可达范围，与 targetBounds 的结果一致，所以一并返回。
+export function targetCurve(rows, handle, count) {
+  if (!rows.length) throw new Error('predictionMissingUser');
+  const points = sampleRanks(rows.length, count).map((rank) => ({
+    rank,
+    rating: rankScenario(rows, handle, rank).rating,
+  }));
+  const first = points[0].rating;
+  const last = points.at(-1).rating;
+  return {
+    rankMin: 1,
+    rankMax: rows.length,
+    ratingMin: Math.min(first, last),
+    ratingMax: Math.max(first, last),
+    points,
+  };
+}
+
 // 反查目标评级对应的名次边界，并对返回边界进行完整结算复核。
 export function analyzeTarget(rows, handle, mode, value) {
   if (!rows.length || !Number.isInteger(value)) throw new Error('predictionInvalidInput');
@@ -93,34 +105,4 @@ export function analyzeTarget(rows, handle, mode, value) {
   for (let i = Math.max(0, low - 3); i < Math.min(positions.length - 1, low + 3); i++)
     if (at(i).rating < at(i + 1).rating) throw new Error('predictionBoundaryUncertain');
   return { ...at(low), target: value };
-}
-
-// 假设评级每次变化后重算全体，精算的是固定快照模型下的零涨分边界。
-export function refinePerformance(rows, handle) {
-  if (!rows.some((r) => r.handle === handle)) throw new Error('predictionMissingUser');
-  const cache = new Map();
-  const delta = (rating) => {
-    if (!cache.has(rating)) {
-      const calc = calculator(rows, handle, rating);
-      calc.calculateDeltas(false);
-      cache.set(rating, calc.contestants.find((c) => c.handle === handle).delta);
-    }
-    return cache.get(rating);
-  };
-  let low = MIN_RATING_LIMIT,
-    high = MAX_RATING_LIMIT - 1;
-  if (delta(low) <= 0) return { performance: low, bound: 'lower' };
-  if (delta(high) > 0) return { performance: high, bound: 'upper' };
-  while (low < high) {
-    const mid = Math.floor((low + high) / 2);
-    if (delta(mid) <= 0) high = mid;
-    else low = mid + 1;
-  }
-  for (
-    let r = Math.max(MIN_RATING_LIMIT, low - 3);
-    r < Math.min(MAX_RATING_LIMIT - 1, low + 3);
-    r++
-  )
-    if (delta(r) < delta(r + 1)) throw new Error('predictionBoundaryUncertain');
-  return { performance: low, bound: null };
 }

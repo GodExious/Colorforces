@@ -1,10 +1,6 @@
 import { appStorage } from '../../storage/gm.js';
-import {
-  PARALLEL_CONTESTS_KEY,
-  CACHE_KEY,
-  CACHE_TIME_KEY,
-  CACHE_LOCALE_KEY,
-} from '../../storage/keys.js';
+import { getRuntimeValue, setRuntimeValues } from '../../storage/runtime.js';
+import { PARALLEL_CONTESTS_KEY, CACHE_KEY } from '../../storage/keys.js';
 import { CACHE_EXPIRY } from '../../config/cache-policy.js';
 import { sortProblemKeys } from '../../utils/problem.js';
 import { fetchContestList, fetchProblemset } from '../../api/codeforces.js';
@@ -91,9 +87,9 @@ export function getProblemsByContest(cid) {
 // 读取有效评分缓存，必要时请求官方题库并关联并赛数据。
 export async function getRatings() {
   const cached = appStorage.getJSON(CACHE_KEY, null);
-  const cachedTimeStr = appStorage.getItem(CACHE_TIME_KEY);
-  const cachedTime = cachedTimeStr ? parseInt(cachedTimeStr, 10) : 0;
-  const hasEnglishCache = appStorage.getItem(CACHE_LOCALE_KEY) === 'en';
+  const cachedTime = Number(getRuntimeValue('ratingsTime')) || 0;
+  // 标记已成功拉取的题库语言，旧版无标记缓存会在后台更新。
+  const hasEnglishCache = getRuntimeValue('ratingsLocale') === 'en';
   const now = Date.now();
 
   // Check if cached data already contains the 'name' field and parallel contest data exists
@@ -211,8 +207,7 @@ export async function getRatings() {
         // Save to appStorage sorted by key
         const sortedRatingsMap = sortProblemKeys(ratingsMap);
         appStorage.setJSON(CACHE_KEY, sortedRatingsMap);
-        appStorage.setItem(CACHE_TIME_KEY, String(now));
-        appStorage.setItem(CACHE_LOCALE_KEY, 'en');
+        setRuntimeValues({ ratingsTime: now, ratingsLocale: 'en' });
         latestRatingsMap = sortedRatingsMap;
         invalidateContestProblemsIndex();
 

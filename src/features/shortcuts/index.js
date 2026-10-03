@@ -37,6 +37,9 @@ export function startShortcuts() {
     displayStyle: () => {
       appSettings.displayStyle = appSettings.displayStyle === 'tag' ? 'block' : 'tag';
     },
+    predictionEnabled: () => {
+      appSettings.prediction.enabled = !appSettings.prediction.enabled;
+    },
     userAvatar: () => {
       appSettings.show.userAvatar = !appSettings.show.userAvatar;
     },

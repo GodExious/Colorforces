@@ -22,8 +22,8 @@ defineProps({ status: String, busy: Boolean, disabled: Boolean });
   justify-content: center;
   gap: 5px;
   padding: 5px 12px;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: var(--cf-font-size-base);
+  font-weight: var(--cf-font-weight-medium);
   line-height: 18px;
   color: var(--cf-action-ink);
   background: color-mix(in srgb, var(--cf-action-color) 22%, var(--cf-card-surface, #ffffff));
@@ -31,7 +31,7 @@ defineProps({ status: String, busy: Boolean, disabled: Boolean });
   box-shadow:
     inset 0 1px 0 #ffffff60,
     0 1px 2px color-mix(in srgb, var(--cf-action-color) 12%, transparent);
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -75,9 +75,9 @@ defineProps({ status: String, busy: Boolean, disabled: Boolean });
     :where([data-state='preview'], [data-state='latest'], [data-state='failed'])
   ),
 .cf-action-button.cooldown {
-  color: #94a3b8;
-  background: var(--cf-control-surface, #f8fafc);
-  border-color: var(--cf-surface-border, #e2e8f0);
+  color: var(--cf-gray-400);
+  background: var(--cf-control-surface, var(--cf-gray-50));
+  border-color: var(--cf-surface-border, var(--cf-gray-200));
 }
 .cf-action-button[aria-busy='true'],
 .cf-action-button.syncing {

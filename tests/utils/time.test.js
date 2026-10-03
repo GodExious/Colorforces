@@ -1,6 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { customFormatTime } from '../../src/utils/time.js';
+import { customFormatTime, utcOffsetLabel } from '../../src/utils/time.js';
+
+test('时区标注：东区、西区、零时区与无效输入', () => {
+  assert.equal(utcOffsetLabel(480), 'UTC+8');
+  assert.equal(utcOffsetLabel(0), 'UTC+0');
+  assert.equal(utcOffsetLabel(-180), 'UTC-3');
+  assert.equal(utcOffsetLabel(-240), 'UTC-4');
+  assert.equal(utcOffsetLabel(NaN), '');
+});
 
 // 2024-01-05 是星期五；使用本地时间构造，结果不受时区影响。
 const morning = new Date(2024, 0, 5, 9, 7, 3, 45);

@@ -100,7 +100,7 @@ const statusHtml = computed(() => {
     return (
       '<span style=' +
       String.fromCharCode(34) +
-      'color:#16a34a;font-weight:600;' +
+      'color:#2f9a6b;font-weight:var(--cf-font-weight-semibold);' +
       String.fromCharCode(34) +
       '>✓ ' +
       t('syncStatusSuccess', sync.successCount) +
@@ -110,7 +110,7 @@ const statusHtml = computed(() => {
     return (
       '<span style=' +
       String.fromCharCode(34) +
-      'color:#dc2626;font-weight:600;' +
+      'color:#c9506d;font-weight:var(--cf-font-weight-semibold);' +
       String.fromCharCode(34) +
       '>✗ ' +
       t('syncStatusInterrupted') +
@@ -147,7 +147,7 @@ watch(overlay, (node) => {
   <Teleport to="body"
     ><DialogTransition
       ><div
-        class="cf-clist-modal-overlay cf-clist-progress-modal"
+        class="cf-clist-modal-overlay cf-aurora-dialog cf-clist-progress-modal"
         :class="{
           'is-syncing': !finished,
           'is-success': sync.status === 'success',
@@ -157,24 +157,18 @@ watch(overlay, (node) => {
         v-show="sync.visible"
         ref="overlay"
       >
-        <div class="cf-clist-modal-card" style="width: 520px">
+        <div class="cf-clist-modal-card cf-aurora-card" style="width: 520px">
           <div class="cf-clist-modal-header">
             <div class="cf-clist-modal-title">
-              <span class="cf-progress-sync-icon"
-                ><InlineSvg :source="cfAssets.clistSyncDialogIcon"
-              /></span>
+              <span class="cf-modal-title-icon cf-aurora-emblem"
+                ><span class="cf-progress-sync-icon"
+                  ><InlineSvg :source="cfAssets.clistSyncDialogIcon" /></span
+              ></span>
               <span class="cf-progress-modal-title" v-text="t('syncModalTitle')"></span>
             </div>
             <button
               type="button"
-              class="cf-modal-close-btn"
-              style="
-                background: none;
-                border: none;
-                font-size: 18px;
-                cursor: pointer;
-                color: #64748b;
-              "
+              class="cf-modal-close-btn cf-aurora-close"
               v-on:click="controller.hide"
               v-bind:title="t('syncBtnBackground')"
             >
@@ -218,16 +212,6 @@ watch(overlay, (node) => {
 
             <div
               class="cf-progress-error"
-              style="
-                background: rgb(254, 242, 242);
-                border: 1px solid rgb(254, 202, 202);
-                border-radius: 6px;
-                padding: 8px 12px;
-                font-size: 12px;
-                color: rgb(185, 28, 28);
-                margin-top: 12px;
-                line-height: 1.5;
-              "
               v-text="sync.error"
               v-show="sync.status === 'error'"
             ></div>
@@ -236,14 +220,14 @@ watch(overlay, (node) => {
             <ActionButton
               type="button"
               class="cf-clist-sync-btn cf-btn-bg"
-              style="font-size: 12px; display: inline-flex"
+              style="font-size: var(--cf-font-size-base); display: inline-flex"
               v-text="sync.status === 'error' ? t('syncBtnClose') : t('syncBtnBackground')"
               v-show="sync.status !== 'success'"
               v-on:click="backgroundAction"
             ></ActionButton>
             <ActionButton
               type="button"
-              class="cf-clist-sync-btn cf-btn-action"
+              class="cf-clist-sync-btn cf-btn-action cf-modal-primary-btn"
               v-show="sync.status==='success'||(sync.status==='error'&amp;&amp;sync.retry)"
               v-text="sync.status === 'success' ? t('syncBtnDone') : t('syncBtnRetry')"
               v-on:click="primaryAction"
@@ -254,25 +238,9 @@ watch(overlay, (node) => {
 </template>
 
 <style>
-.cf-clist-progress-modal {
-  --cf-menu-accent: #c999d8;
-  --cf-menu-secondary: #8fc8c1;
-  --cf-card-surface: #fbf9ff;
-  --cf-control-surface: #f4f1fa;
-  --cf-control-active: #f2e8f3;
-  --cf-surface-border: #e1d8ec;
-  --cf-control-ink: #5a5872;
-  background: rgba(65, 57, 91, 0.38);
-}
 .cf-clist-progress-modal .cf-clist-modal-body {
   min-width: 0;
   overflow-wrap: anywhere;
-}
-.cf-clist-progress-modal .cf-clist-modal-card {
-  background:
-    radial-gradient(ellipse at 0% 0%, #e7e2ffcc, transparent 63%),
-    radial-gradient(ellipse at 100% 22%, #ffe2efc4, transparent 58%),
-    radial-gradient(ellipse at 72% 100%, #dff5edc4, transparent 64%), #fbf9ff;
 }
 .cf-clist-progress-modal .cf-progress-status {
   min-width: 0;
@@ -294,8 +262,8 @@ watch(overlay, (node) => {
   justify-content: space-between;
   gap: 16px;
   color: var(--cf-control-ink);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--cf-font-size-lg);
+  font-weight: var(--cf-font-weight-medium);
   line-height: 1.6;
 }
 .cf-clist-progress-modal .cf-progress-percent {
@@ -338,9 +306,9 @@ watch(overlay, (node) => {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 6px 16px;
-  font-size: 12px;
+  font-size: var(--cf-font-size-base);
   line-height: 1.7;
-  color: color-mix(in srgb, var(--cf-control-ink) 65%, #64748b);
+  color: color-mix(in srgb, var(--cf-control-ink) 65%, var(--cf-gray-500));
   font-variant-numeric: tabular-nums;
 }
 .cf-clist-progress-modal .cf-progress-metrics strong {
@@ -355,17 +323,29 @@ watch(overlay, (node) => {
   min-width: 7.5em;
 }
 .cf-clist-progress-modal .cf-progress-tip {
-  background: var(--cf-control-active);
-  border: 1px solid var(--cf-surface-border);
-  border-radius: 8px;
+  background: var(--cf-control-surface);
+  border: 1px solid var(--cf-aurora-glass-border);
+  border-radius: var(--cf-radius-lg);
+  box-shadow: 0 1px 3px #5a6a8f14;
   padding: 10px 12px;
   margin-top: 16px;
-  font-size: 12px;
+  font-size: var(--cf-font-size-base);
   color: var(--cf-control-ink);
   line-height: 1.6;
 }
+/* 出错说明保留红色语义，但用与幻彩底色相称的柔和色调。 */
+.cf-clist-progress-modal .cf-progress-error {
+  margin-top: 12px;
+  padding: 9px 12px;
+  border: 1px solid #f3c6d0;
+  border-radius: var(--cf-radius-lg);
+  background: #fdecf0c7;
+  color: #b0415d;
+  font-size: var(--cf-font-size-base);
+  line-height: 1.5;
+}
 .cf-clist-progress-modal .cf-btn-action {
-  font-weight: 600;
+  font-weight: var(--cf-font-weight-semibold);
 }
 @keyframes cf-sync-progress-sheen {
   from {
@@ -388,10 +368,10 @@ watch(overlay, (node) => {
   width: 100%;
   box-sizing: border-box;
   padding: 6px 10px;
-  font-size: 11px;
+  font-size: var(--cf-font-size-xs);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   outline: none;
-  color: #334155;
+  color: var(--cf-gray-700);
 }
 </style>

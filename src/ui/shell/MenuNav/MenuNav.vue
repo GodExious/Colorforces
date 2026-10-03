@@ -4,24 +4,29 @@ import { appSettings } from '../../../settings.js';
 import { translate as t } from '../../../i18n/index.js';
 import * as assets from '../../../assets/index.js';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
+import { MENU_TAB_IDS } from '../../../config/menu-tabs.js';
 const props = defineProps({ active: String });
 const emit = defineEmits(['select', 'theme']);
 const root = ref(null),
   indicator = ref(null);
 let observer, frame;
 let lastGeometry, lastTheme;
-const tabs = [
-  { id: 'general', label: 'tabGeneral' },
-  { id: 'appearance', label: 'tabAppearance' },
-  { id: 'ratings', label: 'tabRatings' },
-  { id: 'prediction', label: 'tabPrediction' },
-  { id: 'user', label: 'tabUser' },
-  { id: 'shortcuts', label: 'tabShortcuts' },
-  { id: 'storage', label: 'tabStorage' },
-  { id: 'changelog', label: 'changelogTitle' },
-  { id: 'roadmap', label: 'tabRoadmap' },
-  { id: 'acknowledgments', label: 'ackSectionTitle' },
-];
+const labels = {
+  general: 'tabGeneral',
+  appearance: 'tabAppearance',
+  ratings: 'tabRatings',
+  prediction: 'tabPrediction',
+  user: 'tabUser',
+  shortcuts: 'tabShortcuts',
+  storage: 'tabStorage',
+  changelog: 'changelogTitle',
+  roadmap: 'tabRoadmap',
+  acknowledgments: 'ackSectionTitle',
+};
+// 顺序以统一的页签清单为准，这里只补上各页的标题文案。
+const tabs = MENU_TAB_IDS.map((id) => ({ id, label: labels[id] }));
+// 指示条的位移与主题色的变化共用这个时长和缓动：指示条停下时，颜色也正好变完。
+const SWITCH_TIMING = '0.48s cubic-bezier(0.16,1,0.3,1)';
 // 指示条只做合成位移；相同尺寸的重复通知不打断正在进行的切换。
 function updateIndicator(animate = true) {
   const target = root.value?.querySelector('[data-tab=' + props.active + ']');
@@ -44,8 +49,7 @@ function updateIndicator(animate = true) {
   style.setProperty('--cf-tab-accent', accent);
   if (lastGeometry?.top === top && lastGeometry?.height === height) return;
   lastGeometry = { top, height };
-  const transition =
-    'transform 0.25s cubic-bezier(0.16,1,0.3,1),opacity 0.2s ease,background-color 0.22s ease';
+  const transition = `transform ${SWITCH_TIMING},opacity 0.2s ease,background-color ${SWITCH_TIMING}`;
   const moving = animate && !matchMedia('(prefers-reduced-motion: reduce)').matches;
   style.transition = moving ? transition : 'none';
   style.transform = `translate3d(0, ${top}px, 0)`;
@@ -106,13 +110,10 @@ onBeforeUnmount(() => {
   min-width: 200px;
   max-width: 200px;
   flex-shrink: 0;
-  background:
-    linear-gradient(
-      155deg,
-      color-mix(in srgb, var(--cf-paint-secondary) 5%, transparent),
-      transparent 75%
-    ),
-    color-mix(in srgb, var(--cf-paint-accent) 11%, #f5f8fc);
+  /* 侧栏与标题栏、页脚一样是玻璃：半透明的淡主题色，并模糊底下的页面。 */
+  background: color-mix(in srgb, var(--cf-paint-accent) 9%, #ffffffb8);
+  -webkit-backdrop-filter: blur(9px) saturate(155%);
+  backdrop-filter: blur(9px) saturate(155%);
   border-right: 1px solid color-mix(in srgb, var(--cf-paint-accent) 18%, #dde5ee);
   padding: 10px 8px;
   display: flex;
@@ -122,9 +123,16 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   overflow-y: overlay;
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: var(--cf-gray-300) transparent;
   overscroll-behavior: contain;
   position: relative;
+}
+
+/* 不支持背景模糊时退回不透明的淡主题色，保证文字底下是纯色。 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cf-sidebar-nav {
+    background: color-mix(in srgb, var(--cf-paint-accent) 11%, #f5f8fc);
+  }
 }
 
 .cf-sidebar-nav::-webkit-scrollbar {
@@ -136,12 +144,12 @@ onBeforeUnmount(() => {
 }
 
 .cf-sidebar-nav::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: var(--cf-gray-300);
+  border-radius: var(--cf-radius-xs);
 }
 
 .cf-sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--cf-gray-400);
 }
 
 .cf-nav-indicator {
@@ -152,15 +160,16 @@ onBeforeUnmount(() => {
   height: 36px;
   background-color: #e6f4ff;
   background-color: color-mix(in srgb, var(--cf-tab-accent, #1677ff) 18%, white);
-  border-radius: 8px;
+  border-radius: var(--cf-radius-md);
   pointer-events: none;
   z-index: 1;
   box-sizing: border-box;
   will-change: transform;
+  /* 位移与换色同一个时长、同一条缓动，与脚本里的 SWITCH_TIMING 保持一致。 */
   transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.48s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.2s ease,
-    background-color 0.22s ease;
+    background-color 0.48s cubic-bezier(0.16, 1, 0.3, 1);
   opacity: 0;
 }
 
@@ -174,7 +183,7 @@ onBeforeUnmount(() => {
   height: 18px;
   background-color: var(--cf-tab-accent, #1677ff);
   border-radius: 3px;
-  transition: background-color 0.22s ease;
+  transition: background-color 0.48s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .cf-nav-tab {
@@ -186,15 +195,15 @@ onBeforeUnmount(() => {
   min-height: 28px;
   height: 36px;
   line-height: 20px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #475569;
+  border-radius: var(--cf-radius-md);
+  font-size: var(--cf-font-size-lg);
+  font-weight: var(--cf-font-weight-medium);
+  color: var(--cf-gray-600);
   cursor: pointer;
   position: relative;
   z-index: 2;
   transition:
-    color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.48s cubic-bezier(0.16, 1, 0.3, 1),
     background-color 0.18s ease,
     transform 0.12s ease;
   user-select: none;
@@ -209,7 +218,7 @@ onBeforeUnmount(() => {
 
 .cf-nav-tab:not(.active):hover {
   background: rgba(0, 0, 0, 0.035);
-  color: #0f172a;
+  color: var(--cf-gray-900);
 }
 
 .cf-nav-tab:active {
@@ -219,11 +228,11 @@ onBeforeUnmount(() => {
 .cf-nav-tab.active {
   color: #1677ff;
   color: color-mix(in srgb, var(--cf-tab-accent, #1677ff) 60%, #25334b);
-  font-weight: 600;
+  font-weight: var(--cf-font-weight-semibold);
 }
 
 .cf-tab-icon {
-  font-size: 14px;
+  font-size: var(--cf-font-size-xl);
   width: 16px;
   height: 16px;
   display: inline-flex;

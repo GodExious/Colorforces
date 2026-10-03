@@ -63,6 +63,17 @@ const groups = [
     ],
   },
   {
+    id: 'prediction',
+    labelKey: 'tabPrediction',
+    items: [
+      {
+        key: 'predictionEnabled',
+        titleKey: 'shortcutPredictionEnabledTitle',
+        descKey: 'shortcutPredictionEnabledDesc',
+      },
+    ],
+  },
+  {
     id: 'user',
     labelKey: 'tabUser',
     items: [
@@ -253,9 +264,9 @@ onBeforeUnmount(stopRecording);
 }
 
 .cf-shortcuts-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: var(--cf-font-size-xl);
+  font-weight: var(--cf-font-weight-bold);
+  color: var(--cf-gray-900);
   margin: 0 0 4px 0;
   display: flex;
   align-items: center;
@@ -263,8 +274,8 @@ onBeforeUnmount(stopRecording);
 }
 
 .cf-shortcuts-subtitle {
-  font-size: 12px;
-  color: #64748b;
+  font-size: var(--cf-font-size-base);
+  color: var(--cf-gray-500);
   margin: 0;
   line-height: 1.5;
 }
@@ -280,12 +291,12 @@ onBeforeUnmount(stopRecording);
   background: color-mix(in srgb, var(--cf-menu-accent) 11%, white);
   border: 1px solid var(--cf-surface-border);
   border-left: 3.5px solid var(--cf-menu-accent);
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   display: flex;
   align-items: flex-start;
   gap: 7px;
   box-sizing: border-box;
-  font-size: 12px;
+  font-size: var(--cf-font-size-base);
   line-height: 1.5;
 }
 
@@ -312,14 +323,14 @@ onBeforeUnmount(stopRecording);
 }
 
 .cf-shortcuts-note-label {
-  font-weight: 700;
+  font-weight: var(--cf-font-weight-bold);
   color: var(--cf-note-ink);
   margin-right: 2px;
 }
 
 .cf-shortcuts-note-text {
   color: var(--cf-note-ink);
-  font-weight: 500;
+  font-weight: var(--cf-font-weight-medium);
 }
 
 .cf-shortcuts-list {
@@ -338,9 +349,9 @@ onBeforeUnmount(stopRecording);
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-bold);
+  color: var(--cf-gray-500);
   padding-left: 6px;
   user-select: none;
   text-transform: uppercase;
@@ -364,8 +375,8 @@ onBeforeUnmount(stopRecording);
 }
 
 .cf-shortcut-group-box {
-  background: var(--cf-control-surface, #f8fafc);
-  border-radius: 10px;
+  background: var(--cf-control-surface, var(--cf-gray-50));
+  border-radius: var(--cf-radius-lg);
   padding: 3px 4px;
   display: flex;
   flex-direction: column;
@@ -379,7 +390,7 @@ onBeforeUnmount(stopRecording);
   justify-content: space-between;
   min-height: 34px;
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   background: transparent;
   gap: 10px;
   box-sizing: border-box;
@@ -396,9 +407,9 @@ onBeforeUnmount(stopRecording);
 }
 
 .cf-shortcut-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1e293b;
+  font-size: var(--cf-font-size-lg);
+  font-weight: var(--cf-font-weight-semibold);
+  color: var(--cf-gray-800);
   user-select: none;
   white-space: nowrap;
   overflow: hidden;
@@ -430,10 +441,10 @@ onBeforeUnmount(stopRecording);
   min-height: 28px;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   cursor: pointer;
-  font-size: 11px;
-  color: #0f172a;
+  font-size: var(--cf-font-size-xs);
+  color: var(--cf-gray-900);
   transition:
     background-color 180ms ease,
     border-color 180ms ease,
@@ -505,16 +516,16 @@ onBeforeUnmount(stopRecording);
   min-width: 20px;
   height: 22px;
   padding: 0 5px;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-semibold);
   line-height: 1;
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  color: #334155;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid #cbd5e1;
-  border-bottom: 2px solid #94a3b8;
-  border-radius: 4px;
+  color: var(--cf-gray-700);
+  background: linear-gradient(180deg, #ffffff 0%, var(--cf-gray-50) 100%);
+  border: 1px solid var(--cf-gray-300);
+  border-bottom: 2px solid var(--cf-gray-400);
+  border-radius: var(--cf-radius-xs);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
   transition:
@@ -551,9 +562,9 @@ onBeforeUnmount(stopRecording);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  font-weight: 600;
-  color: #94a3b8;
+  font-size: var(--cf-font-size-2xs);
+  font-weight: var(--cf-font-weight-semibold);
+  color: var(--cf-gray-400);
   margin: 0 0.5px;
   user-select: none;
   flex-shrink: 0;
@@ -565,22 +576,22 @@ onBeforeUnmount(stopRecording);
   justify-content: center;
   height: 22px;
   padding: 0 6px;
-  border-radius: 4px;
-  border: 1px dashed #cbd5e1;
-  background: #f8fafc;
-  color: #94a3b8;
-  font-size: 11px;
+  border-radius: var(--cf-radius-xs);
+  border: 1px dashed var(--cf-gray-300);
+  background: var(--cf-gray-50);
+  color: var(--cf-gray-400);
+  font-size: var(--cf-font-size-xs);
   line-height: 1;
   box-sizing: border-box;
   font-style: normal;
-  font-weight: 500;
+  font-weight: var(--cf-font-weight-medium);
   transition: all 0.15s ease;
 }
 
 .cf-shortcut-key-btn:hover .cf-shortcut-empty {
-  border-color: #94a3b8;
-  color: #475569;
-  background: #f1f5f9;
+  border-color: var(--cf-gray-400);
+  color: var(--cf-gray-600);
+  background: var(--cf-gray-100);
 }
 
 .cf-shortcut-clear-btn {
@@ -591,7 +602,7 @@ onBeforeUnmount(stopRecording);
   height: 22px;
   border: 1px solid transparent;
   background: transparent;
-  color: #94a3b8;
+  color: var(--cf-gray-400);
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -612,12 +623,12 @@ onBeforeUnmount(stopRecording);
   gap: 6px;
   margin-top: 4px;
   padding: 6px 12px;
-  border: 1px solid var(--cf-surface-border, #e2e8f0);
-  background: var(--cf-control-surface, #f8fafc);
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 6px;
+  border: 1px solid var(--cf-surface-border, var(--cf-gray-200));
+  background: var(--cf-control-surface, var(--cf-gray-50));
+  color: var(--cf-gray-500);
+  font-size: var(--cf-font-size-base);
+  font-weight: var(--cf-font-weight-medium);
+  border-radius: var(--cf-radius-sm);
   cursor: pointer;
   align-self: flex-start;
   transition: all 0.15s ease;

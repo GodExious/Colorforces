@@ -37,7 +37,7 @@ defineEmits(['click']);
   border: 1px solid transparent;
   border-radius: 5px;
   background: transparent;
-  color: #94a3b8;
+  color: var(--cf-gray-400);
   cursor: pointer;
   transition:
     background-color 150ms ease,

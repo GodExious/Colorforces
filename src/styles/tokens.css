@@ -1,0 +1,40 @@
+/*
+ * 设计变量：设置菜单与各弹窗共用的灰阶、字号、圆角和字重。
+ * 挂在根节点，传送到页面最外层的弹窗与提示也能读取。
+ * 只服务插件自己的界面；Codeforces 原站页面上的增强样式不使用这些变量。
+ * 组件 <style> 中凡是等于下列数值的写法，都应引用变量，由 tests/styles/tokens.test.js 检查。
+ */
+:root {
+  /* 灰阶：数字越大越深。文字、边框、分隔线与中性底色共用。 */
+  --cf-gray-50: #f8fafc;
+  --cf-gray-100: #f1f5f9;
+  --cf-gray-200: #e2e8f0;
+  --cf-gray-300: #cbd5e1;
+  --cf-gray-400: #94a3b8;
+  --cf-gray-500: #64748b;
+  --cf-gray-600: #475569;
+  --cf-gray-700: #334155;
+  --cf-gray-800: #1e293b;
+  --cf-gray-900: #0f172a;
+
+  /* 字号：base 为正文，向两侧各三档。 */
+  --cf-font-size-2xs: 10px;
+  --cf-font-size-xs: 11px;
+  --cf-font-size-sm: 11.5px;
+  --cf-font-size-base: 12px;
+  --cf-font-size-md: 12.5px;
+  --cf-font-size-lg: 13px;
+  --cf-font-size-xl: 14px;
+
+  /* 圆角：xs 用于小标签与滚动条，sm 用于按钮与输入框，md 以上用于卡片与弹窗。 */
+  --cf-radius-xs: 4px;
+  --cf-radius-sm: 6px;
+  --cf-radius-md: 8px;
+  --cf-radius-lg: 10px;
+  --cf-radius-xl: 12px;
+
+  /* 字重 */
+  --cf-font-weight-medium: 500;
+  --cf-font-weight-semibold: 600;
+  --cf-font-weight-bold: 700;
+}

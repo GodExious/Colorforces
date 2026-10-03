@@ -4,7 +4,6 @@ import {
   calculateSnapshot,
   targetBounds,
   analyzeTarget,
-  refinePerformance,
 } from '../../../../../src/features/contest/rating-prediction/algorithm/analysis.js';
 import predict, {
   Contestant,
@@ -14,11 +13,6 @@ import { sampleRows } from '../../../../helpers/contest-rows.js';
 const rows = sampleRows();
 const handle = rows[7].handle;
 const self = rows[7];
-
-// 把指定选手的评级换成假设值，其余选手不变。
-function withRating(rating) {
-  return rows.map((row) => (row.handle === handle ? { ...row, rating } : row));
-}
 
 test('完整结算不改动传入的榜单', () => {
   const before = JSON.stringify(rows);
@@ -88,12 +82,4 @@ test('非法输入给出对应错误码', () => {
   );
   assert.throws(() => analyzeTarget(rows, 'nobody', 'rank', 1), /predictionMissingUser/);
   assert.throws(() => targetBounds([], handle), /predictionMissingUser/);
-  assert.throws(() => refinePerformance(rows, 'nobody'), /predictionMissingUser/);
-});
-
-test('精算表现分是涨分转为不涨的评级边界', () => {
-  const { performance, bound } = refinePerformance(rows, handle);
-  assert.equal(bound, null);
-  assert.ok(calculateSnapshot(withRating(performance))[handle].delta <= 0);
-  assert.ok(calculateSnapshot(withRating(performance - 1))[handle].delta > 0);
 });

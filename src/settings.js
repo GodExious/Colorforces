@@ -1,6 +1,7 @@
 import { reactive } from 'vue';
 import { appStorage } from './storage/gm.js';
-import { SETTINGS_KEY, CLIST_LAST_SYNC_KEY } from './storage/keys.js';
+import { getRuntimeValue, setRuntimeValues } from './storage/runtime.js';
+import { SETTINGS_KEY } from './storage/keys.js';
 import { DEFAULT_SETTINGS } from './config/defaults.js';
 import { hexToRgba } from './utils/color.js';
 const listeners = new Set();
@@ -91,11 +92,11 @@ function getSettings() {
       if (parsed.clist) {
         if (!settings.clist) settings.clist = { ...DEFAULT_SETTINGS.clist };
         Object.assign(settings.clist, parsed.clist);
-        // 兼容旧版配置内的同步时间，迁移到已有的独立数据键（旧字段 deprecated）。
+        // 兼容旧版配置内的同步时间，迁移到插件数据里（旧字段 deprecated）。
         const legacySyncTime = Number(parsed.clist.lastSyncTime);
-        const storedSyncTime = Number(appStorage.getItem(CLIST_LAST_SYNC_KEY)) || 0;
+        const storedSyncTime = Number(getRuntimeValue('clistSyncTime')) || 0;
         if (Number.isFinite(legacySyncTime) && legacySyncTime > storedSyncTime) {
-          appStorage.setItem(CLIST_LAST_SYNC_KEY, String(legacySyncTime));
+          setRuntimeValues({ clistSyncTime: legacySyncTime });
         }
         delete settings.clist.lastSyncTime;
       }
@@ -125,7 +126,7 @@ function getSettings() {
           }
         }
         // 新快捷键只在未配置时补入；旧绑定占用默认键时保持未绑定，不抢占用户设置。
-        for (const key of ['acHighlight', 'menuLanguage']) {
+        for (const key of ['acHighlight', 'menuLanguage', 'predictionEnabled']) {
           if (Object.hasOwn(parsed.shortcuts, key)) continue;
           const occupied = Object.entries(settings.shortcuts).some(
             ([other, binding]) =>

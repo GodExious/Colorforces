@@ -73,12 +73,12 @@ const timePreview = computed(() =>
             data-control="langIconSizeInput"
           /><span
             style="
-              font-size: 12px;
+              font-size: var(--cf-font-size-base);
               width: 28px;
               text-align: right;
               display: inline-block;
               color: rgb(100, 116, 139);
-              font-weight: 500;
+              font-weight: var(--cf-font-weight-medium);
             "
             v-text="parseFloat(appSettings.langIconSize).toFixed(1) + 'x'"
           ></span>
@@ -100,7 +100,6 @@ const timePreview = computed(() =>
         <span class="cf-setting-label" v-text="t().locShortVerdict"></span
         ><InfoHint
           :text="t('verdictHelpTooltip')"
-          symbol="?"
           variant="question"
           :clickable="true"
           @click="openGuide('verdict', $event)"
@@ -132,7 +131,6 @@ const timePreview = computed(() =>
           <span class="cf-setting-label" v-text="t().timeFormatTitle"></span
           ><InfoHint
             :text="t('timeFormatHelpTooltip')"
-            symbol="?"
             variant="question"
             :clickable="true"
             @click="openGuide('time', $event)"
@@ -153,8 +151,8 @@ const timePreview = computed(() =>
         style="
           width: 100%;
           padding: 6px 10px;
-          border-radius: 6px;
-          font-size: 13px;
+          border-radius: var(--cf-radius-sm);
+          font-size: var(--cf-font-size-lg);
           box-sizing: border-box;
           outline: none;
           font-family: inherit;
@@ -166,7 +164,12 @@ const timePreview = computed(() =>
         data-control="timeInput"
       />
       <div
-        style="font-size: 12px; color: rgb(100, 116, 139); font-family: inherit; text-align: right"
+        style="
+          font-size: var(--cf-font-size-base);
+          color: rgb(100, 116, 139);
+          font-family: inherit;
+          text-align: right;
+        "
         v-text="timePreview"
       ></div>
     </div>

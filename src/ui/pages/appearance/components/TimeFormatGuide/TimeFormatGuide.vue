@@ -19,8 +19,8 @@ const guideOptions = (options) => options;
 function showTimeFormatGuideModal(lang) {
   const l = lang || (typeof appSettings !== 'undefined' && appSettings && appSettings.lang) || 'zh';
   const badge = (tok) =>
-    `<code style="display: inline-block; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; font-weight: 700; color: var(--cf-control-ink); background: var(--cf-control-active); border: 1px solid var(--cf-surface-border); border-radius: 4px; padding: 1.5px 6px; line-height: 1.3; box-shadow: 0 1px 1px rgba(2, 132, 199, 0.06); letter-spacing: 0.2px;">${tok}</code>`;
-  const slash = `<span style="color: #94a3b8; font-size: 11px; margin: 0 3px; user-select: none;">/</span>`;
+    `<code style="display: inline-block; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-xs); font-weight: var(--cf-font-weight-bold); color: var(--cf-control-ink); background: var(--cf-control-active); border: 1px solid var(--cf-surface-border); border-radius: var(--cf-radius-xs); padding: 1.5px 6px; line-height: 1.3; box-shadow: 0 1px 1px rgba(2, 132, 199, 0.06); letter-spacing: 0.2px;">${tok}</code>`;
+  const slash = `<span style="color: var(--cf-gray-400); font-size: var(--cf-font-size-xs); margin: 0 3px; user-select: none;">/</span>`;
   const pair = (a, b) => `${badge(a)}${slash}${badge(b)}`;
 
   return guideOptions({
@@ -32,78 +32,78 @@ function showTimeFormatGuideModal(lang) {
     confirmText: t('timeGuideCloseBtn', l),
     bodyHtml: `
                 <div style="margin-bottom: 14px;">
-                    <div style="font-weight:600; color:var(--cf-control-ink); margin-bottom:8px; font-size: 13px; display:flex; align-items:center; gap:6px;">
+                    <div style="font-weight:var(--cf-font-weight-semibold); color:var(--cf-control-ink); margin-bottom:8px; font-size: var(--cf-font-size-lg); display:flex; align-items:center; gap:6px;">
                         <span>🔤</span><span>${t('timeGuideSectionTokens', l)}</span>
                     </div>
                     <div class="cf-guide-table-wrap">
                         <table class="cf-guide-table">
                             <thead>
                                 <tr>
-                                    <th style="padding: 7px 12px; text-align: left; font-weight: 600; width: 140px;">${t('timeGuideColToken', l)}</th>
-                                    <th style="padding: 7px 12px; text-align: left; font-weight: 600;">${t('timeGuideColMeaning', l)}</th>
-                                    <th style="padding: 7px 12px; text-align: left; font-weight: 600; width: 140px;">${t('timeGuideColExample', l)}</th>
+                                    <th style="padding: 7px 12px; text-align: left; font-weight: var(--cf-font-weight-semibold); width: 140px;">${t('timeGuideColToken', l)}</th>
+                                    <th style="padding: 7px 12px; text-align: left; font-weight: var(--cf-font-weight-semibold);">${t('timeGuideColMeaning', l)}</th>
+                                    <th style="padding: 7px 12px; text-align: left; font-weight: var(--cf-font-weight-semibold); width: 140px;">${t('timeGuideColExample', l)}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${badge('YYYY')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenYear4', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">2026</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenYear4', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">2026</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${badge('YY')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenYear2', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">26</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenYear2', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">26</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${pair('MM', 'M')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenMonth', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">09<span style="color: #94a3b8; margin: 0 3px;">/</span>9</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenMonth', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">09<span style="color: var(--cf-gray-400); margin: 0 3px;">/</span>9</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${pair('DD', 'D')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenDay', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">06<span style="color: #94a3b8; margin: 0 3px;">/</span>6</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenDay', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">06<span style="color: var(--cf-gray-400); margin: 0 3px;">/</span>6</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${pair('HH', 'H')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenHour24', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">14<span style="color: #94a3b8; margin: 0 3px;">/</span>14</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenHour24', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">14<span style="color: var(--cf-gray-400); margin: 0 3px;">/</span>14</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${pair('hh', 'h')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenHour12', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">02<span style="color: #94a3b8; margin: 0 3px;">/</span>2</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenHour12', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">02<span style="color: var(--cf-gray-400); margin: 0 3px;">/</span>2</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${pair('mm', 'm')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenMinute', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">05<span style="color: #94a3b8; margin: 0 3px;">/</span>5</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenMinute', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">05<span style="color: var(--cf-gray-400); margin: 0 3px;">/</span>5</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${pair('ss', 's')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenSecond', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">08<span style="color: #94a3b8; margin: 0 3px;">/</span>8</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenSecond', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">08<span style="color: var(--cf-gray-400); margin: 0 3px;">/</span>8</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${pair('A', 'a')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenAmPm', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">PM<span style="color: #94a3b8; margin: 0 3px;">/</span>pm</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenAmPm', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">PM<span style="color: var(--cf-gray-400); margin: 0 3px;">/</span>pm</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${pair('dddd', 'ddd')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenWeekday', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">Sunday<span style="color: #94a3b8; margin: 0 3px;">/</span>Sun</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenWeekday', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">Sunday<span style="color: var(--cf-gray-400); margin: 0 3px;">/</span>Sun</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 6px 12px; white-space: nowrap;">${pair('MMMM', 'MMM')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenMonthName', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #475569;">September<span style="color: #94a3b8; margin: 0 3px;">/</span>Sep</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenMonthName', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-600);">September<span style="color: var(--cf-gray-400); margin: 0 3px;">/</span>Sep</td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 6px 12px; white-space: nowrap;">${badge('[...]')}</td>
-                                    <td style="padding: 6px 12px; color: #334155;">${t('tokenEscape', l)}</td>
-                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; color: #64748b;">${t('tokenEscapeExample', l)}</td>
+                                    <td style="padding: 6px 12px; color: var(--cf-gray-700);">${t('tokenEscape', l)}</td>
+                                    <td style="padding: 6px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-sm); color: var(--cf-gray-500);">${t('tokenEscapeExample', l)}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -111,7 +111,7 @@ function showTimeFormatGuideModal(lang) {
                 </div>
 
                 <div>
-                    <div style="font-weight:600; color:var(--cf-control-ink); margin-bottom:8px; font-size: 13px; display:flex; align-items:center; gap:6px;">
+                    <div style="font-weight:var(--cf-font-weight-semibold); color:var(--cf-control-ink); margin-bottom:8px; font-size: var(--cf-font-size-lg); display:flex; align-items:center; gap:6px;">
                         <span>💡</span><span>${t('timeGuideSectionExamples', l)}</span>
                     </div>
                     <div class="cf-guide-table-wrap">
@@ -119,15 +119,15 @@ function showTimeFormatGuideModal(lang) {
                             <tbody>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 7px 12px; width: 210px; white-space: nowrap;">${badge('YY/MM/DD HH:mm')}</td>
-                                    <td style="padding: 7px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; color: #334155; font-weight: 500;">26/09/06 14:30</td>
+                                    <td style="padding: 7px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-base); color: var(--cf-gray-700); font-weight: var(--cf-font-weight-medium);">26/09/06 14:30</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                     <td style="padding: 7px 12px; width: 210px; white-space: nowrap;">${badge('YYYY-MM-DD HH:mm:ss')}</td>
-                                    <td style="padding: 7px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; color: #334155; font-weight: 500;">2026-09-06 14:30:08</td>
+                                    <td style="padding: 7px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-base); color: var(--cf-gray-700); font-weight: var(--cf-font-weight-medium);">2026-09-06 14:30:08</td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 7px 12px; width: 210px; white-space: nowrap;">${badge('YYYY/M/D h:mm A')}</td>
-                                    <td style="padding: 7px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; color: #334155; font-weight: 500;">2026/9/6 2:30 PM</td>
+                                    <td style="padding: 7px 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-base); color: var(--cf-gray-700); font-weight: var(--cf-font-weight-medium);">2026/9/6 2:30 PM</td>
                                 </tr>
                             </tbody>
                         </table>

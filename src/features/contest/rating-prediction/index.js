@@ -64,14 +64,18 @@ function workerRunner() {
     },
   };
 }
+// 取样曲线单独占一个线程：它比单次分析久，不能被每次输入触发的取消打断。
 const baseRunner = workerRunner(),
   analysisRunner = workerRunner(),
-  boundsRunner = workerRunner();
+  boundsRunner = workerRunner(),
+  curveRunner = workerRunner();
 let modelKey = '',
   modelVersion = 0,
   analysisSerial = 0;
 const analysisCache = new Map();
 const analysisBoundsCache = new Map();
+const analysisCurveCache = new Map();
+let curvePending = null;
 const enabled = () => appSettings.prediction.enabled || appSettings.participationTags.enabled;
 const rowsFor = (snapshot) =>
   snapshot?.participants.filter((p) => p.status === 'rated' && p.valid) || [];
@@ -92,7 +96,10 @@ export function cancelPredictionAnalysis(close = false) {
   state.computing = false;
   state.analysisResult = null;
   state.analysisError = '';
-  if (close) state.openHandle = null;
+  if (close) {
+    curveRunner.stop();
+    state.openHandle = null;
+  }
 }
 
 // 单实例面板按需分析，避免每行挂载复杂组件。
@@ -119,6 +126,31 @@ export async function getPredictionAnalysisBounds(handle) {
   return bounds;
 }
 
+// 滑杆用的「名次 → 赛后评级」取样曲线，只依赖当前模型，快照刷新而模型未变时直接复用。
+// 同一份曲线正在计算时不重复发起，避免快照刷新把算到一半的任务顶掉重来。
+export function getPredictionAnalysisCurve(handle) {
+  const snapshot = state.snapshot;
+  if (!snapshot || !handle) return Promise.resolve(null);
+  const key = JSON.stringify([modelVersion, handle]);
+  if (analysisCurveCache.has(key)) return Promise.resolve(analysisCurveCache.get(key));
+  if (snapshot.warnings.includes('predictionIncompleteData'))
+    return Promise.reject(new Error('predictionIncompleteData'));
+  if (curvePending?.key === key) return curvePending.promise;
+  const promise = curveRunner
+    .run({ type: 'curve', rows: rowsFor(snapshot), handle })
+    .then((curve) => {
+      analysisCurveCache.set(key, curve);
+      if (analysisCurveCache.size > 8)
+        analysisCurveCache.delete(analysisCurveCache.keys().next().value);
+      return curve;
+    })
+    .finally(() => {
+      if (curvePending?.promise === promise) curvePending = null;
+    });
+  curvePending = { key, promise };
+  return promise;
+}
+
 // 结果回传时核对快照和用户，过期计算不能覆盖新输入。
 export async function runPredictionAnalysis(mode, value) {
   const snapshot = state.snapshot,
@@ -136,7 +168,7 @@ export async function runPredictionAnalysis(mode, value) {
     const result =
       analysisCache.get(cacheKey) ||
       (await analysisRunner.run({
-        type: mode === 'refine' ? 'refine' : 'analyze',
+        type: 'analyze',
         rows: rowsFor(snapshot),
         handle,
         mode,
@@ -229,6 +261,7 @@ export async function refreshPrediction(force = false) {
       modelVersion++;
       analysisCache.clear();
       analysisBoundsCache.clear();
+      analysisCurveCache.clear();
       cancelPredictionAnalysis();
       if (state.openHandle) state.analysisError = 'predictionSnapshotChanged';
     }
@@ -326,6 +359,7 @@ export function startPredictionFeature() {
       modelVersion++;
       analysisCache.clear();
       analysisBoundsCache.clear();
+      analysisCurveCache.clear();
       state.loading = false;
       state.error = '';
       state.snapshot = null;
@@ -351,6 +385,7 @@ export function startPredictionFeature() {
       requestController?.abort();
       baseRunner.stop();
       analysisRunner.stop();
+      curveRunner.stop();
       rendering?.();
       unsubscribe();
       unsubscribeStorage();

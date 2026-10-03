@@ -170,11 +170,11 @@ onBeforeUnmount(() => {
   gap: 6px;
   list-style: none;
   padding: 0;
-  color: #64748b;
+  color: var(--cf-gray-500);
   font: inherit;
   line-height: 18px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--cf-radius-xs);
   user-select: none;
   transition: color 0.15s ease;
 }
@@ -215,7 +215,7 @@ onBeforeUnmount(() => {
 }
 
 .cf-contributors-count {
-  color: #94a3b8;
+  color: var(--cf-gray-400);
   font-variant-numeric: tabular-nums;
 }
 
@@ -245,12 +245,12 @@ onBeforeUnmount(() => {
   max-width: calc(100vw - 80px);
   padding: 10px;
   box-sizing: border-box;
-  border: 1px solid var(--cf-surface-border, #e2e8f0);
-  border-radius: 10px;
+  border: 1px solid var(--cf-surface-border, var(--cf-gray-200));
+  border-radius: var(--cf-radius-lg);
   background: var(--cf-card-surface, #fff);
   box-shadow: 0 8px 28px rgba(15, 23, 42, 0.13);
-  color: #334155;
-  font-size: 12px;
+  color: var(--cf-gray-700);
+  font-size: var(--cf-font-size-base);
   line-height: 1.5;
   user-select: text;
 }
@@ -265,8 +265,8 @@ onBeforeUnmount(() => {
 }
 
 .cf-contributors-heading span {
-  color: #94a3b8;
-  font-size: 10px;
+  color: var(--cf-gray-400);
+  font-size: var(--cf-font-size-2xs);
 }
 
 .cf-contributors-list {
@@ -277,7 +277,7 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: var(--cf-gray-300) transparent;
   margin: 6px 0 0;
   padding: 0;
   list-style: none;
@@ -298,7 +298,7 @@ onBeforeUnmount(() => {
   gap: 4px 10px;
   padding: 10px 8px;
   border-radius: 7px;
-  color: #334155;
+  color: var(--cf-gray-700);
   text-decoration: none;
   transition:
     background 0.15s ease,
@@ -324,7 +324,7 @@ onBeforeUnmount(() => {
   width: 44px;
   height: 100%;
   min-height: 44px;
-  border-radius: 8px;
+  border-radius: var(--cf-radius-md);
   object-fit: contain;
 }
 
@@ -340,21 +340,21 @@ onBeforeUnmount(() => {
 }
 
 .cf-contributor-name {
-  font-weight: 600;
+  font-weight: var(--cf-font-weight-semibold);
   overflow-wrap: anywhere;
 }
 
 .cf-contributor-role {
-  color: #94a3b8;
-  font-size: 11px;
+  color: var(--cf-gray-400);
+  font-size: var(--cf-font-size-xs);
 }
 
 .cf-contributor-description {
   grid-column: 2 / -1;
   grid-row: 2;
   min-width: 0;
-  color: #64748b;
-  font-size: 11px;
+  color: var(--cf-gray-500);
+  font-size: var(--cf-font-size-xs);
   line-height: 1.6;
   overflow-wrap: break-word;
 }
@@ -363,7 +363,7 @@ onBeforeUnmount(() => {
   grid-column: 3;
   grid-row: 1;
   display: inline-flex;
-  color: #94a3b8;
+  color: var(--cf-gray-400);
 }
 
 .cf-contributor-external :deep(svg) {

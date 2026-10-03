@@ -57,6 +57,7 @@ export const DEFAULT_SETTINGS = {
     clistEnabled: 'Shift+C',
     colorRatings: 'Shift+R',
     displayStyle: 'Shift+F',
+    predictionEnabled: 'Shift+P', // Prediction：比赛评分预测总开关。
     userAvatar: 'Shift+A',
   },
 };

@@ -110,9 +110,9 @@ const messages = computed(
 }
 
 .cf-roadmap-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: var(--cf-font-size-xl);
+  font-weight: var(--cf-font-weight-bold);
+  color: var(--cf-gray-900);
   margin: 0 0 4px 0;
   display: flex;
   align-items: center;
@@ -120,8 +120,8 @@ const messages = computed(
 }
 
 .cf-roadmap-subtitle {
-  font-size: 12px;
-  color: #64748b;
+  font-size: var(--cf-font-size-base);
+  color: var(--cf-gray-500);
   margin: 0;
   line-height: 1.5;
 }
@@ -150,19 +150,19 @@ const messages = computed(
 }
 
 .cf-roadmap-group-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #334155;
+  font-size: var(--cf-font-size-base);
+  font-weight: var(--cf-font-weight-bold);
+  color: var(--cf-gray-700);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .cf-roadmap-group-badge {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-semibold);
   padding: 1px 7px;
-  border-radius: 10px;
+  border-radius: var(--cf-radius-lg);
   line-height: 1.3;
 }
 
@@ -186,7 +186,7 @@ const messages = computed(
 
 .cf-roadmap-card {
   background: var(--cf-card-surface, #fff);
-  border: 1px solid var(--cf-surface-border, #e2e8f0);
+  border: 1px solid var(--cf-surface-border, var(--cf-gray-200));
   border-radius: 9px;
   padding: 10px 14px;
   display: flex;
@@ -267,28 +267,28 @@ const messages = computed(
 }
 
 .cf-roadmap-item-title-text {
-  font-size: 13px;
-  font-weight: 600;
-  color: #0f172a;
+  font-size: var(--cf-font-size-lg);
+  font-weight: var(--cf-font-weight-semibold);
+  color: var(--cf-gray-900);
   line-height: 1.4;
 }
 
 .cf-roadmap-card.completed .cf-roadmap-item-title-text {
-  color: #1e293b;
+  color: var(--cf-gray-800);
 }
 
 .cf-roadmap-item-desc {
-  font-size: 11.5px;
-  color: #64748b;
+  font-size: var(--cf-font-size-sm);
+  color: var(--cf-gray-500);
   margin: 0;
   line-height: 1.55;
 }
 
 .cf-roadmap-tag {
   font-size: 10.5px;
-  font-weight: 600;
+  font-weight: var(--cf-font-weight-semibold);
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: var(--cf-radius-xs);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -350,14 +350,14 @@ const messages = computed(
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   background: color-mix(in srgb, var(--cf-proposal-accent) 16%, #fcf0d8);
   color: var(--cf-proposal-ink);
 }
 
 .cf-roadmap-proposal-title-text {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--cf-font-size-lg);
+  font-weight: var(--cf-font-weight-bold);
   color: var(--cf-proposal-ink);
   line-height: 1.4;
 }
@@ -368,12 +368,12 @@ const messages = computed(
   align-items: center;
   gap: 5px;
   padding: 3px 10px;
-  font-size: 11.5px;
-  font-weight: 600;
+  font-size: var(--cf-font-size-sm);
+  font-weight: var(--cf-font-weight-semibold);
   color: var(--cf-proposal-ink);
   background: color-mix(in srgb, var(--cf-proposal-accent) 12%, #fcf0d8);
   border: 1px solid color-mix(in srgb, var(--cf-proposal-accent) 34%, transparent);
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   text-decoration: none;
   flex-shrink: 0;
   line-height: 1.35;
@@ -403,7 +403,7 @@ const messages = computed(
 }
 
 .cf-roadmap-proposal-desc {
-  font-size: 11.5px;
+  font-size: var(--cf-font-size-sm);
   color: var(--cf-proposal-ink);
   margin: 0;
   line-height: 1.55;

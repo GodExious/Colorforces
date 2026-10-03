@@ -5,7 +5,7 @@ export default {
   },
   'rating-prediction': {
     title: '比赛评分预测',
-    desc: '支持涨跌分、表现分、单用户目标模拟与按需精算。',
+    desc: '支持涨跌分、表现分、等级变化与单用户评级分析。',
   },
   'ui-themes': {
     title: '提供多种 UI 样式的主题',

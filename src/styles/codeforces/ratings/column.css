@@ -9,6 +9,11 @@
   box-sizing: border-box !important;
 }
 
+/* 榜单评分行与下方选手行等高，高度由脚本量出；量不到时按内容高度。 */
+.cf-rating-standings-row {
+  height: var(--cf-rating-row-height, auto);
+}
+
 :root.cf-hide-submissions .cf-table-submissions .cf-rating-col,
 :root.cf-hide-status .cf-table-status .cf-rating-col,
 :root.cf-hide-hacks .cf-table-hacks .cf-rating-col,

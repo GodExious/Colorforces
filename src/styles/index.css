@@ -7,8 +7,14 @@
  * user/avatars/teams 先于 user/avatars/avatars。
  */
 
+/* 设计变量 */
+@import './tokens.css';
+
 /* 字体 */
 @import './fonts.css';
+
+/* 弹窗主题 */
+@import './aurora-dialog.css';
 
 /* 比赛 */
 @import './codeforces/contest/rating-prediction.css';

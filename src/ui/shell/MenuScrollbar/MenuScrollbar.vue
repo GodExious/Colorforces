@@ -261,15 +261,15 @@ defineExpose({ sync });
   right: 1px;
   width: 5px;
   height: 100%;
-  border-radius: 4px;
-  background: #cbd5e1;
+  border-radius: var(--cf-radius-xs);
+  background: var(--cf-gray-300);
   opacity: 0;
   cursor: grab;
   touch-action: none;
 }
 .cf-menu-scrollbar-thumb:hover,
 .is-dragging .cf-menu-scrollbar-thumb {
-  background: #94a3b8;
+  background: var(--cf-gray-400);
 }
 .is-dragging .cf-menu-scrollbar-thumb {
   cursor: grabbing;

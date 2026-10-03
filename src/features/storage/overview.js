@@ -1,6 +1,7 @@
 import { appStorage } from '../../storage/gm.js';
 import { listLocalKeys } from '../../storage/local-storage.js';
 import { appSettings } from '../../settings.js';
+import { readRuntimeData } from '../../storage/runtime.js';
 import {
   SETTINGS_KEY,
   CACHE_KEY,
@@ -9,7 +10,7 @@ import {
   AVATAR_CACHE_KEY,
   PREDICTION_STORAGE_KEYS,
   PREDICTION_CACHE_KEY,
-  RUNTIME_STORAGE_KEYS,
+  RUNTIME_DATA_KEY,
 } from '../../storage/keys.js';
 import { getCurrentUserHandle } from '../general/solved.js';
 import { sortProblemIds } from '../../utils/problem.js';
@@ -32,7 +33,7 @@ export const ACTIVE_STORAGE_KEYS = [
   PARALLEL_CONTESTS_KEY,
   CLIST_STORAGE_KEY,
   AVATAR_CACHE_KEY,
-  ...RUNTIME_STORAGE_KEYS,
+  RUNTIME_DATA_KEY,
 ];
 // 读取原版已解决题目缓存详情。
 export const getUserSolvedStorageDetails = () => {
@@ -160,12 +161,13 @@ export const formatStorageBytes = (bytes) => {
 };
 // 汇总各功能的数据和字节占用，不直接操作页面节点。
 export function readStorageOverview() {
+  // 先读插件数据：读取时会把合并前的旧键迁进来，之后再枚举，旧键就不会被算进已弃用的缓存。
+  const runtime = readRuntimeData();
   const solved = getUserSolvedStorageDetails(),
     local = getLocalStorageDetails();
   const countProblems = (value) =>
     Object.keys(value || {}).filter((key) => !key.startsWith('NAME:')).length;
   const clist = appStorage.getJSON(CLIST_STORAGE_KEY, {});
-  const runtimeKeys = RUNTIME_STORAGE_KEYS.filter((key) => appStorage.getItem(key) != null);
   const items = {
     settings: {
       bytes: getStorageItemBytes(SETTINGS_KEY),
@@ -174,12 +176,9 @@ export function readStorageOverview() {
       countKey: 'storageItemCount',
     },
     runtime: {
-      bytes: runtimeKeys.reduce((total, key) => total + getStorageItemBytes(key), 0),
-      count: runtimeKeys.length,
-      keys: runtimeKeys,
-      dataMap: Object.fromEntries(
-        runtimeKeys.map((key) => [key, appStorage.getJSON(key, appStorage.getItem(key))]),
-      ),
+      bytes: getStorageItemBytes(RUNTIME_DATA_KEY),
+      count: Object.keys(runtime).length,
+      keys: [RUNTIME_DATA_KEY],
       countKey: 'storageItemCount',
     },
     cf: {
@@ -216,7 +215,6 @@ export function readStorageOverview() {
     },
   };
   // 合并管理入口，不改旧存储结构；数量分项保留，不能把头像人数与题数相加。
-  const userParts = { avatar: items.avatar, solved: items.solved };
   items.user = {
     bytes: items.avatar.bytes + items.solved.bytes,
     count: 2,
@@ -238,7 +236,6 @@ export function readStorageOverview() {
   };
   return {
     items,
-    userParts,
     total: Object.values(items).reduce((total, item) => total + item.bytes, 0),
   };
 }

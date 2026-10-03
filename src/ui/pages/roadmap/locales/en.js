@@ -5,7 +5,7 @@ export default {
   },
   'rating-prediction': {
     title: 'Contest Rating Prediction',
-    desc: 'Rating changes, performance ratings, single-user target simulations, and on-demand refinement.',
+    desc: 'Rating changes, performance ratings, rank progression, and single-user rating analysis.',
   },
   'ui-themes': {
     title: 'Multiple UI Styles & Color Themes',

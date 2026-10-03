@@ -4,20 +4,19 @@ import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
 import { shallowRef } from 'vue';
 const request = shallowRef(null);
 // 提供同文件调用入口，查看器始终只保留一个实例。
+// title 传文案键名，options.keyLabel 传「存储键 → 说明文字」的函数：两者都在渲染时现取，切换语言后跟着变。
 export function showStorageJsonModal(title, keys, getContent, options = {}) {
   request.value = { title, keys: [...keys], getContent, ...options };
-}
-// 将多个存储键作为一份快照展示，不合并或写入底层存储。
-export function showStorageJsonDocument(title, content, bytes) {
-  request.value = { title, keys: [], document: { content, bytes } };
 }
 </script>
 <script setup>
 import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import { translate as t } from '../../../../../i18n/index.js';
+import { appSettings } from '../../../../../settings.js';
 import { appStorage } from '../../../../../storage/gm.js';
 import { PARALLEL_CONTESTS_KEY } from '../../../../../storage/keys.js';
 import { preventScrollChaining } from '../../../../../utils/scroll.js';
+import { backdropClose } from '../../../../../utils/backdrop.js';
 import { buildPreview } from './json-preview.js';
 import DialogTransition from '../../../../components/transitions/DialogTransition/DialogTransition.vue';
 // 保留离场期间的标题、选项卡和预览，关闭后不重新生成空文案。
@@ -37,40 +36,33 @@ function close() {
   cancelAnimationFrame(frame);
   clearTimeout(timer);
 }
-// 切换预览时只解析当前键，避免大缓存导致菜单卡顿。
-function selectKey(key, initial = false) {
+// 点遮罩关闭；在预览里拖选文字、拖到弹窗外才松开不算。
+const backdrop = backdropClose(close);
+// 切换预览时只解析当前键，避免大缓存导致菜单卡顿。keepScroll 用于原地重建预览，不把滚动位置拉回顶部。
+function selectKey(key, initial = false, keepScroll = false) {
   activeKey.value = key;
   cancelAnimationFrame(frame);
   const render = () => {
     if (!request.value) return;
-    if (request.value.document) {
-      const { content, bytes } = request.value.document;
-      preview.value = buildPreview(null, () => content, bytes);
-      return;
-    }
     if (!key) {
       preview.value = {
         highlightedHtml:
-          '<span style="color:#64748b;font-style:italic;">' + t('storageEmptyData') + '</span>',
+          '<span style="color:var(--cf-gray-500);font-style:italic;">' +
+          t('storageEmptyData') +
+          '</span>',
         badgeText: t('storageItemCount', 0) + ' · 0 B',
       };
       return;
     }
     if (!keyDataCache.has(key)) keyDataCache.set(key, buildPreview(key, request.value.getContent));
     preview.value = keyDataCache.get(key);
+    if (keepScroll) return;
     nextTick(() => {
       if (pre.value) pre.value.scrollTop = 0;
     });
   };
   if (initial) render();
   else frame = requestAnimationFrame(render);
-}
-// 关闭查看器后交给原确认流程清理当前分类，不静默扩大清理范围。
-function clearActive() {
-  const action = request.value?.onClear,
-    key = activeKey.value;
-  close();
-  action?.(key);
 }
 // 复制完整数据，而不是经过裁剪和着色的预览。
 function copyFull() {
@@ -79,9 +71,7 @@ function copyFull() {
   let fullJsonStr = '';
   try {
     let contentToExport;
-    if (request.value.document) {
-      contentToExport = preview.value.content;
-    } else if (
+    if (
       keyDataCache.has(activeKeyValue) &&
       keyDataCache.get(activeKeyValue).content !== undefined
     ) {
@@ -91,11 +81,9 @@ function copyFull() {
     } else {
       contentToExport = appStorage.getJSON(activeKeyValue, null);
     }
-    const exportObj = request.value.document
-      ? contentToExport
-      : {
-          [activeKeyValue]: contentToExport !== undefined ? contentToExport : null,
-        };
+    const exportObj = {
+      [activeKeyValue]: contentToExport !== undefined ? contentToExport : null,
+    };
     fullJsonStr = JSON.stringify(exportObj, null, 2);
     if (activeKeyValue === PARALLEL_CONTESTS_KEY || activeKeyValue === 'cf_parallel_contests') {
       fullJsonStr = fullJsonStr.replace(/\[\s*([-\d\s,]+?)\s*\]/g, (match, nums) => {
@@ -131,6 +119,15 @@ watch(request, (value) => {
     selectKey(value.keys[0] || '', true);
   }
 });
+// 切换语言后原地重建当前预览：项数徽标和截断提示是生成预览时写进去的文字。
+watch(
+  () => appSettings.lang,
+  () => {
+    if (!request.value) return;
+    keyDataCache.clear();
+    selectKey(activeKey.value, true, true);
+  },
+);
 watch(overlay, (node) => {
   if (node) preventScrollChaining(node);
 });
@@ -144,99 +141,35 @@ onBeforeUnmount(() => {
   <Teleport to="body"
     ><DialogTransition
       ><div
-        class="cf-clist-modal-overlay cf-storage-json-modal"
+        class="cf-clist-modal-overlay cf-aurora-dialog cf-storage-json-modal"
         v-if="request"
         ref="overlay"
-        @click.self="close"
+        v-on="backdrop"
       >
-        <div class="cf-clist-modal-card" style="width: 640px; max-height: 85vh">
-          <div class="cf-clist-modal-header" style="padding: 12px 18px">
-            <div class="cf-clist-modal-title" style="font-size: 14.5px">
-              <InlineSvg :source="cfAssets.jsonDocumentIcon" />
-              <span>{{ displayed.title }}</span>
-              <span
-                class="cf-storage-modal-badge"
-                style="
-                  font-size: 11px;
-                  font-weight: 500;
-                  color: #64748b;
-                  background: #f1f5f9;
-                  padding: 2px 7px;
-                  border-radius: 4px;
-                  border: 1px solid #e2e8f0;
-                  margin-left: 6px;
-                "
-                >{{ preview.badgeText }}</span
-              >
+        <div class="cf-clist-modal-card cf-aurora-card cf-storage-json-card">
+          <div class="cf-clist-modal-header">
+            <div class="cf-clist-modal-title">
+              <span class="cf-modal-title-icon cf-aurora-emblem"
+                ><InlineSvg :source="cfAssets.jsonDocumentIcon"
+              /></span>
+              <span>{{ t(displayed.title) }}</span>
+              <span class="cf-storage-modal-badge">{{ preview.badgeText }}</span>
             </div>
-            <button
-              type="button"
-              class="cf-modal-close-btn"
-              style="
-                background: none;
-                border: none;
-                font-size: 20px;
-                cursor: pointer;
-                color: #94a3b8;
-                line-height: 1;
-                padding: 2px 4px;
-                transition: color 0.15s ease;
-                flex-shrink: 0;
-              "
-              @click="close"
-            >
+            <button type="button" class="cf-modal-close-btn cf-aurora-close" @click="close">
               ×
             </button>
           </div>
-          <div
-            class="cf-clist-modal-body"
-            style="
-              padding: 14px 18px;
-              display: flex;
-              flex-direction: column;
-              gap: 10px;
-              flex: 1;
-              min-height: 0;
-            "
-          >
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 14px;
-                font-size: 11.5px;
-                color: #64748b;
-              "
-            >
-              <div style="flex: 1; min-width: 0; line-height: 1.6; word-break: break-all">
-                <template v-if="!displayed.document">
-                  <span style="font-weight: 600; margin-right: 6px; color: #334155"
-                    >{{ t('storageKeyPrefix') }}:</span
-                  >{{ ' ' }}
-                  <code
-                    class="cf-storage-active-key"
-                    style="
-                      background: #f1f5f9;
-                      padding: 2px 7px;
-                      border-radius: 4px;
-                      color: #0284c7;
-                      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-                      font-size: 11.5px;
-                      font-weight: 600;
-                      border: 1px solid #e2e8f0;
-                    "
-                    >{{ activeKey || '(none)' }}</code
-                  >
-                </template>
+          <div class="cf-clist-modal-body cf-storage-json-body">
+            <div class="cf-storage-json-toolbar">
+              <div class="cf-storage-json-key">
+                <span class="cf-storage-json-key-label">{{ t('storageKeyPrefix') }}:</span>{{ ' ' }}
+                <code class="cf-storage-active-key">{{ activeKey || '(none)' }}</code>
               </div>
               <button
                 type="button"
-                class="cf-storage-copy-json-btn"
+                class="cf-storage-copy-json-btn cf-aurora-btn"
+                :class="{ 'is-copied': copied }"
                 @click="copyFull"
-                :style="
-                  copied ? { background: '#ecfdf5', borderColor: '#a7f3d0', color: '#059669' } : {}
-                "
               >
                 <InlineSvg :source="cfAssets.jsonCopyIcon" />
                 <span class="copy-btn-text">{{
@@ -244,101 +177,26 @@ onBeforeUnmount(() => {
                 }}</span>
               </button>
             </div>
-            <div
-              class="cf-storage-key-buttons"
-              style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 2px"
-              v-show="displayed.keys.length"
-            >
+            <div class="cf-storage-key-buttons" v-show="displayed.keys.length">
               <button
                 type="button"
                 class="cf-storage-key-tab-btn"
-                style="
-                  padding: 3px 9px;
-                  border-radius: 5px;
-                  font-size: 11.5px;
-                  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-                  cursor: pointer;
-                  transition: 0.15s;
-                  border: 1px solid rgb(2, 132, 199);
-                  background: rgb(2, 132, 199);
-                  color: rgb(255, 255, 255);
-                  line-height: 1.4;
-                  font-weight: 600;
-                "
                 v-for="key in displayed.keys"
                 :key="key"
                 :data-key="key"
                 @click="selectKey(key)"
                 :class="{ active: activeKey === key }"
-                :style="{
-                  background: activeKey === key ? '#0284c7' : '#f8fafc',
-                  color: activeKey === key ? '#ffffff' : '#334155',
-                  borderColor: activeKey === key ? '#0284c7' : '#cbd5e1',
-                  fontWeight: activeKey === key ? '600' : '500',
-                }"
               >
-                {{ displayed.keyLabels?.[key] || key }}
-              </button>
-              <button
-                v-if="displayed.onClear"
-                type="button"
-                class="cf-storage-btn btn-clear"
-                @click="clearActive"
-              >
-                {{ t('storageClearSection') }}
+                {{ displayed.keyLabel?.(key) || key }}
               </button>
             </div>
-            <div style="flex: 1; min-height: 0; position: relative">
-              <pre
-                class="cf-storage-json-pre"
-                style="
-                  margin: 0;
-                  padding: 12px 14px;
-                  background: #0f172a;
-                  color: #cbd5e1;
-                  border-radius: 8px;
-                  font-size: 11.5px;
-                  line-height: 1.5;
-                  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-                  overflow: auto;
-                  overscroll-behavior: contain;
-                  max-height: 50vh;
-                  border: 1px solid #1e293b;
-                  box-sizing: border-box;
-                  white-space: pre;
-                "
-                v-html="preview.highlightedHtml"
-                ref="pre"
-              ></pre>
+            <div class="cf-storage-json-view">
+              <pre class="cf-storage-json-pre" v-html="preview.highlightedHtml" ref="pre"></pre>
             </div>
           </div>
-          <div
-            class="cf-clist-modal-footer"
-            style="
-              padding: 10px 18px;
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              background: #f8fafc;
-              border-top: 1px solid #e2e8f0;
-            "
-          >
-            <span style="font-size: 11px; color: #94a3b8">{{ t('storageViewFooterTip') }}</span>
-            <button
-              type="button"
-              class="cf-guide-confirm-btn"
-              style="
-                background: #0284c7;
-                color: #fff;
-                border: 1px solid #0284c7;
-                border-radius: 6px;
-                padding: 5px 16px;
-                font-size: 12px;
-                font-weight: 600;
-                cursor: pointer;
-              "
-              @click="close"
-            >
+          <div class="cf-clist-modal-footer cf-storage-json-footer">
+            <span class="cf-storage-json-tip">{{ t('storageViewFooterTip') }}</span>
+            <button type="button" class="cf-aurora-btn cf-aurora-btn--primary" @click="close">
               {{ t('storageCloseBtn') }}
             </button>
           </div>
@@ -348,17 +206,153 @@ onBeforeUnmount(() => {
   >
 </template>
 <style>
-.cf-storage-key-tab-btn:not(.active):hover {
-  background: #f1f5f9 !important;
-  border-color: #94a3b8 !important;
+/* 数据查看弹窗：外壳与配色来自幻彩主题，这里只写本弹窗特有的布局与数据区。 */
+.cf-clist-modal-card.cf-storage-json-card {
+  width: 640px;
+  max-height: 85vh;
 }
-</style>
 
-<style>
+.cf-storage-modal-badge {
+  margin-left: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--cf-aurora-glass-border);
+  border-radius: 999px;
+  background: #ffffff85;
+  color: var(--cf-aurora-muted);
+  font-size: var(--cf-font-size-xs);
+  font-weight: var(--cf-font-weight-medium);
+  line-height: 1.5;
+}
+
+.cf-clist-modal-body.cf-storage-json-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding-top: 14px;
+  padding-bottom: 16px;
+}
+
+.cf-storage-json-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--cf-aurora-muted);
+  font-size: var(--cf-font-size-sm);
+}
+
+.cf-storage-json-key {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.cf-storage-json-key-label {
+  margin-right: 6px;
+  color: var(--cf-control-ink);
+  font-weight: var(--cf-font-weight-semibold);
+}
+
+.cf-storage-active-key {
+  padding: 2px 8px;
+  border: 1px solid var(--cf-aurora-glass-border);
+  border-radius: var(--cf-radius-sm);
+  background: #ffffff99;
+  color: #5565b0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--cf-font-size-sm);
+  font-weight: var(--cf-font-weight-semibold);
+}
+
+.cf-aurora-btn.cf-storage-copy-json-btn {
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding: 4px 12px;
+  font-size: var(--cf-font-size-sm);
+}
+
+.cf-storage-copy-json-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+.cf-aurora-btn.cf-storage-copy-json-btn.is-copied,
+.cf-aurora-btn.cf-storage-copy-json-btn.is-copied:hover {
+  border-color: #a9dcc6;
+  background: #e6f7efd9;
+  color: #2f9a6b;
+}
+
+.cf-storage-copy-json-btn .copy-btn-text {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.cf-storage-key-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+/* 数据项页签：未选中是半透明白，选中是与主按钮同系的蓝紫渐变。 */
+.cf-storage-key-tab-btn {
+  padding: 3px 10px;
+  border: 1px solid #cdd5e8;
+  border-radius: var(--cf-radius-sm);
+  background: #ffffff8f;
+  color: var(--cf-control-ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--cf-font-size-sm);
+  font-weight: var(--cf-font-weight-medium);
+  line-height: 1.4;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.cf-storage-key-tab-btn:not(.active):hover {
+  border-color: #b4bfdc;
+  background: #ffffffe0;
+}
+
+.cf-storage-key-tab-btn.active {
+  border-color: #8590cf;
+  background: linear-gradient(135deg, #8b9ddd, #9c8fd6);
+  color: #fff;
+  font-weight: var(--cf-font-weight-semibold);
+}
+
+.cf-storage-json-view {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
 .cf-storage-json-pre {
-  scrollbar-width: thin;
-  scrollbar-color: #334155 #0f172a;
+  box-sizing: border-box;
+  max-height: 50vh;
+  margin: 0;
+  padding: 12px 14px;
+  overflow: auto;
+  border: 1px solid var(--cf-guide-code-border);
+  border-radius: var(--cf-radius-xl);
+  background: var(--cf-guide-code-bg);
+  box-shadow: inset 0 1px 0 #ffffff14;
+  color: #cfd8f2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--cf-font-size-sm);
+  line-height: 1.5;
+  white-space: pre;
   overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #5a6390 transparent;
 }
 
 .cf-storage-json-pre::-webkit-scrollbar {
@@ -366,83 +360,57 @@ onBeforeUnmount(() => {
   height: 7px;
 }
 
-.cf-storage-json-pre::-webkit-scrollbar-track {
-  background: #0f172a;
-  border-radius: 6px;
+.cf-storage-json-pre::-webkit-scrollbar-track,
+.cf-storage-json-pre::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 .cf-storage-json-pre::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
-  border: 1px solid #1e293b;
-  transition: background 0.15s ease;
+  border-radius: var(--cf-radius-xs);
+  background: #5a6390;
 }
 
 .cf-storage-json-pre::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #6d77a8;
 }
 
-.cf-storage-json-pre::-webkit-scrollbar-corner {
-  background: #0f172a;
-}
-
+/* 语法着色取与幻彩底色相称的粉彩，在深靛蓝底上保持可读。 */
 .cf-json-key {
-  color: #38bdf8;
-  font-weight: 500;
+  color: #9db8ff;
+  font-weight: var(--cf-font-weight-medium);
 }
 
 .cf-json-string {
-  color: #4ade80;
+  color: #8fe0c2;
 }
 
 .cf-json-number {
-  color: #fb923c;
-  font-weight: 500;
+  color: #f5c08a;
+  font-weight: var(--cf-font-weight-medium);
 }
 
 .cf-json-boolean {
-  color: #c084fc;
-  font-weight: 600;
+  color: #d4a8f5;
+  font-weight: var(--cf-font-weight-semibold);
 }
 
 .cf-json-null {
-  color: #94a3b8;
+  color: #9aa3c4;
   font-style: italic;
 }
 
 .cf-json-punct {
-  color: #94a3b8;
+  color: #9aa3c4;
 }
 
-.cf-storage-copy-json-btn {
-  display: inline-flex;
+.cf-clist-modal-footer.cf-storage-json-footer {
   align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 4px 11px;
-  border-radius: 6px;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-  background: #f0f9ff;
-  color: #0284c7;
-  border: 1px solid #bae6fd;
-  transition: all 0.15s ease;
-  white-space: nowrap !important;
-  flex-shrink: 0 !important;
-  align-self: flex-start;
-  user-select: none;
-  box-sizing: border-box;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.cf-storage-copy-json-btn:hover {
-  background: #e0f2fe;
-  color: #0369a1;
-  border-color: #7dd3fc;
-}
-
-.cf-storage-copy-json-btn .copy-btn-text {
-  white-space: nowrap !important;
-  display: inline-block;
+.cf-storage-json-tip {
+  color: var(--cf-aurora-muted);
+  font-size: var(--cf-font-size-xs);
 }
 </style>

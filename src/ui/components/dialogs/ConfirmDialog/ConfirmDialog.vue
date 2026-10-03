@@ -4,13 +4,12 @@ import { shallowRef } from 'vue';
 import { appSettings } from '../../../../settings.js';
 import { tGlobal as t } from '../../../../i18n/index.js';
 const pending = shallowRef(null);
-// 打开原版确认提示，新的提示替换旧提示。
+// 打开确认提示，新的提示替换旧提示。
 export function showConfirmPop(options) {
   pending.value = options;
 }
-// 按原有提示类型生成颜色、文案和按钮组合。
+// 按提示类型决定图标、语气和按钮组合；配色由样式按语气处理。
 function buildAppearance({
-  title = '',
   message = '',
   note = '',
   confirmText = '',
@@ -19,32 +18,13 @@ function buildAppearance({
   lang = (typeof appSettings !== 'undefined' && appSettings && appSettings.lang) || 'zh',
   onConfirm = null,
 } = {}) {
-  const isInfo = type === 'info';
-  const isWarning = type === 'warning';
-  const isAlertOnly = isInfo || typeof onConfirm !== 'function';
-
-  let iconSvg = '';
-  let iconBg = '#fee2e2';
-  let iconColor = '#ef4444';
-  let confirmBtnBg = '#e11d48';
-  let confirmBtnBorder = '#e11d48';
-  let defaultConfirmText = t('popConfirmBtn', lang);
-
-  if (isWarning) {
-    iconBg = '#fef3c7';
-    iconColor = '#d97706';
-    confirmBtnBg = '#d97706';
-    confirmBtnBorder = '#d97706';
-    iconSvg = `${cfAssets.dialogWarningIcon}`;
-  } else if (isInfo) {
-    iconBg = '#e0f2fe';
-    iconColor = '#0284c7';
-    confirmBtnBg = '#0284c7';
-    confirmBtnBorder = '#0284c7';
-    iconSvg = `${cfAssets.dialogInfoIcon}`;
-  } else {
-    iconSvg = `${cfAssets.dialogDeleteIcon}`;
-  }
+  const tone = type === 'info' || type === 'warning' ? type : 'danger';
+  const isAlertOnly = tone === 'info' || typeof onConfirm !== 'function';
+  const icons = {
+    danger: cfAssets.dialogDeleteIcon,
+    warning: cfAssets.dialogWarningIcon,
+    info: cfAssets.dialogInfoIcon,
+  };
 
   let mainMsg = message || '';
   let subNote = note || '';
@@ -54,25 +34,15 @@ function buildAppearance({
     subNote = parts.slice(1).join('\n\n');
   }
 
-  const noteBg = isWarning ? '#fffbeb' : isInfo ? '#f0f9ff' : '#fff1f2';
-  const noteBorder = isWarning ? '#fde68a' : isInfo ? '#bae6fd' : '#fecdd3';
-  const noteColor = isWarning ? '#b45309' : isInfo ? '#0369a1' : '#9f1239';
-
   return {
+    tone,
     isAlertOnly,
-    iconSvg,
+    iconSvg: icons[tone],
     subNote,
     mainHtml: mainMsg.split(String.fromCharCode(10)).join('<br>'),
     noteHtml: subNote.split(String.fromCharCode(10)).join('<br>'),
-    confirmLabel: confirmText || (isAlertOnly ? t('popGotItBtn', lang) : defaultConfirmText),
+    confirmLabel: confirmText || t(isAlertOnly ? 'popGotItBtn' : 'popConfirmBtn', lang),
     cancelLabel: cancelText || t('popCancelBtn', lang),
-    iconStyle: { background: iconBg, color: iconColor },
-    noteStyle: { background: noteBg, borderColor: noteBorder, color: noteColor },
-    buttonStyle: {
-      background: confirmBtnBg,
-      borderColor: confirmBtnBorder,
-      padding: isAlertOnly ? '6px 18px' : '6px 16px',
-    },
   };
 }
 </script>
@@ -81,6 +51,7 @@ import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import InlineSvg from '../../icons/InlineSvg/InlineSvg.vue';
 import DialogTransition from '../../transitions/DialogTransition/DialogTransition.vue';
 import { preventScrollChaining } from '../../../../utils/scroll.js';
+import { backdropClose } from '../../../../utils/backdrop.js';
 const overlay = ref(null);
 // 离场保留最后一份文案，避免按钮与说明在关闭帧重新排版。
 const displayed = shallowRef(pending.value);
@@ -96,6 +67,8 @@ const appearance = computed(() => buildAppearance(displayed.value || {}));
 function close() {
   pending.value = null;
 }
+// 点遮罩关闭；在弹窗里按下、拖到弹窗外才松开不算。
+const backdrop = backdropClose(close);
 // 先关闭弹窗，再运行用户确认的动作。
 function confirm() {
   const callback = pending.value?.onConfirm;
@@ -115,107 +88,41 @@ onBeforeUnmount(() => window.removeEventListener('keydown', keydown));
 <template>
   <Teleport to="body"
     ><DialogTransition
-      ><div class="cf-confirm-pop-overlay" v-if="pending" ref="overlay" v-on:click.self="close">
-        <div class="cf-confirm-pop-card">
-          <div
-            style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px 14px 20px"
-          >
-            <div
-              style="
-                width: 40px;
-                height: 40px;
-                border-radius: 10px;
-                background: #fee2e2;
-                color: #ef4444;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-              "
-              v-bind:style="appearance.iconStyle"
-            >
+      ><div
+        class="cf-confirm-pop-overlay cf-aurora-dialog"
+        v-if="pending"
+        ref="overlay"
+        v-on="backdrop"
+      >
+        <div class="cf-confirm-pop-card cf-aurora-card" :data-tone="appearance.tone">
+          <div class="cf-confirm-main">
+            <div class="cf-confirm-icon cf-aurora-emblem">
               <inline-svg v-bind:source="appearance.iconSvg"></inline-svg>
             </div>
-            <div style="flex: 1; min-width: 0">
+            <div class="cf-confirm-text">
+              <div class="cf-confirm-title" v-text="displayed.title"></div>
+              <div class="cf-confirm-message" v-html="appearance.mainHtml"></div>
               <div
-                style="
-                  font-size: 14.5px;
-                  font-weight: 700;
-                  color: #0f172a;
-                  margin-bottom: 5px;
-                  line-height: 1.3;
-                "
-                v-text="displayed.title"
-              ></div>
-              <div
-                style="font-size: 12.5px; color: #475569; line-height: 1.5; word-break: break-word"
-                v-html="appearance.mainHtml"
-              ></div>
-
-              <div
-                style="
-                  background: #fff1f2;
-                  border: 1px solid #fecdd3;
-                  border-radius: 6px;
-                  padding: 7px 10px;
-                  font-size: 11.5px;
-                  color: #9f1239;
-                  line-height: 1.45;
-                  margin-top: 10px;
-                "
+                class="cf-confirm-note"
                 v-html="appearance.noteHtml"
                 v-if="appearance.subNote"
-                v-bind:style="appearance.noteStyle"
               ></div>
             </div>
           </div>
-          <div
-            style="
-              padding: 10px 18px;
-              background: #f8fafc;
-              border-top: 1px solid #e2e8f0;
-              display: flex;
-              justify-content: flex-end;
-              align-items: center;
-              border-radius: 0 0 12px 12px;
-            "
-          >
+          <div class="cf-confirm-actions">
             <button
               type="button"
-              class="cf-confirm-btn-cancel"
-              style="
-                background: #fff;
-                color: #475569;
-                border: 1px solid #cbd5e1;
-                padding: 6px 14px;
-                border-radius: 6px;
-                font-size: 12px;
-                font-weight: 500;
-                cursor: pointer;
-                margin-right: 8px;
-                transition: all 0.15s ease;
-              "
+              class="cf-aurora-btn cf-confirm-btn-cancel"
               v-text="appearance.cancelLabel"
               v-if="!appearance.isAlertOnly"
               v-on:click="close"
             ></button>
             <button
               type="button"
-              class="cf-confirm-btn-primary"
-              style="
-                background: #e11d48;
-                color: #fff;
-                border: 1px solid #e11d48;
-                padding: 6px 16px;
-                border-radius: 6px;
-                font-size: 12px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.15s ease;
-              "
+              class="cf-aurora-btn cf-aurora-btn--primary cf-confirm-btn-primary"
+              :data-tone="appearance.tone"
               v-text="appearance.confirmLabel"
               v-on:click="confirm"
-              v-bind:style="appearance.buttonStyle"
             ></button>
           </div>
         </div></div></DialogTransition
@@ -223,14 +130,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', keydown));
 </template>
 
 <style>
+/* 确认提示：外观来自幻彩主题；危险、警告、提示三种语气只改图标底板、备注和主按钮的颜色。 */
 .cf-confirm-pop-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(15, 23, 42, 0.48);
-  backdrop-filter: blur(4px);
   z-index: 10000005;
   display: flex;
   align-items: center;
@@ -241,26 +147,82 @@ onBeforeUnmount(() => window.removeEventListener('keydown', keydown));
 }
 
 .cf-confirm-pop-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.15),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --cf-confirm-tone: #d6587c;
+  --cf-confirm-tint: #fbe6ec;
   width: 420px;
   max-width: 92vw;
   overflow: hidden;
   box-sizing: border-box;
   overscroll-behavior: contain;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
-.cf-confirm-btn-cancel:hover {
-  background: #f1f5f9 !important;
-  border-color: #94a3b8 !important;
-  color: #0f172a !important;
+.cf-confirm-pop-card[data-tone='warning'] {
+  --cf-confirm-tone: #c98524;
+  --cf-confirm-tint: #fcefd9;
 }
 
-.cf-confirm-btn-primary:hover {
-  filter: brightness(0.92);
+.cf-confirm-pop-card[data-tone='info'] {
+  --cf-confirm-tone: #6475c4;
+  --cf-confirm-tint: #e6eafc;
+}
+
+.cf-confirm-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px 22px 16px;
+}
+
+.cf-confirm-pop-card .cf-confirm-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--cf-confirm-tint), #ffffffcc);
+  color: var(--cf-confirm-tone);
+}
+
+.cf-confirm-icon svg {
+  --cf-icon-primary: var(--cf-confirm-tone) !important;
+}
+
+.cf-confirm-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.cf-confirm-title {
+  margin-bottom: 5px;
+  color: #3b4868;
+  font-size: 15px;
+  font-weight: var(--cf-font-weight-bold);
+  line-height: 1.35;
+}
+
+.cf-confirm-message {
+  color: var(--cf-aurora-text);
+  font-size: var(--cf-font-size-md);
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.cf-confirm-note {
+  margin-top: 11px;
+  padding: 8px 11px;
+  border: 1px solid color-mix(in srgb, var(--cf-confirm-tone) 26%, #ffffff);
+  border-radius: var(--cf-radius-lg);
+  background: color-mix(in srgb, var(--cf-confirm-tint) 78%, transparent);
+  color: color-mix(in srgb, var(--cf-confirm-tone) 82%, #2b3550);
+  font-size: var(--cf-font-size-sm);
+  line-height: 1.5;
+}
+
+.cf-confirm-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 22px 18px;
+  border-top: 1px solid #d3dbec99;
 }
 </style>

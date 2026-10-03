@@ -7,9 +7,7 @@ export function createTooltipController() {
     visible: false,
     mounted: false,
     positioning: false,
-    originX: 0,
-    originY: 0,
-    radius: 0,
+    pad: 0,
     top: 0,
     left: 0,
     arrow: 10,
@@ -22,11 +20,16 @@ export function createTooltipController() {
   let revision = 0;
   let hideTimer;
   const releases = new Set();
-  // 隐藏提示，同时使尚未完成的定位失效。
-  function hide() {
+  // 隐藏提示，同时使尚未完成的定位失效。instant 为 true 时跳过淡出，立刻撤掉。
+  // 这个函数也直接用作滚动、缩放的监听器，那时收到的是事件对象，所以只认严格的 true。
+  function hide(instant) {
     revision++;
     state.visible = false;
     clearTimeout(hideTimer);
+    if (instant === true) {
+      state.mounted = false;
+      return;
+    }
     hideTimer = setTimeout(
       () => {
         state.mounted = false;
@@ -44,6 +47,7 @@ export function createTooltipController() {
       visible: false,
       mounted: true,
       positioning: true,
+      pad: 0,
       themed: Boolean(anchor.closest('.cf-menu-theme')),
       variant: options.variant || '',
     });
@@ -51,10 +55,21 @@ export function createTooltipController() {
     if (!element || current !== revision) return;
     const tipRect = element.getBoundingClientRect();
     const rect = anchor.getBoundingClientRect();
-    let top = rect.top - tipRect.height - 7;
+    // 左上角对齐到设备像素，文字才落在整像素上、清晰且不会在淡入前后错位
+    // （系统缩放为 125% 等非整数倍时，整数的 CSS 像素也不等于整数的屏幕像素）。
+    const ratio = window.devicePixelRatio || 1;
+    const snap = (value) => Math.round(value * ratio) / ratio;
+    // 高度带小数时，即使顶边对齐了，底边仍会落在半个像素上，和箭头之间露出细缝。
+    // 把高度向上补到整数个设备像素，补的这一点加在下内边距里。
+    const launcher = state.variant === 'launcher';
+    const pad = launcher
+      ? 0
+      : Math.max(0, Math.ceil(tipRect.height * ratio - 0.01) / ratio - tipRect.height);
+    const height = tipRect.height + pad;
+    let top = rect.top - 7 - height;
     let left = rect.left + rect.width / 2 - tipRect.width / 2;
     let placement = 'top';
-    if (state.variant === 'launcher') {
+    if (launcher) {
       top = Math.max(
         8,
         Math.min(
@@ -75,15 +90,15 @@ export function createTooltipController() {
     if (left < 10) left = 10;
     else if (left + tipRect.width > window.innerWidth - 10)
       left = window.innerWidth - tipRect.width - 10;
+    top = snap(top);
+    left = snap(left);
     Object.assign(state, {
       top,
       left,
-      originX: rect.left + rect.width / 2 - left,
-      originY: rect.top + rect.height / 2 - top,
-      radius: Math.hypot(tipRect.width + rect.width, tipRect.height + rect.height) + 36,
+      pad,
       placement,
       arrow: Math.max(10, Math.min(tipRect.width - 10, rect.left + rect.width / 2 - left)),
-      arrowTop: Math.max(10, Math.min(tipRect.height - 10, rect.top + rect.height / 2 - top)),
+      arrowTop: Math.max(10, Math.min(height - 10, rect.top + rect.height / 2 - top)),
     });
     await nextTick();
     if (!element || current !== revision) return;
@@ -174,22 +189,41 @@ export function createTooltipController() {
     };
     const enter = (event) => activate(targetFor(event.target));
     const leave = (event) => activate(targetFor(event.relatedTarget));
+    // 切到别的窗口（如 Alt + Tab）或页面转入后台时，浏览器不一定发出鼠标离开事件，
+    // 还会暂停绘制，淡入淡出可能停在半途，回来时留下一个半透明的提示。
+    // 这时直接撤掉提示、不做动画；回来后鼠标一动，再按所在位置重新显示。
+    const dismiss = () => {
+      activeObserver?.disconnect();
+      activeObserver = null;
+      restore();
+      active = null;
+      hide(true);
+      root.addEventListener('mousemove', enter, { once: true });
+    };
+    const dismissWhenHidden = () => {
+      if (document.hidden) dismiss();
+    };
     root.addEventListener('mouseover', enter);
     root.addEventListener('mouseout', leave);
     root.addEventListener('focusin', enter);
     root.addEventListener('focusout', leave);
     window.addEventListener('scroll', hide, true);
     window.addEventListener('resize', hide);
+    window.addEventListener('blur', dismiss);
+    document.addEventListener('visibilitychange', dismissWhenHidden);
     const release = () => {
       activeObserver?.disconnect();
       activeObserver = null;
       restore();
       root.removeEventListener('mouseover', enter);
       root.removeEventListener('mouseout', leave);
+      root.removeEventListener('mousemove', enter);
       root.removeEventListener('focusin', enter);
       root.removeEventListener('focusout', leave);
       window.removeEventListener('scroll', hide, true);
       window.removeEventListener('resize', hide);
+      window.removeEventListener('blur', dismiss);
+      document.removeEventListener('visibilitychange', dismissWhenHidden);
       releases.delete(release);
     };
     releases.add(release);
@@ -235,14 +269,14 @@ const styles = computed(() => ({
   ...(state.themed ? theme.value : {}),
   display: state.mounted ? 'block' : 'none',
   transition: state.positioning ? 'none' : undefined,
-  visibility: state.mounted ? 'visible' : 'hidden',
+  // 换到新目标时，文字先换、位置后算。这段时间整个提示（连同箭头）完全不画，
+  // 否则旧位置上会闪过一帧「新文字配旧箭头位置」的画面，看起来像箭头横向跳了一下。
+  visibility: state.mounted && !state.positioning ? 'visible' : 'hidden',
   top: state.top + 'px',
   left: state.left + 'px',
   '--arrow-left': state.arrow + 'px',
   '--arrow-top': state.arrowTop + 'px',
-  '--tip-x': state.originX + 'px',
-  '--tip-y': state.originY + 'px',
-  '--tip-radius': state.radius + 'px',
+  '--cf-tip-pad': state.pad + 'px',
 }));
 onMounted(() => {
   tooltip.attach(element.value);
@@ -279,22 +313,26 @@ onBeforeUnmount(tooltip.dispose);
   position: fixed;
   z-index: 10000030;
   max-width: 280px;
-  padding: 7px 11px;
+  padding: 7px 11px calc(7px + var(--cf-tip-pad, 0px));
   background: var(--cf-tip-surface);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   color: #ffffff;
-  font-size: 11.5px;
+  font-size: var(--cf-font-size-sm);
   font-weight: normal;
   line-height: 1.5;
-  border-radius: 6px;
+  border-radius: var(--cf-radius-sm);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
   pointer-events: none;
   white-space: normal;
   word-break: break-word;
   visibility: hidden;
-  clip-path: circle(0px at var(--tip-x) var(--tip-y));
-  transition: clip-path 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  /*
+   * 只做淡入淡出，不移动也不缩放。位移和缩放会让文字在动画期间按另一套像素对齐来绘制，
+   * 动画结束后再按最终位置重画，前后差不到一个像素，看起来就是文字上下抖一下。
+   */
+  opacity: 0;
+  transition: opacity 90ms ease;
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   display: none;
@@ -302,14 +340,15 @@ onBeforeUnmount(tooltip.dispose);
 
 .cf-floating-tooltip.visible {
   visibility: visible;
-  clip-path: circle(var(--tip-radius) at var(--tip-x) var(--tip-y));
+  opacity: 1;
+  transition: opacity 130ms ease;
 }
 
 .cf-floating-tooltip.cf-tip-prediction-rank {
   box-sizing: border-box;
   width: max-content;
   max-width: min(420px, calc(100vw - 24px));
-  padding: 8px 12px;
+  padding: 8px 12px calc(8px + var(--cf-tip-pad, 0px));
   line-height: 1.55;
   white-space: pre-line;
   word-break: keep-all;
@@ -319,7 +358,7 @@ onBeforeUnmount(tooltip.dispose);
   display: block;
 }
 .cf-tip-rank-line:first-child {
-  font-weight: 600;
+  font-weight: var(--cf-font-weight-semibold);
 }
 .cf-tip-rank-line:nth-child(2) {
   margin-top: 3px;
@@ -339,20 +378,27 @@ onBeforeUnmount(tooltip.dispose);
   transform: translateX(-50%);
 }
 
+/* 箭头向主体里压进半个像素，不留接缝。 */
 .cf-floating-tooltip.cf-tip-top::after {
-  top: 100%;
+  top: calc(100% - 0.5px);
   border-top-color: var(--cf-tip-surface);
 }
 
 .cf-floating-tooltip.cf-tip-bottom::after {
-  bottom: 100%;
+  bottom: calc(100% - 0.5px);
   border-bottom-color: var(--cf-tip-surface);
 }
 .cf-floating-tooltip.cf-menu-theme {
   --cf-tip-surface: color-mix(in srgb, var(--cf-menu-accent) 24%, #233047);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--cf-menu-accent) 18%, #23304730);
   transition:
-    clip-path 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 90ms ease,
+    --cf-menu-accent 480ms ease,
+    --cf-menu-secondary 480ms ease;
+}
+.cf-floating-tooltip.cf-menu-theme.visible {
+  transition:
+    opacity 130ms ease,
     --cf-menu-accent 480ms ease,
     --cf-menu-secondary 480ms ease;
 }
@@ -364,8 +410,10 @@ onBeforeUnmount(tooltip.dispose);
   border-radius: 999px;
   background: linear-gradient(135deg, #ffffffef, var(--cf-tip-surface));
   color: color-mix(in srgb, var(--cf-menu-accent, #9980bc) 24%, #465166);
-  font-weight: 500;
+  font-weight: var(--cf-font-weight-medium);
   box-shadow: 0 3px 11px #44516a14;
+  /* 入口提示沿用自己的侧向展开，不参与通用提示的淡入。 */
+  opacity: 1;
   clip-path: inset(-12px -12px -12px 100% round 16px);
   transform: translateX(5px);
   transition:
@@ -409,7 +457,9 @@ onBeforeUnmount(tooltip.dispose);
 }
 @media (prefers-reduced-motion: reduce) {
   .cf-floating-tooltip,
+  .cf-floating-tooltip.visible,
   .cf-floating-tooltip.cf-menu-theme,
+  .cf-floating-tooltip.cf-menu-theme.visible,
   .cf-floating-tooltip.cf-tip-launcher {
     transition: none;
   }

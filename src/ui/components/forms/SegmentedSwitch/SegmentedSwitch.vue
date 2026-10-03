@@ -22,7 +22,7 @@ const sliderStyle = computed(() => ({
       :class="option.class"
       :data-tooltip="option.tooltip"
       :style="{
-        color: modelValue === option.value ? activeColor : `#64748b`,
+        color: modelValue === option.value ? activeColor : `var(--cf-gray-500)`,
         fontWeight: modelValue === option.value ? `bold` : `normal`,
       }"
       @click="$emit(`update:modelValue`, option.value)"
@@ -38,10 +38,10 @@ const sliderStyle = computed(() => ({
   position: relative;
   background: var(--cf-control-surface);
   box-shadow: inset 0 0 0 1px var(--cf-surface-border);
-  border-radius: 12px;
+  border-radius: var(--cf-radius-xl);
   padding: 2px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--cf-font-size-base);
   font-weight: bold;
   user-select: none;
   box-sizing: border-box;
@@ -52,7 +52,7 @@ const sliderStyle = computed(() => ({
   top: 2px;
   bottom: 2px;
   width: calc(50% - 2px);
-  border-radius: 10px;
+  border-radius: var(--cf-radius-lg);
   transition:
     left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
     background-color 0.25s ease;
@@ -67,7 +67,7 @@ const sliderStyle = computed(() => ({
   flex: 1;
   text-align: center;
   padding: 3px 0;
-  font-size: 12px;
+  font-size: var(--cf-font-size-base);
   z-index: 1;
   transition: color 0.25s;
   box-sizing: border-box;

@@ -64,7 +64,7 @@ const parts = computed(() => (props.combo ? props.combo.split('+') : []));
 .cf-shortcut-recording-label {
   padding: 0 6px;
   text-align: center;
-  font-weight: 600;
+  font-weight: var(--cf-font-weight-semibold);
   opacity: 0;
   visibility: hidden;
   transform: translateY(6px);

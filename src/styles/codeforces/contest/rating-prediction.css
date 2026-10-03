@@ -35,22 +35,53 @@
   /* 空余宽度交给刷新按钮的外边距，提示锚点只覆盖可见的快照文字。 */
   flex: 0 1 auto;
 }
+/* 快照时间后的时区：沿用原站比赛时间旁的上标小字样式，这里只补一点间距。 */
+.cf-prediction-zone {
+  margin-left: 1px;
+}
 .cf-prediction-refresh {
   box-sizing: border-box;
   white-space: nowrap;
   flex: 0 0 auto;
   margin-left: auto;
   border: 1px solid #ccc;
-  background: linear-gradient(#fff, #f4f4f4);
+  /* 底色用纯色，上面叠一层由白到透明的高光，外观与原来的渐变相同；纯色能平滑过渡，渐变不能。 */
+  background: linear-gradient(#fff, #fff0) #f4f4f4;
   color: #555;
   border-radius: 3px;
   padding: 2px 8px;
   font: inherit;
   cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+/* 悬停时边框、底色和文字转为原站的蓝色调；按下时去掉高光并加内阴影，像被按进去。加载中不响应。 */
+.cf-prediction-refresh:enabled:hover {
+  border-color: #9bb5dd;
+  background-color: #e3ecf9;
+  color: #3b5998;
+}
+.cf-prediction-refresh:enabled:active {
+  border-color: #7f9fd0;
+  background-color: #d3e0f4;
+  background-image: none;
+  box-shadow: inset 0 1px 2px #3b599833;
+}
+.cf-prediction-refresh:focus-visible {
+  outline: 2px solid #9bb5dd;
+  outline-offset: 0;
 }
 .cf-prediction-refresh:disabled {
   opacity: 0.55;
   cursor: wait;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-prediction-refresh {
+    transition: none;
+  }
 }
 table.standings .cf-prediction-cell {
   width: 4.5em;
@@ -115,20 +146,72 @@ table.standings .highlighted-row .cf-prediction-cell.dark {
   gap: 3px;
   font-weight: bold;
 }
-.cf-prediction-rank-gradient {
+/*
+ * 评级变化的底色：与难度分单元格一样，用同一块底板在「无底色、铺满、紧凑标签」之间变形，
+ * 样式切换时底板收放、变色，不会闪现。渐变本身不能过渡，所以四个端点颜色注册成可插值的颜色变量。
+ */
+@property --cf-rank-from {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+@property --cf-rank-to {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+@property --cf-rank-border-from {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+@property --cf-rank-border-to {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+table.standings .cf-prediction-cell[data-cf-rank-mode] {
   position: relative;
   isolation: isolate;
+  transition:
+    color 0.18s,
+    --cf-rank-from 280ms ease,
+    --cf-rank-to 280ms ease,
+    --cf-rank-border-from 280ms ease,
+    --cf-rank-border-to 280ms ease;
 }
-.cf-prediction-rank-gradient::before {
+[data-cf-rank-mode]::before {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
-  background: linear-gradient(
-    115deg,
-    color-mix(in srgb, var(--cf-rank-from) var(--cf-rank-wash), transparent),
-    color-mix(in srgb, var(--cf-rank-to) var(--cf-rank-wash), transparent)
-  );
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background:
+    linear-gradient(115deg, var(--cf-rank-from), var(--cf-rank-to)) padding-box,
+    linear-gradient(115deg, var(--cf-rank-border-from), var(--cf-rank-border-to)) border-box;
+  opacity: 1;
+  transition:
+    opacity 280ms ease,
+    inset 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 280ms ease;
+}
+/* 没有底色时底板淡出，颜色保留到淡出结束，不会先变透明再消失。 */
+[data-cf-rank-mode='plain']::before {
+  opacity: 0;
+}
+/* 紧凑标签：底板收到内容四周，宽度取脚本量出的内容宽度。 */
+[data-cf-rank-shape='compact']::before {
+  inset: calc((100% - 20px) / 2) max(0px, calc((100% - var(--cf-rank-content, 56px) - 14px) / 2));
+  border-radius: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  table.standings .cf-prediction-cell[data-cf-rank-mode],
+  [data-cf-rank-mode]::before {
+    transition: none;
+  }
 }
 .cf-prediction-tier {
   display: inline-block;
@@ -157,8 +240,13 @@ table.standings td.contestant-cell[data-cf-participation-host] {
   transition: padding-right 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 table.standings td.contestant-cell[data-cf-participation-visible='true'] {
-  padding-right: calc(var(--cf-participation-padding) + 60px) !important;
+  padding-right: calc(var(--cf-participation-padding) + 78px) !important;
 }
+/*
+ * 参赛身份标签：三种身份统一为实底实线框，靠颜色和前置标记区分。
+ * rated 为绿底加实心圆点；unrated 为暖杏色底加空心圆环；virtual 为靛蓝底加菱形。
+ * 三种底色明度相近、色相分开，都不取灰色，避免与表格的隔行底色混在一起。
+ */
 .cf-participation-tag {
   position: absolute;
   right: 8px;
@@ -171,17 +259,30 @@ table.standings td.contestant-cell[data-cf-participation-visible='true'] {
     transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 160ms ease;
   display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-sizing: border-box;
+  height: 18px;
   vertical-align: middle;
   white-space: nowrap;
-  padding: 2px 7px;
-  border-radius: 20px;
-  border: 1px solid #b8d8cb;
-  background: linear-gradient(135deg, #f3faf6, #e1f0e9);
-  color: #397460;
+  padding: 0 8px 0 6px;
+  border-radius: 999px;
+  border: 1px solid #9ad5b4;
+  background: #e4f6ec;
+  color: #177245;
   font:
-    10px/1.4 Arial,
+    600 10.5px/1 Arial,
     sans-serif;
-  font-weight: normal;
+  letter-spacing: 0.02em;
+}
+.cf-participation-tag::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22a565;
+  box-shadow: 0 0 0 2px #22a56526;
 }
 [data-cf-participation-visible='true'] > .cf-participation-tag {
   clip-path: inset(0);
@@ -195,46 +296,87 @@ table.standings td.contestant-cell[data-cf-participation-visible='true'] {
   }
 }
 .cf-participation-tag[data-status='unrated'] {
-  background: linear-gradient(135deg, #f8f7fb, #eeebf4);
-  border-color: #d4cadd;
-  color: #776386;
+  background: #fdf0de;
+  border-color: #ecc894;
+  color: #98601a;
+}
+.cf-participation-tag[data-status='unrated']::before {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px #d2913a;
 }
 .cf-participation-tag[data-status='virtual'] {
-  background: linear-gradient(135deg, #f1f7fc, #e4eef7);
-  border-color: #bcd1e2;
-  color: #527995;
+  background: #eeeffe;
+  border-color: #b6bbf0;
+  color: #4650bd;
+}
+.cf-participation-tag[data-status='virtual']::before {
+  width: 5px;
+  height: 5px;
+  margin: 0 1px;
+  border-radius: 1px;
+  background: #6670e2;
+  box-shadow: none;
+  transform: rotate(45deg);
+}
+/*
+ * 单用户分析入口：一朵五片花瓣的小花，没有底座。
+ * 颜色取这一行表现分的档位色（--cf-flower-color），每片由花心处的原色向花瓣尖变浅；
+ * 花瓣之间和花心用所在格子的底色隔开（--cf-flower-gap）。悬停时整朵转过一片花瓣的角度。
+ */
+table.standings .cf-prediction-cell {
+  --cf-flower-gap: #fff;
+}
+table.standings .cf-prediction-cell.dark {
+  --cf-flower-gap: #f8f8f8;
 }
 .cf-prediction-open {
+  --cf-flower-color: #8f9fd8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 25px;
-  height: 25px;
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
   margin: 0;
   padding: 0;
-  border: 1px solid #ccd9e3;
-  border-radius: 7px;
-  background: linear-gradient(145deg, #f7faff, #eaf0f7);
-  color: #597792;
-  font:
-    bold 15px/1 Arial,
-    sans-serif;
+  border: 0;
+  border-radius: 50%;
+  background: none;
   cursor: pointer;
   vertical-align: middle;
-  transition:
-    background 0.18s,
-    border-color 0.18s;
 }
-.cf-prediction-open:hover,
 .cf-prediction-open:focus-visible {
-  background: linear-gradient(145deg, #edf6ff, #e4ebf7);
-  border-color: #9bb4cc;
-  color: #3c6284;
-  outline-offset: 2px;
+  outline: 2px solid #9bb5dd;
+  outline-offset: 0;
 }
-.cf-prediction-cell .cf-prediction-open svg {
-  width: 17px;
-  height: 17px;
+.cf-prediction-cell .cf-prediction-open svg.cf-prediction-flower {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cf-prediction-open:hover .cf-prediction-flower,
+.cf-prediction-open:focus-visible .cf-prediction-flower {
+  transform: rotate(72deg);
+}
+.cf-prediction-petal {
+  stroke: var(--cf-flower-gap);
+  stroke-width: 0.6;
+}
+.cf-prediction-flower-inner {
+  stop-color: var(--cf-flower-color);
+}
+.cf-prediction-flower-outer {
+  stop-color: color-mix(in srgb, var(--cf-flower-color) 34%, #fff);
+}
+.cf-prediction-flower-core {
+  fill: var(--cf-flower-gap);
+  stroke: color-mix(in srgb, var(--cf-flower-color) 66%, #fff);
+  stroke-width: 0.8;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-prediction-cell .cf-prediction-open svg.cf-prediction-flower {
+    transition: none;
+  }
 }
 /* 与现有评分列相同的布局型进度，不用透明度掩盖瞬间增删。 */
 @property --cf-prediction-column-progress {
@@ -264,10 +406,14 @@ table.standings .cf-prediction-cell.cf-prediction-column-moving {
   ) !important;
   overflow: hidden;
 }
+/*
+ * 裁剪层只固定宽度，不让收放途中更新的文字撑开列；进度变量不继承，这里始终是完整宽度。
+ * 高度不能定：定成整格高度后文字会贴到顶上，收放结束解除裁剪层时又跳回居中，看起来就是上下抖一下。
+ * 保持内容自身的高度，单元格照常把它垂直居中，位置与没有裁剪层时完全一致。
+ */
 .cf-prediction-column-moving > .cf-prediction-column-clip {
   display: block;
-  width: calc(var(--cf-prediction-column-width) * var(--cf-prediction-column-progress));
-  height: calc(var(--cf-prediction-column-height) * var(--cf-prediction-column-progress));
+  width: var(--cf-prediction-column-width);
   overflow: hidden;
   white-space: nowrap;
 }

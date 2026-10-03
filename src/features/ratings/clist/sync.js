@@ -1,5 +1,6 @@
 import { appStorage } from '../../../storage/gm.js';
-import { CLIST_STORAGE_KEY, CLIST_LAST_SYNC_KEY } from '../../../storage/keys.js';
+import { getRuntimeValue, setRuntimeValues } from '../../../storage/runtime.js';
+import { CLIST_STORAGE_KEY } from '../../../storage/keys.js';
 import { sortProblemKeys } from '../../../utils/problem.js';
 import { appSettings } from '../../../settings.js';
 import { CLIST_SYNC_COOLDOWN } from '../../../config/cache-policy.js';
@@ -69,7 +70,7 @@ export function normalizeClistApiKey(rawKey) {
 
 // 计算距离下一次允许同步的剩余时间。
 export function getClistCooldownRemaining() {
-  const lastSync = parseInt(appStorage.getItem(CLIST_LAST_SYNC_KEY) || '0', 10);
+  const lastSync = Number(getRuntimeValue('clistSyncTime')) || 0;
   if (!lastSync) return 0;
   const elapsed = Date.now() - lastSync;
   return Math.max(0, CLIST_SYNC_COOLDOWN - elapsed);
@@ -317,7 +318,7 @@ export async function syncClistRatings(tFunc, onStatusChange) {
       setClistProblems(sortedProblemMap);
 
       const now = Date.now();
-      appStorage.setItem(CLIST_LAST_SYNC_KEY, String(now));
+      setRuntimeValues({ clistSyncTime: now });
 
       modal.setSuccess(finalCount);
 
