@@ -1,6 +1,7 @@
 import { appStorage } from '../../storage/gm.js';
 import { resetSettings } from '../../settings.js';
 import { clearRuntimeData, removeRuntimeValues } from '../../storage/runtime.js';
+import { removeLocalValue } from '../../storage/local-storage.js';
 import {
   CACHE_KEY,
   PARALLEL_CONTESTS_KEY,
@@ -11,6 +12,7 @@ import {
 import { clearRatingsMemory } from '../ratings/data.js';
 import { clearClistMemory } from '../ratings/clist/sync.js';
 import { clearSolvedMemory } from '../general/solved.js';
+import { clearDatasets } from '../user/analytics/data.js';
 import { getUserSolvedStorageDetails, getLocalStorageDetails } from './overview.js';
 const listeners = new Set();
 // 清理后通知统计和页脚刷新，不让 UI 直接修改业务模块变量。
@@ -19,6 +21,8 @@ export function subscribeStorageChanges(listener) {
   return () => listeners.delete(listener);
 }
 // 仅按原有功能范围清理 GM 键；不清空站点 localStorage。
+// 已弃用的缓存例外：早期版本留在站点 localStorage 里的那几个键也一并删掉，否则清不掉、每次都还列出来。
+// 只删本插件自己用过的这几个键，站点的其他数据（原站的、别的脚本的）不动。
 export function clearStorageGroup(group) {
   if (group === 'settings') resetSettings();
   if (group === 'runtime' || group === 'all') clearRuntimeData();
@@ -37,11 +41,15 @@ export function clearStorageGroup(group) {
     appStorage.removeItem(AVATAR_CACHE_KEY);
     getUserSolvedStorageDetails().keys.forEach((key) => appStorage.removeItem(key));
     clearSolvedMemory();
+    clearDatasets();
   }
   if (group === 'prediction' || group === 'all')
     PREDICTION_STORAGE_KEYS.forEach((key) => appStorage.removeItem(key));
-  if (group === 'local' || group === 'all')
-    getLocalStorageDetails().keys.forEach((key) => appStorage.removeItem(key));
+  if (group === 'local' || group === 'all') {
+    const { stale, site } = getLocalStorageDetails();
+    stale.forEach((key) => appStorage.removeItem(key));
+    site.forEach(removeLocalValue);
+  }
   if (group === 'all') resetSettings();
   listeners.forEach((listener) => listener(group));
 }

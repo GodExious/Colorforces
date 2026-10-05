@@ -66,7 +66,7 @@ function showClistKeyGuideModal(lang) {
             `,
   });
 }
-const options = computed(() => showClistKeyGuideModal(appSettings.lang));
+const options = computed(() => showClistKeyGuideModal(appSettings.general.lang));
 </script>
 <template>
   <GuideDialog :visible="visible" :origin="origin" :options="options" @close="visible = false" />

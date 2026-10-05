@@ -1,6 +1,7 @@
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import { translate as t } from '../../../../../i18n/index.js';
+import { appSettings } from '../../../../../settings.js';
 import * as assets from '../../../../../assets/index.js';
 import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
 
@@ -46,6 +47,38 @@ watch(
     if (value) renderOpen.value = true;
   },
   { flush: 'sync' },
+);
+
+// 名单开着的时候切换语言：各人的分工说明长短不一样，换了语言可能从一行变成两行，名单的高度会变。
+// 名单是贴着页脚往上长的，高度直接变的话上边缘会跳一下。这里让它带着过渡长到新的高度，
+// 下面被挤开的几行也滑到新位置。先在界面更新之前量好原来的高度和各行的位置，更新之后再量一次。
+const panel = ref(null);
+watch(
+  () => appSettings.general.lang,
+  async () => {
+    const box = panel.value;
+    if (!box || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const measure = () => ({
+      height: box.offsetHeight,
+      rows: [...box.querySelectorAll('li')].map((row) => row.offsetTop),
+    });
+    const before = measure();
+    await nextTick();
+    if (panel.value !== box) return;
+    const after = measure();
+    const timing = { duration: 280, easing: 'cubic-bezier(.22,1,.36,1)' };
+    if (Math.abs(before.height - after.height) > 0.5)
+      box.animate(
+        [before, after].map(({ height }) => ({ height: `${height}px`, overflow: 'clip' })),
+        timing,
+      );
+    box.querySelectorAll('li').forEach((row, index) => {
+      const shift = before.rows[index] - after.rows[index];
+      if (Math.abs(shift) > 0.5)
+        row.animate([{ translate: `0 ${shift}px` }, { translate: '0 0' }], timing);
+    });
+  },
+  { flush: 'pre' },
 );
 
 // 收起名单；键盘关闭时把焦点还给入口。
@@ -104,6 +137,7 @@ onBeforeUnmount(() => {
     <Transition name="cf-contributors-motion" @after-leave="renderOpen = opened"
       ><div
         v-if="opened"
+        ref="panel"
         id="cf-contributors-panel"
         class="cf-contributors-panel"
         role="region"

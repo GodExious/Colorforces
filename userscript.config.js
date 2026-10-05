@@ -13,9 +13,9 @@ export default {
   namespace: 'https://github.com/GodExious/Colorforces',
   version,
   description: {
-    '': 'Enhance Codeforces with contest rating predictions, CF/CList problem ratings, verdict abbreviations, avatars, custom time formats, tag visibility controls, keyboard shortcuts, and an animated settings menu. Led by GodExious with AI-assisted development by Antigravity, Codex, and ClaudeCode.',
+    '': 'Enhance Codeforces with user data analytics, contest rating predictions, CF/CList problem ratings, verdict abbreviations, avatars, custom time formats, tag visibility controls, keyboard shortcuts, and an animated settings menu. Led by GodExious with AI-assisted development by Antigravity, Codex, and ClaudeCode.',
     'zh-CN':
-      '增强 Codeforces 视觉与使用体验，支持比赛评分预测、CF/CList 难度分、判题状态缩写、头像、自定义时间格式、标签显示控制、快捷键及动态设置菜单。由 GodExious 主导，Antigravity、Codex 与 ClaudeCode 协助开发。',
+      '增强 Codeforces 视觉与使用体验，支持用户数据分析、比赛评分预测、CF/CList 难度分、判题状态缩写、头像、自定义时间格式、标签显示控制、快捷键及动态设置菜单。由 GodExious 主导，Antigravity、Codex 与 ClaudeCode 协助开发。',
   },
   author: 'GodExious & Antigravity & Codex & ClaudeCode',
   supportURL: 'https://github.com/GodExious/Colorforces/issues',
@@ -33,5 +33,12 @@ export default {
     'release-assets.githubusercontent.com',
     'objects.githubusercontent.com',
   ],
-  grant: ['GM_xmlhttpRequest', 'GM_setValue', 'GM_getValue', 'GM_deleteValue', 'GM_listValues'],
+  grant: [
+    'GM_xmlhttpRequest',
+    'GM_setValue',
+    'GM_getValue',
+    'GM_deleteValue',
+    'GM_listValues',
+    'GM_addValueChangeListener',
+  ],
 };

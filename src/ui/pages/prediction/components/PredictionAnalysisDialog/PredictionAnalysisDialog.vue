@@ -72,9 +72,11 @@ function sliderMotion() {
       shown.value = to;
       return;
     }
-    const start = performance.now();
+    // 起点取第一帧自己的时间戳：页面忙时帧的时间戳会比当前时间早，相减得负数，滑块会先朝反方向冲出去。
+    let start = null;
     const step = (now) => {
-      const progress = Math.min(1, (now - start) / SLIDER_GLIDE);
+      start ??= now;
+      const progress = Math.min(1, Math.max(0, (now - start) / SLIDER_GLIDE));
       shown.value = progress < 1 ? from + (to - from) * (1 - (1 - progress) ** 3) : to;
       frame = progress < 1 ? requestAnimationFrame(step) : 0;
     };
@@ -204,9 +206,11 @@ watch(rankBandTarget, (to) => {
     rankBandShown.value = to;
     return;
   }
-  const start = performance.now();
+  // 起点同样取第一帧的时间戳，原因见上面滑块的补间。
+  let start = null;
   const step = (now) => {
-    const progress = Math.min(1, (now - start) / SLIDER_GLIDE);
+    start ??= now;
+    const progress = Math.min(1, Math.max(0, (now - start) / SLIDER_GLIDE));
     const eased = 1 - (1 - progress) ** 3;
     rankBandShown.value =
       progress < 1
@@ -519,7 +523,7 @@ watch(
 // 切换语言时文字行数会变。先记下旧高度，待新文案排好后把弹窗高度平滑过渡过去；
 // 过渡期间裁掉溢出，避免高度突变和一闪而过的纵向滚动条。
 watch(
-  () => appSettings.lang,
+  () => appSettings.general.lang,
   async () => {
     languagePulse.value = false;
     clearTimeout(languagePulseTimer);
@@ -576,7 +580,7 @@ watch(
   },
 );
 // 优先复用页面头像，缺失时读取缓存；打开弹窗不增加头像请求。
-watch([handle, () => appSettings.show.userAvatar], ([name, enabled]) => {
+watch([handle, () => appSettings.user.avatar.enabled], ([name, enabled]) => {
   avatar.value = '';
   if (!enabled || !name) return;
   const link = [...document.querySelectorAll('td.contestant-cell a[href]')].find((link) => {
@@ -992,9 +996,14 @@ header {
   width: 25px;
   height: 25px;
 }
+/*
+ * 头像不一定是正方形。高度不能写成百分比：外框的行高是自动的，百分比高度不生效，
+ * 竖长的头像会按原比例撑出框外。这里按宽度定成正方形，多出的部分居中裁掉。
+ */
 .cf-analysis-emblem img {
+  display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   object-fit: cover;
   border-radius: inherit;
 }

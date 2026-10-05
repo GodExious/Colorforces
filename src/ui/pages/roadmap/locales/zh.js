@@ -1,6 +1,6 @@
 export default {
   'data-analytics': {
-    title: '数据分析',
+    title: '用户数据分析',
     desc: '可视化解题趋势、难度与算法标签分布。',
   },
   'rating-prediction': {
@@ -10,6 +10,18 @@ export default {
   'ui-themes': {
     title: '提供多种 UI 样式的主题',
     desc: '提供多套色彩丰富的配色主题方案，进一步美化界面。',
+  },
+  i18n: {
+    title: '完善多语言支持',
+    desc: '补全界面文案的国际化（i18n），提供更多可选的界面语言。',
+  },
+  translation: {
+    title: '内置翻译功能',
+    desc: '支持翻译题面等页面内容，方便阅读。',
+  },
+  'contest-analysis': {
+    title: '完善比赛分析预测功能',
+    desc: '提供更详细的比赛数据分析。',
   },
   'friend-groups': {
     title: '好友分组标注功能',

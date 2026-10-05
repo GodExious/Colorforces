@@ -76,7 +76,8 @@ const analysisCache = new Map();
 const analysisBoundsCache = new Map();
 const analysisCurveCache = new Map();
 let curvePending = null;
-const enabled = () => appSettings.prediction.enabled || appSettings.participationTags.enabled;
+const enabled = () =>
+  appSettings.contest.prediction.enabled || appSettings.contest.participationTags.enabled;
 const rowsFor = (snapshot) =>
   snapshot?.participants.filter((p) => p.status === 'rated' && p.valid) || [];
 
@@ -104,7 +105,7 @@ export function cancelPredictionAnalysis(close = false) {
 
 // 单实例面板按需分析，避免每行挂载复杂组件。
 export function openPredictionAnalysis(handle) {
-  if (!appSettings.prediction.enabled || !appSettings.prediction.analysis) return;
+  if (!appSettings.contest.prediction.enabled || !appSettings.contest.prediction.analysis) return;
   cancelPredictionAnalysis();
   state.openHandle = handle;
 }
@@ -155,7 +156,12 @@ export function getPredictionAnalysisCurve(handle) {
 export async function runPredictionAnalysis(mode, value) {
   const snapshot = state.snapshot,
     handle = state.openHandle;
-  if (!snapshot || !handle || !appSettings.prediction.enabled || !appSettings.prediction.analysis)
+  if (
+    !snapshot ||
+    !handle ||
+    !appSettings.contest.prediction.enabled ||
+    !appSettings.contest.prediction.analysis
+  )
     return;
   cancelPredictionAnalysis();
   state.computing = true;
@@ -203,7 +209,7 @@ function schedule(delay) {
 
 // 官方 Δ 不依赖重算；残缺人群不生成貌似精确的表现分。
 async function calculate(snapshot, token) {
-  if (!appSettings.prediction.enabled) return {};
+  if (!appSettings.contest.prediction.enabled) return {};
   let results = {};
   if (!snapshot.warnings.includes('predictionIncompleteData') && rowsFor(snapshot).length)
     results = await baseRunner.run({ type: 'predict', rows: rowsFor(snapshot) });
@@ -223,6 +229,7 @@ export async function refreshPrediction(force = false) {
   requestController = controller;
   const token = generation;
   state.loading = true;
+  state.stage = '';
   state.progress = 0;
   state.error = '';
   render();
@@ -231,6 +238,10 @@ export async function refreshPrediction(force = false) {
     const snapshot = await loadSnapshot(contestId, {
       signal: controller.signal,
       force,
+      stage: (id) => {
+        state.stage = id;
+        render();
+      },
       progress: (n) => {
         state.progress = n;
         render();
@@ -251,10 +262,13 @@ export async function refreshPrediction(force = false) {
       ]),
     ]);
     const changed = key !== modelKey;
-    const results =
-      !changed && Object.keys(state.results).length
-        ? state.results
-        : await calculate(snapshot, token);
+    const reuse = !changed && Object.keys(state.results).length;
+    // 数据是这次请求来的才显示「计算」这一段；直接用了缓存时不显示进度。
+    if (!reuse && state.stage) {
+      state.stage = 'compute';
+      render();
+    }
+    const results = reuse ? state.results : await calculate(snapshot, token);
     if (token !== generation) return;
     if (changed) {
       modelKey = key;
@@ -321,28 +335,32 @@ export function startPredictionFeature() {
   state.snapshot = enabled() ? readSnapshot(contestId) : null;
   let signature = '';
   let lifecycleSignature = '';
-  let language = appSettings.lang;
+  let language = appSettings.general.lang;
   let styleSignature = '';
   const settingsChanged = () => {
-    const languageChanged = language !== appSettings.lang;
-    language = appSettings.lang;
+    const languageChanged = language !== appSettings.general.lang;
+    language = appSettings.general.lang;
     const nextStyle = JSON.stringify([
-      appSettings.colorRatings,
-      appSettings.displayStyle,
-      appSettings.tagFillCell,
+      appSettings.ratings.enabled,
+      appSettings.ratings.style,
+      appSettings.ratings.tagFillCell,
     ]);
     const styleChanged = nextStyle !== styleSignature;
     styleSignature = nextStyle;
-    const next = JSON.stringify([appSettings.prediction, appSettings.participationTags]);
+    const next = JSON.stringify([
+      appSettings.contest.prediction,
+      appSettings.contest.participationTags,
+    ]);
     const presentationChanged = next !== signature;
     signature = next;
     // 只有预测计算或整个功能的启停才重启任务，外观开关仅更新同一批节点。
-    const nextLifecycle = JSON.stringify([appSettings.prediction.enabled, enabled()]);
+    const nextLifecycle = JSON.stringify([appSettings.contest.prediction.enabled, enabled()]);
     if (nextLifecycle !== lifecycleSignature) {
       lifecycleSignature = nextLifecycle;
       reconcile();
     } else if ((presentationChanged || languageChanged || styleChanged) && enabled()) {
-      if (!appSettings.prediction.analysis && state.openHandle) cancelPredictionAnalysis(true);
+      if (!appSettings.contest.prediction.analysis && state.openHandle)
+        cancelPredictionAnalysis(true);
       render();
     }
   };

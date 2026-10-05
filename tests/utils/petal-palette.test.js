@@ -6,6 +6,7 @@ import {
   PETAL_COLORS,
   petalPosition,
   petalColor,
+  petalTone,
   petalTint,
 } from '../../src/utils/petal-palette.js';
 import { MENU_TAB_IDS } from '../../src/config/menu-tabs.js';
@@ -48,6 +49,21 @@ test('落在两片花瓣之间时取中间色，越靠近哪一片越像哪一�
   assert.match(near, /^#[0-9a-f]{6}$/);
   assert.ok(distance(near, PETAL_COLORS[0]) < distance(near, PETAL_COLORS[1]));
   assert.ok(distance(far, PETAL_COLORS[1]) < distance(far, PETAL_COLORS[0]));
+});
+
+test('统一明暗：色相各不相同的颜色换成同一明度后，亮度差距明显缩小', () => {
+  const luma = (hex) =>
+    [1, 3, 5].reduce(
+      (sum, at, index) => sum + parseInt(hex.slice(at, at + 2), 16) * [0.299, 0.587, 0.114][index],
+      0,
+    );
+  const spread = (colors) => Math.max(...colors.map(luma)) - Math.min(...colors.map(luma));
+  const toned = PETAL_COLORS.map((color) => petalTone(color, 0.62, 0.1));
+  toned.forEach((color) => assert.match(color, /^#[0-9a-f]{6}$/));
+  assert.equal(new Set(toned).size, PETAL_COLORS.length);
+  assert.ok(spread(toned) < spread(PETAL_COLORS) / 2);
+  // 没有色相的灰色也不会算出无效颜色。
+  assert.match(petalTone('#808080', 0.62, 0.1), /^#[0-9a-f]{6}$/);
 });
 
 test('浅色版本：与白色相混，比例为 1 时不变，为 0 时是白色', () => {

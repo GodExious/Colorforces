@@ -157,7 +157,7 @@ function formatVerdictBody(body) {
   if (current && [span.dataset.original, span.dataset.short].includes(current.innerHTML)) {
     displayVerdict(
       span,
-      appSettings.show.shortVerdict ? span.dataset.short : span.dataset.original,
+      appSettings.appearance.shortVerdict ? span.dataset.short : span.dataset.original,
     );
     return;
   }
@@ -186,7 +186,7 @@ function formatVerdictBody(body) {
     span.classList.add(forms.type[2]);
   span.dataset.original = forms.original;
   span.dataset.short = forms.short;
-  displayVerdict(span, appSettings.show.shortVerdict ? forms.short : forms.original);
+  displayVerdict(span, appSettings.appearance.shortVerdict ? forms.short : forms.original);
 }
 
 // 将站点更新定位到真正的判题正文；旧包装拆开时移动节点，绝不用 textContent 丢弃结构。

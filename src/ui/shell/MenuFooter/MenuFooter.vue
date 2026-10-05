@@ -19,7 +19,8 @@ const syncing = computed(() => progress.value && !progress.value.done);
 const lastTime = computed(() => {
   tick.value;
   const timestamp =
-    Number(getRuntimeValue(appSettings.clist.enabled ? 'clistSyncTime' : 'ratingsTime')) || 0;
+    Number(getRuntimeValue(appSettings.ratings.clist.enabled ? 'clistSyncTime' : 'ratingsTime')) ||
+    0;
   return timestamp > 0 && !isNaN(new Date(timestamp).getTime()) ? timestamp : 0;
 });
 const dotStyle = computed(() => ({
@@ -68,7 +69,7 @@ onBeforeUnmount(() => {
         <Transition name="cf-footer-swap">
           <div
             v-if="!syncing"
-            :key="appSettings.clist.enabled ? 'clist' : 'cf'"
+            :key="appSettings.ratings.clist.enabled ? 'clist' : 'cf'"
             class="cf-footer-status"
           >
             <span class="cf-status-dot" :style="dotStyle"></span
@@ -80,9 +81,9 @@ onBeforeUnmount(() => {
                 justify-content: center;
                 flex-shrink: 0;
               "
-              :title="appSettings.clist.enabled ? 'clist.by' : 'Codeforces'"
+              :title="appSettings.ratings.clist.enabled ? 'clist.by' : 'Codeforces'"
               ><img
-                v-if="appSettings.clist.enabled"
+                v-if="appSettings.ratings.clist.enabled"
                 :src="assets.CLIST_ICON_DATA_URI"
                 width="14"
                 height="14"

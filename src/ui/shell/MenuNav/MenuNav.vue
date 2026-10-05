@@ -61,7 +61,7 @@ function updateIndicator(animate = true) {
   }
 }
 watch(
-  () => [props.active, appSettings.lang],
+  () => [props.active, appSettings.general.lang],
   () => nextTick(() => updateIndicator()),
 );
 defineExpose({ updateIndicator });

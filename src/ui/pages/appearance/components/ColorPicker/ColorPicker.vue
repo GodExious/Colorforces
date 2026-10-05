@@ -10,7 +10,7 @@ onMounted(() => {
   picker = PickrLibrary.create({
     el: element.value,
     theme: 'nano',
-    default: appSettings.acBgColor,
+    default: appSettings.appearance.acHighlight.color,
     position: 'bottom-end',
     components: {
       preview: true,
@@ -21,10 +21,10 @@ onMounted(() => {
   });
   picker
     .on('init', () => {
-      picker.setColor(appSettings.acBgColor, true);
+      picker.setColor(appSettings.appearance.acHighlight.color, true);
     })
     .on('change', (color) => {
-      appSettings.acBgColor = color.toRGBA().toString(0);
+      appSettings.appearance.acHighlight.color = color.toRGBA().toString(0);
       picker.applyColor(true);
       saveSettings();
     })
@@ -32,7 +32,7 @@ onMounted(() => {
 });
 // 设置重置或外部切换时同步选择器，避免重复发出 change。
 watch(
-  () => appSettings.acBgColor,
+  () => appSettings.appearance.acHighlight.color,
   (color) => {
     picker?.setColor(color, true);
   },

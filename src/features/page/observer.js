@@ -4,6 +4,7 @@ import { applyUserAvatars } from '../user/avatars/enhance.js';
 import { applyProblemTagsVisibility } from '../appearance/problem-tags/visibility.js';
 import { wrapVirtualParticipationTime, applyTimeFormatting } from '../appearance/time/format.js';
 import { walkAndReplaceVerdict, VERDICT_SELECTOR } from '../appearance/verdicts.js';
+import { PLUGIN_UI_SELECTOR } from './plugin-ui.js';
 
 // 阻止页面增强过程中递归处理自身 DOM 变更。
 export let isMutationProcessing = false;
@@ -24,9 +25,10 @@ export function updateWithoutObservation(update) {
   }
 }
 
-// 无需参与站点增强观察的插件浮层与侧栏。
+// 无需参与站点增强观察的插件浮层与侧栏：插件自己的界面，加上插件插入的头像和原站侧栏。
 export const PLUGIN_IGNORE_SELECTOR =
-  '.cf-menu-theme, .cf-avatar-line-wrapper, .cf-avatar-container, .cf-user-avatar, .cf-settings-modal, .cf-clist-modal-overlay, .cf-storage-json-modal, .cf-confirm-pop-overlay, .cf-guide-modal-overlay, .cf-toast-notification, .cf-floating-tooltip, #cf-ratings-settings-btn, .pcr-app, .roundbox.sidebox, #sidebar';
+  PLUGIN_UI_SELECTOR +
+  ', .cf-avatar-line-wrapper, .cf-avatar-container, .cf-user-avatar, .roundbox.sidebox, #sidebar';
 
 // 判断变更节点是否属于应忽略的插件区域。
 export function isPluginIgnoredElement(el) {

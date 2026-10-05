@@ -14,7 +14,7 @@ import { toggleFromRow } from '../../../utils/row-toggle.js';
 import MenuSizeSettings from './components/MenuSizeSettings/MenuSizeSettings.vue';
 import MenuPositionSettings from './components/MenuPositionSettings/MenuPositionSettings.vue';
 const updateState = ref('');
-const changeLanguage = inject('cf-change-language', (value) => choose('lang', value));
+const changeLanguage = inject('cf-change-language', (value) => choose('general.lang', value));
 const languageOptions = computed(() =>
   languages.map(({ code, labelKey, label }) => ({
     value: code,
@@ -57,7 +57,7 @@ async function manualUpdate() {
 }
 // 重新启用自动检查时清除原有冷却。
 function autoCheckChanged() {
-  if (!appSettings.disableAutoCheckUpdate) resetUpdateCooldown();
+  if (!appSettings.general.disableUpdateCheck) resetUpdateCooldown();
   saveSettings();
 }
 onBeforeUnmount(() => clearTimeout(resetTimer));
@@ -68,7 +68,7 @@ onBeforeUnmount(() => clearTimeout(resetTimer));
       <span class="cf-setting-label" data-cf-language-text v-text="t().langLabel"></span
       ><segmented-switch
         style="width: 140px"
-        :model-value="appSettings.lang"
+        :model-value="appSettings.general.lang"
         @update:model-value="changeLanguage"
         :options="languageOptions"
       ></segmented-switch>
@@ -101,7 +101,7 @@ onBeforeUnmount(() => clearTimeout(resetTimer));
         ><toggle-switch
           as="label"
           style="margin: 0px; cursor: pointer"
-          v-model="appSettings.disableAutoCheckUpdate"
+          v-model="appSettings.general.disableUpdateCheck"
           input-class="cf-toggle-auto-check"
           data-control="cbAutoCheckUpdate"
           @change="autoCheckChanged"

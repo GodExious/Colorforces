@@ -15,7 +15,7 @@ function buildAppearance({
   confirmText = '',
   cancelText = '',
   type = 'danger',
-  lang = (typeof appSettings !== 'undefined' && appSettings && appSettings.lang) || 'zh',
+  lang = (typeof appSettings !== 'undefined' && appSettings && appSettings.general.lang) || 'zh',
   onConfirm = null,
 } = {}) {
   const tone = type === 'info' || type === 'warning' ? type : 'danger';

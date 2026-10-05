@@ -1,4 +1,27 @@
 export default {
+  'v 1.8.0:0': [
+    'Added user data analytics on profile pages: a summary, rating heatmap, monthly and hourly activity, multi-user rating and contest rank curve comparison, rating and tag distributions, tag weak spots, recent average rating, attempts, verdicts, contest pace, participation types, languages and unsolved problems.',
+    'Added three items to the roadmap: full internationalization (i18n), improved contest analysis & prediction, and built-in translation.',
+  ],
+  'v 1.8.0:1': [
+    'Improved the display of non-square avatars in the rating analysis dialog.',
+    'The number of contests cached for rating prediction can now be customized, 10 by default.',
+    'To help users try new features, many options are now enabled by default, and some default values were adjusted.',
+    'Reorganized the storage structure of the plugin configuration by menu tab; existing settings will be migrated automatically.',
+    'Updated the acknowledged projects and redesigned the Acknowledgments page around the petal theme.',
+    'Improved the styling of some submenu components (sub-options, sliders and roadmap cards).',
+    'Times shown in tooltips of the original page now follow the custom time format.',
+    'Added a TypeScript language icon, and languages without a preset icon now show a common unknown-language icon.',
+    'Rating prediction now shows staged progress while loading: standings, ratings, submissions and calculation.',
+    'Previews of large data in the storage viewer are trimmed further, making it smoother to switch between items.',
+    'Added a notice explaining that dark themes from other extensions are no longer adapted for.',
+  ],
+  'v 1.8.0:2': [
+    'Fixed incomplete solved-problem records for accounts with more than 10,000 submissions.',
+    'Fixed setting changes being overwritten by other pages when several pages are open at once.',
+    'Fixed leftover time text appearing in other tooltips after hovering a time on the page.',
+    "Fixed the deprecated cache listing other scripts' data, and data left in the site's local storage by early versions not being clearable.",
+  ],
   'v 1.7.0:0': [
     'Added contest rating prediction with rating changes, performance, rank progression and single-user rating analysis, plus a shortcut to toggle it.',
     'Added rated/unrated/virtual participant tags indicating how each participant takes part in the contest.',

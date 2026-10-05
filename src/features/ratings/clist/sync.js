@@ -103,7 +103,7 @@ export async function syncClistRatings(tFunc, onStatusChange) {
   }
 
   const getLang = () =>
-    (typeof appSettings !== 'undefined' && appSettings && appSettings.lang) || 'zh';
+    (typeof appSettings !== 'undefined' && appSettings && appSettings.general.lang) || 'zh';
 
   const cooldownRemaining = getClistCooldownRemaining();
   if (cooldownRemaining > 0) {
@@ -112,9 +112,9 @@ export async function syncClistRatings(tFunc, onStatusChange) {
   }
 
   const authMode =
-    (appSettings.clist && appSettings.clist.authMode) ||
-    (appSettings.clist && appSettings.clist.apiKey ? 'api' : 'cookie');
-  const rawKey = (appSettings.clist && appSettings.clist.apiKey) || '';
+    (appSettings.ratings.clist && appSettings.ratings.clist.authMode) ||
+    (appSettings.ratings.clist && appSettings.ratings.clist.apiKey ? 'api' : 'cookie');
+  const rawKey = (appSettings.ratings.clist && appSettings.ratings.clist.apiKey) || '';
 
   if (authMode === 'api' && !rawKey) {
     const l = getLang();

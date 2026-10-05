@@ -14,6 +14,7 @@ import clistImage from './images/brands/clist-icon.png?inline';
 import cfHelperImage from './images/brands/cf-helper-icon.png?inline';
 // CF Analytics 保留用户提供的 Chrome 商店项目图标，不使用自绘图标替代。
 import cfAnalyticsImage from './images/brands/cf-analytics-icon.png?inline';
+import cfHeatmapImage from './images/brands/cf-heatmap-icon.png?inline';
 import githubBrandIcon from './icons/brands/github-ack-icon.svg?raw';
 import carrotImage from './images/brands/carrot-icon.png?inline';
 import godexiousAvatar from './images/brands/godexious-avatar.png?inline';
@@ -65,6 +66,7 @@ export {
   clistImage,
   cfHelperImage,
   cfAnalyticsImage,
+  cfHeatmapImage,
   githubBrandIcon,
   carrotImage,
   godexiousAvatar,
@@ -139,3 +141,4 @@ export { default as jsonCopyIcon } from './icons/actions/json-copy.svg?raw';
 export { default as languageC } from './icons/languages/c.svg?inline';
 export { default as languageD } from './icons/languages/d.svg?inline';
 export { default as languageIo } from './icons/languages/io.svg?inline';
+export { default as languageUnknown } from './icons/languages/unknown.svg?inline';

@@ -9,7 +9,7 @@ import { isTeamCell } from './structure.js';
 
 // 收集页面用户链接，按缓存及官方信息补齐头像。
 export async function applyUserAvatars() {
-  if (!appSettings.show.userAvatar) return;
+  if (!appSettings.user.avatar.enabled) return;
 
   // 兼容相对路径与绝对路径 (/profile/xxx 与 https://codeforces.com/profile/xxx)
   const userLinks = document.querySelectorAll(

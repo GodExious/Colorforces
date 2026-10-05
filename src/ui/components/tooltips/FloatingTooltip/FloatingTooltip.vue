@@ -1,5 +1,6 @@
 <script>
 import { reactive, nextTick } from 'vue';
+import { isTruncated } from '../../../../utils/text-overflow.js';
 // 创建提示控制器；视图由同文件组件挂载。
 export function createTooltipController() {
   const state = reactive({
@@ -115,10 +116,11 @@ export function createTooltipController() {
   // 仅为被省略的文字显示完整内容，供快捷键和存储图注共用。
   function showIfTruncated(event) {
     const target = event.currentTarget;
-    if (target.scrollWidth > target.clientWidth) show(target, target.textContent);
+    if (isTruncated(target)) show(target, target.textContent);
   }
   // 委托绑定动态提示节点，避免重复注册逐元素监听。
-  function bind(root = document, { native = false } = {}) {
+  // nativeText 用来改写接管的原站 title 文字（比如按用户的格式重写里面的时间）；插件自己的提示不经过它。
+  function bind(root = document, { native = false, nativeText = (text) => text } = {}) {
     let active = null,
       borrowed = null,
       activeObserver = null;
@@ -151,10 +153,10 @@ export function createTooltipController() {
       if (!target) return;
       activeObserver = new MutationObserver(() => {
         if (target !== active) return;
-        const text =
-          target.getAttribute('data-tooltip') ??
-          target.getAttribute('data-cf-native-tooltip') ??
-          target.getAttribute('title');
+        const own = target.getAttribute('data-tooltip');
+        const borrowedText =
+          target.getAttribute('data-cf-native-tooltip') ?? target.getAttribute('title');
+        const text = own ?? (borrowedText && nativeText(borrowedText));
         if (text) show(target, text, { variant: target.dataset.tooltipVariant || '' });
       });
       activeObserver.observe(target, {
@@ -183,6 +185,8 @@ export function createTooltipController() {
         borrowed = { element: target, text };
         target.setAttribute('data-cf-native-tooltip', text);
         target.removeAttribute('title');
+        // 元素上保留原文，离开时原样还回去；只有显示出来的文字经过改写。
+        text = nativeText(text);
       }
       observeActive(target);
       show(target, text, { variant: target.dataset.tooltipVariant || '' });
@@ -253,6 +257,7 @@ export const tooltip = createTooltipController();
 </script>
 <script setup>
 import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue';
+import { formatTimesInText } from '../../../../features/appearance/time/format.js';
 const element = ref(null);
 const theme = inject('cf-menu-theme', ref({}));
 const state = tooltip.state;
@@ -280,7 +285,8 @@ const styles = computed(() => ({
 }));
 onMounted(() => {
   tooltip.attach(element.value);
-  tooltip.bind(document, { native: true });
+  // 原站的 title 里常带完整时间（如个人主页的「最后访问」「注册于」），提示里按用户设置的时间格式显示。
+  tooltip.bind(document, { native: true, nativeText: formatTimesInText });
 });
 onBeforeUnmount(tooltip.dispose);
 </script>

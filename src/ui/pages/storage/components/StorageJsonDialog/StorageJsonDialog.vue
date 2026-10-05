@@ -5,6 +5,7 @@ import { shallowRef } from 'vue';
 const request = shallowRef(null);
 // 提供同文件调用入口，查看器始终只保留一个实例。
 // title 传文案键名，options.keyLabel 传「存储键 → 说明文字」的函数：两者都在渲染时现取，切换语言后跟着变。
+// options.preview 可选，给个别键自己的缩略预览，见 json-preview.js 的 buildPreview；复制不受它影响。
 export function showStorageJsonModal(title, keys, getContent, options = {}) {
   request.value = { title, keys: [...keys], getContent, ...options };
 }
@@ -14,10 +15,9 @@ import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import { translate as t } from '../../../../../i18n/index.js';
 import { appSettings } from '../../../../../settings.js';
 import { appStorage } from '../../../../../storage/gm.js';
-import { PARALLEL_CONTESTS_KEY } from '../../../../../storage/keys.js';
 import { preventScrollChaining } from '../../../../../utils/scroll.js';
 import { backdropClose } from '../../../../../utils/backdrop.js';
-import { buildPreview } from './json-preview.js';
+import { buildPreview, stringifyStored } from './json-preview.js';
 import DialogTransition from '../../../../components/transitions/DialogTransition/DialogTransition.vue';
 // 保留离场期间的标题、选项卡和预览，关闭后不重新生成空文案。
 const displayed = shallowRef(request.value);
@@ -54,7 +54,8 @@ function selectKey(key, initial = false, keepScroll = false) {
       };
       return;
     }
-    if (!keyDataCache.has(key)) keyDataCache.set(key, buildPreview(key, request.value.getContent));
+    if (!keyDataCache.has(key))
+      keyDataCache.set(key, buildPreview(key, request.value.getContent, request.value.preview));
     preview.value = keyDataCache.get(key);
     if (keepScroll) return;
     nextTick(() => {
@@ -84,17 +85,7 @@ function copyFull() {
     const exportObj = {
       [activeKeyValue]: contentToExport !== undefined ? contentToExport : null,
     };
-    fullJsonStr = JSON.stringify(exportObj, null, 2);
-    if (activeKeyValue === PARALLEL_CONTESTS_KEY || activeKeyValue === 'cf_parallel_contests') {
-      fullJsonStr = fullJsonStr.replace(/\[\s*([-\d\s,]+?)\s*\]/g, (match, nums) => {
-        const compact = nums
-          .split(/\s*,\s*/)
-          .map((s) => s.trim())
-          .filter(Boolean)
-          .join(', ');
-        return `[${compact}]`;
-      });
-    }
+    fullJsonStr = stringifyStored(activeKeyValue, exportObj);
   } catch (e) {
     fullJsonStr = '{}';
   }
@@ -121,7 +112,7 @@ watch(request, (value) => {
 });
 // 切换语言后原地重建当前预览：项数徽标和截断提示是生成预览时写进去的文字。
 watch(
-  () => appSettings.lang,
+  () => appSettings.general.lang,
   () => {
     if (!request.value) return;
     keyDataCache.clear();

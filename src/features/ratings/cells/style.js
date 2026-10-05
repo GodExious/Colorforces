@@ -30,9 +30,9 @@ export function applyRatingStyle(cell, rating, options = {}) {
 
 // 按评分与当前样式写入底板、文字、描边的颜色和数字宽度。
 function paintRatingCell(cell, rating, displayValue, prefix, options) {
-  const enabled = options.enabled ?? appSettings.colorRatings;
-  const tag = appSettings.displayStyle === 'tag';
-  const compact = tag && appSettings.tagFillCell === false;
+  const enabled = options.enabled ?? appSettings.ratings.enabled;
+  const tag = appSettings.ratings.style === 'tag';
+  const compact = tag && appSettings.ratings.tagFillCell === false;
   const palette = getRatingTagStyle(rating);
   cell.dataset.cfRatingMode = !enabled ? 'plain' : compact ? 'compact' : tag ? 'filled' : 'block';
   cell.style.setProperty(

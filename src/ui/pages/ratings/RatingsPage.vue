@@ -68,9 +68,20 @@ onBeforeUnmount(() => {
   stop?.();
 });
 
+// 「难度分展示区域」下的各项，顺序即菜单中的排列。
+const locations = [
+  ['submissions', 'locSubmissions'],
+  ['status', 'locStatus'],
+  ['hacks', 'locHacks'],
+  ['problemset', 'locProblemset'],
+  ['contestProblems', 'locContestProblems'],
+  ['standings', 'locStandings'],
+  ['problemTags', 'locProblemTags'],
+];
+
 const ratingSliderStyle = computed(() => {
   const tag = getRatingTagStyle(2400);
-  return appSettings.displayStyle === 'block'
+  return appSettings.ratings.style === 'block'
     ? { background: getRatingBgColor(2400), border: '1px solid ' + getRatingBgColor(2400) }
     : { background: tag.bg, border: '1px solid ' + tag.border };
 });
@@ -93,13 +104,13 @@ const ratingSliderStyle = computed(() => {
         ><span class="cf-setting-label" v-text="t().clistEnable"></span
         ><toggle-switch
           as="div"
-          v-model="appSettings.clist.enabled"
+          v-model="appSettings.ratings.clist.enabled"
           input-class="cf-toggle-clist-enabled"
           data-control="cbClistEnabled"
           @change="saveSettings()"
         ></toggle-switch
       ></label>
-      <ExpandTransition :show="appSettings.clist.enabled"
+      <ExpandTransition :show="appSettings.ratings.clist.enabled"
         ><div class="cf-clist-subgroup">
           <div
             class="cf-setting-item"
@@ -114,8 +125,8 @@ const ratingSliderStyle = computed(() => {
             <span class="cf-setting-sublabel" v-text="t().clistAuthMode"></span
             ><segmented-switch
               style="width: 110px"
-              :model-value="appSettings.clist.authMode"
-              @update:model-value="value=&gt;choose('clist.authMode',value)"
+              :model-value="appSettings.ratings.clist.authMode"
+              @update:model-value="value=&gt;choose('ratings.clist.authMode',value)"
               :options="[
                 {
                   value: 'cookie',
@@ -126,7 +137,7 @@ const ratingSliderStyle = computed(() => {
               ]"
             ></segmented-switch>
           </div>
-          <ExpandTransition :show="appSettings.clist.authMode === 'api'"
+          <ExpandTransition :show="appSettings.ratings.clist.authMode === 'api'"
             ><div style="display: flex; flex-direction: column; gap: 6px">
               <div style="display: flex; align-items: center; justify-content: space-between">
                 <div
@@ -144,7 +155,7 @@ const ratingSliderStyle = computed(() => {
               <input
                 type="text"
                 class="cf-clist-input-box"
-                v-model.trim="appSettings.clist.apiKey"
+                v-model.trim="appSettings.ratings.clist.apiKey"
                 v-on:input="saveSettings()"
                 v-bind:placeholder="t().clistApiKeyPlaceholder"
                 data-control="inputClistApiKey"
@@ -184,51 +195,45 @@ const ratingSliderStyle = computed(() => {
       ><span class="cf-setting-label" v-text="t().masterColorRatings"></span
       ><toggle-switch
         as="div"
-        v-model="appSettings.colorRatings"
+        v-model="appSettings.ratings.enabled"
         input-class="cf-toggle-color-ratings"
         data-control="cbColorRatings"
         @change="saveSettings()"
       ></toggle-switch
     ></label>
-    <ExpandTransition :show="appSettings.colorRatings"
+    <ExpandTransition :show="appSettings.ratings.enabled"
       ><div class="cf-setting-item cf-row-display-style" style="padding-left: 12px">
         <span class="cf-setting-sublabel" v-text="t().displayStyleTitle"></span
         ><segmented-switch
           style="width: 120px"
-          :model-value="appSettings.displayStyle"
-          @update:model-value="value=&gt;choose('displayStyle',value)"
+          :model-value="appSettings.ratings.style"
+          @update:model-value="value=&gt;choose('ratings.style',value)"
           :options="[
             { value: 'block', label: t('styleBlock'), class: 'cf-btn-style-block' },
             { value: 'tag', label: t('styleTag'), class: 'cf-btn-style-tag' },
           ]"
           :active-style="ratingSliderStyle"
           :active-color="
-            appSettings.displayStyle === 'block' ? 'white' : getRatingTagStyle(2400).text
+            appSettings.ratings.style === 'block' ? 'white' : getRatingTagStyle(2400).text
           "
         ></segmented-switch></div
     ></ExpandTransition>
-    <ExpandTransition :show="appSettings.colorRatings &amp;&amp; appSettings.displayStyle === 'tag'"
-      ><label
-        class="cf-setting-item cf-row-tag-fill-cell"
-        style="
-          align-items: center;
-          justify-content: space-between;
-          font-size: var(--cf-font-size-base);
-          cursor: pointer;
-          user-select: none;
-          min-height: 28px;
-          margin: 0px;
-          padding-left: 24px;
-        "
-        ><span class="cf-setting-sublabel" v-text="t().locTagFillCell"></span
-        ><toggle-switch
-          as="div"
-          v-model="appSettings.tagFillCell"
-          data-control="cbTagFillCell"
-          @change="saveSettings()"
-        ></toggle-switch></label
+    <ExpandTransition
+      :show="appSettings.ratings.enabled &amp;&amp; appSettings.ratings.style === 'tag'"
+      ><div class="cf-ratings-nested">
+        <div class="cf-nested-options">
+          <label class="cf-setting-item cf-ratings-nested-item cf-row-tag-fill-cell"
+            ><span class="cf-setting-sublabel" v-text="t().locTagFillCell"></span
+            ><toggle-switch
+              as="div"
+              v-model="appSettings.ratings.tagFillCell"
+              data-control="cbTagFillCell"
+              @change="saveSettings()"
+            ></toggle-switch
+          ></label>
+        </div></div
     ></ExpandTransition>
-    <ExpandTransition :show="appSettings.colorRatings"
+    <ExpandTransition :show="appSettings.ratings.enabled"
       ><div
         class="cf-show-group"
         style="display: flex; flex-direction: column; gap: 8px; padding-left: 12px"
@@ -238,140 +243,19 @@ const ratingSliderStyle = computed(() => {
           style="margin-bottom: 2px"
           v-text="t().locationsTitle"
         ></div>
-        <label
-          class="cf-setting-item"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: var(--cf-font-size-base);
-            cursor: pointer;
-            user-select: none;
-            min-height: 28px;
-            margin: 0px;
-            padding-left: 12px;
-          "
-          ><span class="cf-setting-sublabel">{{ t('locSubmissions') }}</span
-          ><toggle-switch
-            as="div"
-            v-model="appSettings.show.submissions"
-            @change="saveSettings()"
-          ></toggle-switch></label
-        ><label
-          class="cf-setting-item"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: var(--cf-font-size-base);
-            cursor: pointer;
-            user-select: none;
-            min-height: 28px;
-            margin: 0px;
-            padding-left: 12px;
-          "
-          ><span class="cf-setting-sublabel">{{ t('locStatus') }}</span
-          ><toggle-switch
-            as="div"
-            v-model="appSettings.show.status"
-            @change="saveSettings()"
-          ></toggle-switch></label
-        ><label
-          class="cf-setting-item"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: var(--cf-font-size-base);
-            cursor: pointer;
-            user-select: none;
-            min-height: 28px;
-            margin: 0px;
-            padding-left: 12px;
-          "
-          ><span class="cf-setting-sublabel">{{ t('locHacks') }}</span
-          ><toggle-switch
-            as="div"
-            v-model="appSettings.show.hacks"
-            @change="saveSettings()"
-          ></toggle-switch></label
-        ><label
-          class="cf-setting-item"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: var(--cf-font-size-base);
-            cursor: pointer;
-            user-select: none;
-            min-height: 28px;
-            margin: 0px;
-            padding-left: 12px;
-          "
-          ><span class="cf-setting-sublabel">{{ t('locProblemset') }}</span
-          ><toggle-switch
-            as="div"
-            v-model="appSettings.show.problemset"
-            @change="saveSettings()"
-          ></toggle-switch></label
-        ><label
-          class="cf-setting-item"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: var(--cf-font-size-base);
-            cursor: pointer;
-            user-select: none;
-            min-height: 28px;
-            margin: 0px;
-            padding-left: 12px;
-          "
-          ><span class="cf-setting-sublabel">{{ t('locContestProblems') }}</span
-          ><toggle-switch
-            as="div"
-            v-model="appSettings.show.contestProblems"
-            @change="saveSettings()"
-          ></toggle-switch></label
-        ><label
-          class="cf-setting-item"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: var(--cf-font-size-base);
-            cursor: pointer;
-            user-select: none;
-            min-height: 28px;
-            margin: 0px;
-            padding-left: 12px;
-          "
-          ><span class="cf-setting-sublabel">{{ t('locStandings') }}</span
-          ><toggle-switch
-            as="div"
-            v-model="appSettings.show.standings"
-            @change="saveSettings()"
-          ></toggle-switch></label
-        ><label
-          class="cf-setting-item"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: var(--cf-font-size-base);
-            cursor: pointer;
-            user-select: none;
-            min-height: 28px;
-            margin: 0px;
-            padding-left: 12px;
-          "
-          ><span class="cf-setting-sublabel">{{ t('locProblemTags') }}</span
-          ><toggle-switch
-            as="div"
-            v-model="appSettings.show.problemTags"
-            @change="saveSettings()"
-          ></toggle-switch
-        ></label></div
+        <div class="cf-nested-options">
+          <label
+            v-for="[key, label] in locations"
+            :key="key"
+            class="cf-setting-item cf-ratings-nested-item"
+            ><span class="cf-setting-sublabel">{{ t(label) }}</span
+            ><toggle-switch
+              as="div"
+              v-model="appSettings.ratings.show[key]"
+              @change="saveSettings()"
+            ></toggle-switch
+          ></label>
+        </div></div
     ></ExpandTransition>
   </div>
 </template>
@@ -398,6 +282,18 @@ const ratingSliderStyle = computed(() => {
   gap: 10px;
   padding-left: 12px;
   transition: all 0.25s ease;
+}
+
+/* 子选项下面再分一级的选项行；左侧细线与缩进来自公共样式 cf-nested-options。 */
+.cf-ratings-nested {
+  padding-left: 12px;
+}
+
+.cf-ratings-nested-item {
+  font-size: var(--cf-font-size-base);
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
 }
 
 .cf-clist-icon-btn {

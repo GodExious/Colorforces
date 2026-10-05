@@ -36,7 +36,7 @@ export function compareVersions(v1, v2) {
 
 // 按设置和冷却规则检查更新，必要时请求显示提醒。
 export async function checkScriptUpdate(force = false) {
-  if (!force && appSettings.disableAutoCheckUpdate) {
+  if (!force && appSettings.general.disableUpdateCheck) {
     return { success: true, skipped: true, reason: 'disabled' };
   }
 

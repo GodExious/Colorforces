@@ -10,33 +10,33 @@ import ExpandTransition from '../../../../components/transitions/ExpandTransitio
     <span class="cf-setting-label" data-cf-language-text v-text="t().locHideTags"></span>
     <ToggleSwitch
       as="div"
-      v-model="appSettings.hideTags"
+      v-model="appSettings.appearance.tags.hide"
       input-class="cf-toggle-hide-tags"
       data-control="cbHideTags"
       @change="saveSettings()"
     />
   </label>
-  <ExpandTransition :show="appSettings.hideTags">
+  <ExpandTransition :show="appSettings.appearance.tags.hide">
     <label
       class="cf-setting-item cf-sub-setting-item cf-tag-visibility-setting cf-tag-visibility-subitem"
     >
       <span class="cf-setting-sublabel" data-cf-language-text v-text="t().locHideRatingTag"></span>
       <ToggleSwitch
         as="div"
-        v-model="appSettings.hideRatingTag"
+        v-model="appSettings.appearance.tags.hideRating"
         data-control="cbHideRatingTag"
         @change="saveSettings()"
       />
     </label>
   </ExpandTransition>
-  <ExpandTransition :show="appSettings.hideTags">
+  <ExpandTransition :show="appSettings.appearance.tags.hide">
     <label
       class="cf-setting-item cf-sub-setting-item cf-tag-visibility-setting cf-tag-visibility-subitem"
     >
       <span class="cf-setting-sublabel" data-cf-language-text v-text="t().locNotHideAcTags"></span>
       <ToggleSwitch
         as="div"
-        v-model="appSettings.notHideAcTags"
+        v-model="appSettings.appearance.tags.keepSolved"
         data-control="cbNotHideAcTags"
         @change="saveSettings()"
       />

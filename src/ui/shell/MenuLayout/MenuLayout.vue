@@ -26,11 +26,13 @@ export function useMenuLayout(root, visible) {
     y: Math.max(0, viewport.height - margin * 2 - viewport.buttonHeight),
   }));
   const panelAnchored = computed(
-    () => appSettings.menuPosition.enabled && appSettings.menuPosition.reference === 'panel',
+    () =>
+      appSettings.general.menuPosition.enabled &&
+      appSettings.general.menuPosition.reference === 'panel',
   );
   // 百分比对应当前定位对象的可用范围，0% 和 100% 都保留屏幕边距。
   const buttonAnchor = computed(() => {
-    const position = appSettings.menuPosition;
+    const position = appSettings.general.menuPosition;
     const x = margin + tracks.value.x * (position.enabled ? (position.x ?? 100) / 100 : 1);
     const y = position.enabled
       ? margin + tracks.value.y * ((position.y ?? defaultVertical()) / 100)
@@ -44,7 +46,7 @@ export function useMenuLayout(root, visible) {
   });
   // 只在原窗口尺寸下沿用抓取时的可见尺寸；窗口变化仍恢复原始宽高偏好。
   const heldPanelSize = computed(() => {
-    const saved = appSettings.menuPosition.panelSize;
+    const saved = appSettings.general.menuPosition.panelSize;
     return panelAnchored.value &&
       saved?.viewportWidth === viewport.width &&
       saved?.viewportHeight === viewport.height
@@ -65,7 +67,7 @@ export function useMenuLayout(root, visible) {
     const a = buttonAnchor.value;
     const width = Math.max(
       1,
-      appSettings.menuPosition.enabled
+      appSettings.general.menuPosition.enabled
         ? a.right
           ? a.x + viewport.buttonWidth - margin
           : viewport.width - margin - a.x
@@ -89,12 +91,12 @@ export function useMenuLayout(root, visible) {
   }));
   const target = computed(() => {
     const a = buttonAnchor.value,
-      settings = appSettings.menuSize;
+      settings = appSettings.general.menuSize;
     // 保留原来的 680px、56vh 和 440px 最小高度，自定义定位才按可用空间避让。
     const { width: defaultWidth, height: defaultHeight } = automaticSize.value;
     let width = settings.enabled ? (settings.width ?? defaultWidth) : defaultWidth;
     let height = settings.enabled ? (settings.height ?? defaultHeight) : defaultHeight;
-    if (settings.enabled || appSettings.menuPosition.enabled) {
+    if (settings.enabled || appSettings.general.menuPosition.enabled) {
       width = clamp(width, limits.value.minWidth, limits.value.maxWidth);
       height = clamp(height, limits.value.minHeight, limits.value.maxHeight);
     }
@@ -104,8 +106,8 @@ export function useMenuLayout(root, visible) {
         height = Math.min(height, heldPanelSize.value.height);
       }
       const travel = panelTracks(width, height);
-      const left = margin + travel.x * ((appSettings.menuPosition.x ?? 100) / 100);
-      const top = margin + travel.y * ((appSettings.menuPosition.y ?? 0) / 100);
+      const left = margin + travel.x * ((appSettings.general.menuPosition.x ?? 100) / 100);
+      const top = margin + travel.y * ((appSettings.general.menuPosition.y ?? 0) / 100);
       const right = left + width / 2 >= viewport.width / 2;
       const above = top - margin,
         below = viewport.height - margin - top - height;
@@ -169,7 +171,7 @@ export function useMenuLayout(root, visible) {
   }
   // 标题栏移动不应改变面板大小，也不应把临时缩小写成用户的原始宽高。
   function rememberPanelSize(size = rendered) {
-    appSettings.menuPosition.panelSize = {
+    appSettings.general.menuPosition.panelSize = {
       width: size.width,
       height: size.height,
       viewportWidth: viewport.width,
@@ -241,14 +243,14 @@ export function useMenuLayout(root, visible) {
         ),
       );
       if (
-        value === appSettings.menuSize[axis] &&
+        value === appSettings.general.menuSize[axis] &&
         (!heldPanelSize.value || heldPanelSize.value[axis] === value)
       )
         continue;
-      appSettings.menuSize[axis] = value;
+      appSettings.general.menuSize[axis] = value;
       if (panelAnchored.value) {
         if (!heldPanelSize.value) rememberPanelSize();
-        appSettings.menuPosition.panelSize[axis] = value;
+        appSettings.general.menuPosition.panelSize[axis] = value;
       }
       changed = true;
     }
@@ -257,16 +259,20 @@ export function useMenuLayout(root, visible) {
     return changed;
   }
   // 输入保留一位小数，拖动保留足够精度以免抓取点被百分比取整抖动。
-  function setPosition(next, persist = true, reference = appSettings.menuPosition.reference) {
-    let changed = reference !== appSettings.menuPosition.reference;
-    appSettings.menuPosition.reference = reference;
-    if (reference === 'button') appSettings.menuPosition.panelSize = null;
+  function setPosition(
+    next,
+    persist = true,
+    reference = appSettings.general.menuPosition.reference,
+  ) {
+    let changed = reference !== appSettings.general.menuPosition.reference;
+    appSettings.general.menuPosition.reference = reference;
+    if (reference === 'button') appSettings.general.menuPosition.panelSize = null;
     for (const axis of ['x', 'y']) {
       if (!Number.isFinite(next[axis])) continue;
       const precision = persist ? 10 : 1e6;
       const value = Math.round(clamp(next[axis], 0, 100) * precision) / precision;
-      if (value === appSettings.menuPosition[axis]) continue;
-      appSettings.menuPosition[axis] = value;
+      if (value === appSettings.general.menuPosition[axis]) continue;
+      appSettings.general.menuPosition[axis] = value;
       changed = true;
     }
     retarget(persist ? 'smooth' : reference === 'panel' ? 'panel-drag' : 'drag');
@@ -275,9 +281,9 @@ export function useMenuLayout(root, visible) {
   }
   // 开启时沿用当前布局，关闭时平滑回到原始位置或默认尺寸。
   function setEnabled(kind, enabled) {
-    const settings = appSettings[kind];
+    const settings = appSettings.general[kind];
     if (settings.enabled === Boolean(enabled)) return;
-    if (kind === 'menuSize' && !enabled) appSettings.menuPosition.panelSize = null;
+    if (kind === 'menuSize' && !enabled) appSettings.general.menuPosition.panelSize = null;
     if (enabled) {
       if (kind === 'menuSize') {
         settings.width ??= Math.round(rendered.width);
@@ -311,16 +317,16 @@ export function useMenuLayout(root, visible) {
   }
   // 只比较数值与定位基准，不把开关是否关闭作为默认状态的条件。
   function isDefault(kind) {
-    if (kind === 'menuSize' && appSettings.menuPosition.panelSize) return false;
+    if (kind === 'menuSize' && appSettings.general.menuPosition.panelSize) return false;
     return Object.entries(defaultValues(kind)).every(
-      ([key, value]) => (appSettings[kind][key] ?? value) === value,
+      ([key, value]) => (appSettings.general[kind][key] ?? value) === value,
     );
   }
   // 恢复当前项的初始数值并保留开关；尺寸恢复时释放拖动保留的临时尺寸。
   function resetLayout(kind) {
     if (isDefault(kind)) return;
-    Object.assign(appSettings[kind], defaultValues(kind));
-    if (kind === 'menuSize') appSettings.menuPosition.panelSize = null;
+    Object.assign(appSettings.general[kind], defaultValues(kind));
+    if (kind === 'menuSize') appSettings.general.menuPosition.panelSize = null;
     retarget();
     saveSettings();
   }
@@ -329,7 +335,9 @@ export function useMenuLayout(root, visible) {
     if (
       event.button !== 0 ||
       drag ||
-      (kind === 'move' ? !appSettings.menuPosition.enabled : !appSettings.menuSize.enabled)
+      (kind === 'move'
+        ? !appSettings.general.menuPosition.enabled
+        : !appSettings.general.menuSize.enabled)
     )
       return;
     if (kind === 'move' && event.target.closest('button,a,input,select,textarea')) return;
@@ -361,8 +369,8 @@ export function useMenuLayout(root, visible) {
   }
   // 以面板左上角反算百分比，不再把标题栏位移当作按钮位移。
   function movePanel(left, top) {
-    const switched = appSettings.menuPosition.reference !== 'panel';
-    appSettings.menuPosition.reference = 'panel';
+    const switched = appSettings.general.menuPosition.reference !== 'panel';
+    appSettings.general.menuPosition.reference = 'panel';
     const travel = panelTracks(target.value.width, target.value.height);
     return (
       setPosition(
@@ -480,7 +488,7 @@ export function useMenuLayout(root, visible) {
     nextTick(refreshViewport);
   });
   watch(
-    () => [appSettings.menuSize.enabled, appSettings.menuPosition.enabled],
+    () => [appSettings.general.menuSize.enabled, appSettings.general.menuPosition.enabled],
     () => finishDrag(),
   );
   onMounted(() => {
@@ -500,7 +508,7 @@ export function useMenuLayout(root, visible) {
     reducedMotion.removeEventListener('change', refreshViewport);
   });
   const size = reactive({
-    enabled: computed(() => appSettings.menuSize.enabled),
+    enabled: computed(() => appSettings.general.menuSize.enabled),
     isDefault: computed(() => isDefault('menuSize')),
     reset: () => resetLayout('menuSize'),
     animating,
@@ -524,13 +532,13 @@ export function useMenuLayout(root, visible) {
     return travel ? Math.round(clamp(((value - margin) / travel) * 100, 0, 100) * 10) / 10 : 0;
   }
   const position = reactive({
-    enabled: computed(() => appSettings.menuPosition.enabled),
+    enabled: computed(() => appSettings.general.menuPosition.enabled),
     isDefault: computed(() => isDefault('menuPosition')),
     reset: () => resetLayout('menuPosition'),
     animating,
     goal: computed(() => ({
-      x: appSettings.menuPosition.x ?? 100,
-      y: appSettings.menuPosition.y ?? defaultVertical(),
+      x: appSettings.general.menuPosition.x ?? 100,
+      y: appSettings.general.menuPosition.y ?? defaultVertical(),
     })),
     x: computed(() => positionPercent('x')),
     y: computed(() => positionPercent('y')),

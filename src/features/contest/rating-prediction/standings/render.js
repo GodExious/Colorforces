@@ -260,11 +260,11 @@ function renderRow(cell, record, result, columns, state, analyze) {
         : t('predictionUnknown');
   }
   const show =
-    appSettings.participationTags.enabled &&
+    appSettings.contest.participationTags.enabled &&
     record &&
     record.reason !== 'unofficial' &&
     ['rated', 'unrated', 'virtual'].includes(record.status) &&
-    appSettings.participationTags[record.status];
+    appSettings.contest.participationTags[record.status];
   updateParticipationTag(
     cell,
     show ? record.status : null,
@@ -276,8 +276,8 @@ function renderRow(cell, record, result, columns, state, analyze) {
 function renderAnalysisAction(output, record, result, state, analyze) {
   let button = output.querySelector('.cf-prediction-open');
   const canAnalyze =
-    appSettings.prediction.enabled &&
-    appSettings.prediction.analysis &&
+    appSettings.contest.prediction.enabled &&
+    appSettings.contest.prediction.analysis &&
     record?.status === 'rated' &&
     record.valid &&
     !!result &&
@@ -331,6 +331,32 @@ export function observePredictionTable(render) {
   };
 }
 
+// 加载分成的几段，按先后顺序；有的段会被跳过（比如官方已出分时不用核对提交记录）。
+const STAGES = ['standings', 'ratings', 'submissions', 'compute'];
+// 加载时状态栏里写的话：到了哪一段；核对提交记录时带上已经扫描的条数。
+function loadingText(state) {
+  if (state.stage === 'standings') return t('predictionStageStandings');
+  if (state.stage === 'ratings') return t('predictionStageRatings');
+  if (state.stage === 'submissions')
+    return state.progress
+      ? t('predictionScanning', state.progress)
+      : t('predictionStageSubmissions');
+  if (state.stage === 'compute') return t('predictionStageCompute');
+  return t('predictionLoading');
+}
+// 状态文字前面的分段进度：做完的段填实，正在做的一段有流动的光带。
+// 只在真的发了请求的加载中显示；收起时各段保持最后的样子，不回跳。
+function renderSteps(bar, state) {
+  const stepping = state.loading && Boolean(state.stage);
+  bar.classList.toggle('is-stepping', stepping);
+  if (!stepping) return;
+  const current = STAGES.indexOf(state.stage);
+  bar.querySelectorAll('.cf-prediction-steps i').forEach((step, index) => {
+    step.classList.toggle('is-done', index < current);
+    step.classList.toggle('is-active', index === current);
+  });
+}
+
 // 显示当前快照，暂时失败时保留原时间并给出说明。
 export function renderPrediction(state, actions) {
   const table = document.querySelector('table.standings');
@@ -340,19 +366,27 @@ export function renderPrediction(state, actions) {
     let bar = document.querySelector('.cf-prediction-bar');
     if (!bar) {
       bar = node('div', 'cf-prediction-bar');
-      bar.append(node('span', 'cf-prediction-status'), node('span', 'cf-prediction-note'));
+      // 状态栏里分上下两行：上面一行是进度、状态文字、快照时间和刷新按钮，下面一行是临时的提醒。
+      const row = node('div', 'cf-prediction-row');
+      const steps = node('span', 'cf-prediction-steps');
+      steps.setAttribute('aria-hidden', 'true');
+      steps.append(...STAGES.map(() => node('i', '')));
+      row.append(steps, node('span', 'cf-prediction-status'), node('span', 'cf-prediction-note'));
       const button = node('button', 'cf-prediction-refresh');
       button.type = 'button';
       button.addEventListener('click', actions.refresh);
-      bar.append(button);
+      row.append(button);
+      // 临时的提醒，在状态栏里面、状态文字的下一行：后续版本要做主题配色，所以不再适配其他插件的深色主题。
+      // 和个人主页数据分析面板里的那一条是同一句话、同样的样子；主题功能上线后一起删掉。
+      bar.append(row, node('div', 'cf-prediction-notice'));
       table.parentNode.insertBefore(bar, table);
     }
+    text(bar.querySelector('.cf-prediction-notice'), t('themeNotice'));
+    renderSteps(bar, state);
     toolbarText(
       bar.querySelector('.cf-prediction-status'),
       state.loading
-        ? state.progress
-          ? t('predictionScanning', state.progress)
-          : t('predictionLoading')
+        ? loadingText(state)
         : state.error
           ? t(state.error)
           : state.snapshot
@@ -382,10 +416,10 @@ export function renderPrediction(state, actions) {
           reason: 'unofficial',
           valid: false,
         });
-    const columns = appSettings.prediction.enabled
+    const columns = appSettings.contest.prediction.enabled
       ? ['performance', 'delta', 'rank', 'ratedRank', 'actions'].filter(
           (key) =>
-            appSettings.prediction[
+            appSettings.contest.prediction[
               key === 'rank' ? 'rankChange' : key === 'actions' ? 'analysis' : key
             ],
         )

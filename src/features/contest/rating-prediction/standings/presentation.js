@@ -15,7 +15,7 @@ export function snapshotTime(fetchedAt) {
   const date = new Date(fetchedAt);
   if (Number.isNaN(date.getTime())) return { text: '', zone: '' };
   return {
-    text: date.toLocaleString(appSettings.lang === 'zh' ? 'zh-CN' : 'en-US', {
+    text: date.toLocaleString(appSettings.general.lang === 'zh' ? 'zh-CN' : 'en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -31,9 +31,9 @@ export function snapshotTime(fetchedAt) {
 export function predictionNumberColor(value, delta = false) {
   if (!Number.isFinite(value) && value !== Infinity) return undefined;
   if (delta) return value > 0 ? '#008000' : '#808080';
-  if (!appSettings.prediction.followRatingStyle || !appSettings.colorRatings)
+  if (!appSettings.contest.prediction.followRatingStyle || !appSettings.ratings.enabled)
     return rankForRating(value).color;
-  return appSettings.displayStyle === 'tag'
+  return appSettings.ratings.style === 'tag'
     ? getRatingTagStyle(value).text
     : getRatingBgColor(value);
 }
@@ -56,7 +56,7 @@ function plainValue(cell, value) {
 
 // 表现分按评级着色；涨跌分始终绿色上涨、灰色下降，底板共用现有评分样式。
 export function renderScore(cell, key, value) {
-  const styled = appSettings.prediction.followRatingStyle && appSettings.colorRatings;
+  const styled = appSettings.contest.prediction.followRatingStyle && appSettings.ratings.enabled;
   cell.classList.toggle(
     'cf-prediction-legendary',
     !styled &&
@@ -135,11 +135,11 @@ export function renderRankProgress(cell, record, result, phase) {
       ? before + result.delta
       : null;
   // 底色与表现分、涨跌分一致：只有「沿用难度分样式」开启时才有，并跟随难度分的三种样式。
-  const styled = appSettings.prediction.followRatingStyle && appSettings.colorRatings;
+  const styled = appSettings.contest.prediction.followRatingStyle && appSettings.ratings.enabled;
   const gradient = styled && progress && Number.isFinite(before) && Number.isFinite(after);
-  const tag = appSettings.displayStyle === 'tag';
+  const tag = appSettings.ratings.style === 'tag';
   // 标签且不铺满时底板收成内容四周的小标签，否则铺满整个单元格。
-  const compact = tag && appSettings.tagFillCell === false;
+  const compact = tag && appSettings.ratings.tagFillCell === false;
   // 显隐与形状分开记：关闭底色时底板在原来的形状上淡出，不会边淡出边变形。
   cell.dataset.cfRankMode = gradient ? 'tinted' : 'plain';
   cell.dataset.cfRankShape = compact ? 'compact' : 'full';
@@ -162,7 +162,7 @@ export function renderRankProgress(cell, record, result, phase) {
   measureRankContent(cell);
   // 提示里带计评级名次，名次变了也要重画。
   const ratedRank = Number.isInteger(result?.rank) ? result.rank : null;
-  const signature = JSON.stringify([progress, appSettings.lang, ratedRank]);
+  const signature = JSON.stringify([progress, appSettings.general.lang, ratedRank]);
   if (cell.dataset.rankSignature === signature) return;
   cell.dataset.rankSignature = signature;
   cell.removeAttribute('data-tooltip-variant');

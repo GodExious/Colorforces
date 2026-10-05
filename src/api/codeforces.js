@@ -28,9 +28,13 @@ export function fetchContestSubmissions(contestId, from, signal) {
     { signal },
   );
 }
-// 按原版批量上限请求用户提交记录，保留同源访问。
-export function fetchUserStatus(handle) {
-  return fetch(`/api/user.status?handle=${encodeURIComponent(handle)}&from=1&count=10000&lang=en`);
+// 请求用户的全部提交记录，保留同源访问。不带数量上限：带上限时超过一万条的账号会丢掉更早的记录。
+export function fetchUserStatus(handle, signal) {
+  return fetch(`/api/user.status?handle=${encodeURIComponent(handle)}&lang=en`, { signal });
+}
+// 请求用户参加过的每场评级比赛的评级变化，保留同源访问。
+export function fetchUserRating(handle, signal) {
+  return fetch(`/api/user.rating?handle=${encodeURIComponent(handle)}`, { signal });
 }
 // 请求用户信息以补齐头像缓存。
 export function fetchUserInfo(handles) {

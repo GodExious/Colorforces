@@ -1,5 +1,6 @@
 import { appSettings, subscribeSettings } from '../settings.js';
 import { startPredictionFeature } from './contest/rating-prediction/index.js';
+import { startAnalyticsFeature } from './user/analytics/index.js';
 import { updateDynamicStyle } from './appearance/dynamic-style.js';
 import { refreshVerdicts } from './appearance/verdicts.js';
 import { applyTimeFormatting, wrapVirtualParticipationTime } from './appearance/time/format.js';
@@ -18,26 +19,26 @@ export function connectSettingsEffects() {
   const ratingNodes = '.cf-rating-col, .cf-rating-standings-row > :is(td, th), span.tag-box';
   const effects = [
     {
-      read: () => [appSettings.hideTags, appSettings.hideRatingTag, appSettings.notHideAcTags],
+      read: () => appSettings.appearance.tags,
       selector: 'span.tag-box, table.problems a.notice, .cf-tags-hidden-notice',
       apply: applyProblemTagsVisibility,
     },
     {
-      read: () => appSettings.show.shortVerdict,
+      read: () => appSettings.appearance.shortVerdict,
       selector: '.cf-verdict-text',
       apply: refreshVerdicts,
     },
     {
-      read: () => appSettings.timeFormat,
+      read: () => appSettings.appearance.timeFormat,
       selector: '.cf-formatted-time, .format-time, .format-date, .cf-table-time-cell',
       apply: applyTimeFormatting,
       style: true,
     },
     {
       read: () => [
-        appSettings.colorRatings,
+        appSettings.ratings.enabled,
         ...['submissions', 'status', 'hacks', 'problemset', 'contestProblems', 'standings'].map(
-          (key) => appSettings.show[key],
+          (key) => appSettings.ratings.show[key],
         ),
       ],
       selector: ratingNodes,
@@ -46,32 +47,32 @@ export function connectSettingsEffects() {
     },
     {
       read: () => [
-        appSettings.colorRatings,
-        appSettings.displayStyle,
-        appSettings.tagFillCell,
-        appSettings.clist.enabled,
-        appSettings.show.problemTags,
+        appSettings.ratings.enabled,
+        appSettings.ratings.style,
+        appSettings.ratings.tagFillCell,
+        appSettings.ratings.clist.enabled,
+        appSettings.ratings.show.problemTags,
       ],
       selector: ratingNodes,
       apply: refreshRatingsOnPage,
     },
     {
-      read: () => [appSettings.show.userAvatar, appSettings.show.formatTeams],
+      read: () => [appSettings.user.avatar.enabled, appSettings.user.formatTeams],
       selector: '.status-party-cell, table.standings .contestant-cell, a[href*="/profile/"]',
       apply: refreshUserAvatarsAndStandings,
       style: true,
     },
     {
-      read: () => appSettings.show.langIcon,
+      read: () => appSettings.appearance.langIcon.enabled,
       selector: '[data-cf-lang-icon-processed]',
       style: true,
     },
     {
       read: () => [
-        appSettings.avatarSize,
-        appSettings.langIconSize,
-        appSettings.acBgColor,
-        appSettings.show.acHighlight,
+        appSettings.user.avatar.size,
+        appSettings.appearance.langIcon.size,
+        appSettings.appearance.acHighlight.color,
+        appSettings.appearance.acHighlight.enabled,
       ],
       selector: '',
       style: true,
@@ -117,6 +118,8 @@ export async function startFeatures() {
   syncSecondLevelMenuLava();
   observeSecondLevelMenu();
   const ratings = await getRatings();
+  // 数据分析要查本地题库，所以排在题库就绪之后。
+  startAnalyticsFeature();
   applyRatings(ratings);
   formatStandingsCells();
   applyProblemTagsVisibility();

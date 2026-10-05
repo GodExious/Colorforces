@@ -46,6 +46,12 @@ export function normalizeProblemName(name) {
   return s;
 }
 
+// 题号（场次编号加题目序号，如 1000A）对应的题目页地址；题号不成形时返回 null。
+export function problemLink(key) {
+  const [, contest, index] = String(key ?? '').match(/^(\d+)(.+)$/) || [];
+  return contest ? `https://codeforces.com/contest/${contest}/problem/${index}` : null;
+}
+
 // 从题目链接提取比赛编号与题号。
 export function extractProblemKey(url) {
   if (!url) return null;

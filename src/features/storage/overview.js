@@ -1,5 +1,5 @@
 import { appStorage } from '../../storage/gm.js';
-import { listLocalKeys } from '../../storage/local-storage.js';
+import { readLocalValue } from '../../storage/local-storage.js';
 import { appSettings } from '../../settings.js';
 import { readRuntimeData } from '../../storage/runtime.js';
 import {
@@ -11,13 +11,15 @@ import {
   PREDICTION_STORAGE_KEYS,
   PREDICTION_CACHE_KEY,
   RUNTIME_DATA_KEY,
+  ANALYTICS_KEY,
+  LEGACY_LOCAL_KEYS,
 } from '../../storage/keys.js';
+import { migrateDatasets } from '../user/analytics/data.js';
 import { getCurrentUserHandle } from '../general/solved.js';
 import { sortProblemIds } from '../../utils/problem.js';
-// 读取原版单键存储字节数。
-export const getStorageItemBytes = (key) => {
+// 一份存储值占多少字节。
+const bytesOf = (val) => {
   try {
-    const val = appStorage.getItem(key);
     if (!val) return 0;
     const str = typeof val === 'string' ? val : JSON.stringify(val);
     return new Blob([str]).size;
@@ -25,6 +27,8 @@ export const getStorageItemBytes = (key) => {
     return 0;
   }
 };
+// 读取原版单键存储字节数。
+export const getStorageItemBytes = (key) => bytesOf(appStorage.getItem(key));
 // 读取原版当前有效键列表。
 export const ACTIVE_STORAGE_KEYS = [
   ...PREDICTION_STORAGE_KEYS,
@@ -34,6 +38,7 @@ export const ACTIVE_STORAGE_KEYS = [
   CLIST_STORAGE_KEY,
   AVATAR_CACHE_KEY,
   RUNTIME_DATA_KEY,
+  ANALYTICS_KEY,
 ];
 // 读取原版已解决题目缓存详情。
 export const getUserSolvedStorageDetails = () => {
@@ -46,9 +51,6 @@ export const getUserSolvedStorageDetails = () => {
   try {
     const allKeys = appStorage.keys();
     const keySet = new Set(allKeys);
-    for (const k of listLocalKeys()) {
-      if (k.startsWith('cf_user_solved_')) keySet.add(k);
-    }
     const currentHandle = getCurrentUserHandle();
     currentKey = currentHandle ? 'cf_user_solved_' + currentHandle.toLowerCase() : null;
     if (currentKey) {
@@ -121,34 +123,33 @@ export const getUserSolvedStorageDetails = () => {
     currentKey,
   };
 };
-// 读取原版旧本地数据路径详情（deprecated）。
+// 读取原版旧本地数据路径详情（deprecated）。旧数据有两处：
+// stale 是油猴存储里已经不用的键；site 是早期版本留在网站本地存储里的键，只看约定的那几个。
+// 同一个键名两处都有时合成一项，查看时显示油猴存储里的那份。清理要按这两份名单各删各的：
+// site 里有的键名（如题库缓存）在油猴存储里是正在用的，不能照着键名把那一份也删了。
 export const getLocalStorageDetails = () => {
-  const localKeys = [];
-  let totalBytes = 0;
   const dataMap = {};
+  let totalBytes = 0;
+  let stale = [];
   try {
-    const keySet = new Set();
-    try {
-      for (const k of appStorage.keys() || []) if (k) keySet.add(k);
-    } catch (e) {}
-    try {
-      for (const k of listLocalKeys()) if (k.startsWith('cf_')) keySet.add(k);
-    } catch (e) {}
-
-    for (const k of keySet) {
-      if (k && !ACTIVE_STORAGE_KEYS.includes(k) && !k.startsWith('cf_user_solved_')) {
-        localKeys.push(k);
-        totalBytes += getStorageItemBytes(k);
-        const raw = appStorage.getItem(k);
-        try {
-          dataMap[k] = JSON.parse(raw);
-        } catch (e) {
-          dataMap[k] = raw;
-        }
-      }
-    }
+    stale = (appStorage.keys() || []).filter(
+      (k) => k && !ACTIVE_STORAGE_KEYS.includes(k) && !k.startsWith('cf_user_solved_'),
+    );
   } catch (e) {}
-  return { keys: localKeys, bytes: totalBytes, dataMap };
+  const site = LEGACY_LOCAL_KEYS.filter((k) => readLocalValue(k) !== null);
+  const localKeys = [...new Set([...stale, ...site])];
+  for (const k of localKeys) {
+    const own = stale.includes(k) ? appStorage.getItem(k) : null;
+    const old = site.includes(k) ? readLocalValue(k) : null;
+    totalBytes += bytesOf(own) + bytesOf(old);
+    const raw = own ?? old;
+    try {
+      dataMap[k] = JSON.parse(raw);
+    } catch (e) {
+      dataMap[k] = raw;
+    }
+  }
+  return { keys: localKeys, bytes: totalBytes, dataMap, stale, site };
 };
 // 读取原版存储大小显示单位。
 export const formatStorageBytes = (bytes) => {
@@ -159,10 +160,17 @@ export const formatStorageBytes = (bytes) => {
   const mb = kb / 1024;
   return mb.toFixed(2) + ' MB';
 };
+// 设置按菜单页签分了组，数的是最里层的设置项。
+const countSettings = (value) =>
+  value && typeof value === 'object'
+    ? Object.values(value).reduce((sum, item) => sum + countSettings(item), 0)
+    : 1;
 // 汇总各功能的数据和字节占用，不直接操作页面节点。
 export function readStorageOverview() {
   // 先读插件数据：读取时会把合并前的旧键迁进来，之后再枚举，旧键就不会被算进已弃用的缓存。
   const runtime = readRuntimeData();
+  // 数据分析同理：合并前按账号各存的旧键先并进新键。
+  migrateDatasets();
   const solved = getUserSolvedStorageDetails(),
     local = getLocalStorageDetails();
   const countProblems = (value) =>
@@ -171,7 +179,8 @@ export function readStorageOverview() {
   const items = {
     settings: {
       bytes: getStorageItemBytes(SETTINGS_KEY),
-      count: Object.keys(appSettings).length,
+      // 结构版本号不算设置项。
+      count: countSettings(appSettings) - 1,
       keys: [SETTINGS_KEY],
       countKey: 'storageItemCount',
     },
@@ -214,12 +223,17 @@ export function readStorageOverview() {
       countKey: 'storageItemCount',
     },
   };
+  // 数据分析的各个账号合存在一个键里，查看时现读，不提前解析；没用过时不列出。
+  const analyticsKeys = appStorage.getItem(ANALYTICS_KEY) != null ? [ANALYTICS_KEY] : [];
   // 合并管理入口，不改旧存储结构；数量分项保留，不能把头像人数与题数相加。
   items.user = {
-    bytes: items.avatar.bytes + items.solved.bytes,
-    count: 2,
+    bytes:
+      items.avatar.bytes +
+      items.solved.bytes +
+      analyticsKeys.reduce((sum, key) => sum + getStorageItemBytes(key), 0),
+    count: 3,
     countKey: 'storageCategoryCount',
-    keys: [...items.avatar.keys, ...items.solved.keys],
+    keys: [...items.avatar.keys, ...items.solved.keys, ...analyticsKeys],
     dataMap: {
       ...items.solved.dataMap,
       [AVATAR_CACHE_KEY]: appStorage.getJSON(AVATAR_CACHE_KEY, {}),

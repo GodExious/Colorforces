@@ -18,9 +18,12 @@ import {
   PREDICTION_RATINGS_KEY,
   PREDICTION_LOCK_KEY,
   RUNTIME_DATA_KEY,
+  ANALYTICS_KEY,
 } from '../../../storage/keys.js';
 import { showConfirmPop } from '../../components/dialogs/ConfirmDialog/ConfirmDialog.vue';
+import { readStore, previewStore } from '../../../features/user/analytics/store.js';
 import { showStorageJsonModal } from './components/StorageJsonDialog/StorageJsonDialog.vue';
+import { TRUNCATE_MARKER } from './components/StorageJsonDialog/json-preview.js';
 import StorageCard from './components/StorageCard/StorageCard.vue';
 import StorageUsageChart from './components/StorageUsageChart/StorageUsageChart.vue';
 const props = defineProps({ active: Boolean });
@@ -90,6 +93,7 @@ const KEY_LABELS = {
   [PARALLEL_CONTESTS_KEY]: 'storageKeyParallel',
   [CLIST_STORAGE_KEY]: 'storageKeyClist',
   [AVATAR_CACHE_KEY]: 'storageAvatarTitle',
+  [ANALYTICS_KEY]: 'storageAnalyticsTitle',
   [PREDICTION_CACHE_KEY]: 'storageKeySnapshots',
   [PREDICTION_RATINGS_KEY]: 'storageKeyRatingSources',
   [PREDICTION_LOCK_KEY]: 'storageKeyRequestLease',
@@ -131,6 +135,16 @@ function requestClear(id) {
     },
   });
 }
+// 数据分析的缓存里是各个账号的全部提交记录，账号一多就很大。查看时只列出前面若干个账号、
+// 每个账号各项数据的开头几条，项数写的是缓存了多少个账号；复制的仍是完整数据。
+function previewOf(key, content) {
+  if (key !== ANALYTICS_KEY) return null;
+  const store = readStore(content);
+  return {
+    content: previewStore(store, TRUNCATE_MARKER),
+    count: Object.keys(store.users).length,
+  };
+}
 // 查看原版使用的内存优先快照，复制动作仍导出完整数据。
 function view(group) {
   refresh();
@@ -149,7 +163,7 @@ function view(group) {
       const value = appStorage.getJSON(key, null);
       return group.id === 'clist' ? sortProblemKeys(value) : value;
     },
-    { keyLabel },
+    { keyLabel, preview: previewOf },
   );
 }
 let stopStorage, stopWrites, refreshTimer;

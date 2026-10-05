@@ -7,6 +7,7 @@ import {
   cleanProblemTitle,
   normalizeProblemName,
   extractProblemKey,
+  problemLink,
 } from '../../src/utils/problem.js';
 
 test('题号按数字大小而非字符顺序比较', () => {
@@ -49,4 +50,12 @@ test('从三种题目链接提取题目编号', () => {
   assert.equal(extractProblemKey('/gym/100001/problem/B'), '100001B');
   assert.equal(extractProblemKey('/blog/entry/1'), null);
   assert.equal(extractProblemKey(''), null);
+});
+
+test('由题号拼出题目页地址，题号不成形时返回空', () => {
+  assert.equal(problemLink('1831C1'), 'https://codeforces.com/contest/1831/problem/C1');
+  assert.equal(problemLink('4A'), 'https://codeforces.com/contest/4/problem/A');
+  assert.equal(problemLink('ABC'), null);
+  assert.equal(problemLink(''), null);
+  assert.equal(problemLink(null), null);
 });

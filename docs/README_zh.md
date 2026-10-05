@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="CHANGELOG_zh.md">
-    <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-1.7.0-d77c9d?style=flat&amp;logo=github&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="版本 1.7.0">
+    <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-1.8.0-d77c9d?style=flat&amp;logo=github&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="版本 1.8.0">
   </a>
   <a href="https://github.com/GodExious/Colorforces/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF%E8%AF%81-MIT-c5ab77?style=flat&amp;logo=opensourceinitiative&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="MIT 许可证">
@@ -26,6 +26,7 @@ Colorforces 是一个 Codeforces 页面增强油猴脚本，让题目难度、�
 ## ✨ 功能特性
 
 - 题目难度分着色：支持 CF 官方与 CList 数据，色块、标签两种样式
+- 用户数据分析：在个人主页展示统计摘要、难度热力图、评级与排名曲线对比等十余种图表
 - 比赛评分预测与单用户评级分析
 - 选手参赛类型标签、用户头像、语言图标、判题缩写与自定义时间格式
 - 快捷键、存储管理与中英双语菜单
@@ -71,6 +72,11 @@ Colorforces 是一个 Codeforces 页面增强油猴脚本，让题目难度、�
   <img src="../imgs/blogs.png" alt="Blogs">
   <br>
   <em>博客内容页面的用户头像展示</em>
+</p>
+<p align="center">
+  <img src="../imgs/user-analyze-zh.png" alt="User Data Analytics">
+  <br>
+  <em>个人主页的用户数据分析：统计摘要、难度热力图、评级与排名曲线对比等十余种图表</em>
 </p>
 
 ## 🚀 安装说明
@@ -122,11 +128,14 @@ npm test
 
 | 项目 | 说明 | 链接 |
 | :--- | :--- | :--- |
+| Codeforces | 提供优质的比赛环境与训练体验，并开放官方 API。 | <a href="https://codeforces.com/"><img src="https://img.shields.io/badge/%E5%AE%98%E7%BD%91-c5ab77?style=flat&amp;logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjkiLz48cGF0aCBkPSJNMyAxMmgxOE0xMiAzYzMgMy4yIDMgMTQuOCAwIDE4TTEyIDNjLTMgMy4yLTMgMTQuOCAwIDE4Ii8%2BPC9zdmc%2B" height="20" alt="官网"></a> |
 | Codeforces-Helper | 本项目最初的灵感来源。 | <a href="https://chromewebstore.google.com/detail/codeforces-helper/ahoeafmlmoohkkalcickdnkifpfnolpj"><img src="https://img.shields.io/badge/Chrome-709dc6?style=flat&amp;logo=chromewebstore&amp;logoColor=white" height="20" alt="Chrome 网上应用店"></a> |
 | CList | 提供额外的题目难度数据。 | <a href="https://clist.by/"><img src="https://img.shields.io/badge/%E5%AE%98%E7%BD%91-c5ab77?style=flat&amp;logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjkiLz48cGF0aCBkPSJNMyAxMmgxOE0xMiAzYzMgMy4yIDMgMTQuOCAwIDE4TTEyIDNjLTMgMy4yLTMgMTQuOCAwIDE4Ii8%2BPC9zdmc%2B" height="20" alt="官网"></a> |
-| OJ Better | 提供页面增强功能的启发。 | <a href="https://github.com/beijixiaohu/OJBetter"><img src="https://img.shields.io/badge/GitHub-343b49?style=flat&amp;logo=github&amp;logoColor=white" height="20" alt="GitHub"></a> |
+| OJ Better | 带来集成 CList 难度分的启发。 | <a href="https://github.com/beijixiaohu/OJBetter"><img src="https://img.shields.io/badge/GitHub-343b49?style=flat&amp;logo=github&amp;logoColor=white" height="20" alt="GitHub"></a> |
 | Carrot-Plus | 为内置的比赛评分预测功能提供算法参考。 | <a href="https://github.com/wuyuqian114514/carrot-plus"><img src="https://img.shields.io/badge/GitHub-343b49?style=flat&amp;logo=github&amp;logoColor=white" height="20" alt="GitHub"></a> |
-| CF Analytics Pro Max | 本插件计划在后续版本提供类似的内置数据分析功能。 | <a href="https://chromewebstore.google.com/detail/codeforces-analytics-pro/gfoledimnmjchddncmedpcieiccnagcj"><img src="https://img.shields.io/badge/Chrome-709dc6?style=flat&amp;logo=chromewebstore&amp;logoColor=white" height="20" alt="Chrome 网上应用店"></a> <a href="https://greasyfork.org/zh-CN/scripts/465176-cf%E8%A7%A3%E9%A2%98%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96-pro-max"><img src="https://img.shields.io/badge/Greasy_Fork-78ac98?style=flat&amp;logo=greasyfork&amp;logoColor=white" height="20" alt="Greasy Fork"></a> |
+| atcoder-standings-difficulty-analyzer | 为比赛的深入分析提供算法参考。 | <a href="https://github.com/iilj/atcoder-standings-difficulty-analyzer"><img src="https://img.shields.io/badge/GitHub-343b49?style=flat&amp;logo=github&amp;logoColor=white" height="20" alt="GitHub"></a> |
+| CF Analytics Pro Max | 为内置的用户数据图表分析功能提供统计维度与图表设计的参考。 | <a href="https://chromewebstore.google.com/detail/codeforces-analytics-pro/gfoledimnmjchddncmedpcieiccnagcj"><img src="https://img.shields.io/badge/Chrome-709dc6?style=flat&amp;logo=chromewebstore&amp;logoColor=white" height="20" alt="Chrome 网上应用店"></a> <a href="https://greasyfork.org/zh-CN/scripts/465176-cf%E8%A7%A3%E9%A2%98%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96-pro-max"><img src="https://img.shields.io/badge/Greasy_Fork-78ac98?style=flat&amp;logo=greasyfork&amp;logoColor=white" height="20" alt="Greasy Fork"></a> |
+| Codeforces Rating-Based Heatmap | 为内置的用户数据分析提供难度热力图的启发。 | <a href="https://chromewebstore.google.com/detail/codeforces-rating-based-h/heajdhmohlobjebkgkpdomkaihaghkgb"><img src="https://img.shields.io/badge/Chrome-709dc6?style=flat&amp;logo=chromewebstore&amp;logoColor=white" height="20" alt="Chrome 网上应用店"></a> |
 
 ## 📄 License
 

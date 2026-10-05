@@ -1,10 +1,11 @@
 import { appSettings } from '../../../settings.js';
 import { customFormatTime } from '../../../utils/time.js';
 import { displayTime } from './motion.js';
+import { inPluginUi } from '../../page/plugin-ui.js';
 
 // 识别页面中的时间文本，并按用户格式转换。
 export function formatTimeStr(text) {
-  if (!appSettings.timeFormat.enabled) return null;
+  if (!appSettings.appearance.timeFormat.enabled) return null;
 
   // Clean text for parsing
   const cleanText = text
@@ -55,9 +56,21 @@ export function formatTimeStr(text) {
   }
 
   if (!isNaN(d.getTime())) {
-    return customFormatTime(d, appSettings.timeFormat.format);
+    return customFormatTime(d, appSettings.appearance.timeFormat.format);
   }
   return null;
+}
+
+// 原站写时间的两种写法：英文界面的 May/24/2021 06:44，俄文界面的 24.05.2021 06:44，秒可有可无。
+const SITE_TIME =
+  /[A-Za-z]{3}\/\d{1,2}\/\d{4}\s+\d{1,2}:\d{2}(?::\d{2})?|\d{2}\.\d{2}\.\d{4}\s+\d{1,2}:\d{2}(?::\d{2})?/g;
+
+// 把一段文字里原站写法的时间换成用户设置的格式，其余内容（比如后面的时区）不动。
+// 没有时间、或没开启时间格式化时原样返回。
+// 供悬停提示使用：「最后访问」「注册于」这类字段，原站把完整时间写在 title 里，页面上的时间节点里没有它。
+export function formatTimesInText(text) {
+  if (!text || !appSettings.appearance.timeFormat.enabled) return text;
+  return text.replace(SITE_TIME, (time) => formatTimeStr(time) || time);
 }
 
 // 标记虚拟参赛时间节点，保留原始时间便于恢复。
@@ -99,6 +112,9 @@ export function wrapVirtualParticipationTime() {
     ) {
       continue; // Skip already formatted text
     }
+    // 插件自己的界面不处理。悬停提示会显示原站的时间（原站写在 title 里的完整日期），
+    // 如果把它的文字拆开包一层，提示组件之后只更新自己的文字，这一层会留在所有提示里。
+    if (inPluginUi(walker.currentNode.parentElement)) continue;
     if (dateRegex.test(walker.currentNode.nodeValue)) {
       nodes.push(walker.currentNode);
     }
@@ -166,6 +182,7 @@ export function applyTimeFormatting() {
     '.format-time, .format-date, .cf-formatted-time, .cf-table-time-cell',
   );
   timeSpans.forEach((span) => {
+    if (inPluginUi(span)) return;
     // 表格单元格可能包含真正的时间节点，不重复包装整格及其链接。
     if (span.querySelector('.format-time, .format-date, .cf-formatted-time')) return;
     const zone = span.querySelector('sup.tz-superscript');
@@ -197,7 +214,7 @@ export function applyTimeFormatting() {
     }
     if (origHTML.length < 8) return;
 
-    if (appSettings.timeFormat.enabled) {
+    if (appSettings.appearance.timeFormat.enabled) {
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = origHTML;
       tempDiv.querySelectorAll('br').forEach((br) => br.replaceWith(' '));

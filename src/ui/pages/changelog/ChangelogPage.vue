@@ -23,7 +23,9 @@ const released = new Map(
 );
 const languageFiles = import.meta.glob('./locales/*.js', { eager: true, import: 'default' });
 const messages = computed(
-  () => languageFiles['./locales/' + appSettings.lang + '.js'] || languageFiles['./locales/en.js'],
+  () =>
+    languageFiles['./locales/' + appSettings.general.lang + '.js'] ||
+    languageFiles['./locales/en.js'],
 );
 const props = defineProps({ active: Boolean });
 const expanded = ref(new Set([entries[0]?.version]));

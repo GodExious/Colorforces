@@ -13,35 +13,42 @@ export function startShortcuts() {
   startModifierTracking();
   const actions = {
     hideTags: () => {
-      appSettings.hideTags = !appSettings.hideTags;
+      const tags = appSettings.appearance.tags;
+      tags.hide = !tags.hide;
     },
     menuLanguage: () => cycleMenuLanguage?.(),
     acHighlight: () => {
-      appSettings.show.acHighlight = !appSettings.show.acHighlight;
+      const highlight = appSettings.appearance.acHighlight;
+      highlight.enabled = !highlight.enabled;
     },
     shortVerdict: () => {
-      appSettings.show.shortVerdict = !appSettings.show.shortVerdict;
+      appSettings.appearance.shortVerdict = !appSettings.appearance.shortVerdict;
     },
     timeFormat: () => {
-      appSettings.timeFormat.enabled = !appSettings.timeFormat.enabled;
+      const timeFormat = appSettings.appearance.timeFormat;
+      timeFormat.enabled = !timeFormat.enabled;
     },
     langIcon: () => {
-      appSettings.show.langIcon = !appSettings.show.langIcon;
+      const langIcon = appSettings.appearance.langIcon;
+      langIcon.enabled = !langIcon.enabled;
     },
     clistEnabled: () => {
-      appSettings.clist.enabled = !appSettings.clist.enabled;
+      const clist = appSettings.ratings.clist;
+      clist.enabled = !clist.enabled;
     },
     colorRatings: () => {
-      appSettings.colorRatings = !appSettings.colorRatings;
+      appSettings.ratings.enabled = !appSettings.ratings.enabled;
     },
     displayStyle: () => {
-      appSettings.displayStyle = appSettings.displayStyle === 'tag' ? 'block' : 'tag';
+      appSettings.ratings.style = appSettings.ratings.style === 'tag' ? 'block' : 'tag';
     },
     predictionEnabled: () => {
-      appSettings.prediction.enabled = !appSettings.prediction.enabled;
+      const prediction = appSettings.contest.prediction;
+      prediction.enabled = !prediction.enabled;
     },
     userAvatar: () => {
-      appSettings.show.userAvatar = !appSettings.show.userAvatar;
+      const avatar = appSettings.user.avatar;
+      avatar.enabled = !avatar.enabled;
     },
   };
   const keydown = (event) => {

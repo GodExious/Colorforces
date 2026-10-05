@@ -17,7 +17,8 @@ import GuideDialog from '../../../../components/dialogs/GuideDialog/GuideDialog.
 // 生成原版说明内容，不创建或手动挂载 DOM。
 const guideOptions = (options) => options;
 function showVerdictGuideModal(lang) {
-  const l = lang || (typeof appSettings !== 'undefined' && appSettings && appSettings.lang) || 'zh';
+  const l =
+    lang || (typeof appSettings !== 'undefined' && appSettings && appSettings.general.lang) || 'zh';
   return guideOptions({
     className: 'cf-verdict-guide-modal',
     width: '680px',
@@ -115,7 +116,7 @@ function showVerdictGuideModal(lang) {
             `,
   });
 }
-const options = computed(() => showVerdictGuideModal(appSettings.lang));
+const options = computed(() => showVerdictGuideModal(appSettings.general.lang));
 </script>
 <template>
   <GuideDialog :visible="visible" :origin="origin" :options="options" @close="visible = false" />

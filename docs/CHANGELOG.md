@@ -8,6 +8,34 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+### v1.8.0
+`2026-10-06 00:22 UTC+8`
+
+**Added**
+1. Added user data analytics on profile pages: a summary, rating heatmap, monthly and hourly activity, multi-user rating and contest rank curve comparison, rating and tag distributions, tag weak spots, recent average rating, attempts, verdicts, contest pace, participation types, languages and unsolved problems.
+2. Added three items to the roadmap: full internationalization (i18n), improved contest analysis & prediction, and built-in translation.
+
+**Optimized**
+1. Improved the display of non-square avatars in the rating analysis dialog.
+2. The number of contests cached for rating prediction can now be customized, 10 by default.
+3. To help users try new features, many options are now enabled by default, and some default values were adjusted.
+4. Reorganized the storage structure of the plugin configuration by menu tab; existing settings will be migrated automatically.
+5. Updated the acknowledged projects and redesigned the Acknowledgments page around the petal theme.
+6. Improved the styling of some submenu components (sub-options, sliders and roadmap cards).
+7. Times shown in tooltips of the original page now follow the custom time format.
+8. Added a TypeScript language icon, and languages without a preset icon now show a common unknown-language icon.
+9. Rating prediction now shows staged progress while loading: standings, ratings, submissions and calculation.
+10. Previews of large data in the storage viewer are trimmed further, making it smoother to switch between items.
+11. Added a notice explaining that dark themes from other extensions are no longer adapted for.
+
+**Fixed**
+1. Fixed incomplete solved-problem records for accounts with more than 10,000 submissions.
+2. Fixed setting changes being overwritten by other pages when several pages are open at once.
+3. Fixed leftover time text appearing in other tooltips after hovering a time on the page.
+4. Fixed the deprecated cache listing other scripts' data, and data left in the site's local storage by early versions not being clearable.
+
+---
+
 ### v1.7.0
 `2026-10-04 03:59 UTC+8`
 

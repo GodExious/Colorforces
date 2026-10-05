@@ -10,9 +10,9 @@ import { beginTagMotion, finishTagMotion } from './motion.js';
 
 // 按隐藏设置和通过状态控制算法标签、难度标签及占位提示。
 export function applyProblemTagsVisibility({ animate = true } = {}) {
-  const isHide = !!appSettings.hideTags;
-  const hideRating = !!appSettings.hideRatingTag;
-  const notHideAc = !!appSettings.notHideAcTags;
+  const isHide = !!appSettings.appearance.tags.hide;
+  const hideRating = !!appSettings.appearance.tags.hideRating;
+  const notHideAc = !!appSettings.appearance.tags.keepSolved;
 
   if (notHideAc) {
     checkAndFetchUserSolved();

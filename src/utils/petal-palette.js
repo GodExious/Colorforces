@@ -71,6 +71,13 @@ export function petalColor(position) {
   return fromOklab(start.map((value, at) => value + (end[at] - value) * share));
 }
 
+// 只保留色相，换成指定的明度与彩度：一组颜色深浅一致，放在一起不会有的偏亮、有的偏灰。
+export function petalTone(hex, lightness, chroma) {
+  const [, a, b] = toOklab(hex);
+  const scale = chroma / (Math.hypot(a, b) || 1);
+  return fromOklab([lightness, a * scale, b * scale]);
+}
+
 // 同一颜色的浅色版本，用作图标的点缀色：与白色按比例相混。
 export function petalTint(hex, share = 0.6) {
   return toHex(channels(hex).map((value) => value * share + (1 - share)));

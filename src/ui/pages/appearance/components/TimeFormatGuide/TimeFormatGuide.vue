@@ -17,7 +17,8 @@ import GuideDialog from '../../../../components/dialogs/GuideDialog/GuideDialog.
 // 生成原版说明内容，不创建或手动挂载 DOM。
 const guideOptions = (options) => options;
 function showTimeFormatGuideModal(lang) {
-  const l = lang || (typeof appSettings !== 'undefined' && appSettings && appSettings.lang) || 'zh';
+  const l =
+    lang || (typeof appSettings !== 'undefined' && appSettings && appSettings.general.lang) || 'zh';
   const badge = (tok) =>
     `<code style="display: inline-block; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--cf-font-size-xs); font-weight: var(--cf-font-weight-bold); color: var(--cf-control-ink); background: var(--cf-control-active); border: 1px solid var(--cf-surface-border); border-radius: var(--cf-radius-xs); padding: 1.5px 6px; line-height: 1.3; box-shadow: 0 1px 1px rgba(2, 132, 199, 0.06); letter-spacing: 0.2px;">${tok}</code>`;
   const slash = `<span style="color: var(--cf-gray-400); font-size: var(--cf-font-size-xs); margin: 0 3px; user-select: none;">/</span>`;
@@ -136,7 +137,7 @@ function showTimeFormatGuideModal(lang) {
             `,
   });
 }
-const options = computed(() => showTimeFormatGuideModal(appSettings.lang));
+const options = computed(() => showTimeFormatGuideModal(appSettings.general.lang));
 </script>
 <template>
   <GuideDialog :visible="visible" :origin="origin" :options="options" @close="visible = false" />

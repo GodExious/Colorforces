@@ -32,11 +32,11 @@ export function applyProblemTagStyle(box, tag, rating) {
   const isTagHidden =
     tag && (tag.getAttribute('data-cf-tag-hidden') === 'true' || tag.style.display === 'none');
   const shouldHideScoreTag =
-    !!appSettings.hideTags &&
-    !!appSettings.hideRatingTag &&
-    !(appSettings.notHideAcTags && isCurrentPageProblemAccepted());
+    !!appSettings.appearance.tags.hide &&
+    !!appSettings.appearance.tags.hideRating &&
+    !(appSettings.appearance.tags.keepSolved && isCurrentPageProblemAccepted());
 
-  if (!appSettings.show.problemTags || !appSettings.colorRatings) {
+  if (!appSettings.ratings.show.problemTags || !appSettings.ratings.enabled) {
     if (box && box.hasAttribute('data-original-css')) box.style.cssText = box.dataset.originalCss;
     else if (box) {
       box.style.removeProperty('background-color');
@@ -67,7 +67,7 @@ export function applyProblemTagStyle(box, tag, rating) {
   if (tag.hasAttribute('data-original-css')) tag.style.cssText = tag.dataset.originalCss;
 
   tag.style.setProperty('background-color', 'transparent', 'important');
-  if (appSettings.displayStyle === 'tag') {
+  if (appSettings.ratings.style === 'tag') {
     const tagStyle = getRatingTagStyle(rating);
     if (box) {
       box.style.setProperty('background-color', tagStyle.bg, 'important');
@@ -100,10 +100,10 @@ export function applyProblemTagStyle(box, tag, rating) {
   }
 }
 
-// 结合官方、Clist 和并赛题目查找难度。
-export function getProblemRating(hrefOrKey, probName) {
+// 结合官方、Clist 和并赛题目查找难度。clist 传 false 时不看 Clist，只按官方分和并赛题目查找。
+export function getProblemRating(hrefOrKey, probName, { clist = true } = {}) {
   if (!hrefOrKey) return null;
-  const clistEnabled = !!(appSettings.clist && appSettings.clist.enabled);
+  const clistEnabled = clist && !!(appSettings.ratings.clist && appSettings.ratings.clist.enabled);
   const clistData = clistEnabled ? getClistProblems() : null;
   const safeRatingsMap = latestRatingsMap || {};
 
@@ -281,7 +281,7 @@ export function updateProblemPageRatingTag(ratingsMap) {
   if (!container) return;
   const motion = beginTagMotion(container);
 
-  const clistEnabled = !!(appSettings.clist && appSettings.clist.enabled);
+  const clistEnabled = !!(appSettings.ratings.clist && appSettings.ratings.clist.enabled);
   let problemPageTitle = '';
   const titleEl = document.querySelector('.problem-statement .header .title');
   if (titleEl) {
@@ -550,7 +550,7 @@ export function refreshRatingsOnPage() {
 
 // 按页面表格和链接结构插入评分列及难度标记。
 export function applyRatings(ratingsMap) {
-  const clistEnabled = !!(appSettings.clist && appSettings.clist.enabled);
+  const clistEnabled = !!(appSettings.ratings.clist && appSettings.ratings.clist.enabled);
   const clistData = clistEnabled ? getClistProblems() : null;
   const hasOfficial = ratingsMap && Object.keys(ratingsMap).length > 0;
   if (!hasOfficial && !clistData) return;
@@ -662,14 +662,15 @@ export function applyRatings(ratingsMap) {
 
     let shouldShowRating = false;
     if (isHacks) {
-      shouldShowRating = appSettings.show.hacks;
+      shouldShowRating = appSettings.ratings.show.hacks;
     } else if (isSubmissionsPage) {
-      shouldShowRating = appSettings.show.submissions;
+      shouldShowRating = appSettings.ratings.show.submissions;
     } else {
-      shouldShowRating = appSettings.show.status;
+      shouldShowRating = appSettings.ratings.show.status;
     }
 
-    if (!shouldShowRating && !appSettings.timeFormat.enabled && langColIdx === -1) return;
+    if (!shouldShowRating && !appSettings.appearance.timeFormat.enabled && langColIdx === -1)
+      return;
 
     // Process Header (Rating Column and Time)
     if (!headerRow.hasAttribute('data-cf-rating-processed')) {
@@ -890,8 +891,8 @@ export function applyRatings(ratingsMap) {
   problemsTables.forEach((table) => {
     const isProblemset = window.location.pathname.toLowerCase().includes('/problemset');
     const shouldShowRating = isProblemset
-      ? appSettings.show.problemset
-      : appSettings.show.contestProblems;
+      ? appSettings.ratings.show.problemset
+      : appSettings.ratings.show.contestProblems;
 
     if (isProblemset) table.classList.add('cf-table-problemset');
     else table.classList.add('cf-table-contestProblems');

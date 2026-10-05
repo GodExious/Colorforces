@@ -5,6 +5,7 @@ import {
   fetchContestSubmissions,
 } from '../../../api/codeforces.js';
 import { appStorage } from '../../../storage/gm.js';
+import { appSettings } from '../../../settings.js';
 import {
   PREDICTION_CACHE_KEY,
   PREDICTION_RATINGS_KEY,
@@ -18,6 +19,9 @@ import {
 } from '../../../config/cache-policy.js';
 
 const owner = `prediction-${Math.random().toString(36).slice(2)}`;
+
+// 保留最近几场比赛的数据，由设置决定；正在看的这一场总要留着，所以至少一场。
+const cacheLimit = () => Math.max(1, appSettings.contest.prediction.cacheContests);
 
 // 等待时响应关闭开关或页面离开，不积累悬挂计时器。
 function wait(ms, signal) {
@@ -201,7 +205,7 @@ function saveSnapshot(snapshot) {
   contests[snapshot.id] = snapshot;
   const keep = Object.values(contests)
     .sort((a, b) => b.fetchedAt - a.fetchedAt)
-    .slice(0, 3);
+    .slice(0, cacheLimit());
   appStorage.setJSON(PREDICTION_CACHE_KEY, {
     version: 1,
     contests: Object.fromEntries(keep.map((c) => [c.id, c])),
@@ -209,7 +213,11 @@ function saveSnapshot(snapshot) {
 }
 
 // 以比赛为边界获取一致输入；官方已出分时不下载现在的用户 Rating。
-export async function loadSnapshot(contestId, { signal, force = false, progress = () => {} }) {
+// stage(段名) 在每一段开始请求前调用，progress(条数) 在核对提交记录时每扫完一页调用。
+export async function loadSnapshot(
+  contestId,
+  { signal, force = false, stage = () => {}, progress = () => {} },
+) {
   let previous = readSnapshot(contestId);
   if (!force && previous && Date.now() - previous.fetchedAt < snapshotLifetime(previous))
     return previous;
@@ -218,6 +226,7 @@ export async function loadSnapshot(contestId, { signal, force = false, progress 
     previous = readSnapshot(contestId);
     if (!force && previous && Date.now() - previous.fetchedAt < snapshotLifetime(previous))
       return previous;
+    stage('standings');
     const standing = await request((s) => fetchContestStandings(contestId, s), signal);
     const { contest, rows } = standing;
     if (!contest || !Array.isArray(rows) || Number(contest.id) !== Number(contestId))
@@ -225,6 +234,7 @@ export async function loadSnapshot(contestId, { signal, force = false, progress 
     const standingsAt = Date.now();
     let changes = null;
     if (contest.phase === 'FINISHED') {
+      stage('ratings');
       try {
         const data = await request((s) => fetchContestRatingChanges(contestId, s), signal);
         if (Array.isArray(data) && data.length) changes = data;
@@ -273,6 +283,7 @@ export async function loadSnapshot(contestId, { signal, force = false, progress 
         newParticipant ||
         (!previous?.ratingSourceAt && ratingSource.fetchedAt < start - 3600000)
       ) {
+        stage('ratings');
         const users = await request((s) => fetchRatedUsers(contestId, s), signal);
         if (!Array.isArray(users)) throw new Error('predictionIncompleteData');
         ratingSource = {
@@ -285,14 +296,16 @@ export async function loadSnapshot(contestId, { signal, force = false, progress 
         sources[contestId] = ratingSource;
         const keep = Object.values(sources)
           .sort((a, b) => b.fetchedAt - a.fetchedAt)
-          .slice(0, 3);
+          .slice(0, cacheLimit());
         appStorage.setJSON(PREDICTION_RATINGS_KEY, {
           version: 1,
           contests: Object.fromEntries(keep.map((s) => [s.contestId, s])),
         });
       }
-      if (contest.phase !== 'BEFORE')
+      if (contest.phase !== 'BEFORE') {
+        stage('submissions');
         activity = await submissions(contest, previous?.activity, signal, progress);
+      }
       if (ratingSource?.fetchedAt > start) warnings.push('predictionLateRatings');
     }
     const officialHandles = changes ? new Set(changes.map((c) => c.handle.toLowerCase())) : null;

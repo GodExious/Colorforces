@@ -27,6 +27,7 @@ import RatingsPage from './pages/ratings/RatingsPage.vue';
 import PredictionPage from './pages/prediction/PredictionPage.vue';
 import UserPage from './pages/user/UserPage.vue';
 import PredictionAnalysisDialog from './pages/prediction/components/PredictionAnalysisDialog/PredictionAnalysisDialog.vue';
+import UserAnalyticsPanel from './pages/user/components/UserAnalyticsPanel/UserAnalyticsPanel.vue';
 import ShortcutsPage from './pages/shortcuts/ShortcutsPage.vue';
 import StoragePage from './pages/storage/StoragePage.vue';
 import ChangelogPage from './pages/changelog/ChangelogPage.vue';
@@ -117,7 +118,7 @@ function finishLanguageChange() {
   releaseLanguagePosition = null;
   const requested = requestedLanguage;
   requestedLanguage = null;
-  if (requested && requested !== appSettings.lang) setSetting('lang', requested);
+  if (requested && requested !== appSettings.general.lang) setSetting('general.lang', requested);
 }
 // 只收放可见文案，图标、控件底色与点击区域始终保持原样。
 function languageTextElements() {
@@ -144,10 +145,10 @@ async function changeLanguage(code) {
     requestedLanguage = code;
     return;
   }
-  if (code === appSettings.lang) return;
+  if (code === appSettings.general.lang) return;
   cleanup?.();
   if (!visible.value || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    setSetting('lang', code);
+    setSetting('general.lang', code);
     return;
   }
   const elements = languageLayoutElements();
@@ -169,7 +170,7 @@ async function changeLanguage(code) {
   if (revision !== languageRevision) return;
   const target = requestedLanguage;
   requestedLanguage = null;
-  setSetting('lang', target);
+  setSetting('general.lang', target);
   await nextTick();
   if (revision !== languageRevision) return;
   languageAnimations.push(
@@ -222,13 +223,13 @@ async function changeLanguage(code) {
     const queued = requestedLanguage;
     requestedLanguage = null;
     finishLanguageChange();
-    if (queued && queued !== appSettings.lang) changeLanguage(queued);
+    if (queued && queued !== appSettings.general.lang) changeLanguage(queued);
   }
 }
 provide('cf-change-language', changeLanguage);
 // 连续按键以最后请求的语言为起点，复用菜单已有的文案和布局过渡。
 function cycleMenuLanguage() {
-  const current = requestedLanguage ?? appSettings.lang;
+  const current = requestedLanguage ?? appSettings.general.lang;
   const index = languages.findIndex((language) => language.code === current);
   const next = languages[(index + 1) % languages.length];
   if (next) changeLanguage(next.code);
@@ -489,6 +490,7 @@ onBeforeUnmount(() => {
     ></menu-launcher>
   </div>
   <PredictionAnalysisDialog />
+  <UserAnalyticsPanel />
   <FloatingTooltip /><ConfirmDialog /><UpdateDialog /><ClistSyncDialog /><ClistKeyGuide /><ClistSyncGuide /><TimeFormatGuide /><VerdictGuide /><StorageJsonDialog />
 </template>
 <style>
@@ -572,11 +574,6 @@ onBeforeUnmount(() => {
   border-color: var(--cf-menu-accent);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--cf-menu-accent) 15%, transparent);
   outline: none;
-}
-
-/* 滑块与开关一致，跟随当前页面的主题色。 */
-.cf-menu-theme input[type='range'] {
-  accent-color: var(--cf-menu-accent);
 }
 
 .cf-version-tag {
@@ -867,6 +864,20 @@ onBeforeUnmount(() => {
   font-size: var(--cf-font-size-base);
   color: var(--cf-gray-500);
   user-select: none;
+}
+
+/* 子选项下面再分出的一组选项：再缩进一级，并在左侧画一条细线，表示它们从属于上面那一项。 */
+.cf-nested-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 2px;
+  padding-left: 12px;
+  border-left: 2px solid color-mix(in srgb, var(--cf-menu-accent) 22%, transparent);
+}
+
+.cf-nested-options .cf-setting-item {
+  min-height: 28px;
 }
 
 .cf-settings-modal a,

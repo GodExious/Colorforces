@@ -1,13 +1,10 @@
 /* 预测列沿用原生榜单条纹与网格，标签仅控制自己的右侧预留空间。 */
 .cf-prediction-bar {
-  display: flex;
-  align-items: center;
   box-sizing: border-box;
   min-width: 0;
   max-width: 100%;
   overflow-x: clip;
   contain: paint;
-  gap: 8px;
   padding: 4px 6px;
   margin: 0;
   border-bottom: 1px solid #e1e1e1;
@@ -16,7 +13,80 @@
   font:
     11px/1.5 Arial,
     sans-serif;
+}
+/* 状态栏的第一行：进度、状态文字、快照时间和刷新按钮排成一行，放不下时文字省略，不换行。 */
+.cf-prediction-row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
   flex-wrap: nowrap;
+}
+/* 状态栏里第二行的临时提醒，在下框线的上面；和个人主页数据分析面板里的那一条是同样的暖色样子。
+   字号跟状态栏走，上下留得紧一些。 */
+.cf-prediction-notice {
+  box-sizing: border-box;
+  margin: 5px 0 2px;
+  padding: 4px 10px;
+  border: 1px solid #ecdcae;
+  border-left: 3px solid #d9a93f;
+  border-radius: var(--cf-radius-md);
+  background: #fffaf0;
+  color: #77572e;
+  text-align: left;
+}
+/* 加载时状态文字前面的分段进度：榜单、评级数据、提交记录、计算，各一小段。
+   平时收起不占位置（连同它后面的间隔一起收掉），加载时展开。 */
+.cf-prediction-steps {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 3px;
+  width: 0;
+  margin-right: -8px;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    width 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin-right 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease;
+}
+.cf-prediction-bar.is-stepping .cf-prediction-steps {
+  width: 73px;
+  margin-right: 0;
+  opacity: 1;
+}
+.cf-prediction-steps i {
+  flex: 0 0 16px;
+  height: 4px;
+  border-radius: 2px;
+  background: #e2e6eb;
+  transition: background-color 240ms ease;
+}
+.cf-prediction-steps i.is-done {
+  background: #7fa3d6;
+}
+/* 进行中的一段用流动的光带表示「正在进行」。 */
+.cf-prediction-steps i.is-active {
+  background: linear-gradient(90deg, #7fa3d6 0%, #dbe6f5 50%, #7fa3d6 100%);
+  background-size: 200% 100%;
+  animation: cf-prediction-flow 1.2s linear infinite;
+}
+@keyframes cf-prediction-flow {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-prediction-steps,
+  .cf-prediction-steps i {
+    transition: none;
+  }
+  .cf-prediction-steps i.is-active {
+    animation: none;
+  }
 }
 .cf-prediction-status,
 .cf-prediction-note {

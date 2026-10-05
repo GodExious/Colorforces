@@ -1,4 +1,4 @@
-import { languageC, languageD, languageIo } from '../../assets/index.js';
+import { languageC, languageD, languageIo, languageUnknown } from '../../assets/index.js';
 import { getDeviconUrl } from '../../assets/remote.js';
 
 // 将 Codeforces 编程语言名称映射到图标标识。
@@ -12,6 +12,7 @@ export function getLanguageIconName(langStr) {
   if (/\bgo\b/.test(langStr)) return 'go';
   if (langStr.includes('kotlin')) return 'kotlin';
   if (langStr.includes('ruby')) return 'ruby';
+  if (langStr.includes('typescript')) return 'typescript';
   if (langStr.includes('node.js') || langStr.includes('nodejs')) return 'nodejs';
   if (langStr.includes('javascript') || langStr.includes('v8')) return 'javascript';
   if (langStr.includes('php')) return 'php';
@@ -32,51 +33,46 @@ export function getLanguageIconName(langStr) {
   return null;
 }
 
+// 图库里文件名和别的语言不一样的，以及用插件自带图标的语言。
+const WORDMARK = new Set(['go']);
+const BUNDLED = { c: languageC, d: languageD, io: languageIo };
+
+// 语言名称对应的图标地址。没有预设图标的语言一律用同一个「未知语言」图标，
+// 这样提交记录里每一行、图表里每一种语言都有图标，排起来是齐的。
+export function getLanguageIconSrc(langStr) {
+  const iconName = getLanguageIconName(langStr);
+  if (!iconName) return languageUnknown;
+  if (BUNDLED[iconName]) return BUNDLED[iconName];
+  const variant = WORDMARK.has(iconName) ? 'original-wordmark' : 'original';
+  return getDeviconUrl(iconName, `${iconName}-${variant}.svg`);
+}
+
 // 为提交语言单元格插入图标，保留原始语言文本和提示。
 export function enhanceLanguageCell(langCell) {
   const langText = (langCell.title || langCell.textContent).trim();
-  const iconName = getLanguageIconName(langText);
-  const needsProcessing =
-    !langCell.hasAttribute('data-cf-lang-icon-processed') ||
-    (iconName && !langCell.querySelector('.cf-lang-icon'));
+  const done =
+    langCell.hasAttribute('data-cf-lang-icon-processed') &&
+    (!langText || langCell.querySelector('.cf-lang-icon'));
+  if (done) return;
+  langCell.setAttribute('data-cf-lang-icon-processed', 'true');
+  langCell.title = langText;
 
-  if (needsProcessing) {
-    langCell.setAttribute('data-cf-lang-icon-processed', 'true');
-    langCell.title = langText;
-
-    const textSpan = langCell.querySelector('.cf-lang-text') || document.createElement('span');
-    textSpan.className = 'cf-lang-text';
-    textSpan.textContent = langText;
-
-    if (iconName) {
-      let img = langCell.querySelector('.cf-lang-icon');
-      if (!img) {
-        img = document.createElement('img');
-        let svgName = `${iconName}-original.svg`;
-        let customSrc = null;
-        if (iconName === 'go') svgName = 'go-original-wordmark.svg';
-        if (iconName === 'c') {
-          customSrc = languageC;
-        }
-        if (iconName === 'd') {
-          customSrc = languageD;
-        }
-        if (iconName === 'io') {
-          customSrc = languageIo;
-        }
-        img.src = customSrc || getDeviconUrl(iconName, svgName);
-        img.className = 'cf-lang-icon';
-      }
-      const content = document.createElement('span');
-      content.className = 'cf-lang-content';
-      const slot = document.createElement('span');
-      slot.className = 'cf-lang-icon-slot';
-      slot.appendChild(img);
-      content.append(slot, textSpan);
-      langCell.replaceChildren(content);
-    } else {
-      langCell.innerHTML = '';
-      langCell.appendChild(textSpan);
-    }
+  const textSpan = langCell.querySelector('.cf-lang-text') || document.createElement('span');
+  textSpan.className = 'cf-lang-text';
+  textSpan.textContent = langText;
+  // 单元格里没有语言名称时不放图标。
+  if (!langText) {
+    langCell.replaceChildren(textSpan);
+    return;
   }
+  const img = langCell.querySelector('.cf-lang-icon') || document.createElement('img');
+  img.src = getLanguageIconSrc(langText);
+  img.className = 'cf-lang-icon';
+  const content = document.createElement('span');
+  content.className = 'cf-lang-content';
+  const slot = document.createElement('span');
+  slot.className = 'cf-lang-icon-slot';
+  slot.appendChild(img);
+  content.append(slot, textSpan);
+  langCell.replaceChildren(content);
 }

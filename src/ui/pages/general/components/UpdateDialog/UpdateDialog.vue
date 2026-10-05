@@ -28,7 +28,7 @@ watch(
 // 重新开启自动检查时清除旧冷却时间。
 function autoCheckChanged() {
   saveSettings();
-  if (!appSettings.disableAutoCheckUpdate) resetUpdateCooldown();
+  if (!appSettings.general.disableUpdateCheck) resetUpdateCooldown();
 }
 // 普通点击后关闭提示；新标签跳转交给链接，保留中键和修饰键行为。
 function installUpdate(event) {
@@ -50,7 +50,7 @@ function installUpdate(event) {
             <input
               type="checkbox"
               id="cf-update-stop-cb"
-              v-model="appSettings.disableAutoCheckUpdate"
+              v-model="appSettings.general.disableUpdateCheck"
               v-on:change="autoCheckChanged"
             />
             <span v-text="t('updateModalStopCheck')"></span>

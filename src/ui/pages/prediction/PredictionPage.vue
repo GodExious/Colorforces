@@ -4,6 +4,7 @@ import { appSettings, saveSettings } from '../../../settings.js';
 import { translate as t } from '../../../i18n/index.js';
 import { menuPredictionIcon } from '../../../assets/index.js';
 import ToggleSwitch from '../../components/forms/ToggleSwitch/ToggleSwitch.vue';
+import NumberInput from '../../components/forms/NumberInput/NumberInput.vue';
 import ActionButton from '../../components/forms/ActionButton/ActionButton.vue';
 import ExpandTransition from '../../components/transitions/ExpandTransition/ExpandTransition.vue';
 import InfoHint from '../../components/tooltips/InfoHint/InfoHint.vue';
@@ -64,12 +65,12 @@ const groups = [
           <ToggleSwitch
             as="label"
             :input-id="`cf-participation-control-${group.key}`"
-            v-model="appSettings[group.key].enabled"
+            v-model="appSettings.contest[group.key].enabled"
             :data-control="group.key"
             @change="saveSettings()"
           />
         </div>
-        <ExpandTransition :show="appSettings[group.key].enabled">
+        <ExpandTransition :show="appSettings.contest[group.key].enabled">
           <div class="cf-prediction-subsettings">
             <label v-for="[key, label] in group.options" :key="key" class="cf-setting-item">
               <span class="cf-setting-sublabel"
@@ -81,10 +82,26 @@ const groups = [
               /></span>
               <ToggleSwitch
                 as="div"
-                v-model="appSettings[group.key][key]"
+                v-model="appSettings.contest[group.key][key]"
                 @change="saveSettings()"
               />
             </label>
+            <!-- 整行不做成 label：否则行里的说明图标会被当成它对应的控件，鼠标停在空白处也显示成悬停。 -->
+            <div v-if="group.key === 'prediction'" class="cf-setting-item cf-prediction-number-row">
+              <span class="cf-setting-sublabel"
+                ><label for="cf-prediction-control-cache-contests">{{
+                  t('predictionCacheContests')
+                }}</label
+                ><InfoHint :text="t('predictionCacheContestsHint')"
+              /></span>
+              <NumberInput
+                v-model="appSettings.contest.prediction.cacheContests"
+                :min="1"
+                input-id="cf-prediction-control-cache-contests"
+                data-control="predictionCacheContests"
+                @change="saveSettings()"
+              />
+            </div>
           </div>
         </ExpandTransition>
       </div>
@@ -175,6 +192,13 @@ const groups = [
 }
 .cf-prediction-subsettings .cf-setting-item {
   min-height: 28px;
+}
+/* 数字输入这一行没有开关，行内空白处不可点，只有文字可点（点了聚焦输入框）。 */
+.cf-prediction-number-row {
+  cursor: default;
+}
+.cf-prediction-number-row label {
+  cursor: pointer;
 }
 .cf-setting-label {
   display: inline-flex;

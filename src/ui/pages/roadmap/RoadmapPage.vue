@@ -7,7 +7,9 @@ import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
 import items from './data.js';
 const languageFiles = import.meta.glob('./locales/*.js', { eager: true, import: 'default' });
 const messages = computed(
-  () => languageFiles['./locales/' + appSettings.lang + '.js'] || languageFiles['./locales/en.js'],
+  () =>
+    languageFiles['./locales/' + appSettings.general.lang + '.js'] ||
+    languageFiles['./locales/en.js'],
 );
 </script>
 <template>
@@ -127,8 +129,10 @@ const messages = computed(
 }
 
 .cf-roadmap-container {
-  --cf-roadmap-planned: color-mix(in srgb, var(--cf-menu-accent) 24%, #6681a7);
-  --cf-roadmap-planned-ink: color-mix(in srgb, var(--cf-roadmap-planned) 65%, #263747);
+  /* 计划中用一档明亮的蓝，带一点本页主色，和已实现的绿是同样的鲜艳程度。 */
+  --cf-roadmap-planned: color-mix(in srgb, var(--cf-menu-accent) 16%, #3b82f6);
+  --cf-roadmap-planned-ink: color-mix(in srgb, var(--cf-roadmap-planned) 70%, #1e3a8a);
+  --cf-roadmap-done: #10b981;
   --cf-proposal-accent: #aa7c30;
   --cf-proposal-ink: #77572e;
   display: flex;
@@ -203,7 +207,7 @@ const messages = computed(
   box-shadow: 0 2px 8px color-mix(in srgb, var(--cf-roadmap-planned) 10%, transparent);
 }
 
-/* 计划用蓝灰、完成用青绿；提议入口用暖金，与页面底色拉开层次。 */
+/* 计划用亮蓝、完成用青绿；提议入口用暖金，与页面底色拉开层次。 */
 .cf-roadmap-card.planned {
   background: linear-gradient(
     115deg,
@@ -221,14 +225,22 @@ const messages = computed(
     0 2px 8px color-mix(in srgb, var(--cf-roadmap-planned) 12%, transparent);
 }
 
+/* 已实现的卡片与绿勾、绿标签同色系，做法和计划中的卡片一致，只是略淡一些。 */
 .cf-roadmap-card.completed {
-  background: color-mix(in srgb, var(--cf-menu-accent) 7%, var(--cf-content-surface));
-  border-color: var(--cf-surface-border);
+  background: linear-gradient(
+    115deg,
+    color-mix(in srgb, var(--cf-roadmap-done) 11%, var(--cf-content-surface)),
+    color-mix(in srgb, var(--cf-roadmap-done) 4%, var(--cf-content-surface))
+  );
+  border-color: color-mix(in srgb, var(--cf-roadmap-done) 24%, var(--cf-surface-border));
+  box-shadow: inset 2px 0 color-mix(in srgb, var(--cf-roadmap-done) 60%, transparent);
 }
 
 .cf-roadmap-card.completed:hover {
-  background: color-mix(in srgb, var(--cf-menu-accent) 11%, var(--cf-content-surface));
-  border-color: color-mix(in srgb, var(--cf-menu-accent) 42%, #dde5ee);
+  border-color: color-mix(in srgb, var(--cf-roadmap-done) 52%, var(--cf-surface-border));
+  box-shadow:
+    inset 2px 0 var(--cf-roadmap-done),
+    0 2px 8px color-mix(in srgb, var(--cf-roadmap-done) 12%, transparent);
 }
 
 .cf-roadmap-card-header {
@@ -256,7 +268,7 @@ const messages = computed(
 }
 
 .cf-roadmap-status-icon.completed {
-  background: #10b981;
+  background: var(--cf-roadmap-done);
   color: #ffffff;
 }
 

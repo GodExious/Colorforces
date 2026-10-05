@@ -10,3 +10,6 @@ export const PREDICTION_REFRESH = 30 * 1000;
 export const PREDICTION_PENDING_REFRESH = 60 * 1000;
 export const PREDICTION_FINAL_CACHE = 24 * 60 * 60 * 1000;
 export const PREDICTION_API_GAP = 2200;
+
+// 用户提交记录的缓存有效期；已通过题目与数据分析共用这一份。
+export const USER_STATUS_CACHE = 15 * 60 * 1000;

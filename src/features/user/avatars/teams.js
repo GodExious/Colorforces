@@ -24,8 +24,8 @@ export function formatStandingsCells() {
       !isTeamCell(cell) && getProfileLinks(cell).length === 1,
     );
   });
-  if (!appSettings.show.userAvatar) return;
-  const formatTeams = appSettings.show.formatTeams !== false;
+  if (!appSettings.user.avatar.enabled) return;
+  const formatTeams = appSettings.user.formatTeams !== false;
   const cells = document.querySelectorAll(`
         table.standings .contestant-cell:not(.cf-avatar-processed-cell),
         .status-party-cell:not(.cf-avatar-processed-cell)
@@ -87,7 +87,7 @@ export function formatStandingsCells() {
 
         cell.innerHTML = '';
 
-        const size = appSettings.avatarSize || 1.6;
+        const size = appSettings.user.avatar.size || 1.6;
         ghostImg.style.cssText = `width: ${size}em; height: ${size}em; vertical-align: middle; margin-right: 4px; display: inline-block; object-fit: cover;`;
 
         const teamHeader = document.createElement('div');
@@ -215,7 +215,7 @@ export function refreshUserAvatarsAndStandings() {
   cells.forEach((cell) => {
     // 普通用户保留头像和姓名节点，开关只改变头像槽宽度，不重建单元格。
     if (!isTeamCell(cell)) return;
-    const formatted = appSettings.show.userAvatar && appSettings.show.formatTeams !== false;
+    const formatted = appSettings.user.avatar.enabled && appSettings.user.formatTeams !== false;
     if (
       cell.classList.contains('cf-team-formatted') === formatted &&
       cell.classList.contains('cf-avatar-processed-cell')

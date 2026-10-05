@@ -65,4 +65,17 @@ export const appStorage = {
     const str = typeof obj === 'string' ? obj : JSON.stringify(obj);
     this.setItem(key, str);
   },
+  // 别的标签页改了某个键时通知这里；本页自己的写入不通知。脚本管理器没有这个接口时返回 false。
+  onRemoteChange(key, listener) {
+    if (typeof GM_addValueChangeListener !== 'function') return false;
+    try {
+      GM_addValueChangeListener(key, (_name, _previous, _current, remote) => {
+        if (remote) listener();
+      });
+      return true;
+    } catch (e) {
+      console.error('Colorforces: GM_addValueChangeListener failed', e);
+      return false;
+    }
+  },
 };
