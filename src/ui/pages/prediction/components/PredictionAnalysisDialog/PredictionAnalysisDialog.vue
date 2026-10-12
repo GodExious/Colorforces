@@ -19,7 +19,13 @@ import {
   RATING_RANKS,
   rankForRating,
 } from '../../../../../features/contest/rating-prediction/algorithm/ranks.js';
+import {
+  getRatingBgColor,
+  getRatingBorderColor,
+  getRatingTagStyle,
+} from '../../../../../features/ratings/rules.js';
 import DialogTransition from '../../../../components/transitions/DialogTransition/DialogTransition.vue';
+import ExpandTransition from '../../../../components/transitions/ExpandTransition/ExpandTransition.vue';
 import analyzeIcon from '../../../../../assets/icons/prediction/analyze.svg?raw';
 import {
   predictionNumberColor,
@@ -87,10 +93,6 @@ function sliderMotion() {
 // 评级滑块的位置就是评级本身；名次滑块的位置是对数换算后的刻度，在刻度上补间，滑动才是匀速的。
 const { shown: ratingShown, move: moveRating } = sliderMotion();
 const { shown: rankShown, move: moveRank } = sliderMotion();
-const languagePulse = ref(false);
-let languagePulseTimer = null;
-let languagePulseFrame = 0;
-let languageHeight = null;
 let previousFocus = null;
 // 最近一次提交计算的目标，回车与失焦先后触发时不重复计算。
 let committed = '';
@@ -100,10 +102,46 @@ const participant = computed(() =>
 );
 // 榜单快照的抓取时间与时区，时区在小签里排成上标小字。
 const snapshotTaken = computed(() => snapshotTime(state.snapshot?.fetchedAt));
-// 模型里的赛前评级。
-const before = computed(() => participant.value?.rating ?? null);
+// 这个人的新号修正（参赛不满六场的账号才有，查到之后才出现，见 algorithm/newcomer.js）。
+// 有它的时候，面板里的评级一律是显示评级，赛前评级和当前结果都取修正后的。
+const newcomer = computed(() =>
+  state.newcomer && state.newcomer.handle === handle.value ? state.newcomer : null,
+);
+// 标签收起的过渡期间还要显示原来的文字，所以另记一份最后一次的内容。
+const newcomerShown = ref(null);
+watch(
+  newcomer,
+  (next) => {
+    if (next) newcomerShown.value = next;
+  },
+  { immediate: true },
+);
+// 这个人是计分队伍的成员时（见 features/contest/rating-prediction/index.js 的 teamMember）：
+// 名次和涨跌是全队共用的，评级显示他自己的。
+const member = computed(() =>
+  state.member && state.member.handle === handle.value ? state.member : null,
+);
+// 标签收起的过渡期间还要显示原来的文字，另记一份最后一次的内容。
+const memberShown = ref(null);
+watch(
+  member,
+  (next) => {
+    if (next) memberShown.value = next;
+  },
+  { immediate: true },
+);
+// 赛前评级。
+const before = computed(() =>
+  member.value
+    ? member.value.before
+    : newcomer.value
+      ? newcomer.value.before
+      : (participant.value?.rating ?? null),
+);
 // 当前榜单上这位选手的名次与赛后评级，是滑杆的起点，也是两根轴上「当前」小旗的位置。
 const current = computed(() => {
+  if (member.value) return member.value.current;
+  if (newcomer.value) return newcomer.value.current;
   const result = state.results?.[handle.value];
   if (
     !result ||
@@ -138,30 +176,119 @@ const sliderToRank = (value) =>
     1,
     bounds.value?.rankMax ?? 1,
   );
-// 色带用评级档位的经典颜色，调淡后不抢数字的风头。
+// 色带和滑块的颜色。平常用评级档位的经典颜色（色带调淡，不抢数字的风头）。
+// 「沿用难度分样式」开着时，和榜单上的预测各列、弹窗里的数字一样跟难度分的样式走：
+// 标签样式——色带用标签的描边色（标签的底色太浅，铺在八像素高的色带上看不出来），滑块用标签的文字色；
+// 色块样式——色带用色块的底色，滑块用色块的边线色。
+// 难度分的配色里每一档颜色都不同，所以这时 2300、2600、3000 这几条经典配色里看不出来的分界也分得开。
 const soft = (color) => `color-mix(in srgb, ${color} 58%, #fff)`;
-const tierColor = (rating) => rankForRating(rating).color;
-// 落在可达范围内部的档位分界。
+const following = computed(
+  () => appSettings.contest.prediction.followRatingStyle && appSettings.ratings.enabled,
+);
+const tagged = computed(() => appSettings.ratings.style === 'tag');
+// 现在用的是哪一套配色。它一变，色带整条换成新的：新的一条盖在旧的上面淡入（渐变色本身没法过渡）。
+const palette = computed(() => (!following.value ? 'classic' : tagged.value ? 'tag' : 'block'));
+const tierColor = (rating) =>
+  !following.value
+    ? soft(rankForRating(rating).color)
+    : tagged.value
+      ? getRatingTagStyle(rating).border
+      : getRatingBgColor(rating);
+const ringColor = (rating) =>
+  !following.value
+    ? rankForRating(rating).color
+    : tagged.value
+      ? getRatingTagStyle(rating).text
+      : getRatingBorderColor(rating);
+// 可达范围里的档位分界。最高可达分正好等于分界时也算：拿到第 1 名就进了这一档，轴上要有它的颜色。
+//（下限正好等于分界时不用算：整个范围从头就在这一档里。）
 const tierCuts = computed(() => {
   const range = bounds.value;
   if (!range) return [];
   return RATING_RANKS.map((rank) => rank.low).filter(
-    (low) => low > range.ratingMin && low < range.ratingMax,
+    (low) => low > range.ratingMin && low <= range.ratingMax,
   );
 });
 // 把分界位置和各段颜色拼成硬切换的渐变。
 function bandStyle(marks, colors) {
   return `linear-gradient(90deg, ${colors
-    .map((color, index) => `${soft(color)} ${marks[index]}% ${marks[index + 1]}%`)
+    .map((color, index) => `${color} ${marks[index]}% ${marks[index + 1]}%`)
     .join(', ')})`;
 }
+// 两端的档位至少画这么宽（占整根轴的百分之几，约六个像素）。评级轴和名次轴的色带都用。
+// 位置是按分数算的：最高可达分只比分界高一两分时，最后一档只有一两个像素宽，正好等于分界时宽度是零，
+// 都看不出「再往上是另一档」。所以把最靠两端的分界往里挪到至少留出这么宽；
+// 只挪色带的分界，滑块、刻度和数值的换算都不变。
+const END_BAND = 1.6;
+function roomyMarks(marks) {
+  if (marks.length < 3) return marks;
+  const spaced = [...marks];
+  const last = spaced.length - 1;
+  // 先让出最低一档，再让出最高一档；中间的分界不越过被挪动的那一个，挤在一起时最高一档优先。
+  spaced[1] = Math.max(spaced[1], END_BAND);
+  for (let at = 2; at < last; at++) spaced[at] = Math.max(spaced[at], spaced[at - 1]);
+  spaced[last - 1] = Math.min(spaced[last - 1], 100 - END_BAND);
+  for (let at = last - 2; at > 0; at--) spaced[at] = Math.min(spaced[at], spaced[at + 1]);
+  return spaced;
+}
+/*
+ * 画面上的一条色带。target 是它应有的样子（{ marks, colors }）；分界位置变了就滑过去，不跳变：
+ * 可达范围换了（比如查到是新号、按实际评级重算）、名次轴从粗估换成取样曲线、新增了精确点，都会让分界挪位置。
+ * 第一次出现、段数变了或用户关闭了动效时直接到位。
+ */
+const bandFrames = new Set();
+function glidingBand(target) {
+  const shown = ref(null);
+  let frame = 0;
+  watch(
+    target,
+    (to) => {
+      cancelAnimationFrame(frame);
+      bandFrames.delete(frame);
+      const from = shown.value;
+      if (
+        !to ||
+        !from ||
+        from.marks.length !== to.marks.length ||
+        from.marks.every((mark, index) => Math.abs(mark - to.marks[index]) < 0.05) ||
+        matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        shown.value = to;
+        return;
+      }
+      // 起点同样取第一帧的时间戳，原因见上面滑块的补间。
+      let start = null;
+      const step = (now) => {
+        bandFrames.delete(frame);
+        start ??= now;
+        const progress = Math.min(1, Math.max(0, (now - start) / SLIDER_GLIDE));
+        const eased = 1 - (1 - progress) ** 3;
+        shown.value =
+          progress < 1
+            ? {
+                colors: to.colors,
+                marks: from.marks.map((mark, index) => mark + (to.marks[index] - mark) * eased),
+              }
+            : to;
+        if (progress < 1) bandFrames.add((frame = requestAnimationFrame(step)));
+      };
+      bandFrames.add((frame = requestAnimationFrame(step)));
+    },
+    { immediate: true },
+  );
+  return computed(() =>
+    shown.value ? bandStyle(shown.value.marks, shown.value.colors) : undefined,
+  );
+}
 // 评级轴色带：档位分界处切换颜色。
-const ratingBand = computed(() => {
-  const range = bounds.value;
-  if (!range) return undefined;
-  const edges = [range.ratingMin, ...tierCuts.value, range.ratingMax];
-  return bandStyle(edges.map(ratingPos), edges.slice(0, -1).map(tierColor));
-});
+const ratingBand = glidingBand(
+  computed(() => {
+    const range = bounds.value;
+    if (!range) return null;
+    const edges = [range.ratingMin, ...tierCuts.value, range.ratingMax];
+    return { marks: roomyMarks(edges.map(ratingPos)), colors: edges.slice(0, -1).map(tierColor) };
+  }),
+);
 // 取样曲线要算几十个名次，比可达范围晚到几帧。它到之前，先用已知的三个点
 //（第一名、当前名次、最后一名）粗估各档位的分界，让名次轴和评级轴同时上色。
 const bandPoints = computed(() => {
@@ -181,53 +308,22 @@ const rankBandTarget = computed(() => {
   const marks = [0];
   const colors = [tierColor(range.ratingMin)];
   for (const cut of tierCuts.value) {
+    // 能拿到这个档位的最差名次。
     const rank = estimateRank(bandPoints.value, cut);
     if (rank == null) continue;
-    marks.push(rankPos(rank));
+    // 分界画在这个名次和下一个名次的正中间，而不是画在这个名次自己的位置上：
+    // 这样每个名次都落在它那一档的颜色里面。画在名次自己的位置上的话，只有第 1 名才到的档位
+    // 要从轴的最右端开始，宽度是零，根本看不见。靠后的名次挨得很密，挪这半格看不出差别。
+    marks.push((rankPos(rank) + rankPos(rank + 1)) / 2);
     colors.push(tierColor(cut));
   }
   marks.push(100);
-  return { marks, colors };
+  // 两端和评级轴一样至少留出一小截。名次轴是对数的，靠后的名次挤在最左边：
+  // 只有最后一两名才会掉进的那一档，按位置算只有万分之几宽，不挪就看不见。
+  return { marks: roomyMarks(marks), colors };
 });
-// 画面上的名次轴色带。分界位置变了（粗估换成取样曲线、新增了精确点）就滑过去，不跳变；
-// 第一次出现、段数变了或用户关闭了动效时直接到位。
-const rankBandShown = ref(null);
-let rankBandFrame = 0;
-watch(rankBandTarget, (to) => {
-  cancelAnimationFrame(rankBandFrame);
-  const from = rankBandShown.value;
-  if (
-    !to ||
-    !from ||
-    from.marks.length !== to.marks.length ||
-    from.marks.every((mark, index) => Math.abs(mark - to.marks[index]) < 0.05) ||
-    matchMedia('(prefers-reduced-motion: reduce)').matches
-  ) {
-    rankBandShown.value = to;
-    return;
-  }
-  // 起点同样取第一帧的时间戳，原因见上面滑块的补间。
-  let start = null;
-  const step = (now) => {
-    start ??= now;
-    const progress = Math.min(1, Math.max(0, (now - start) / SLIDER_GLIDE));
-    const eased = 1 - (1 - progress) ** 3;
-    rankBandShown.value =
-      progress < 1
-        ? {
-            colors: to.colors,
-            marks: from.marks.map((mark, index) => mark + (to.marks[index] - mark) * eased),
-          }
-        : to;
-    if (progress < 1) rankBandFrame = requestAnimationFrame(step);
-  };
-  rankBandFrame = requestAnimationFrame(step);
-});
-const rankBand = computed(() =>
-  rankBandShown.value
-    ? bandStyle(rankBandShown.value.marks, rankBandShown.value.colors)
-    : undefined,
-);
+// 画面上的名次轴色带，分界位置变了同样滑过去。
+const rankBand = glidingBand(rankBandTarget);
 // 刻度太密时数字会叠在一起：按给定的先后挑选，离已选刻度太近的跳过。
 function spread(candidates, gap) {
   const kept = [];
@@ -271,19 +367,41 @@ const ratingFlags = computed(() => {
     });
   if (before.value != null && before.value >= range.ratingMin && before.value <= range.ratingMax)
     flags.push({ key: 'before', label: t('predictionFlagBefore'), at: ratingPos(before.value) });
-  // 两面小旗离得太近时，文字分别摆到旗杆两侧，免得叠在一起。
-  if (flags.length === 2 && Math.abs(flags[0].at - flags[1].at) < 14) {
-    const [left, right] = flags[0].at <= flags[1].at ? flags : [flags[1], flags[0]];
-    left.side = 'left';
-    right.side = 'right';
-  }
-  return flags;
+  return apart(flags);
 });
-const rankFlags = computed(() =>
-  bounds.value && current.value
-    ? [{ key: 'current', label: t('predictionFlagCurrent'), at: rankPos(current.value.rank) }]
-    : [],
-);
+// 两面小旗离得近时文字会叠在一起，要错开。能只挪一面就只挪一面：左边那面的文字摆到它旗杆的左侧，
+// 右边那面照旧居中——右边那面常常立在轴的最右端（当前第 1 名、当前就是最高分），文字再往右摆就伸到轴外面去了。
+// 两根旗杆几乎贴在一起时，只挪一面还是会叠，才两面各摆一侧。
+const FLAGS_NEAR = 14;
+const FLAGS_TOUCHING = 6;
+function apart(flags) {
+  if (flags.length !== 2) return flags;
+  const gap = Math.abs(flags[0].at - flags[1].at);
+  if (gap >= FLAGS_NEAR) return flags;
+  const [left, right] = flags[0].at <= flags[1].at ? flags : [flags[1], flags[0]];
+  left.side = 'left';
+  if (gap < FLAGS_TOUCHING) right.side = 'right';
+  return flags;
+}
+// 名次轴上的两面小旗：当前榜单的名次，和刚好不掉分的名次（赛前评级在评级轴上对应的那个名次）。
+// 后一个是按取样曲线估出来的，曲线到位后才有；怎么排都掉分或者都不掉分时不标。
+const rankFlags = computed(() => {
+  const range = bounds.value;
+  if (!range) return [];
+  const flags = [];
+  if (current.value)
+    flags.push({
+      key: 'current',
+      label: t('predictionFlagCurrent'),
+      at: rankPos(current.value.rank),
+    });
+  if (before.value != null && before.value >= range.ratingMin && before.value <= range.ratingMax) {
+    const keep = estimateRank(points.value, before.value);
+    if (keep != null)
+      flags.push({ key: 'keep', label: t('predictionFlagKeep'), at: rankPos(keep) });
+  }
+  return apart(flags);
+});
 // 常用目标：一点就算，不用自己找位置。
 const shortcuts = computed(() => {
   const range = bounds.value;
@@ -305,7 +423,7 @@ const shortcuts = computed(() => {
 // 滑块描边跟随当前显示的赛后评级所在的档位。
 const thumbColor = computed(() => {
   const rating = view.value?.rating ?? before.value;
-  return rating == null ? undefined : tierColor(rating);
+  return rating == null ? undefined : ringColor(rating);
 });
 const ratingTextColor = computed(() => {
   const value = Number(ratingText.value);
@@ -464,7 +582,8 @@ function applyBounds({ rankMin, rankMax, ratingMin, ratingMax }) {
   )
     return;
   bounds.value = { rankMin, rankMax, ratingMin, ratingMax };
-  if (view.value) place(view.value);
+  // 原来就有范围、只是换了一个（按新号重算、榜单刷新）时，滑块滑到新位置；第一次到位时直接摆好。
+  if (view.value) place(view.value, undefined, Boolean(old));
 }
 // 读取可达范围和取样曲线。范围只算首尾两个名次，先到；曲线要取几十个点，后到，
 // 到了之后名次轴才有档位色带，拖动时另一头才有估算值。
@@ -509,6 +628,16 @@ watch(
     extra.value = [...extra.value, { rank: result.rank, rating: result.rating }];
   },
 );
+// 查到是新号（或者不再是了）：评级的算法换了，回到当前结果，范围和曲线重新算。
+// 原来的范围先留着，新的算好了再换过去——先清空的话，刻度、小旗、快捷按钮会一下子全没了又冒出来，弹窗也跟着变高变矮。
+watch(
+  () => newcomer.value?.played,
+  (now, was) => {
+    if (!state.openHandle || now === was) return;
+    showCurrent();
+    load(false);
+  },
+);
 // 榜单刷新后，仍停在「当前榜单」时跟着新结果走；用户已经拖到别处时不打扰。
 watch(current, () => {
   if (state.openHandle && (!view.value || view.value.driver === 'current')) showCurrent();
@@ -518,45 +647,6 @@ watch(
   () => state.snapshot,
   () => {
     if (state.openHandle) load(false);
-  },
-);
-// 切换语言时文字行数会变。先记下旧高度，待新文案排好后把弹窗高度平滑过渡过去；
-// 过渡期间裁掉溢出，避免高度突变和一闪而过的纵向滚动条。
-watch(
-  () => appSettings.general.lang,
-  async () => {
-    languagePulse.value = false;
-    clearTimeout(languagePulseTimer);
-    cancelAnimationFrame(languagePulseFrame);
-    const node = dialog.value;
-    // 连续切换时从当前画面的高度接续，而不是跳回自然高度。
-    const from = node?.clientHeight;
-    languageHeight?.cancel();
-    languageHeight = null;
-    if (!state.openHandle || !node || matchMedia('(prefers-reduced-motion: reduce)').matches)
-      return;
-    await nextTick();
-    if (!state.openHandle || !node.isConnected) return;
-    const to = node.clientHeight;
-    if (Math.abs(to - from) > 0.5) {
-      const animation = node.animate(
-        [
-          { height: from + 'px', overflow: 'hidden' },
-          { height: to + 'px', overflow: 'hidden' },
-        ],
-        { duration: 260, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-      );
-      languageHeight = animation;
-      animation.finished
-        .catch(() => {})
-        .then(() => {
-          if (languageHeight === animation) languageHeight = null;
-        });
-    }
-    languagePulseFrame = requestAnimationFrame(() => {
-      languagePulse.value = true;
-      languagePulseTimer = setTimeout(() => (languagePulse.value = false), 240);
-    });
   },
 );
 // 打开时锁定用户，从当前榜单的结果开始；关闭动画保留最后一帧内容。
@@ -638,10 +728,7 @@ function keyboard(event) {
 }
 onMounted(() => document.addEventListener('keydown', keyboard, true));
 onBeforeUnmount(() => {
-  clearTimeout(languagePulseTimer);
-  cancelAnimationFrame(languagePulseFrame);
-  cancelAnimationFrame(rankBandFrame);
-  languageHeight?.cancel();
+  bandFrames.forEach(cancelAnimationFrame);
   document.removeEventListener('keydown', keyboard, true);
 });
 </script>
@@ -657,6 +744,7 @@ onBeforeUnmount(() => {
         <section
           ref="dialog"
           class="cf-prediction-dialog"
+          data-cf-language-surface
           role="dialog"
           aria-modal="true"
           aria-labelledby="cf-prediction-title"
@@ -678,7 +766,11 @@ onBeforeUnmount(() => {
                 <small>{{ t('predictionAnalyze') }}</small>
                 <h3
                   id="cf-prediction-title"
-                  :style="{ color: predictionNumberColor(participant?.rating) || '#34435f' }"
+                  :style="{
+                    color:
+                      predictionNumberColor(member ? member.before : participant?.rating) ||
+                      '#34435f',
+                  }"
                 >
                   {{ handle }}
                 </h3>
@@ -693,14 +785,14 @@ onBeforeUnmount(() => {
               ×
             </button>
           </header>
-          <div class="cf-analysis-content" :class="{ 'cf-analysis-language-pulse': languagePulse }">
-            <p class="cf-analysis-context">
+          <div class="cf-analysis-content">
+            <div class="cf-analysis-context">
               <span class="cf-analysis-contest">{{ state.snapshot?.name }}</span>
               <span class="cf-analysis-meta">
                 <span
                   >{{ t('predictionModelRating') }}
-                  <strong :style="{ color: predictionNumberColor(participant?.rating) }">{{
-                    participant?.rating
+                  <strong :style="{ color: predictionNumberColor(before) }">{{
+                    before
                   }}</strong></span
                 >
                 <span
@@ -710,7 +802,25 @@ onBeforeUnmount(() => {
                   }}</sup></span
                 >
               </span>
-            </p>
+              <!-- 新号修正的标签：另起一行，放在两枚常规标签下面；只有新号才有，出现和消失时这一行展开、收起。 -->
+              <ExpandTransition :show="Boolean(newcomer)">
+                <span v-if="newcomerShown" class="cf-analysis-newcomer">
+                  <span :data-tooltip="t('predictionNewcomerTip')" data-tooltip-variant="lines"
+                    >{{ t('predictionNewcomer', newcomerShown.played + 1) }}
+                    <strong>{{ t('predictionNewcomerBonus', newcomerShown.bonus) }}</strong></span
+                  >
+                </span>
+              </ExpandTransition>
+              <!-- 队伍成员的标签：说明这场按队伍计分、推演用的是队伍评级。样子和新号的那一枚相同。 -->
+              <ExpandTransition :show="Boolean(member)">
+                <span v-if="memberShown" class="cf-analysis-newcomer">
+                  <span :data-tooltip="t('predictionTeamMemberTip')" data-tooltip-variant="lines"
+                    >{{ t('predictionTeamMember', memberShown.size) }}
+                    <strong>{{ t('predictionTeamRating', memberShown.teamRating) }}</strong></span
+                  >
+                </span>
+              </ExpandTransition>
+            </div>
             <div class="cf-analysis-result" aria-live="polite" :aria-busy="state.computing">
               <span v-if="state.analysisError" class="cf-analysis-state cf-analysis-error">{{
                 t(state.analysisError)
@@ -802,24 +912,36 @@ onBeforeUnmount(() => {
                 />
               </div>
               <div class="cf-analysis-rail">
-                <span class="cf-analysis-band" :style="{ background: ratingBand }"></span>
-                <div class="cf-analysis-marks" aria-hidden="true">
+                <span class="cf-analysis-band"
+                  ><Transition name="cf-analysis-paint"
+                    ><span
+                      :key="palette"
+                      class="cf-analysis-paint"
+                      :style="{ background: ratingBand }"
+                    ></span></Transition
+                ></span>
+                <TransitionGroup
+                  tag="div"
+                  name="cf-analysis-mark"
+                  class="cf-analysis-marks"
+                  aria-hidden="true"
+                >
                   <span
                     v-for="tick in ratingTicks"
-                    :key="tick.label"
+                    :key="'tick-' + tick.label"
                     class="cf-analysis-tick"
                     :style="{ left: tick.at + '%' }"
                     >{{ tick.label }}</span
                   >
                   <span
                     v-for="flag in ratingFlags"
-                    :key="flag.key"
+                    :key="'flag-' + flag.key"
                     class="cf-analysis-flag"
                     :data-side="flag.side"
                     :style="{ left: flag.at + '%' }"
                     ><span>{{ flag.label }}</span></span
                   >
-                </div>
+                </TransitionGroup>
                 <input
                   type="range"
                   step="1"
@@ -854,23 +976,36 @@ onBeforeUnmount(() => {
                 />
               </div>
               <div class="cf-analysis-rail">
-                <span class="cf-analysis-band" :style="{ background: rankBand }"></span>
-                <div class="cf-analysis-marks" aria-hidden="true">
+                <span class="cf-analysis-band"
+                  ><Transition name="cf-analysis-paint"
+                    ><span
+                      :key="palette"
+                      class="cf-analysis-paint"
+                      :style="{ background: rankBand }"
+                    ></span></Transition
+                ></span>
+                <TransitionGroup
+                  tag="div"
+                  name="cf-analysis-mark"
+                  class="cf-analysis-marks"
+                  aria-hidden="true"
+                >
                   <span
                     v-for="tick in rankTicks"
-                    :key="tick.label"
+                    :key="'tick-' + tick.label"
                     class="cf-analysis-tick"
                     :style="{ left: tick.at + '%' }"
                     >{{ tick.label }}</span
                   >
                   <span
                     v-for="flag in rankFlags"
-                    :key="flag.key"
+                    :key="'flag-' + flag.key"
                     class="cf-analysis-flag"
+                    :data-side="flag.side"
                     :style="{ left: flag.at + '%' }"
                     ><span>{{ flag.label }}</span></span
                   >
-                </div>
+                </TransitionGroup>
                 <input
                   type="range"
                   min="0"
@@ -886,7 +1021,7 @@ onBeforeUnmount(() => {
                 />
               </div>
             </div>
-            <div v-if="shortcuts.length" class="cf-analysis-shortcuts">
+            <div class="cf-analysis-shortcuts">
               <button
                 v-for="item in shortcuts"
                 :key="item.key"
@@ -1019,7 +1154,7 @@ header small {
 }
 header h3 {
   margin: 1px 0 0;
-  font-size: 20px;
+  font-size: calc(20px * var(--cf-font-scale));
   font-weight: var(--cf-font-weight-bold);
   line-height: 1.25;
   color: #34435f;
@@ -1042,9 +1177,9 @@ header h3 {
     sans-serif;
   cursor: pointer;
   transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease;
+    background-color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease;
 }
 .cf-analysis-close:hover {
   border-color: #ffffffd9;
@@ -1058,22 +1193,8 @@ header h3 {
 .cf-analysis-content {
   padding: 0 22px 22px;
   transition:
-    opacity 180ms ease,
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.cf-analysis-language-pulse {
-  animation: cf-analysis-language-pulse 240ms ease both;
-}
-/* 只向上偏移：向下的位移会被算进弹窗的可滚动范围，使滚动条闪现。 */
-@keyframes cf-analysis-language-pulse {
-  0% {
-    opacity: 0.62;
-    transform: translateY(-3px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    opacity var(--cf-duration-base) ease,
+    transform var(--cf-duration-base) var(--cf-ease-out);
 }
 .cf-analysis-context {
   margin: 0 0 16px;
@@ -1109,11 +1230,32 @@ header h3 {
   color: #33415f;
   font-weight: var(--cf-font-weight-bold);
 }
+/* 新号修正的小签：和上面两枚一个形状，暖色，另起一行。 */
+.cf-analysis-newcomer {
+  display: flex;
+  padding-top: 6px;
+  font-size: var(--cf-font-size-xs);
+}
+.cf-analysis-newcomer > span {
+  padding: 3px 10px;
+  border: 1px solid #e6c58f;
+  border-radius: 999px;
+  background: #fbf0d9;
+  color: #7a5a1e;
+  font-weight: var(--cf-font-weight-medium);
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.cf-analysis-newcomer strong {
+  margin-left: 2px;
+  color: #8a5a00;
+  font-weight: var(--cf-font-weight-bold);
+}
 /* 时区：与原站比赛时间旁的标注一样，排成上标小字；行高为 0，不撑高小签。 */
 .cf-analysis-zone {
   margin-left: 1px;
   vertical-align: super;
-  font-size: 9px;
+  font-size: calc(9px * var(--cf-font-scale));
   line-height: 0;
 }
 /* 结果区：固定高度，出错提示与结果之间切换时弹窗不会跳动。 */
@@ -1207,8 +1349,8 @@ header h3 {
 }
 .cf-analysis-hero strong {
   color: #36466b;
-  font-size: 30px;
-  font-weight: 800;
+  font-size: calc(30px * var(--cf-font-scale));
+  font-weight: var(--cf-font-weight-bold);
   line-height: 1.15;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
@@ -1231,7 +1373,7 @@ header h3 {
   white-space: nowrap;
 }
 .cf-analysis-ratings span {
-  font-size: 15px;
+  font-size: calc(15px * var(--cf-font-scale));
   font-weight: var(--cf-font-weight-semibold);
   opacity: 0.82;
 }
@@ -1247,15 +1389,15 @@ header h3 {
   stroke-linejoin: round;
 }
 .cf-analysis-ratings strong {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: calc(22px * var(--cf-font-scale));
+  font-weight: var(--cf-font-weight-bold);
   line-height: 1.2;
 }
 /* 还只是估算的那一头调淡，精确结果回来后恢复。 */
 .cf-analysis-hero strong > span,
 .cf-analysis-ratings strong,
 .cf-analysis-delta {
-  transition: opacity 160ms ease;
+  transition: opacity var(--cf-duration-fast) ease;
 }
 .cf-analysis-hero .cf-analysis-estimate,
 .cf-analysis-ratings.cf-analysis-estimate strong,
@@ -1311,18 +1453,18 @@ header h3 {
   box-shadow: inset 0 1px 2px #5a6a8f12;
   color: #425674;
   font: inherit;
-  font-size: 15px;
+  font-size: calc(15px * var(--cf-font-scale));
   font-weight: var(--cf-font-weight-semibold);
   font-variant-numeric: tabular-nums;
   text-align: right;
   transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    background-color 160ms ease;
+    border-color var(--cf-duration-fast) ease,
+    box-shadow var(--cf-duration-fast) ease,
+    background-color var(--cf-duration-fast) ease;
 }
 .cf-analysis-axis-head input:focus {
   border-color: #9badd8;
-  background: #fff;
+  background: var(--cf-white-surface);
   box-shadow: 0 0 0 3px #9badd838;
   outline: none;
 }
@@ -1342,7 +1484,35 @@ header h3 {
   height: 8px;
   border-radius: var(--cf-radius-xs);
   background: #d7deec;
+  /* 里面的色带换配色时两条叠着过渡，叠放的先后只在这一小块里算。 */
+  overflow: hidden;
+  isolation: isolate;
+}
+/* 色带上沿的一道内阴影，盖在颜色上面。 */
+.cf-analysis-band::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
   box-shadow: inset 0 1px 2px #2634531f;
+  pointer-events: none;
+}
+/* 色带的颜色。配色换了（难度分的显示样式切换、「沿用难度分样式」开关）时，新的一条盖在旧的上面淡入，
+   旧的等它淡完再撤掉。 */
+.cf-analysis-paint {
+  position: absolute;
+  inset: 0;
+}
+.cf-analysis-paint-enter-active {
+  z-index: 1;
+  transition: opacity var(--cf-duration-moderate) ease;
+}
+.cf-analysis-paint-enter-from {
+  opacity: 0;
+}
+.cf-analysis-paint-leave-active {
+  transition: opacity var(--cf-duration-moderate) ease;
 }
 .cf-analysis-marks {
   position: absolute;
@@ -1357,10 +1527,18 @@ header h3 {
   top: 36px;
   transform: translateX(-50%);
   color: #7684a0;
-  font-size: 10.5px;
+  font-size: var(--cf-font-size-xs);
   line-height: 1.3;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+  /* 范围换了：还在的刻度滑到新位置，换掉的淡出、新来的淡入。 */
+  transition:
+    left var(--cf-duration-moderate) ease,
+    opacity var(--cf-duration-base) ease;
+}
+.cf-analysis-mark-enter-from,
+.cf-analysis-mark-leave-to {
+  opacity: 0;
 }
 .cf-analysis-tick::before {
   content: '';
@@ -1376,16 +1554,21 @@ header h3 {
   top: 0;
   width: 0;
   color: #51607b;
-  font-size: 10.5px;
+  font-size: var(--cf-font-size-xs);
   font-weight: var(--cf-font-weight-semibold);
   line-height: 1.3;
   white-space: nowrap;
+  /* 小旗出现、消失时淡入淡出（名次轴上「不掉分」那一面要等曲线算完才有）；位置变了滑过去，文字换边时也滑过去。 */
+  transition:
+    left var(--cf-duration-moderate) ease,
+    opacity var(--cf-duration-base) ease;
 }
 .cf-analysis-flag > span {
   position: absolute;
   top: 0;
   left: 0;
   transform: translateX(-50%);
+  transition: transform var(--cf-duration-moderate) ease;
 }
 .cf-analysis-flag[data-side='left'] > span {
   transform: translateX(calc(-100% - 3px));
@@ -1415,6 +1598,15 @@ header h3 {
   appearance: none;
   cursor: pointer;
 }
+/* 滑块描边的颜色是从这个变量来的；登记成颜色类型，它才能带着过渡变（换配色、拖过档位分界时）。 */
+@property --cf-analysis-thumb {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #8f9fd8;
+}
+.cf-analysis-rail input[type='range'] {
+  transition: --cf-analysis-thumb var(--cf-duration-base) ease;
+}
 .cf-analysis-rail input[type='range']:focus {
   outline: none;
 }
@@ -1434,7 +1626,7 @@ header h3 {
   margin-top: 2px;
   border: 3px solid var(--cf-analysis-thumb, #8f9fd8);
   border-radius: 50%;
-  background: #fff;
+  background: var(--cf-white-surface);
   box-shadow: 0 2px 6px #26345340;
 }
 .cf-analysis-rail input[type='range']:focus-visible::-webkit-slider-thumb {
@@ -1452,7 +1644,7 @@ header h3 {
   height: 18px;
   border: 3px solid var(--cf-analysis-thumb, #8f9fd8);
   border-radius: 50%;
-  background: #fff;
+  background: var(--cf-white-surface);
   box-shadow: 0 2px 6px #26345340;
 }
 .cf-analysis-rail input[type='range']:focus-visible::-moz-range-thumb {
@@ -1461,13 +1653,21 @@ header h3 {
     0 0 0 4px #9badd859;
 }
 /* 常用目标：一排小胶囊按钮。 */
+@keyframes cf-analysis-shortcut-in {
+  from {
+    opacity: 0;
+  }
+}
+/* 这一行的位置一直留着：按钮要等可达范围算出来才有，不留的话它们一出现弹窗就高出一截。 */
 .cf-analysis-shortcuts {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  min-height: 28px;
   margin-top: 12px;
 }
 .cf-analysis-shortcuts button {
+  animation: cf-analysis-shortcut-in 200ms ease;
   padding: 4px 11px;
   border: 1px solid #c9d3e6;
   border-radius: 999px;
@@ -1478,12 +1678,12 @@ header h3 {
   line-height: 1.5;
   cursor: pointer;
   transition:
-    border-color 160ms ease,
-    background-color 160ms ease;
+    border-color var(--cf-duration-fast) ease,
+    background-color var(--cf-duration-fast) ease;
 }
 .cf-analysis-shortcuts button:hover {
   border-color: #9badd8;
-  background: #fff;
+  background: var(--cf-white-surface);
 }
 .cf-analysis-shortcuts button:focus-visible {
   outline: 2px solid #9badd8;
@@ -1597,11 +1797,17 @@ header h3 {
   .cf-analysis-ratings strong,
   .cf-analysis-delta,
   .cf-analysis-axis-head input,
-  .cf-analysis-shortcuts button {
+  .cf-analysis-shortcuts button,
+  .cf-analysis-rail input[type='range'],
+  .cf-analysis-paint-enter-active,
+  .cf-analysis-paint-leave-active,
+  .cf-analysis-tick,
+  .cf-analysis-flag,
+  .cf-analysis-flag > span {
     transition: none;
   }
-  .cf-analysis-language-pulse,
-  .cf-analysis-spinner {
+  .cf-analysis-spinner,
+  .cf-analysis-shortcuts button {
     animation: none;
   }
 }

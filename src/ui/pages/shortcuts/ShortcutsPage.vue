@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onBeforeUnmount } from 'vue';
+import { ref, computed, watch, onBeforeUnmount } from 'vue';
 import { appSettings, saveSettings } from '../../../settings.js';
 import { translate as t } from '../../../i18n/index.js';
 import * as assets from '../../../assets/index.js';
@@ -10,12 +10,12 @@ import { isShiftActive, CODE_TO_BASE_KEY } from '../../../utils/shortcuts.js';
 import { tooltip } from '../../components/tooltips/FloatingTooltip/FloatingTooltip.vue';
 import ShortcutKeys from './components/ShortcutKeys/ShortcutKeys.vue';
 const props = defineProps({ active: Boolean });
+// 分组照菜单的页签，组里的先后照各页里选项的先后。
 const groups = [
   {
     id: 'general',
     labelKey: 'tabGeneral',
     items: [
-      { key: 'hideTags', titleKey: 'shortcutHideTagsTitle', descKey: 'shortcutHideTagsDesc' },
       {
         key: 'menuLanguage',
         titleKey: 'shortcutMenuLanguageTitle',
@@ -27,6 +27,12 @@ const groups = [
     id: 'appearance',
     labelKey: 'tabAppearance',
     items: [
+      { key: 'hideTags', titleKey: 'shortcutHideTagsTitle', descKey: 'shortcutHideTagsDesc' },
+      {
+        key: 'hideVerdictTests',
+        titleKey: 'shortcutHideVerdictTestsTitle',
+        descKey: 'shortcutHideVerdictTestsDesc',
+      },
       {
         key: 'acHighlight',
         titleKey: 'shortcutAcHighlightTitle',
@@ -78,6 +84,11 @@ const groups = [
     labelKey: 'tabUser',
     items: [
       { key: 'userAvatar', titleKey: 'shortcutUserAvatarTitle', descKey: 'shortcutUserAvatarDesc' },
+      {
+        key: 'userAnalytics',
+        titleKey: 'shortcutUserAnalyticsTitle',
+        descKey: 'shortcutUserAnalyticsDesc',
+      },
     ],
   },
 ];
@@ -167,6 +178,19 @@ function resetAll() {
   Object.assign(appSettings.shortcuts, DEFAULT_SETTINGS.shortcuts);
   saveSettings();
 }
+// 清空全部快捷键：每一项都变成未设置，之后可以逐个重新录，也可以一键恢复默认。
+function clearAll() {
+  stopRecording();
+  for (const key of Object.keys(appSettings.shortcuts)) appSettings.shortcuts[key] = '';
+  saveSettings();
+}
+// 已经全是默认值、已经全空时，对应的按钮没有事可做，变灰。
+const allDefault = computed(() =>
+  Object.entries(DEFAULT_SETTINGS.shortcuts).every(
+    ([key, binding]) => appSettings.shortcuts[key] === binding,
+  ),
+);
+const allEmpty = computed(() => Object.values(appSettings.shortcuts).every((binding) => !binding));
 watch(() => props.active, stopRecording);
 onBeforeUnmount(stopRecording);
 </script>
@@ -178,12 +202,17 @@ onBeforeUnmount(stopRecording);
           ><inline-svg v-bind:source="assets.menuShortcutsIcon"></inline-svg></span
         ><span class="cf-shortcuts-title-text">{{ t('shortcutsSectionTitle') }}</span>
       </h3>
-      <p class="cf-shortcuts-subtitle" v-text="t().shortcutsSectionSubtitle"></p>
-      <p class="cf-shortcuts-subtitle" v-text="t().shortcutsSectionTip"></p>
+      <p class="cf-shortcuts-subtitle">
+        <span>{{ t().shortcutsSectionSubtitle }}</span>
+      </p>
+      <p class="cf-shortcuts-subtitle">
+        <span>{{ t().shortcutsSectionTip }}</span>
+      </p>
       <div class="cf-shortcuts-note">
         <span class="cf-shortcuts-note-icon"
           ><inline-svg v-bind:source="assets.shortcutInfoIcon"></inline-svg
         ></span>
+        <!-- 标题和正文是连着排的一段话，正文会折行，所以切换语言时整段一起收放，不分开标。 -->
         <div class="cf-shortcuts-note-body">
           <strong class="cf-shortcuts-note-label" v-text="t('shortcutsSectionNoteLabel')"></strong
           ><span class="cf-shortcuts-note-text">{{ t('shortcutsSectionNote') }}</span>
@@ -201,9 +230,9 @@ onBeforeUnmount(stopRecording);
           <div class="cf-shortcut-item" v-for="item in group.items" v-bind:key="item.key">
             <div
               class="cf-shortcut-title"
-              v-text="t(item.titleKey)"
               v-on:mouseenter="tooltip.showIfTruncated"
               v-on:mouseleave="tooltip.hide"
+              v-text="t(item.titleKey)"
             ></div>
             <div class="cf-shortcut-controls">
               <button
@@ -246,10 +275,27 @@ onBeforeUnmount(stopRecording);
         </div>
       </div>
     </div>
-    <button type="button" class="cf-shortcut-reset-all-btn" v-on:click="resetAll">
-      <inline-svg v-bind:source="assets.shortcutResetAllIcon"></inline-svg
-      ><span class="btn-text">{{ t('shortcutResetAllBtn') }}</span>
-    </button>
+    <!-- 对全部快捷键的两个操作并排放在列表下面，各占一半宽。 -->
+    <div class="cf-shortcut-bulk">
+      <button
+        type="button"
+        class="cf-shortcut-bulk-btn"
+        v-bind:disabled="allDefault"
+        v-on:click="resetAll"
+      >
+        <inline-svg v-bind:source="assets.shortcutResetAllIcon"></inline-svg
+        ><span class="btn-text">{{ t('shortcutResetAllBtn') }}</span>
+      </button>
+      <button
+        type="button"
+        class="cf-shortcut-bulk-btn is-clear"
+        v-bind:disabled="allEmpty"
+        v-on:click="clearAll"
+      >
+        <inline-svg v-bind:source="assets.shortcutClearIcon"></inline-svg
+        ><span class="btn-text">{{ t('shortcutClearAllBtn') }}</span>
+      </button>
+    </div>
   </div>
 </template>
 <style>
@@ -396,8 +442,8 @@ onBeforeUnmount(stopRecording);
   box-sizing: border-box;
   overflow: hidden;
   transition:
-    background-color 180ms ease,
-    box-shadow 180ms ease;
+    background-color var(--cf-duration-base) ease,
+    box-shadow var(--cf-duration-base) ease;
 }
 
 .cf-shortcut-item:hover,
@@ -446,9 +492,9 @@ onBeforeUnmount(stopRecording);
   font-size: var(--cf-font-size-xs);
   color: var(--cf-gray-900);
   transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease;
+    background-color var(--cf-duration-base) ease,
+    border-color var(--cf-duration-base) ease,
+    color var(--cf-duration-base) ease;
   user-select: none;
   box-sizing: border-box;
   outline: none;
@@ -474,7 +520,7 @@ onBeforeUnmount(stopRecording);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 180ms ease;
+  transition: opacity var(--cf-duration-base) ease;
 }
 
 .cf-shortcut-key-btn.recording::after {
@@ -529,10 +575,10 @@ onBeforeUnmount(stopRecording);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
   transition:
-    transform 150ms ease,
-    border-color 150ms ease,
-    color 150ms ease,
-    box-shadow 150ms ease;
+    transform var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease,
+    box-shadow var(--cf-duration-fast) ease;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -570,28 +616,42 @@ onBeforeUnmount(stopRecording);
   flex-shrink: 0;
 }
 
+/* 还没设置快捷键：一个和按键一样高的空位，虚线边、浅色字，前面一个小加号，看得出是「可以点这里设一个」。
+   悬停时换成主题色，和旁边已经设了的按键悬停时的反应一致。 */
 .cf-shortcut-key-btn .cf-shortcut-empty {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   height: 22px;
-  padding: 0 6px;
+  min-width: 58px;
+  padding: 0 8px;
   border-radius: var(--cf-radius-xs);
-  border: 1px dashed var(--cf-gray-300);
-  background: var(--cf-gray-50);
+  border: 1px dashed color-mix(in srgb, var(--cf-menu-accent) 26%, var(--cf-gray-300));
+  background: transparent;
   color: var(--cf-gray-400);
   font-size: var(--cf-font-size-xs);
   line-height: 1;
   box-sizing: border-box;
   font-style: normal;
   font-weight: var(--cf-font-weight-medium);
-  transition: all 0.15s ease;
+  transition:
+    background-color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease;
+}
+
+.cf-shortcut-key-btn .cf-shortcut-empty::before {
+  content: '+';
+  font-size: var(--cf-font-size-base);
+  font-weight: var(--cf-font-weight-semibold);
+  line-height: 1;
 }
 
 .cf-shortcut-key-btn:hover .cf-shortcut-empty {
-  border-color: var(--cf-gray-400);
-  color: var(--cf-gray-600);
-  background: var(--cf-gray-100);
+  border-color: color-mix(in srgb, var(--cf-menu-accent) 70%, var(--cf-gray-300));
+  background: color-mix(in srgb, var(--cf-menu-accent) 9%, transparent);
+  color: var(--cf-control-ink);
 }
 
 .cf-shortcut-clear-btn {
@@ -603,9 +663,9 @@ onBeforeUnmount(stopRecording);
   border: 1px solid transparent;
   background: transparent;
   color: var(--cf-gray-400);
-  border-radius: 5px;
+  border-radius: var(--cf-radius-sm);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--cf-duration-fast) ease;
   flex-shrink: 0;
   box-sizing: border-box;
   padding: 0;
@@ -617,31 +677,87 @@ onBeforeUnmount(stopRecording);
   border-color: #fee2e2;
 }
 
-.cf-shortcut-reset-all-btn {
+/* 对全部快捷键的两个操作（恢复默认、清空）：并排各占一半宽，一样高，文字和图标居中。 */
+.cf-shortcut-bulk {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cf-shortcut-bulk-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  margin-top: 4px;
+  min-width: 0;
   padding: 6px 12px;
-  border: 1px solid var(--cf-surface-border, var(--cf-gray-200));
-  background: var(--cf-control-surface, var(--cf-gray-50));
-  color: var(--cf-gray-500);
+  /* 恢复默认是稳妥的操作，用主题色：浅底、同色的边线和字。 */
+  border: 1px solid color-mix(in srgb, var(--cf-menu-accent) 36%, var(--cf-surface-border));
+  background: color-mix(in srgb, var(--cf-menu-accent) 10%, var(--cf-card-surface, #fff));
+  color: var(--cf-control-ink);
   font-size: var(--cf-font-size-base);
   font-weight: var(--cf-font-weight-medium);
   border-radius: var(--cf-radius-sm);
   cursor: pointer;
-  align-self: flex-start;
-  transition: all 0.15s ease;
+  transition:
+    background-color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease,
+    opacity var(--cf-duration-base) ease;
 }
 
-.cf-shortcut-reset-all-btn:hover {
-  background: var(--cf-card-surface, #fff);
-  color: var(--cf-control-ink);
-  border-color: var(--cf-surface-border);
+.cf-shortcut-bulk-btn > svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  transition:
+    filter var(--cf-duration-fast) ease,
+    opacity var(--cf-duration-fast) ease;
+}
+
+.cf-shortcut-bulk-btn:enabled:hover {
+  background: color-mix(in srgb, var(--cf-menu-accent) 19%, var(--cf-card-surface, #fff));
+  border-color: color-mix(in srgb, var(--cf-menu-accent) 60%, var(--cf-surface-border));
+}
+
+/* 清空是有损失的操作，平时就是红色的，一眼分得出；悬停时再深一些。 */
+.cf-shortcut-bulk-btn.is-clear {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.cf-shortcut-bulk-btn.is-clear:enabled:hover {
+  border-color: #fca5a5;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* 没有可做的（已经全是默认值 / 已经全空）：两个按钮都换成灰色，不带主题色和红色，图标也褪色，
+   鼠标停上去是「不可用」的样子。颜色随按钮本身的过渡渐变过去。 */
+.cf-shortcut-bulk-btn:disabled,
+.cf-shortcut-bulk-btn.is-clear:disabled {
+  border-color: var(--cf-gray-200);
+  background: var(--cf-gray-100);
+  color: var(--cf-gray-400);
+  cursor: not-allowed;
+}
+
+.cf-shortcut-bulk-btn:disabled > svg {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.cf-shortcut-bulk-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--cf-menu-accent) 55%, transparent);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .cf-shortcut-item,
+  .cf-shortcut-bulk-btn,
+  .cf-shortcut-bulk-btn > svg,
   .cf-shortcut-key-btn,
   .cf-shortcut-key-btn::after,
   .cf-shortcut-key-btn kbd {

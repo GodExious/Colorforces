@@ -22,14 +22,14 @@ defineProps({
   >
     <!-- 用多少道题来平均。和菜单里的同一项设置同步。 -->
     <label class="cf-analytics-recent-count">
-      <span data-cf-language-text>{{ t('analyticsRecentBefore') }}</span>
+      <span>{{ t('analyticsRecentBefore') }}</span>
       <NumberInput
         v-model="appSettings.user.analytics.recentCount"
         :min="1"
         :aria-label="t('analyticsRecentCountLabel')"
         @change="saveSettings()"
       />
-      <span data-cf-language-text>{{ t('analyticsRecentAfter') }}</span>
+      <span>{{ t('analyticsRecentAfter') }}</span>
     </label>
   </RecentAverage>
 </template>

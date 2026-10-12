@@ -15,4 +15,12 @@ export const predictionState = shallowReactive({
   computing: false,
   analysisResult: null,
   analysisError: '',
+  // 单用户分析里正在看的这个人的新号修正（见 algorithm/newcomer.js）；不是新号、还没查到时是 null。
+  // { handle, played, bonus, hidden, before, current }：此前打过几场、这一场的补分、赛前还没补的部分、
+  // 赛前的显示评级、按修正后的评级算出的当前结果（{ rank, rating }，评级是显示评级）。
+  newcomer: null,
+  // 单用户分析里正在看的人是计分队伍的成员时（见 index.js 的 teamMember）：
+  // { handle, unit, shift, before, teamRating, size, current }：模型里对应的参赛者（他所在的队）、
+  // 队伍评级比他自己的评级高多少、他自己的赛前评级、队伍评级、队伍人数、当前结果（{ rank, rating }，评级是他自己的）。
+  member: null,
 });

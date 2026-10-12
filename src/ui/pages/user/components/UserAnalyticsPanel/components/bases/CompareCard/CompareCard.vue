@@ -6,7 +6,7 @@ import { HISTORY } from '../../../../../../../../features/user/analytics/rating-
 import ExpandTransition from '../../../../../../../components/transitions/ExpandTransition/ExpandTransition.vue';
 import ChartHint from '../../parts/ChartHint/ChartHint.vue';
 import { COMPARE_MAX } from '../../../composables/compare-accounts.js';
-import { COMPARE_GRID } from '../../../composables/compare-chart.js';
+import { compareGrid } from '../../../composables/compare-chart.js';
 
 // 对比曲线的卡片外壳：标题、对比中的账号名单（开头是添加账号的输入框和「和我对比」），下面是图表（默认插槽）和一行说明。
 // 「评级曲线对比」和「参赛排名曲线对比」都用它；两张图的账号名单是同一份，在哪一张上增减都一样。
@@ -47,8 +47,8 @@ const STATUS_TEXT = {
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head">
       <h4 class="cf-analytics-compare-head">
-        <span data-cf-language-text>{{ title }}</span>
-        <span v-if="note" class="cf-analytics-card-note" data-cf-language-text>{{ note }}</span>
+        <span>{{ title }}</span>
+        <span v-if="note" class="cf-analytics-card-note">{{ note }}</span>
       </h4>
       <!-- 各张图自己的控件（比如按比赛的类别筛选）。 -->
       <div v-if="$slots.tools" class="cf-analytics-card-tools">
@@ -73,14 +73,14 @@ const STATUS_TEXT = {
             @keydown.enter.prevent="add"
           />
           <button type="button" :disabled="!draft.trim()" @click="add">
-            <span data-cf-language-text>{{ t('analyticsCompareAdd') }}</span>
+            <span>{{ t('analyticsCompareAdd') }}</span>
           </button>
         </span>
       </li>
       <li v-if="accounts.self" key="+self" class="cf-analytics-compare-self">
         <button type="button" @click="addSelf">
           <svg viewBox="0 0 8 8" aria-hidden="true"><path d="M4 1v6M1 4h6" /></svg>
-          <span data-cf-language-text>{{ t('analyticsCompareSelf') }}</span>
+          <span>{{ t('analyticsCompareSelf') }}</span>
         </button>
       </li>
       <li
@@ -101,11 +101,9 @@ const STATUS_TEXT = {
           class="cf-analytics-compare-retry"
           @click="accounts.load(entry, true)"
         >
-          <span data-cf-language-text>{{ t('analyticsCompareFailed') }}</span>
+          <span>{{ t('analyticsCompareFailed') }}</span>
         </button>
-        <span v-else class="cf-analytics-compare-state" data-cf-language-text>{{
-          t(STATUS_TEXT[entry.status])
-        }}</span>
+        <span v-else class="cf-analytics-compare-state">{{ t(STATUS_TEXT[entry.status]) }}</span>
         <button
           v-if="!entry.fixed"
           type="button"
@@ -119,7 +117,7 @@ const STATUS_TEXT = {
       <!-- 输入不对时的一句提示，排在这一行的最后，不把别的东西推开。 -->
       <!-- 换成另一句提示时算作换了一项：旧的淡出，新的淡入。 -->
       <li v-if="notice" :key="`+notice-${notice}`" class="cf-analytics-card-note" role="status">
-        <span data-cf-language-text>{{ t(notice, COMPARE_MAX) }}</span>
+        <span>{{ t(notice, COMPARE_MAX) }}</span>
       </li>
     </TransitionGroup>
     <!-- 一条线都画不出来时图表收起，只留上面的名单。 -->
@@ -127,7 +125,7 @@ const STATUS_TEXT = {
       <div class="cf-analytics-compare-body">
         <slot />
         <!-- 说明从纵轴的位置起，和绘图区的左边缘对齐。 -->
-        <ChartHint :inset="COMPARE_GRID.left">{{ t('analyticsComparePinHint') }}</ChartHint>
+        <ChartHint :inset="compareGrid().left">{{ t('analyticsComparePinHint') }}</ChartHint>
       </div>
     </ExpandTransition>
   </section>
@@ -168,7 +166,7 @@ const STATUS_TEXT = {
   border: 1px solid color-mix(in srgb, var(--cf-analytics-accent) 26%, #dfe4ec);
   border-right: 0;
   border-radius: var(--cf-radius-sm) 0 0 var(--cf-radius-sm);
-  background: #fff;
+  background: var(--cf-white-surface);
   color: var(--cf-gray-700);
   font: inherit;
   font-size: var(--cf-font-size-xs);
@@ -176,8 +174,8 @@ const STATUS_TEXT = {
   box-sizing: border-box;
   outline: none;
   transition:
-    border-color 0.18s ease,
-    box-shadow 0.18s ease;
+    border-color var(--cf-duration-base) ease,
+    box-shadow var(--cf-duration-base) ease;
 }
 .cf-analytics-compare-add input::placeholder {
   color: var(--cf-gray-400);
@@ -200,9 +198,9 @@ const STATUS_TEXT = {
   white-space: nowrap;
   cursor: pointer;
   transition:
-    background-color 0.16s ease,
-    border-color 0.16s ease,
-    opacity 0.16s ease;
+    background-color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease,
+    opacity var(--cf-duration-fast) ease;
 }
 .cf-analytics-compare-add button:enabled:hover {
   border-color: color-mix(in srgb, var(--cf-analytics-accent) 60%, #dfe4ec);
@@ -241,16 +239,16 @@ const STATUS_TEXT = {
   line-height: 18px;
   white-space: nowrap;
   transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    opacity 0.2s ease;
+    border-color var(--cf-duration-base) ease,
+    background-color var(--cf-duration-base) ease,
+    opacity var(--cf-duration-base) ease;
 }
 .cf-analytics-compare-chip > i {
   width: 8px;
   height: 8px;
   border: 2px solid var(--cf-compare-color);
   border-radius: 50%;
-  background: #fff;
+  background: var(--cf-white-surface);
   box-sizing: border-box;
 }
 .cf-analytics-compare-name {
@@ -295,8 +293,8 @@ const STATUS_TEXT = {
   color: var(--cf-gray-400);
   cursor: pointer;
   transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+    background-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease;
 }
 .cf-analytics-compare-remove svg {
   width: 8px;
@@ -331,8 +329,8 @@ const STATUS_TEXT = {
   white-space: nowrap;
   cursor: pointer;
   transition:
-    background-color 0.16s ease,
-    border-color 0.16s ease;
+    background-color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease;
 }
 .cf-analytics-compare-self button:hover {
   border-color: color-mix(in srgb, var(--cf-analytics-accent) 75%, #dfe4ec);
@@ -351,8 +349,8 @@ const STATUS_TEXT = {
 .cf-analytics-chip-leave-active,
 .cf-analytics-chip-move {
   transition:
-    opacity 0.22s ease,
-    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity var(--cf-duration-base) ease,
+    transform var(--cf-duration-moderate) var(--cf-ease-out);
 }
 .cf-analytics-chip-enter-from,
 .cf-analytics-chip-leave-to {

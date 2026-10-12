@@ -7,6 +7,11 @@ th.cf-table-time-header {
   vertical-align: middle !important;
 }
 
+/* 表头里的时区标注：提交表和比赛列表是同一种样子——另起一行、带括号，比表头文字小一号、淡一些。 */
+.cf-time-timezone-label {
+  font-size: 0.85em;
+  opacity: 0.8;
+}
 :root.cf-hide-timeFormat .cf-time-timezone-label {
   display: none !important;
 }
@@ -33,10 +38,6 @@ th.cf-table-time-header {
 /* Start 表头统一标注时区，正文按原列宽换行，不强撑成一整行。 */
 .cf-contest-time-zone {
   display: block;
-  font-size: 9px;
-  line-height: 1.4;
-  font-weight: normal;
-  color: #77838d;
 }
 :root:not(.cf-hide-timeFormat) .cf-contest-start-cell sup.tz-superscript {
   display: none;

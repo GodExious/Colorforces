@@ -1,6 +1,10 @@
 // 设置的结构版本。第一层的归档方式或某一项的位置、名字变了，就把它加一，
 // 并在 storage/migrations/settings.js 里写上从旧结构到新结构的迁移。只新增设置项不用改。
 export const SETTINGS_VERSION = 2;
+// 插件字体大小：一个整数。base 是设计时的正文字号，各档字号按「填的数 / base」等比放大缩小。
+export const FONT_SIZE = { base: 12, min: 10, max: 16 };
+// 比赛评分预测最多缓存几场比赛：设置里能填的范围。所有比赛的数据存在一个键里，场数越多读写越慢，所以有上限。
+export const PREDICTION_CACHE_CONTESTS = { min: 1, max: 25 };
 // 原版默认设置；组件不得另行维护默认值副本。
 // 第一层按菜单页签归档：通用、外观、难度分、比赛、用户、快捷键。
 export const DEFAULT_SETTINGS = {
@@ -9,20 +13,32 @@ export const DEFAULT_SETTINGS = {
   general: {
     lang: 'en',
     disableUpdateCheck: false,
+    fontSize: FONT_SIZE.base,
     menuSize: { enabled: false, width: null, height: null },
     menuPosition: { enabled: false, x: null, y: null, reference: 'button', panelSize: null },
   },
   // 外观
   appearance: {
-    acHighlight: { enabled: true, color: 'rgba(167, 219, 255, 0.39)' },
+    // 整行高亮提交过的题目：color 是已通过的底色，rejectedColor 是提交过但没通过的底色。
+    acHighlight: {
+      enabled: true,
+      color: 'rgba(167, 219, 255, 0.39)',
+      rejectedColor: 'rgba(255, 167, 167, 0.3)',
+    },
     langIcon: { enabled: true, size: 1.6 },
     shortVerdict: true,
+    // 隐藏判题状态里的测试点信息（on test 3 这样的）。
+    hideVerdictTests: false,
     timeFormat: {
       enabled: true,
       format: 'YYYY/MM/DD HH:mm',
     },
     // 题目标签的隐藏：hide 是总开关，hideRating 连难度分标签一起隐藏，keepSolved 已通过的题目不隐藏。
     tags: { hide: false, hideRating: false, keepSolved: false },
+    // 侧栏「最新动态」排成规整的两行一条：作者一行，标题另起一行完整显示，条目之间有分隔线。
+    formatRecentActions: true,
+    // 格式化之后，标题要不要缩进到和作者名的左边对齐；默认不缩进，从这一条的最左边起，在头像的正下方。
+    indentRecentActionTitles: false,
   },
   // 难度分
   ratings: {
@@ -57,10 +73,20 @@ export const DEFAULT_SETTINGS = {
       ratedRank: true,
       analysis: true,
       followRatingStyle: true,
+      // 刷新预测时把页面上的榜单表格也换成最新的。
+      syncStandings: true,
       // 最多保留最近几场比赛的预测数据。
       cacheContests: 10,
     },
-    participationTags: { enabled: true, rated: true, unrated: true, virtual: true },
+    participationTags: {
+      enabled: true,
+      rated: true,
+      unrated: true,
+      virtual: true,
+      untrusted: true,
+      practice: true,
+      ghost: true,
+    },
   },
   // 用户
   user: {
@@ -76,11 +102,13 @@ export const DEFAULT_SETTINGS = {
       followRatingSource: true,
       followRatingStyle: true,
       includeTeams: true,
-      // 难度分布显示什么：count 题数、share 占已解决题数的比例、coverage 分段占比（覆盖了题库里这一档的多少）。
-      // 在图表上切换，不在菜单里。
+      // 难度分布和标签分布显示什么，两张图共用，在哪一张上切换都一样：count 题数、share 占已解决题数的比例、
+      // coverage 题库覆盖（覆盖了题库里这一档、或带这个标签的题的多少）。在图表上切换，不在菜单里。
+      // 这一项原来只管难度分布，标签分布另有一项；合并时沿用了它的名字，没有改名：
+      // 改名的话，升级时还开着的旧版本页面不认新名字，保存设置时会把它丢掉。
       ratingsMode: 'count',
-      // 标签分布显示什么，取值同上；coverage 在这里是覆盖了题库里带这个标签的多少题。
-      tagsMode: 'count',
+      // 参赛类型分布数什么：submissions 提交次数，contests 比赛场数。在图表上切换。
+      typesMode: 'submissions',
       // 刷题作息统计多长时间以内的提交：all 全部、year 近一年、quarter 近 90 天、month 近 30 天、
       // week 近 7 天。在图表上切换，不在菜单里。
       hoursSpan: 'all',
@@ -115,8 +143,10 @@ export const DEFAULT_SETTINGS = {
   },
   // 快捷键。键名是动作的标识，不是设置项的路径。
   shortcuts: {
-    hideTags: 'Shift+H',
+    // 先后照菜单里的页签和各页里选项的顺序。
     menuLanguage: 'Shift+M', // Menu language：切换菜单语言，不与语言图标的 Shift+L 冲突。
+    hideTags: 'Shift+H',
+    hideVerdictTests: 'Shift+N', // Number：测试点编号；Shift+T 已经给了时间格式。
     acHighlight: 'Shift+B', // Background：整行背景高亮，避开头像使用的 Shift+A。
     langIcon: 'Shift+L',
     shortVerdict: 'Shift+S',
@@ -126,5 +156,6 @@ export const DEFAULT_SETTINGS = {
     displayStyle: 'Shift+F',
     predictionEnabled: 'Shift+P', // Prediction：比赛评分预测总开关。
     userAvatar: 'Shift+A',
+    userAnalytics: 'Shift+D', // Data：用户数据分析总开关。
   },
 };

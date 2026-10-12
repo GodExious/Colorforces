@@ -360,16 +360,89 @@ export function attemptsDistribution(collected) {
   return buckets;
 }
 
-// 参赛类型分布：全部提交按提交时的参赛身份计数。
-// 常见的四种按固定顺序排在前面（正式参赛、虚拟参赛、未评级参赛、练习），没有的记 0；其余的身份有才列出。
-export const PARTICIPATION_TYPES = ['CONTESTANT', 'VIRTUAL', 'OUT_OF_COMPETITION', 'PRACTICE'];
-export function participationDistribution(dataset, { includeTeams = true } = {}) {
-  const counts = new Map(PARTICIPATION_TYPES.map((type) => [type, 0]));
+// 一条提交属于哪场比赛：题号开头的数字就是比赛编号（1000A、1000B2 都是第 1000 场）。
+const contestOf = (dataset, row) => parseInt(dataset.problems[row[ROW.problem]], 10);
+
+// 参赛类型分布：全部提交按提交时的参赛身份归类，每种身份下再分个人交的（solo）和以队伍的名义交的（team）。
+// 队伍指接口里带队伍编号的提交，只有一名成员的队伍也算（见 pack.js）。
+// by 决定数什么：
+// - 'submissions'（默认）数提交的次数。各项互不重叠，全部加起来就是全部提交。
+// - 'contests' 数比赛的场数：这一格里的提交来自多少场不同的比赛。同一场比赛可能出现在好几格里
+//   （赛中交过、赛后又练过），所以各格加起来会多于参加过的场数。
+// 返回 [{ type, solo, team }]。
+// 常见的四种按固定顺序排在前面（正式参赛、虚拟参赛、未评级参赛、练习），接着是「成绩被取消」，没有的记 0；
+// 其余的身份有才列出。
+// 不计入队伍提交时（includeTeams 为假）队伍提交整个不算，team 都是 0。
+//
+// 「成绩被取消」不是接口里的参赛身份，是从提交结果认出来的：某一场比赛里，赛时的提交（正式参赛或未评级参赛）
+// 至少有一次、并且全部是 SKIPPED。原站取消一个人某一场的成绩时就是把他这一场的提交全部标成跳过（有的还会把身份
+// 改成未评级参赛）。只有一部分被跳过的不算：按分数计的赛制里重交之后旧的那次也会被标成跳过，那是正常的。
+// 这样的比赛，赛时的提交都归到这一项，不再算进正式参赛或未评级参赛；赛后练习、虚拟参赛的提交不受影响。
+// 个人交的和以队伍的名义交的分开认。
+export const CANCELLED = 'CANCELLED';
+export const PARTICIPATION_TYPES = [
+  'CONTESTANT',
+  'VIRTUAL',
+  'OUT_OF_COMPETITION',
+  'PRACTICE',
+  CANCELLED,
+];
+const IN_CONTEST = new Set(['CONTESTANT', 'OUT_OF_COMPETITION']);
+// 成绩被取消的比赛：「solo 或 team|比赛编号」的集合。
+function cancelledContests(dataset, includeTeams) {
+  const skipped = dataset.verdicts.indexOf('SKIPPED');
+  const found = new Set();
+  if (skipped < 0) return found;
+  // 每一场赛时提交的总数和其中被跳过的数。
+  const tally = new Map();
   eachRow(dataset, includeTeams, (row) => {
-    const type = dataset.types[row[ROW.type]] || 'PRACTICE';
-    counts.set(type, (counts.get(type) || 0) + 1);
+    if (!IN_CONTEST.has(dataset.types[row[ROW.type]])) return;
+    const key = `${row[ROW.team] ? 'team' : 'solo'}|${contestOf(dataset, row)}`;
+    const item = tally.get(key) || tally.set(key, [0, 0]).get(key);
+    item[0]++;
+    if (row[ROW.verdict] === skipped) item[1]++;
   });
-  return [...counts].map(([type, count]) => ({ type, count }));
+  for (const [key, [total, lost]] of tally) if (lost === total) found.add(key);
+  return found;
+}
+export function participationDistribution(
+  dataset,
+  { includeTeams = true, by = 'submissions' } = {},
+) {
+  const counts = new Map(PARTICIPATION_TYPES.map((type) => [type, { type, solo: 0, team: 0 }]));
+  const seen = by === 'contests' ? new Set() : null;
+  const cancelled = cancelledContests(dataset, includeTeams);
+  eachRow(dataset, includeTeams, (row) => {
+    const field = row[ROW.team] ? 'team' : 'solo';
+    let type = dataset.types[row[ROW.type]] || 'PRACTICE';
+    if (IN_CONTEST.has(type) && cancelled.has(`${field}|${contestOf(dataset, row)}`))
+      type = CANCELLED;
+    if (!counts.has(type)) counts.set(type, { type, solo: 0, team: 0 });
+    if (seen) {
+      const key = `${type}|${field}|${contestOf(dataset, row)}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+    }
+    counts.get(type)[field]++;
+  });
+  return [...counts.values()];
+}
+
+// 难度分纵轴的范围和刻度间隔，两端对齐：先挑一个整齐的间隔，上下限都取它的整数倍，刻度之间一样远。
+// lowest、highest 是要画的难度分里最低和最高的。下面留 200 分的空（纵轴不从 0 起，最矮的柱子也得有一截高度）；
+// 间隔从小到大挑第一个能让刻度不超过六个的。没有数据时给一个空的范围。
+const AXIS_STEPS = [100, 200, 250, 500, 1000];
+export function difficultyAxis(lowest, highest) {
+  if (!Number.isFinite(lowest) || !Number.isFinite(highest))
+    return { min: 0, max: 500, interval: 100 };
+  const floor = Math.max(0, lowest - 200);
+  const spans = (step) => Math.ceil(highest / step) - Math.floor(floor / step);
+  const interval = AXIS_STEPS.find((step) => spans(step) <= 5) ?? AXIS_STEPS.at(-1);
+  return {
+    min: Math.floor(floor / interval) * interval,
+    max: Math.ceil(highest / interval) * interval,
+    interval,
+  };
 }
 
 // 比赛速度：赛中的提交按「开赛后第几分钟」分段。每段的提交数（submissions）和通过数（solved）；

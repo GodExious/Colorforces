@@ -6,6 +6,7 @@ import { HISTORY } from '../../../../../../../../features/user/analytics/rating-
 import { mixHex } from '../../../../../../../../utils/color.js';
 import CompareCard from '../../bases/CompareCard/CompareCard.vue';
 import { useCompareChart } from '../../../composables/compare-chart.js';
+import { ratingPaint } from '../../../utils/rating-paint.js';
 
 // 背景的色带是自己画的图形，在这里登记。
 use([CustomChart]);
@@ -37,15 +38,34 @@ const lines = () =>
     rows: entry.history.rows,
     names: entry.history.contests,
   }));
+// 最高的那条线上面，再往上露出多少分的高一档色带。
+const NEXT_BAND = 100;
 // 评级轴取整到百位，上下各留一点空。
 function axis(rows) {
   const ratings = rows.map((row) => row[HISTORY.rating]);
+  const top = Math.max(...ratings);
   const min = Math.floor((Math.min(...ratings) - 40) / 100) * 100;
-  const max = Math.ceil((Math.max(...ratings) + 40) / 100) * 100;
+  // 往上多露出一截高一档的色带：图里最高到了哪一档，就把再上面一档的底边和一小截颜色也画出来，
+  // 下一个目标在哪、还差多少一眼看得到。已经在最高一档的，上面没有了，不用加。
+  const next = BANDS.map(([from]) => from).find((edge) => edge > top);
+  const max = Math.max(
+    Math.ceil((top + 40) / 100) * 100,
+    next === undefined ? -Infinity : next + NEXT_BAND,
+  );
   // 纵轴的刻度标在档位的分界上，和原站的评级图一样；范围里的分界太少时用自动的刻度。
   const edges = BANDS.map(([from]) => from).filter((edge) => edge > min && edge < max);
-  // 评级写成不带千位分隔符的数字。
-  return { min, max, ticks: edges.length >= 2 ? edges : null, format: (value) => String(value) };
+  // 评级写成不带千位分隔符的数字，颜色用它所在档位的（和近期平均难度、难度分布的刻度一样）。
+  // 取色的函数是图表画刻度时才调用的，那时读到的设置不会被记成这张图的依赖；所以在这里先取一次色，
+  // 难度分的显示样式一换（比如按快捷键），这张图才知道要重画刻度。这张图别的地方都不跟难度分样式走。
+  const tone = (value) => ratingPaint(Number(value)).text;
+  tone(min);
+  return {
+    min,
+    max,
+    ticks: edges.length >= 2 ? edges : null,
+    format: (value) => String(value),
+    color: tone,
+  };
 }
 // 背景的色带，只画落在纵轴范围里的部分。纵轴范围变了，色带带着过渡挪到新位置。
 function bands({ min, max, at }) {

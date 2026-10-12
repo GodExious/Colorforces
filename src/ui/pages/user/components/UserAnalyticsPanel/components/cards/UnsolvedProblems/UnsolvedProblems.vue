@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { translate as t } from '../../../../../../../../i18n/index.js';
 import { bucketRating } from '../../../../../../../../features/user/analytics/stats.js';
 import { problemLink } from '../../../../../../../../utils/problem.js';
@@ -43,36 +43,152 @@ const rows = computed(() => {
 });
 const head = computed(() => rows.value.slice(0, COLLAPSED));
 const rest = computed(() => rows.value.slice(COLLAPSED));
+
+/*
+ * 列表变了之后的过渡。难度分换来源（比如开关 CList 难度分）时，每道题的分数、颜色都可能变，整张列表按新分数重排：
+ * 行从原来的位置滑到新位置，颜色从原来的渐变成新的，分数淡入；原来看不见、现在排进来的行淡入，
+ * 现在看不见了的行在原地淡出。
+ * 颜色不能只靠样式里的过渡：重排时浏览器会把挪了位置的节点先摘下来再放回去，放回去的节点没有「之前的颜色」，
+ * 样式过渡不会启动。所以这里记下变之前的颜色，变完之后自己从旧颜色过渡到新颜色。
+ * 两段列表（前十道和其余的）是两个容器，行换了容器就是新节点，也靠同一份「题号 → 原来的位置」接上。
+ */
+const lists = ref(null);
+const MOVE = { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)' };
+const TINT = { duration: 300, easing: 'ease' };
+const still = () => document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches;
+const onScreen = (rect) => rect.bottom > 0 && rect.top < window.innerHeight;
+// 页面上现在看得见的各行（收着的那一段不算）。
+function shownRows(root) {
+  return [...root.querySelectorAll('li[data-unsolved]')].filter(
+    (item) => expanded.value || !item.closest('.cf-expand-region'),
+  );
+}
+let pending = null;
+// 界面更新之前：记下各行的位置；更新之后就看不见了的行，先复制一份留着淡出。
+watch(rows, (next, previous) => {
+  pending = null;
+  const root = lists.value;
+  if (!root || still()) return;
+  const staying = new Set((expanded.value ? next : next.slice(0, COLLAPSED)).map((row) => row.key));
+  const origin = root.getBoundingClientRect();
+  const before = new Map();
+  const leaving = [];
+  for (const item of shownRows(root)) {
+    const rect = item.getBoundingClientRect();
+    if (!rect.height) continue;
+    before.set(item.dataset.unsolved, rect);
+    if (!staying.has(item.dataset.unsolved) && onScreen(rect))
+      leaving.push({
+        node: item.cloneNode(true),
+        left: rect.left - origin.left,
+        top: rect.top - origin.top,
+        width: rect.width,
+      });
+  }
+  pending = { before, leaving, paints: new Map((previous || []).map((row) => [row.key, row])) };
+});
+// 界面更新之后：从原来的位置、原来的颜色过渡过来。
+watch(
+  rows,
+  (next) => {
+    const job = pending;
+    pending = null;
+    const root = lists.value;
+    if (!job || !root) return;
+    const now = new Map(next.map((row) => [row.key, row]));
+    for (const item of shownRows(root)) {
+      const rect = item.getBoundingClientRect();
+      if (!rect.height) continue;
+      const key = item.dataset.unsolved;
+      const was = job.before.get(key);
+      if (!was) {
+        if (onScreen(rect)) item.animate([{ opacity: 0 }, { opacity: 1 }], TINT);
+        continue;
+      }
+      // 变之前和变之后都在窗口外面的行不用动。
+      if (!onScreen(rect) && !onScreen(was)) continue;
+      const dx = was.left - rect.left;
+      const dy = was.top - rect.top;
+      if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5)
+        item.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], MOVE);
+      const old = job.paints.get(key);
+      const row = now.get(key);
+      const link = item.firstElementChild;
+      if (!old || !row || !link) continue;
+      const from = old.style;
+      const to = row.style;
+      if (from['--cf-unsolved-tint'] !== to['--cf-unsolved-tint'])
+        link.animate(
+          [
+            {
+              backgroundColor: from['--cf-unsolved-tint'],
+              borderColor: from['--cf-unsolved-edge'],
+            },
+            { backgroundColor: to['--cf-unsolved-tint'], borderColor: to['--cf-unsolved-edge'] },
+          ],
+          TINT,
+        );
+      if (from['--cf-unsolved-ink'] !== to['--cf-unsolved-ink'])
+        for (const mark of link.querySelectorAll('b, i'))
+          mark.animate(
+            [{ color: from['--cf-unsolved-ink'] }, { color: to['--cf-unsolved-ink'] }],
+            TINT,
+          );
+      if (old.rating !== row.rating)
+        link.querySelector('i')?.animate([{ opacity: 0 }, { opacity: 1 }], TINT);
+    }
+    if (!job.leaving.length) return;
+    // 淡出的那几行放在盖在列表上的一层里，各自留在原来的位置。
+    const layer = document.createElement('ul');
+    layer.className = 'cf-analytics-unsolved cf-analytics-unsolved-ghosts';
+    layer.setAttribute('aria-hidden', 'true');
+    for (const ghost of job.leaving) {
+      ghost.node.removeAttribute('data-unsolved');
+      Object.assign(ghost.node.style, {
+        left: ghost.left + 'px',
+        top: ghost.top + 'px',
+        width: ghost.width + 'px',
+      });
+      layer.append(ghost.node);
+    }
+    root.append(layer);
+    layer
+      .animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in' })
+      .finished.catch(() => {})
+      .then(() => layer.remove());
+  },
+  { flush: 'post' },
+);
 </script>
 
 <template>
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsUnsolvedTitle') }}</span>
+        <span>{{ t('analyticsUnsolvedTitle') }}</span>
       </h4>
       <div class="cf-analytics-card-tools">
         <RatingSource />
         <Transition name="cf-analytics-swap" mode="out-in">
-          <span :key="problems.length" class="cf-analytics-source" data-cf-language-text>{{
+          <span :key="problems.length" class="cf-analytics-source">{{
             t('analyticsUnsolvedCount', problems.length)
           }}</span>
         </Transition>
       </div>
     </header>
     <p v-if="!rows.length" class="cf-analytics-card-empty">
-      <span data-cf-language-text>{{ t('analyticsUnsolvedEmpty') }}</span>
+      <span>{{ t('analyticsUnsolvedEmpty') }}</span>
     </p>
     <template v-else>
       <!-- 每道题一行：题号、名称、尝试次数、难度分。整行是指向题目页的链接。
            两段列表放在一个纵向弹性容器里：收放过渡靠负的下外边距抵掉间隔，这一招在网格布局里不生效。 -->
-      <div class="cf-analytics-unsolved-lists">
+      <div ref="lists" class="cf-analytics-unsolved-lists">
         <ul class="cf-analytics-unsolved">
-          <li v-for="row in head" :key="row.key">
+          <li v-for="row in head" :key="row.key" :data-unsolved="row.key">
             <a :href="row.href" target="_blank" rel="noopener noreferrer" :style="row.style">
               <b>{{ row.key }}</b>
               <span class="cf-analytics-unsolved-name">{{ row.name }}</span>
-              <span class="cf-analytics-unsolved-tries" data-cf-language-text>{{ row.tries }}</span>
+              <span class="cf-analytics-unsolved-tries">{{ row.tries }}</span>
               <i>{{ row.rating }}</i>
             </a>
           </li>
@@ -80,13 +196,11 @@ const rest = computed(() => rows.value.slice(COLLAPSED));
         <!-- 其余的题收在下面，展开和收起带高度过渡。 -->
         <ExpandTransition v-if="rest.length" :show="expanded">
           <ul class="cf-analytics-unsolved">
-            <li v-for="row in rest" :key="row.key">
+            <li v-for="row in rest" :key="row.key" :data-unsolved="row.key">
               <a :href="row.href" target="_blank" rel="noopener noreferrer" :style="row.style">
                 <b>{{ row.key }}</b>
                 <span class="cf-analytics-unsolved-name">{{ row.name }}</span>
-                <span class="cf-analytics-unsolved-tries" data-cf-language-text>{{
-                  row.tries
-                }}</span>
+                <span class="cf-analytics-unsolved-tries">{{ row.tries }}</span>
                 <i>{{ row.rating }}</i>
               </a>
             </li>
@@ -102,7 +216,7 @@ const rest = computed(() => rows.value.slice(COLLAPSED));
           @click="expanded = !expanded"
         >
           <Transition name="cf-analytics-swap" mode="out-in">
-            <span :key="expanded" data-cf-language-text>{{
+            <span :key="expanded">{{
               expanded ? t('analyticsTagsLess') : t('analyticsUnsolvedMore', rows.length)
             }}</span>
           </Transition>
@@ -132,10 +246,22 @@ const rest = computed(() => rows.value.slice(COLLAPSED));
   padding: 0 0 4px;
 }
 .cf-analytics-unsolved-lists {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
   margin-bottom: -4px;
+}
+/* 重排时淡出的那几行：盖在列表上的一层，不分栏，每一行按原来的位置摆。 */
+.cf-analytics-unsolved.cf-analytics-unsolved-ghosts {
+  position: absolute;
+  inset: 0;
+  columns: auto;
+  pointer-events: none;
+}
+.cf-analytics-unsolved-ghosts li {
+  position: absolute;
+  box-sizing: border-box;
 }
 /* 每一行本身就是一枚按难度档位着色的标签：浅底、细边。
    链接的颜色显式写出，不受原站 a:link / a:visited 的影响。 */
@@ -153,9 +279,9 @@ const rest = computed(() => rows.value.slice(COLLAPSED));
   line-height: 18px;
   text-decoration: none;
   transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease;
+    background-color var(--cf-duration-base) ease,
+    border-color var(--cf-duration-base) ease,
+    color var(--cf-duration-base) ease;
 }
 /* 悬停时加深：底色往边线色靠，边线换成这一档的文字色，题目名称也深一级。 */
 .cf-analytics .cf-analytics-unsolved a:is(:hover, :focus-visible) {
@@ -169,7 +295,7 @@ const rest = computed(() => rows.value.slice(COLLAPSED));
   font-style: normal;
   font-weight: var(--cf-font-weight-semibold);
   font-variant-numeric: tabular-nums;
-  transition: color 0.3s ease;
+  transition: color var(--cf-duration-slow) ease;
 }
 .cf-analytics-unsolved i {
   text-align: right;

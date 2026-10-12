@@ -70,7 +70,7 @@ const rows = computed(() =>
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsChartVerdicts') }}</span>
+        <span>{{ t('analyticsChartVerdicts') }}</span>
       </h4>
     </header>
     <BarList

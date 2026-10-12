@@ -154,7 +154,21 @@ const hours = computed(() =>
 );
 const verdicts = computed(() => verdictDistribution(state.dataset, teams.value));
 const speed = computed(() => contestSpeed(state.dataset, teams.value));
-const types = computed(() => participationDistribution(state.dataset, teams.value));
+// 参赛类型分布可以按提交次数或比赛场数看（在图表上切换）。两种都算好交给图表：柱子画当前选的那一种，
+// 悬停提示里两种都写。
+const types = computed(() => {
+  const contests = new Map(
+    participationDistribution(state.dataset, { ...teams.value, by: 'contests' }).map((item) => [
+      item.type,
+      item,
+    ]),
+  );
+  return participationDistribution(state.dataset, teams.value).map(({ type, solo, team }) => ({
+    type,
+    submissions: { solo, team },
+    contests: { solo: contests.get(type)?.solo ?? 0, team: contests.get(type)?.team ?? 0 },
+  }));
+});
 const languages = computed(() =>
   languageDistribution(state.dataset, { ...teams.value, familyOf: languageFamily }),
 );
@@ -215,28 +229,8 @@ const errorText = computed(() =>
     ? t('analyticsErrorApi', lastError.value.comment)
     : t(lastError.value.code === 'timeout' ? 'analyticsErrorTimeout' : 'analyticsErrorNetwork'),
 );
-// 用鼠标点过的按钮不留焦点。否则之后一按键盘（比如用 Shift 开头的快捷键），
-// 浏览器会认为在用键盘操作，给还握着焦点的那个按钮画出焦点框。
-// 用键盘按下的按钮（点击次数为 0）不处理，Tab 键操作时焦点框照常显示。
-function releasePointerFocus(event) {
-  if (event.detail > 0) event.target.closest?.('button')?.blur();
-}
-// 切换语言时，面板里的文字从左到右重新展开，和菜单里的效果一致。
+// 面板的根元素。切换语言时的过渡由 utils/language-wave.js 统一处理：面板是其中一个界面（根元素上的 data-cf-language-surface）。
 const panel = ref(null);
-watch(
-  () => appSettings.general.lang,
-  () => {
-    if (!panel.value || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    for (const element of panel.value.querySelectorAll('[data-cf-language-text]')) {
-      if (!element.getClientRects().length) continue;
-      element.animate(
-        [{ clipPath: 'inset(-0.2em 100% -0.2em 0)' }, { clipPath: 'inset(-0.2em 0% -0.2em 0)' }],
-        { duration: 280, easing: 'cubic-bezier(.22,1,.36,1)' },
-      );
-    }
-  },
-  { flush: 'post' },
-);
 </script>
 
 <template>
@@ -246,8 +240,8 @@ watch(
       <section
         ref="panel"
         class="cf-analytics"
+        data-cf-language-surface
         :lang="appSettings.general.lang"
-        @click="releasePointerFocus"
       >
         <header class="cf-analytics-header">
           <div class="cf-analytics-brand">
@@ -259,7 +253,7 @@ watch(
               />
             </span>
             <h3 class="cf-analytics-title">
-              <span data-cf-language-text>{{ t('analyticsTitle') }}</span>
+              <span>{{ t('analyticsTitle') }}</span>
             </h3>
             <!-- 头像和用户名取自主页本身：用户名沿用原站按评级着色的样式。 -->
             <span class="cf-analytics-user">
@@ -271,7 +265,7 @@ watch(
           </div>
           <Transition name="cf-analytics-swap">
             <div v-if="state.dataset" class="cf-analytics-meta">
-              <span class="cf-analytics-updated" data-cf-language-text
+              <span class="cf-analytics-updated"
                 >{{ t('analyticsUpdatedLabel') }}{{ updated.time
                 }}<sup class="cf-analytics-zone">{{ updated.zone }}</sup
                 >{{ t('analyticsUpdatedAgo', updated.ago) }}</span
@@ -284,7 +278,7 @@ watch(
                 @click="loadAnalytics({ force: true })"
               >
                 <InlineSvg :source="assets.syncIcon" />
-                <span data-cf-language-text>{{ t('analyticsRefresh') }}</span>
+                <span>{{ t('analyticsRefresh') }}</span>
               </button>
             </div>
           </Transition>
@@ -303,10 +297,10 @@ watch(
                   id-prefix="cf-analytics-load"
                 />
               </span>
-              <span data-cf-language-text>{{ t('analyticsLoadButton') }}</span>
+              <span>{{ t('analyticsLoadButton') }}</span>
             </button>
             <p class="cf-analytics-start-note">
-              <span data-cf-language-text>{{ t('analyticsLoadNote') }}</span>
+              <span>{{ t('analyticsLoadNote') }}</span>
             </p>
           </div>
         </ExpandTransition>
@@ -323,9 +317,9 @@ watch(
 
         <ExpandTransition :show="Boolean(state.error)">
           <div class="cf-analytics-error" role="alert">
-            <span data-cf-language-text>{{ errorText }}</span>
+            <span>{{ errorText }}</span>
             <button type="button" class="cf-analytics-link" @click="loadAnalytics({ force: true })">
-              <span data-cf-language-text>{{ t('analyticsRetry') }}</span>
+              <span>{{ t('analyticsRetry') }}</span>
             </button>
           </div>
         </ExpandTransition>
@@ -333,7 +327,7 @@ watch(
         <ExpandTransition :show="Boolean(state.dataset)">
           <div v-if="state.dataset" class="cf-analytics-body">
             <p v-if="!collected.submissions" class="cf-analytics-empty">
-              <span data-cf-language-text>{{ t('analyticsEmpty') }}</span>
+              <span>{{ t('analyticsEmpty') }}</span>
             </p>
             <template v-else>
               <ExpandTransition :show="charts.summary">
@@ -388,7 +382,7 @@ watch(
                 <ContestSpeed :buckets="speed" />
               </ExpandTransition>
               <ExpandTransition :show="charts.types">
-                <ParticipationDistribution :types="types" />
+                <ParticipationDistribution :types="types" :teams="teams.includeTeams" />
               </ExpandTransition>
               <ExpandTransition :show="charts.languages">
                 <LanguageDistribution :languages="languages" />
@@ -436,16 +430,12 @@ watch(
 .cf-analytics .cf-expand-region {
   min-width: 0;
 }
-/* 切换语言时文字用裁剪展开，行内元素要有自己的盒子才裁得动。 */
-.cf-analytics span[data-cf-language-text] {
-  display: inline-block;
-}
 /* 小块内容的出现、消失与替换：淡入淡出并略微位移。 */
 .cf-analytics-swap-enter-active,
 .cf-analytics-swap-leave-active {
   transition:
-    opacity 0.18s ease,
-    transform 0.18s ease;
+    opacity var(--cf-duration-base) ease,
+    transform var(--cf-duration-base) ease;
 }
 .cf-analytics-swap-enter-from,
 .cf-analytics-swap-leave-to {
@@ -491,7 +481,7 @@ watch(
   margin: 0;
   padding: 0;
   color: var(--cf-gray-800);
-  font-size: 15px;
+  font-size: calc(15px * var(--cf-font-scale));
   font-weight: var(--cf-font-weight-bold);
   line-height: 22px;
 }
@@ -517,10 +507,10 @@ watch(
   box-sizing: border-box;
   object-fit: cover;
   transition:
-    width 0.26s cubic-bezier(0.22, 1, 0.36, 1),
-    height 0.18s ease,
-    margin-right 0.26s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.18s ease;
+    width var(--cf-duration-moderate) var(--cf-ease-out),
+    height var(--cf-duration-base) ease,
+    margin-right var(--cf-duration-moderate) var(--cf-ease-out),
+    opacity var(--cf-duration-base) ease;
 }
 :root.cf-hide-userAvatar .cf-analytics-avatar {
   width: 0;
@@ -539,14 +529,14 @@ watch(
 .cf-analytics-zone {
   margin-left: 1px;
   vertical-align: super;
-  font-size: 9px;
+  font-size: calc(9px * var(--cf-font-scale));
   line-height: 0;
 }
 /* 图表里的颜色变化（切换难度分样式、悬停）平滑过渡，不突变。 */
 .cf-analytics-chart svg :is(path, text) {
   transition:
-    fill 0.3s ease,
-    stroke 0.3s ease;
+    fill var(--cf-duration-slow) ease,
+    stroke var(--cf-duration-slow) ease;
 }
 .cf-analytics-meta {
   display: flex;
@@ -572,14 +562,14 @@ watch(
   line-height: 18px;
   cursor: pointer;
   transition:
-    background-color 0.16s ease,
-    border-color 0.16s ease,
-    box-shadow 0.16s ease;
+    background-color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease,
+    box-shadow var(--cf-duration-fast) ease;
 }
 .cf-analytics-refresh svg {
   width: 12px;
   height: 12px;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.5s var(--cf-ease-out);
 }
 .cf-analytics-refresh:enabled:hover {
   border-color: color-mix(in srgb, var(--cf-analytics-accent) 60%, #dfe4ec);
@@ -635,13 +625,13 @@ watch(
     0 1px 2px #1f2d3d14,
     inset 0 1px 0 #fff;
   transition:
-    border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    transform 0.18s ease;
+    border-color var(--cf-duration-base) ease,
+    box-shadow var(--cf-duration-base) ease,
+    transform var(--cf-duration-base) ease;
 }
 /* 悬停时花朵转过一片花瓣的角度，八瓣的花转完后轮廓不变，只有颜色换了位置。 */
 .cf-analytics-load-flower {
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.6s var(--cf-ease-out);
 }
 .cf-analytics-load:hover {
   border-color: color-mix(in srgb, var(--cf-analytics-accent) 70%, #dfe4ec);
@@ -801,27 +791,27 @@ watch(
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity 0.12s ease,
+    opacity var(--cf-duration-fast) ease,
     visibility 0s linear 0.12s;
 }
 .cf-analytics-chart-tip.is-visible {
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.12s ease;
+  transition: opacity var(--cf-duration-fast) ease;
 }
 /* 提示显示着的时候移到相邻的柱子上：滑过去，不是跳过去。刚出现时没有这个类，直接放到位。 */
 .cf-analytics-chart-tip.is-visible.is-gliding {
   transition:
-    left 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-    top 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.12s ease;
+    left var(--cf-duration-base) var(--cf-ease-out),
+    top var(--cf-duration-base) var(--cf-ease-out),
+    opacity var(--cf-duration-fast) ease;
 }
 /* 提示的面板。默认白底灰边；难度分布会按档位把背板和边线换成对应的颜色。 */
 .cf-analytics-tip {
   padding: 6px 10px;
   border: 1px solid #dfe4ec;
   border-radius: var(--cf-radius-md);
-  background: #fff;
+  background: var(--cf-white-surface);
   box-shadow: 0 4px 14px #1f2d3d1f;
   color: var(--cf-gray-700);
   font-size: var(--cf-font-size-base);
@@ -830,9 +820,9 @@ watch(
   font-variant-numeric: tabular-nums;
   /* 从一档移到另一档时，底色和边线色渐变过去；固定与放开时阴影渐变。 */
   transition:
-    background-color 0.22s ease,
-    border-color 0.22s ease,
-    box-shadow 0.22s ease;
+    background-color var(--cf-duration-base) ease,
+    border-color var(--cf-duration-base) ease,
+    box-shadow var(--cf-duration-base) ease;
 }
 /* 标题行：开头加粗的一段和后面的说明排成一行。 */
 .cf-analytics-tip-head {
@@ -843,7 +833,7 @@ watch(
 }
 .cf-analytics-tip strong {
   font-weight: var(--cf-font-weight-bold);
-  transition: color 0.22s ease;
+  transition: color var(--cf-duration-base) ease;
 }
 /* 提示被点击固定住之后才接收鼠标，可以移进去点里面的链接；平时不挡下面的图形。 */
 .cf-analytics-chart-tip.is-pinned.is-visible {
@@ -886,7 +876,7 @@ watch(
 }
 .cf-analytics-tip li :is(b, span, i) {
   padding: 0.5px 5px;
-  transition: background-color 0.16s ease;
+  transition: background-color var(--cf-duration-fast) ease;
 }
 .cf-analytics-tip li :is(b, i) {
   font-style: normal;
@@ -929,8 +919,8 @@ watch(
   text-decoration-color: color-mix(in srgb, currentColor 38%, transparent);
   text-underline-offset: 2px;
   transition:
-    background-color 0.16s ease,
-    text-decoration-color 0.16s ease;
+    background-color var(--cf-duration-fast) ease,
+    text-decoration-color var(--cf-duration-fast) ease;
 }
 .cf-analytics-tip li.is-action a:is(:hover, :focus-visible) span {
   text-decoration-color: currentColor;

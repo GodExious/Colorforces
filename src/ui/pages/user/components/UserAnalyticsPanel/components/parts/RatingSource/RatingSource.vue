@@ -8,7 +8,7 @@ import { usesClist } from '../../../composables/rating-source.js';
 
 <template>
   <Transition name="cf-analytics-swap" mode="out-in">
-    <span :key="usesClist" class="cf-analytics-source" data-cf-language-text>{{
+    <span :key="usesClist" class="cf-analytics-source">{{
       t(usesClist ? 'analyticsSourceClist' : 'analyticsSourceOfficial')
     }}</span>
   </Transition>

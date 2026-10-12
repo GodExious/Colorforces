@@ -16,6 +16,9 @@
 /* 弹窗主题 */
 @import './aurora-dialog.css';
 
+/* 换语言时的过渡 */
+@import './language-wave.css';
+
 /* 比赛 */
 @import './codeforces/contest/rating-prediction.css';
 
@@ -30,9 +33,11 @@
 @import './codeforces/appearance/ac-highlight.css';
 @import './codeforces/appearance/language-icons.css';
 @import './codeforces/appearance/problem-tags.css';
+@import './codeforces/appearance/recent-actions.css';
 @import './codeforces/appearance/time.css';
 @import './codeforces/appearance/verdicts.css';
 
 /* 用户 */
 @import './codeforces/user/avatars/teams.css';
 @import './codeforces/user/avatars/avatars.css';
+@import './codeforces/user/rating-graph.css';

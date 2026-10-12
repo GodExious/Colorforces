@@ -8,6 +8,7 @@ import { rankForRating } from '../../../../../../features/contest/rating-predict
 import { mixHex } from '../../../../../../utils/color.js';
 import { useChart } from './chart.js';
 import { grays } from '../utils/grays.js';
+import { scaled } from '../../../../../../utils/font-scale.js';
 
 // 折线、自己画的圆点和底部的范围选择在这里登记。
 use([CustomChart, LineChart, DataZoomSliderComponent]);
@@ -18,7 +19,13 @@ use([CustomChart, LineChart, DataZoomSliderComponent]);
 const FONT = 'verdana, arial, sans-serif';
 // 绘图区下面依次是时间轴的文字和范围选择的滑块。
 const SLIDER = 18;
-export const COMPARE_GRID = { left: 38, right: 10, top: 8, bottom: 22 + SLIDER + 10 };
+// 左边放纵轴的刻度、下边放时间轴的文字，这两处跟着插件字体大小走。
+export const compareGrid = () => ({
+  left: scaled(38),
+  right: 10,
+  top: 8,
+  bottom: scaled(22) + SLIDER + 10,
+});
 const DAY = 86400;
 const pad = (value) => String(value).padStart(2, '0');
 const dateText = (date) =>
@@ -49,8 +56,9 @@ function inSpan(rows, span) {
  * lines() 返回要画的线：[{ entry, rows, names }]，rows 是这条线上的各场（评级历史里的行），
  *   names 是和 rows 一一对应的比赛名称。
  * valueOf(row) 是一场比赛在纵轴上的数值。
- * axis(rows) 按选中的时间范围里的那些场（可能一场都没有）定纵轴：返回 { min, max, ticks, format, inverse, guides }，
+ * axis(rows) 按选中的时间范围里的那些场（可能一场都没有）定纵轴：返回 { min, max, ticks, format, color, inverse, guides }，
  *   ticks 是刻度所在的数值（不给就用自动的刻度），format 把刻度上的数值写成文字，
+ *   color 按数值给刻度文字取色（不给就用统一的灰），
  *   inverse 为真时数值小的在上面，guides 为真时每个刻度画一条浅色的横线。
  * backdrop({ min, max, at }) 可选，返回画在线后面的一个系列（比如评级的色带）；at 是时间轴上的一个时刻，给它定位用。
  */
@@ -81,10 +89,10 @@ export function useCompareChart({ accounts, lines, valueOf, axis, backdrop = nul
     const dotsBefore = lastDots;
     lastDots = new Map();
     const shown = lines();
-    const axisLabel = { fontSize: 10, fontFamily: FONT, color: ink.label };
+    const grid = compareGrid();
+    const axisLabel = { fontSize: scaled(10), fontFamily: FONT, color: ink.label };
     const all = accounts.drawn.flatMap((entry) => entry.history.rows);
-    if (!all.length)
-      return { grid: COMPARE_GRID, xAxis: { type: 'time' }, yAxis: { type: 'value' }, series: [] };
+    if (!all.length) return { grid, xAxis: { type: 'time' }, yAxis: { type: 'value' }, series: [] };
     const times = all.map((row) => row[HISTORY.time]);
     const from = Math.min(...times);
     const to = Math.max(...times);
@@ -97,10 +105,12 @@ export function useCompareChart({ accounts, lines, valueOf, axis, backdrop = nul
     const span = settled.value && zoom;
     const seen = shown.flatMap((line) => inSpan(line.rows, span));
     const scale = axis(seen.length ? seen : shown.flatMap((line) => line.rows));
-    const marks = scale.ticks ? { customValues: scale.ticks } : {};
-    const plot = width - COMPARE_GRID.left - COMPARE_GRID.right;
+    // 不指定刻度时要明确写成空：图表的配置是合并更新的，省略不写的话上一次指定的刻度还留着，
+    // 而那些刻度已经不在新的范围里，轴上就一个数都没有了。
+    const marks = { customValues: scale.ticks || null };
+    const plot = width - grid.left - grid.right;
     return {
-      grid: COMPARE_GRID,
+      grid,
       xAxis: {
         type: 'time',
         min: extent[0],
@@ -120,7 +130,13 @@ export function useCompareChart({ accounts, lines, valueOf, axis, backdrop = nul
         max: scale.max,
         inverse: Boolean(scale.inverse),
         axisTick: { show: false, ...marks },
-        axisLabel: { ...axisLabel, ...marks, formatter: scale.format },
+        // 刻度文字的颜色：图表给了取色的办法（评级曲线按档位取色）就用它的，否则是统一的灰。
+        axisLabel: {
+          ...axisLabel,
+          ...marks,
+          formatter: scale.format,
+          ...(scale.color ? { color: scale.color } : {}),
+        },
         // 横线跟着刻度走（图表库按刻度的位置画）。
         splitLine: { show: Boolean(scale.guides), lineStyle: { color: ink.faint } },
       },
@@ -132,8 +148,8 @@ export function useCompareChart({ accounts, lines, valueOf, axis, backdrop = nul
           // 只移动窗口，不筛掉窗口外的点：线要从窗口外连进来，不能在边上断开。
           filterMode: 'none',
           ...(zoom ? { startValue: zoom[0], endValue: zoom[1] } : { start: 0, end: 100 }),
-          left: COMPARE_GRID.left,
-          right: COMPARE_GRID.right,
+          left: grid.left,
+          right: grid.right,
           bottom: 4,
           height: SLIDER,
           // 在滑块的空白处拖动不新选一段范围，只能拖手柄和滑块本身，免得误操作。
@@ -155,7 +171,7 @@ export function useCompareChart({ accounts, lines, valueOf, axis, backdrop = nul
           handleStyle: { color: '#fff', borderColor: '#5b8fd6', borderWidth: 1 },
           emphasis: { handleStyle: { borderColor: '#3f76c4', borderWidth: 2 } },
           // 拖动时手柄旁标出范围两头的日期。
-          textStyle: { fontSize: 10, fontFamily: FONT, color: ink.label },
+          textStyle: { fontSize: scaled(10), fontFamily: FONT, color: ink.label },
           labelFormatter: (value) => dateText(new Date(value)),
         },
       ],
@@ -232,13 +248,14 @@ export function useCompareChart({ accounts, lines, valueOf, axis, backdrop = nul
       const at = chart.convertFromPixel({ seriesId }, [x, y]);
       if (!at) continue;
       // 只认绘图区里的点：选了时间范围之后，范围外的点被裁掉了，不该还能悬停到。
-      const right = chart.getWidth() - COMPARE_GRID.right;
+      const grid = compareGrid();
+      const right = chart.getWidth() - grid.right;
       // 先按时间找到最近的一场，再把它前后两场也比一比：线很陡的地方，时间最近的不一定是离得最近的。
       const middle = nearestIndex(rows, at[0] / 1000);
       const last = Math.min(rows.length - 1, middle + 2);
       for (let index = Math.max(0, middle - 2); index <= last; index++) {
         const point = pixelOf(chart, seriesId, rows[index]);
-        if (!point || point[0] < COMPARE_GRID.left || point[0] > right) continue;
+        if (!point || point[0] < grid.left || point[0] > right) continue;
         const distance = Math.hypot(point[0] - x, point[1] - y);
         if (distance <= REACH && (!best || distance < best.distance))
           best = { seriesId, dataIndex: index, line, distance };

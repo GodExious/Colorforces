@@ -8,6 +8,56 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+### v1.8.1
+`2026-10-13 01:25 UTC+8`
+
+**Added**
+1. Added an option to format Recent Actions in the sidebar.
+2. Added one roadmap item: multi-criteria problem filtering.
+3. Added three participation tags: untrusted, practice and ghost.
+4. Added a plugin font size option that scales the text of the menu, dialogs and the analytics panel, charts included.
+5. Added an option to hide test numbers in verdicts (such as on test 3). Off by default, with a shortcut to toggle it.
+6. The Shortcuts page can now clear all shortcuts at once.
+7. Team-rated contests such as VK Cup now get rating prediction and per-member rating analysis, and team participation types are divided and tagged in more detail.
+8. Row highlighting has a new background colour option for attempted but unsolved problems.
+
+**Optimized**
+1. The update notice now lists what changed in the new version.
+2. Improved the drawing, interaction and some descriptions of several charts in the user analytics panel, and added a shortcut to toggle it.
+3. Improved the transition animations of several plugin features.
+4. The participation type distribution in the user analytics panel now separates individuals from teams, can be viewed by submissions or by contests, and counts contests whose results were cancelled.
+5. Improved controls unexpectedly showing a focus ring in some cases.
+6. Improved the UI of the menu and some dialogs.
+7. Improved the style of the rating row on standings, restoring the lower height of the previous version.
+8. Standings now refresh automatically at intervals that depend on the contest phase, with improved transitions and some tooltip text.
+9. During a running contest, predictions for participants on the current page now use the live results shown on the page.
+10. The CList API Key guide is now a livelier animated demonstration.
+11. Improved some styles and tooltip text of the single-user rating analysis dialog on standings; accounts with fewer than 6 contests are now calculated with the newcomer rules and marked with a tag.
+12. Team formatting can now expand the members that the site collapses when a team has more than 3.
+13. Improved members of some ghost teams not being listed one per line on standings when team formatting is on.
+14. Contests that ended long ago without rating changes are treated as unrated, and their official participants get the unrated tag.
+15. Standardised the project style variables (font sizes, corner radii, font weights and transition durations); half-pixel font sizes are no longer used.
+16. Improved how time formatting applies to the sent and judged times on the submission page, and made the time zone label in table headers look the same on the contests and status pages.
+17. The number of cached contests is now capped at 25, so that the cache does not grow too large.
+18. Reduced noticeable stutter while pages such as standings are loading.
+19. Reduced the brief stutter when switching to the Storage page in the menu.
+
+**Fixed**
+1. Fixed the y-axis labels of the rating curve comparison disappearing after narrowing the time range.
+2. Fixed language switching not fully taking effect in some confirmation dialogs.
+3. Fixed rating prediction missing untrusted participants during running Div. 2, Div. 3, Div. 4 and Educational rounds, which made predictions inaccurate.
+4. Fixed live rating predictions treating some rated participants as first-time accounts and wrongly calculating them at 1400.
+5. Fixed the single-user rating analysis not taking tied ranks into account, which made its predictions too low.
+6. Fixed teams with an asterisk in their name being tagged as unrated.
+7. Fixed avatars displaying incorrectly when toggling team formatting on submission pages.
+8. Fixed standings of old unrated contests (such as ICPC mirrors) reporting a failed request.
+9. Fixed full-row backgrounds of attempted but unsolved problems staying after row highlighting is turned off.
+10. Fixed the colour picker jumping back and forth between colours when several pages are open.
+11. Fixed verdict abbreviations not being applied in places such as the title of the source popup.
+12. Fixed the time zone still being shown in each time cell of submission tables when time formatting is on, although the header already states it.
+
+---
+
 ### v1.8.0
 `2026-10-06 00:22 UTC+8`
 

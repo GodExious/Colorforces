@@ -13,6 +13,7 @@ export function submission({
   type = 'PRACTICE',
   relative = 2147483647,
   members = ['alice'],
+  teamId,
 } = {}) {
   return {
     id,
@@ -20,7 +21,12 @@ export function submission({
     creationTimeSeconds: time,
     relativeTimeSeconds: relative,
     problem: { contestId, index, name, type: 'PROGRAMMING', rating, tags },
-    author: { contestId, members: members.map((handle) => ({ handle })), participantType: type },
+    author: {
+      contestId,
+      members: members.map((handle) => ({ handle })),
+      participantType: type,
+      ...(teamId == null ? {} : { teamId }),
+    },
     programmingLanguage: lang,
     verdict,
   };

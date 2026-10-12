@@ -3,7 +3,7 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { translate as t } from '../../../i18n/index.js';
 import * as assets from '../../../assets/index.js';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
-import { readStorageOverview } from '../../../features/storage/overview.js';
+import { readStorageOverview, storageWarmupSteps } from '../../../features/storage/overview.js';
 import { clearStorageGroup, subscribeStorageChanges } from '../../../features/storage/cleanup.js';
 import { appStorage, subscribeStorageWrites } from '../../../storage/gm.js';
 import { latestRatingsMap, parallelContestsCache } from '../../../features/ratings/data.js';
@@ -26,7 +26,8 @@ import { showStorageJsonModal } from './components/StorageJsonDialog/StorageJson
 import { TRUNCATE_MARKER } from './components/StorageJsonDialog/json-preview.js';
 import StorageCard from './components/StorageCard/StorageCard.vue';
 import StorageUsageChart from './components/StorageUsageChart/StorageUsageChart.vue';
-const props = defineProps({ active: Boolean });
+// active：这一页正显示着。menuOpen：菜单开着（不管停在哪一页）。
+const props = defineProps({ active: Boolean, menuOpen: Boolean });
 const groups = [
   {
     id: 'settings',
@@ -105,7 +106,18 @@ function keyLabel(key) {
     return t('storageSolvedTitle') + ' · ' + key.slice(SOLVED_PREFIX.length);
   return KEY_LABELS[key] ? t(KEY_LABELS[key]) : key;
 }
-const overview = ref(readStorageOverview());
+// 统计要把各项缓存都读一遍、量一遍大小，放到这一页打开时再做（见下面对 active 的监听）。
+// 菜单是插件一启动就建好的，那时就统计的话每个页面加载都要白算一次：这一页打开时反正还要重新统计。
+// 打开之前先放一份各组都是零的空表，那时这一页不显示。
+const overview = ref({
+  items: Object.fromEntries(
+    groups.map((group) => [
+      group.id,
+      { bytes: 0, count: 0, keys: [], countKey: 'storageItemCount' },
+    ]),
+  ),
+  total: 0,
+});
 // 重新枚举实际存储，不在模板中重复解析大对象。
 function refresh() {
   overview.value = readStorageOverview();
@@ -117,17 +129,19 @@ function requestClear(id) {
   const group = groups.find((group) => group.id === id);
   if (id === 'local' && !overview.value.items.local.keys.length) {
     showConfirmPop({
-      title: t(group.title),
+      title: () => t(group.title),
       type: 'info',
-      message: t('storageLegacyNoneTip'),
-      confirmText: t('popGotItBtn'),
+      message: () => t('storageLegacyNoneTip'),
+      confirmText: () => t('popGotItBtn'),
     });
     return;
   }
+  // 文字都给成函数：提示开着时换语言，文字跟着换。条数在打开的这一刻就定下来。
+  const count = overview.value.items.local.keys.length;
   showConfirmPop({
-    title: t(group?.title || 'storageClearAllBtn'),
-    message: t(group?.confirm || 'storageClearAllConfirm', overview.value.items.local.keys.length),
-    confirmText: t(group?.action || 'storageClearAllBtn'),
+    title: () => t(group?.title || 'storageClearAllBtn'),
+    message: () => t(group?.confirm || 'storageClearAllConfirm', count),
+    confirmText: () => t(group?.action || 'storageClearAllBtn'),
     type: 'danger',
     onConfirm: () => {
       clearStorageGroup(id);
@@ -166,9 +180,31 @@ function view(group) {
     { keyLabel, preview: previewOf },
   );
 }
+// 菜单开着、还没点到这一页时，趁页面空闲把各项缓存先量好，一次只量一项（见 storageWarmupSteps）。
+// 等点到这一页，统计用的都是现成的结果，切过来才不会卡一下。量的过程中点过来了就停，剩下的由统计自己量。
+let warmTurn = 0;
+const whenIdle = (run) =>
+  typeof requestIdleCallback === 'function'
+    ? requestIdleCallback(run, { timeout: 1000 })
+    : setTimeout(run, 50);
+function warmUp() {
+  const turn = ++warmTurn;
+  const steps = storageWarmupSteps();
+  const next = () => {
+    if (turn !== warmTurn || !props.menuOpen || props.active) return;
+    const step = steps.shift();
+    if (!step) return;
+    step();
+    whenIdle(next);
+  };
+  // 先让菜单展开的动画过去。
+  setTimeout(() => whenIdle(next), 400);
+}
 let stopStorage, stopWrites, refreshTimer;
 // 可见时合并密集缓存写入；持续写入也按短窗口刷新，关闭菜单后不扫描。
 function scheduleRefresh() {
+  // 菜单开着但没停在这一页：缓存变了，把变了的那几项重新量好。
+  if (!props.active && props.menuOpen) warmUp();
   if (!props.active || refreshTimer) return;
   refreshTimer = setTimeout(() => {
     refreshTimer = null;
@@ -182,6 +218,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   stopStorage?.();
   stopWrites?.();
+  warmTurn++;
   clearTimeout(refreshTimer);
 });
 watch(
@@ -191,6 +228,16 @@ watch(
     refreshTimer = null;
     if (active) refresh();
   },
+  // 这一页建好时就已经开着的话，当场统计。
+  { immediate: true },
+);
+watch(
+  () => props.menuOpen,
+  (open) => {
+    if (open) warmUp();
+    else warmTurn++;
+  },
+  { immediate: true },
 );
 </script>
 <template>
@@ -201,7 +248,9 @@ watch(
           ><inline-svg v-bind:source="assets.menuStorageIcon"></inline-svg></span
         ><span class="cf-storage-title-text">{{ t('storageSectionTitle') }}</span>
       </h3>
-      <p class="cf-storage-subtitle" v-text="t().storageSectionSubtitle"></p>
+      <p class="cf-storage-subtitle">
+        <span>{{ t().storageSectionSubtitle }}</span>
+      </p>
     </div>
     <div class="cf-storage-overview">
       <div class="cf-storage-overview-top">
@@ -320,7 +369,7 @@ watch(
   display: flex;
   flex-direction: column;
   gap: 7px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--cf-duration-base) cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
   box-sizing: border-box;
 }
@@ -348,7 +397,7 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: calc(16px * var(--cf-font-scale));
   flex-shrink: 0;
 }
 
@@ -436,7 +485,7 @@ watch(
 }
 
 .cf-storage-count-tag {
-  font-size: 10.5px;
+  font-size: var(--cf-font-size-xs);
   font-weight: var(--cf-font-weight-semibold);
   padding: 1px 6px;
   border-radius: var(--cf-radius-xs);
@@ -474,7 +523,7 @@ watch(
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: all 0.15s ease;
+  transition: all var(--cf-duration-fast) ease;
 }
 
 .cf-storage-btn.btn-view {

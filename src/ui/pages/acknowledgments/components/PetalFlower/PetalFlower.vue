@@ -79,15 +79,15 @@ const step = computed(() => 360 / props.colors.length);
   flex: none;
   overflow: visible;
   transform: rotate(var(--cf-petal-turn, 0deg));
-  transition: transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.48s var(--cf-ease-out);
 }
 /* 花瓣只改变亮度和绕花心的转角，不缩放。 */
 .cf-petal-flower-petal {
   opacity: var(--cf-petal-light, 1);
   transform-origin: 22px 22px;
   transition:
-    opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.48s var(--cf-ease-out),
+    transform 0.75s var(--cf-ease-out);
 }
 /* 落位时按间隔从第一片起依次到位；散开时一起隐去，不排队。 */
 .cf-petal-flower:not(.is-scattered) .cf-petal-flower-petal {

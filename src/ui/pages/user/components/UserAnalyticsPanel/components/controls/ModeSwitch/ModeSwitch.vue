@@ -37,7 +37,7 @@ function choose(id) {
       :aria-pressed="modelValue === id"
       @click="choose(id)"
     >
-      <span data-cf-language-text>{{ t(text) }}</span>
+      <span>{{ t(text) }}</span>
     </button>
   </div>
 </template>
@@ -54,7 +54,7 @@ function choose(id) {
   padding: 1px;
   border: 1px solid color-mix(in srgb, var(--cf-analytics-accent) 26%, #dfe4ec);
   border-radius: var(--cf-radius-sm);
-  background: #fff;
+  background: var(--cf-white-surface);
 }
 .cf-analytics-modes-thumb {
   position: absolute;
@@ -66,7 +66,7 @@ function choose(id) {
   background: color-mix(in srgb, var(--cf-analytics-accent) 18%, #fff);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--cf-analytics-accent) 22%, transparent);
   transform: translateX(calc(var(--cf-analytics-mode, 0) * 100%));
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--cf-duration-slow) var(--cf-ease-out);
 }
 .cf-analytics-modes button {
   position: relative;
@@ -80,7 +80,7 @@ function choose(id) {
   line-height: 16px;
   white-space: nowrap;
   cursor: pointer;
-  transition: color 0.24s ease;
+  transition: color var(--cf-duration-moderate) ease;
 }
 .cf-analytics-modes button:hover,
 .cf-analytics-modes button.is-active {

@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="docs/CHANGELOG.md">
-    <img src="https://img.shields.io/badge/Version-1.8.0-d77c9d?style=flat&amp;logo=github&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="Version 1.8.0">
+    <img src="https://img.shields.io/badge/Version-1.8.1-d77c9d?style=flat&amp;logo=github&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="Version 1.8.1">
   </a>
   <a href="https://github.com/GodExious/Colorforces/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-c5ab77?style=flat&amp;logo=opensourceinitiative&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="MIT License">

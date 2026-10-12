@@ -83,3 +83,48 @@ test('非法输入给出对应错误码', () => {
   assert.throws(() => analyzeTarget(rows, 'nobody', 'rank', 1), /predictionMissingUser/);
   assert.throws(() => targetBounds([], handle), /predictionMissingUser/);
 });
+
+test('并列的人都取这一组的最后一名', () => {
+  const rows = [
+    { handle: 'a', points: 3, penalty: 0, rating: 1500 },
+    { handle: 'b', points: 2, penalty: 0, rating: 1500 },
+    { handle: 'c', points: 2, penalty: 0, rating: 1400 },
+    { handle: 'd', points: 2, penalty: 0, rating: 1600 },
+    { handle: 'e', points: 1, penalty: 0, rating: 1500 },
+  ];
+  const result = calculateSnapshot(rows);
+  assert.deepEqual(
+    ['a', 'b', 'c', 'd', 'e'].map((handle) => result[handle].rank),
+    [1, 4, 4, 4, 5],
+  );
+});
+
+test('把人放在他现在的名次上分析，结果和整场一起算的一样（别人的并列不拆开）', () => {
+  // 并列很多的一场：分数只有几档。
+  const rows = Array.from({ length: 240 }, (_, index) => ({
+    handle: 'u' + index,
+    points: 6 - Math.floor(index / 40),
+    penalty: index % 40 < 25 ? 0 : 10,
+    rating: 900 + ((index * 37) % 1500),
+  }));
+  const whole = calculateSnapshot(rows);
+  for (const handle of ['u0', 'u24', 'u25', 'u39', 'u40', 'u101', 'u199', 'u239']) {
+    const alone = analyzeTarget(rows, handle, 'rank', whole[handle].rank);
+    assert.equal(alone.delta, whole[handle].delta, handle);
+  }
+});
+
+test('目标名次逐名变差时，赛后评级不会回升', () => {
+  const rows = Array.from({ length: 120 }, (_, index) => ({
+    handle: 'u' + index,
+    points: 5 - Math.floor(index / 30),
+    penalty: 0,
+    rating: 1000 + ((index * 53) % 1300),
+  }));
+  let previous = Infinity;
+  for (let rank = 1; rank <= rows.length; rank++) {
+    const { rating } = analyzeTarget(rows, 'u60', 'rank', rank);
+    assert.ok(rating <= previous, '第 ' + rank + ' 名');
+    previous = rating;
+  }
+});

@@ -36,10 +36,10 @@ defineProps({ status: String, busy: Boolean, disabled: Boolean });
   user-select: none;
   white-space: nowrap;
   transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease;
+    background-color var(--cf-duration-base) ease,
+    border-color var(--cf-duration-base) ease,
+    color var(--cf-duration-base) ease,
+    box-shadow var(--cf-duration-base) ease;
 }
 .cf-action-button:not(:disabled):hover {
   background: color-mix(in srgb, var(--cf-action-color) 32%, var(--cf-card-surface, #ffffff));
@@ -89,7 +89,7 @@ defineProps({ status: String, busy: Boolean, disabled: Boolean });
 .cf-action-button svg {
   width: 14px;
   height: 14px;
-  transition: transform 200ms ease;
+  transition: transform var(--cf-duration-base) ease;
 }
 .cf-action-button:not(:disabled):hover svg {
   transform: rotate(45deg);

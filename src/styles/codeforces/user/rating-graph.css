@@ -1,0 +1,32 @@
+/* 原站个人主页评级图上固定住的提示，见 features/user/analytics/official-graph.js。 */
+
+/* 固定的这份照搬原站提示的位置和配色（都写在它自己的行内样式里），这里只补上：
+   不透明、压在别的东西上面、一圈阴影和略深的边线表示它是固定着的。 */
+#cf-rating-tip-pinned {
+  z-index: 1000;
+  border-color: #f0b4b4 !important;
+  box-shadow: 0 3px 12px #7a2a2a2e;
+  opacity: 1 !important;
+  animation: cf-rating-tip-pin 160ms ease-out;
+}
+/* 原站的提示是八成不透明的；固定时从这个程度过渡到不透明，阴影一起浮出来。 */
+@keyframes cf-rating-tip-pin {
+  from {
+    box-shadow: 0 0 0 #7a2a2a00;
+    opacity: 0.8;
+  }
+}
+/* 固定着的时候原站自己的提示不显示，免得两份叠在一起。只藏起来、不拿掉：再点同一个点要靠它认出来。 */
+:root.cf-rating-tip-is-pinned #tooltip {
+  visibility: hidden !important;
+}
+/* 鼠标停在曲线的点上时换成手型，提示这里可以点。 */
+#usersRatingGraphPlaceholder.cf-rating-graph-pointing,
+#usersRatingGraphPlaceholder.cf-rating-graph-pointing canvas {
+  cursor: pointer !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  #cf-rating-tip-pinned {
+    animation: none;
+  }
+}

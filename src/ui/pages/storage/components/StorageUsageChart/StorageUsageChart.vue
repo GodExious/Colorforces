@@ -182,6 +182,8 @@ onBeforeUnmount(() => {
 .cf-storage-usage :deep(.cf-storage-chart-tooltip) {
   position: absolute;
   pointer-events: none;
+  /* 图表库把字号写在行内样式里（11px）；这里换成样式变量，跟着插件字体大小走。 */
+  font-size: var(--cf-font-size-xs) !important;
 }
 .cf-storage-pie-summary {
   min-width: 0;
@@ -203,7 +205,7 @@ onBeforeUnmount(() => {
 }
 .cf-storage-pie-total strong {
   font-size: var(--cf-font-size-xs);
-  font-weight: 650;
+  font-weight: var(--cf-font-weight-semibold);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }

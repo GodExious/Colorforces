@@ -1,6 +1,7 @@
 <script>
 import * as cfAssets from '../../../../../assets/index.js';
 import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
+import { menuTabColor } from '../../../../../utils/petal-palette.js';
 import { shallowRef } from 'vue';
 const request = shallowRef(null);
 // 提供同文件调用入口，查看器始终只保留一个实例。
@@ -140,7 +141,9 @@ onBeforeUnmount(() => {
         <div class="cf-clist-modal-card cf-aurora-card cf-storage-json-card">
           <div class="cf-clist-modal-header">
             <div class="cf-clist-modal-title">
-              <span class="cf-modal-title-icon cf-aurora-emblem"
+              <span
+                class="cf-modal-title-icon cf-aurora-emblem"
+                :style="{ '--cf-emblem-petal': menuTabColor('storage') }"
                 ><InlineSvg :source="cfAssets.jsonDocumentIcon"
               /></span>
               <span>{{ t(displayed.title) }}</span>
@@ -231,7 +234,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 14px;
   color: var(--cf-aurora-muted);
-  font-size: var(--cf-font-size-sm);
+  font-size: var(--cf-font-size-base);
 }
 
 .cf-storage-json-key {
@@ -254,7 +257,7 @@ onBeforeUnmount(() => {
   background: #ffffff99;
   color: #5565b0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: var(--cf-font-size-sm);
+  font-size: var(--cf-font-size-base);
   font-weight: var(--cf-font-weight-semibold);
 }
 
@@ -262,7 +265,7 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
   align-self: flex-start;
   padding: 4px 12px;
-  font-size: var(--cf-font-size-sm);
+  font-size: var(--cf-font-size-base);
 }
 
 .cf-storage-copy-json-btn svg {
@@ -298,14 +301,14 @@ onBeforeUnmount(() => {
   background: #ffffff8f;
   color: var(--cf-control-ink);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: var(--cf-font-size-sm);
+  font-size: var(--cf-font-size-base);
   font-weight: var(--cf-font-weight-medium);
   line-height: 1.4;
   cursor: pointer;
   transition:
-    background-color 150ms ease,
-    border-color 150ms ease,
-    color 150ms ease;
+    background-color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease;
 }
 
 .cf-storage-key-tab-btn:not(.active):hover {
@@ -316,7 +319,7 @@ onBeforeUnmount(() => {
 .cf-storage-key-tab-btn.active {
   border-color: #8590cf;
   background: linear-gradient(135deg, #8b9ddd, #9c8fd6);
-  color: #fff;
+  color: var(--cf-white-ink);
   font-weight: var(--cf-font-weight-semibold);
 }
 
@@ -338,7 +341,7 @@ onBeforeUnmount(() => {
   box-shadow: inset 0 1px 0 #ffffff14;
   color: #cfd8f2;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: var(--cf-font-size-sm);
+  font-size: var(--cf-font-size-base);
   line-height: 1.5;
   white-space: pre;
   overscroll-behavior: contain;

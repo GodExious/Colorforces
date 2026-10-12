@@ -2,17 +2,60 @@ import { appSettings } from '../../../settings.js';
 import { applyUserAvatars } from './enhance.js';
 import { captureTeamLayout, animateTeamLayout } from './layout-motion.js';
 import { getProfileLinks, isTeamCell } from './structure.js';
+import { hiddenMembers, isMoreMark, parseGhostTeam } from './team-members.js';
 
-// 恢复队伍单元格的原始结构。
-export function unformatTeamCell(cell) {
-  if (cell.hasAttribute('data-original-html')) {
+// 把原站折叠成「...」的成员补成主页链接，接在已有的成员后面；「...」本身去掉。返回补出来的链接。
+// 提示有可能已经被插件的提示功能接管（鼠标正停在上面时原来的 title 会挪到 data-cf-native-tooltip 里），两处都看。
+function revealHiddenMembers(cell) {
+  const mark = [...cell.querySelectorAll('span')].find(
+    (span) =>
+      isMoreMark(span.textContent) &&
+      (span.hasAttribute('title') || span.hasAttribute('data-cf-native-tooltip')),
+  );
+  if (!mark) return [];
+  const names = hiddenMembers(
+    mark.getAttribute('title') ?? mark.getAttribute('data-cf-native-tooltip'),
+  );
+  if (!names.length) return [];
+  mark.remove();
+  return names.map((name) => {
+    const link = document.createElement('a');
+    link.href = '/profile/' + encodeURIComponent(name);
+    link.textContent = name;
+    link.className = 'cf-team-extra-member';
+    link.dataset.cfTeamExtra = '';
+    return link;
+  });
+}
+
+/*
+ * 把格子恢复成原站的样子，头像一个不留，名字上「头像处理过了」的记号也去掉，之后头像功能会重新补。
+ * 存下的原始内容不一定干净：头像功能是先给名字打上「处理中」的记号、再存原始内容的，
+ * 照原样恢复的话名字带着记号回来，头像功能以为处理过了，头像就再也不出现。
+ */
+function restoreOriginal(cell) {
+  if (cell.hasAttribute('data-original-html'))
     cell.innerHTML = cell.getAttribute('data-original-html');
-  }
+  cell.querySelectorAll('.cf-avatar-container').forEach((el) => el.remove());
+  cell
+    .querySelectorAll('.cf-avatar-line-wrapper')
+    .forEach((wrap) => wrap.replaceWith(...wrap.childNodes));
+  cell
+    .querySelectorAll('a[href*="/profile/"]')
+    .forEach((link) => link.removeAttribute('data-cf-avatar-processed'));
+}
+
+// 恢复队伍单元格的原始结构。只有排过版的才需要恢复：没排过的本来就是原站的样子，里面可能已经有头像，不动它。
+// 返回有没有恢复（恢复了的话头像被清掉了，要重新补）。
+export function unformatTeamCell(cell) {
+  const restored = cell.classList.contains('cf-team-formatted');
+  if (restored) restoreOriginal(cell);
   cell.classList.remove('cf-team-formatted');
   cell.classList.add('cf-team-unformatted');
   cell.style.removeProperty('padding-top');
   cell.style.removeProperty('padding-bottom');
   cell.style.setProperty('word-break', 'break-word', 'important');
+  return restored;
 }
 
 // 头像开启时整理榜单和提交记录中的队伍信息。
@@ -26,6 +69,8 @@ export function formatStandingsCells() {
   });
   if (!appSettings.user.avatar.enabled) return;
   const formatTeams = appSettings.user.formatTeams !== false;
+  // 这一趟里有没有把哪个格子的头像清掉：有的话最后让头像功能重新补一遍。
+  let reinject = false;
   const cells = document.querySelectorAll(`
         table.standings .contestant-cell:not(.cf-avatar-processed-cell),
         .status-party-cell:not(.cf-avatar-processed-cell)
@@ -40,50 +85,14 @@ export function formatStandingsCells() {
     const ghostImg = cell.querySelector('img[src*="ghost.png"]');
     if (ghostImg) {
       if (!formatTeams) {
-        unformatTeamCell(cell);
+        if (unformatTeamCell(cell)) reinject = true;
         return;
       }
       const span = cell.querySelector('span[title="Ghost participant"]');
       if (span) {
         cell.classList.remove('cf-team-unformatted');
         cell.classList.add('cf-team-formatted');
-        const text = span.textContent.trim();
-        let school = '',
-          team = '',
-          members = '';
-
-        if (text.includes(': ')) {
-          // Pattern: School: Team (Members) or School: Team
-          const parts = text.split(': ');
-          school = parts[0].trim();
-          let rest = parts.slice(1).join(': ').trim();
-          const parenMatch = rest.match(/^(.*?)\s*\((.*?)\)$/);
-          if (parenMatch) {
-            team = parenMatch[1].trim();
-            members = parenMatch[2].trim();
-          } else {
-            team = rest;
-          }
-        } else if (text.includes(' - ') && text.split(' - ').length >= 3) {
-          // Pattern: School - Team - Members
-          const parts = text.split(' - ');
-          school = parts[0].trim();
-          team = parts[1].trim();
-          members = parts.slice(2).join(' - ').trim();
-        } else if (text.includes(' - ') && text.split(' - ').length === 2) {
-          // Pattern: School - Team
-          const parts = text.split(' - ');
-          school = parts[0].trim();
-          team = parts[1].trim();
-        } else if (text.match(/^(.*?)\s*\((.*?)\)$/)) {
-          // Pattern: Team (School)
-          const match = text.match(/^(.*?)\s*\((.*?)\)$/);
-          team = match[1].trim();
-          school = match[2].trim();
-        } else {
-          // Fallback
-          team = text;
-        }
+        const { school, team, members } = parseGhostTeam(span.textContent);
 
         cell.innerHTML = '';
 
@@ -123,8 +132,8 @@ export function formatStandingsCells() {
 
         cell.appendChild(teamHeader);
 
-        if (members) {
-          const memberNames = members.split(',').map((m) => m.trim());
+        if (members.length) {
+          const memberNames = members;
           const membersContainer = document.createElement('div');
           membersContainer.className = 'cf-team-members';
           membersContainer.style.cssText =
@@ -143,11 +152,21 @@ export function formatStandingsCells() {
       return;
     }
 
-    const userLinks = getProfileLinks(cell);
+    let userLinks = getProfileLinks(cell);
     if (userLinks.length > 1 || cell.querySelector('a[href*="/team/"]')) {
       if (!formatTeams) {
-        unformatTeamCell(cell);
+        if (unformatTeamCell(cell)) reinject = true;
         return;
+      }
+      /*
+       * 头像可能比排版先到：提交记录页的选手格要等评级功能认出来（加上类名）才轮到这里，那时头像早就插好了。
+       * 头像是连同名字包在一起的，直接排版只会把名字挪走、头像留在队名旁边。先恢复成原站的样子再排，
+       * 头像随后重新补到每个成员那一行。
+       */
+      if (cell.querySelector('.cf-avatar-line-wrapper, .cf-avatar-container')) {
+        restoreOriginal(cell);
+        userLinks = getProfileLinks(cell);
+        reinject = true;
       }
       cell.classList.remove('cf-team-unformatted');
       cell.classList.add('cf-team-formatted');
@@ -157,7 +176,7 @@ export function formatStandingsCells() {
       membersContainer.style.cssText =
         'display: flex; flex-direction: column; gap: 4px; margin-left: 4px;';
 
-      userLinks.forEach((link) => {
+      [...userLinks, ...revealHiddenMembers(cell)].forEach((link) => {
         const memberLine = document.createElement('div');
         memberLine.className = 'cf-member-line';
         memberLine.style.cssText =
@@ -203,6 +222,7 @@ export function formatStandingsCells() {
       return;
     }
   });
+  if (reinject) applyUserAvatars();
 }
 
 // 设置变化后刷新头像及依赖头像的榜单格式。
@@ -222,22 +242,8 @@ export function refreshUserAvatarsAndStandings() {
     )
       return;
     snapshots.push(captureTeamLayout(cell));
-    if (cell.hasAttribute('data-original-html')) {
-      cell.innerHTML = cell.getAttribute('data-original-html');
-      cell.classList.remove('cf-team-formatted');
-      cell.classList.remove('cf-team-unformatted');
-    }
-    cell.classList.remove('cf-avatar-processed-cell');
-    cell
-      .querySelectorAll('a[href*="/profile/"]')
-      .forEach((a) => a.removeAttribute('data-cf-avatar-processed'));
-    cell.querySelectorAll('.cf-avatar-container').forEach((el) => el.remove());
-    cell.querySelectorAll('.cf-avatar-line-wrapper').forEach((wrap) => {
-      while (wrap.firstChild) {
-        wrap.parentNode.insertBefore(wrap.firstChild, wrap);
-      }
-      wrap.remove();
-    });
+    restoreOriginal(cell);
+    cell.classList.remove('cf-team-formatted', 'cf-team-unformatted', 'cf-avatar-processed-cell');
   });
   formatStandingsCells();
   applyUserAvatars();

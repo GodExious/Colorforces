@@ -3,7 +3,10 @@ import { computed } from 'vue';
 import { use } from 'echarts/core';
 import { CustomChart } from 'echarts/charts';
 import { translate as t } from '../../../../../../../../i18n/index.js';
-import { bucketRating } from '../../../../../../../../features/user/analytics/stats.js';
+import {
+  bucketRating,
+  difficultyAxis,
+} from '../../../../../../../../features/user/analytics/stats.js';
 import { problemLink } from '../../../../../../../../utils/problem.js';
 import AnimatedNumber from '../../parts/AnimatedNumber/AnimatedNumber.vue';
 import ChartHint from '../../parts/ChartHint/ChartHint.vue';
@@ -12,6 +15,7 @@ import { useChart } from '../../../composables/chart.js';
 import { grays } from '../../../utils/grays.js';
 import { ratingPaint } from '../../../utils/rating-paint.js';
 import { AXIS_LEFT } from '../../../utils/numbers.js';
+import { scaled } from '../../../../../../../../utils/font-scale.js';
 
 // 平均线和它末端的数值标签是自己画的图形，在这里登记。
 use([CustomChart]);
@@ -49,14 +53,22 @@ const columns = computed(() =>
 );
 
 // 绘图区的边距：左边留给纵轴的难度分，右边留给平均线末端的数值标签。
-const GRID = { left: AXIS_LEFT, right: 46, top: 20, bottom: 22 };
+// 留的都是放字的位置，跟着插件字体大小走。
+const gridOf = () => ({
+  left: scaled(AXIS_LEFT),
+  right: scaled(46),
+  top: scaled(20),
+  bottom: scaled(22),
+});
 function buildOption(width) {
+  const GRID = gridOf();
   const ink = grays();
   const list = columns.value;
   // 每一栏够宽时，在柱子上方标出这道题的难度分；太挤就不标，看纵轴和悬停提示。
   const band = (width - GRID.left - GRID.right) / Math.max(1, list.length);
-  const labelled = band >= 30;
+  const labelled = band >= scaled(30);
   const lowest = list.reduce((low, column) => Math.min(low, column.rating), Infinity);
+  const highest = list.reduce((high, column) => Math.max(high, column.rating), -Infinity);
   // 柱子一根接一根地长出来。题数很多时把间隔压短，让最后一根也在四分之一秒内开始动，整段动画不随题数变长。
   const stagger = (step) => Math.min(step, 240 / Math.max(1, list.length));
   const mean = averagePaint.value;
@@ -71,7 +83,7 @@ function buildOption(width) {
         axisLine: { lineStyle: { color: ink.line } },
         axisLabel: {
           margin: 7,
-          fontSize: 10,
+          fontSize: scaled(10),
           fontFamily: FONT,
           color: ink.muted,
           hideOverlap: true,
@@ -81,17 +93,22 @@ function buildOption(width) {
       { type: 'value', min: 0, max: 1, show: false },
     ],
     // 纵轴不从 0 起：难度分都在几百以上，从最低的那道题往下留一点空，各题之间的差别才看得出来。
-    // 刻度上的分数用所在档位的颜色。
+    // 上下限和间隔一起定（两端对齐，见 difficultyAxis）：原来只定上下限、中间的刻度交给图表库挑，
+    // 两头常常各多出一个不在间隔上的刻度。刻度上的分数用所在档位的颜色。
     yAxis: {
       type: 'value',
-      min: Number.isFinite(lowest) ? Math.max(0, Math.floor(lowest / 100) * 100 - 200) : 0,
-      max: ({ max }) => Math.ceil(max / 100) * 100,
-      minInterval: 100,
-      splitNumber: 4,
+      ...difficultyAxis(lowest, highest),
+      // 这张图为了画平均线多了一条不显示的数值横轴，图表库因此会把纵轴的轴线画出来；别的图都没有这条线，关掉。
+      axisLine: { show: false },
+      // 刻度旁的小横线也是跟着那条轴线一起出来的，同样关掉。
+      axisTick: { show: false },
       axisLabel: {
-        fontSize: 10,
+        fontSize: scaled(10),
         fontFamily: FONT,
-        color: (value) => ratingPaint(bucketRating(value)).text,
+        // 数值轴的刻度传进来的是文字，不是数：先转成数，不然归不了档，全是灰的。
+        color: (value) => ratingPaint(bucketRating(Number(value))).text,
+        // 难度分直接写数字，不带千位分隔，和别处一致。
+        formatter: (value) => String(Math.round(value)),
       },
       splitLine: { lineStyle: { color: ink.faint } },
     },
@@ -131,7 +148,7 @@ function buildOption(width) {
           show: labelled,
           position: 'top',
           distance: 3,
-          fontSize: 10,
+          fontSize: scaled(10),
           fontFamily: FONT,
           valueAnimation: true,
           formatter: ({ value }) => String(Math.round(value)),
@@ -192,7 +209,7 @@ function buildOption(width) {
                   borderWidth: 1,
                   borderRadius: 3,
                   padding: [2, 5],
-                  fontSize: 10,
+                  fontSize: scaled(10),
                   fontFamily: FONT,
                   fontWeight: 'bold',
                   align: 'left',
@@ -220,7 +237,8 @@ function hit(x, y, chart) {
   if (!Number.isInteger(index) || index < 0 || index >= list.length) return null;
   const value = list[index].rating;
   const top = chart.convertToPixel({ seriesIndex: 0 }, [index, value]);
-  if (!top || y < top[1] - LABEL_REACH) return null;
+  if (!top || y < top[1] - scaled(LABEL_REACH)) return null;
+  const GRID = gridOf();
   const band = (chart.getWidth() - GRID.left - GRID.right) / list.length;
   if (Math.abs(x - top[0]) > band / 2) return null;
   return { seriesIndex: 0, dataIndex: index, value };
@@ -255,7 +273,7 @@ const { element } = useChart(buildOption, { tip: { hit, content: tipOf, pinnable
     <header class="cf-analytics-card-head is-stacked">
       <!-- 平均分紧跟在标题后面：数值变化时滚动过去，颜色跟着档位变。 -->
       <h4 class="cf-analytics-recent-head">
-        <span data-cf-language-text>{{ title }}</span>
+        <span>{{ title }}</span>
         <span class="cf-analytics-recent-value" :style="{ color: averageColor }">
           <AnimatedNumber :value="trend.average" empty="N/A" />
         </span>
@@ -273,11 +291,11 @@ const { element } = useChart(buildOption, { tip: { hit, content: tipOf, pinnable
       class="cf-analytics-chart cf-analytics-recent-chart"
     ></div>
     <!-- 说明从纵轴的位置起，和绘图区的左边缘对齐。 -->
-    <ChartHint v-show="trend.problems.length" :inset="GRID.left">{{
+    <ChartHint v-show="trend.problems.length" :inset="gridOf().left">{{
       t('analyticsRecentPinHint')
     }}</ChartHint>
     <p v-if="!trend.problems.length" class="cf-analytics-card-empty">
-      <span data-cf-language-text>{{ empty }}</span>
+      <span>{{ empty }}</span>
     </p>
   </section>
 </template>
@@ -295,7 +313,7 @@ const { element } = useChart(buildOption, { tip: { hit, content: tipOf, pinnable
   font-size: var(--cf-font-size-xl);
   font-weight: var(--cf-font-weight-bold);
   font-variant-numeric: tabular-nums;
-  transition: color 0.3s ease;
+  transition: color var(--cf-duration-slow) ease;
 }
 /* 卡片里没有内容可画时的一行说明。 */
 .cf-analytics-card-empty {

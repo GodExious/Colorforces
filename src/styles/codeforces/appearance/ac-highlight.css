@@ -1,4 +1,5 @@
-/* 已通过题目行的底色，颜色由脚本写入的 CSS 变量提供。 */
+/* 提交过的题目行的底色：已通过的一种，提交过但没通过的一种，颜色由脚本写入的 CSS 变量提供。
+   关掉「整行高亮提交过的题目」后两种都不画，回到原站的样子。 */
 html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.act,
 html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td.id,
 html:root:not(.cf-ac-highlight-disabled) body table.problems tr.accepted-problem td,
@@ -12,11 +13,26 @@ html:root:not(.cf-ac-highlight-disabled) body .problems .accepted-problem td.id 
   border-left-color: var(--cf-ac-background) !important;
 }
 
-html:root body tr.accepted-problem td {
+html:root:not(.cf-ac-highlight-disabled) body table.problems tr.rejected-problem td.act,
+html:root:not(.cf-ac-highlight-disabled) body table.problems tr.rejected-problem td.id,
+html:root:not(.cf-ac-highlight-disabled) body table.problems tr.rejected-problem td,
+html:root:not(.cf-ac-highlight-disabled) body .problems .rejected-problem td.act,
+html:root:not(.cf-ac-highlight-disabled) body tr.rejected-problem td {
+  background-color: var(--cf-rejected-background) !important;
+}
+
+html:root:not(.cf-ac-highlight-disabled) body table.problems tr.rejected-problem td.id,
+html:root:not(.cf-ac-highlight-disabled) body .problems .rejected-problem td.id {
+  border-left-color: var(--cf-rejected-background) !important;
+}
+
+html:root body tr.accepted-problem td,
+html:root body tr.rejected-problem td {
   transition: none;
 }
 
-html:root.cf-ac-highlight-transition body tr.accepted-problem td {
+html:root.cf-ac-highlight-transition body tr.accepted-problem td,
+html:root.cf-ac-highlight-transition body tr.rejected-problem td {
   /* 只在开关切换时过渡；关闭后自然回到原站底色，取色时不延迟。 */
   transition:
     background-color 320ms ease-in-out,
@@ -24,7 +40,8 @@ html:root.cf-ac-highlight-transition body tr.accepted-problem td {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html:root.cf-ac-highlight-transition body tr.accepted-problem td {
+  html:root.cf-ac-highlight-transition body tr.accepted-problem td,
+  html:root.cf-ac-highlight-transition body tr.rejected-problem td {
     transition: none;
   }
 }

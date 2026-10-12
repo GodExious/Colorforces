@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { packSubmissions } from '../../../../src/features/user/analytics/pack.js';
 import {
   bucketRating,
+  difficultyAxis,
   collectProblems,
   coveredProblems,
   zoneDay,
@@ -521,20 +522,151 @@ test('尝试次数分布：已通过的题按首次通过前交的次数分成�
   ]);
 });
 
-test('参赛类型分布：常见的四种固定在前，没有的记 0，其余有才列出', () => {
+test('参赛类型分布：常见的四种固定在前，没有的记 0，其余有才列出；每种再分个人和队伍', () => {
+  const team = ['alice', 'bob'];
   const dataset = pack([
     submission({ id: 1, type: 'PRACTICE' }),
     submission({ id: 2, type: 'PRACTICE' }),
     submission({ id: 3, type: 'CONTESTANT' }),
     submission({ id: 4, type: 'MANAGER' }),
+    submission({ id: 5, type: 'CONTESTANT', members: team }),
+    submission({ id: 6, type: 'CONTESTANT', members: team }),
+    submission({ id: 7, type: 'VIRTUAL', members: team }),
+  ]);
+  const counted = participationDistribution(dataset);
+  assert.deepEqual(counted, [
+    { type: 'CONTESTANT', solo: 1, team: 2 },
+    { type: 'VIRTUAL', solo: 0, team: 1 },
+    { type: 'OUT_OF_COMPETITION', solo: 0, team: 0 },
+    { type: 'PRACTICE', solo: 2, team: 0 },
+    { type: 'CANCELLED', solo: 0, team: 0 },
+    { type: 'MANAGER', solo: 1, team: 0 },
+  ]);
+  // 各项互不重叠，加起来正好是全部提交。
+  const total = counted.reduce((sum, item) => sum + item.solo + item.team, 0);
+  assert.equal(total, dataset.rows.length);
+  // 不计入队伍提交时，队伍的提交整个不算。
+  assert.deepEqual(participationDistribution(dataset, { includeTeams: false }), [
+    { type: 'CONTESTANT', solo: 1, team: 0 },
+    { type: 'VIRTUAL', solo: 0, team: 0 },
+    { type: 'OUT_OF_COMPETITION', solo: 0, team: 0 },
+    { type: 'PRACTICE', solo: 2, team: 0 },
+    { type: 'CANCELLED', solo: 0, team: 0 },
+    { type: 'MANAGER', solo: 1, team: 0 },
+  ]);
+});
+
+test('参赛类型按场数：同一格里同一场比赛只算一次，同一场可以出现在几格里', () => {
+  const team = ['alice', 'bob'];
+  const dataset = pack([
+    // 第 1000 场：赛中交了三次，赛后又练了两次。
+    submission({ id: 1, contestId: 1000, index: 'A', type: 'CONTESTANT' }),
+    submission({ id: 2, contestId: 1000, index: 'B', type: 'CONTESTANT' }),
+    submission({ id: 3, contestId: 1000, index: 'B', type: 'CONTESTANT' }),
+    submission({ id: 4, contestId: 1000, index: 'C', type: 'PRACTICE' }),
+    submission({ id: 5, contestId: 1000, index: 'C', type: 'PRACTICE' }),
+    // 第 1001 场：只在赛后练过。
+    submission({ id: 6, contestId: 1001, index: 'A', type: 'PRACTICE' }),
+    // 第 1002 场：以队伍的名义参赛。
+    submission({ id: 7, contestId: 1002, index: 'A', type: 'CONTESTANT', members: team }),
+    submission({ id: 8, contestId: 1002, index: 'B', type: 'CONTESTANT', members: team }),
+  ]);
+  assert.deepEqual(participationDistribution(dataset, { by: 'contests' }), [
+    { type: 'CONTESTANT', solo: 1, team: 1 },
+    { type: 'VIRTUAL', solo: 0, team: 0 },
+    { type: 'OUT_OF_COMPETITION', solo: 0, team: 0 },
+    { type: 'PRACTICE', solo: 2, team: 0 },
+    { type: 'CANCELLED', solo: 0, team: 0 },
+  ]);
+  assert.deepEqual(participationDistribution(dataset, { by: 'contests', includeTeams: false })[0], {
+    type: 'CONTESTANT',
+    solo: 1,
+    team: 0,
+  });
+});
+
+test('成绩被取消：赛时的提交全部被跳过的比赛单独算一项，不再算进正式参赛或未评级参赛', () => {
+  const team = ['alice', 'bob'];
+  const dataset = pack([
+    // 第 2000 场：赛时三次提交全被跳过（身份已被改成未评级参赛），赛后又练了一次。
+    submission({
+      id: 1,
+      contestId: 2000,
+      index: 'A',
+      type: 'OUT_OF_COMPETITION',
+      verdict: 'SKIPPED',
+    }),
+    submission({
+      id: 2,
+      contestId: 2000,
+      index: 'B',
+      type: 'OUT_OF_COMPETITION',
+      verdict: 'SKIPPED',
+    }),
+    submission({
+      id: 3,
+      contestId: 2000,
+      index: 'B',
+      type: 'OUT_OF_COMPETITION',
+      verdict: 'SKIPPED',
+    }),
+    submission({ id: 4, contestId: 2000, index: 'A', type: 'PRACTICE' }),
+    // 第 2001 场：身份没改，仍是正式参赛，两次提交全被跳过。
+    submission({ id: 5, contestId: 2001, index: 'A', type: 'CONTESTANT', verdict: 'SKIPPED' }),
+    submission({ id: 6, contestId: 2001, index: 'A', type: 'CONTESTANT', verdict: 'SKIPPED' }),
+    // 第 2002 场：只有一部分被跳过（重交之后旧的那次），是正常参赛。
+    submission({ id: 7, contestId: 2002, index: 'A', type: 'CONTESTANT', verdict: 'SKIPPED' }),
+    submission({ id: 8, contestId: 2002, index: 'A', type: 'CONTESTANT' }),
+    // 第 2003 场：虚拟参赛时被跳过的不算。
+    submission({ id: 9, contestId: 2003, index: 'A', type: 'VIRTUAL', verdict: 'SKIPPED' }),
+    // 第 2004 场：以队伍的名义参赛，全部被跳过；个人和队伍分开认。
+    submission({
+      id: 10,
+      contestId: 2004,
+      index: 'A',
+      type: 'CONTESTANT',
+      verdict: 'SKIPPED',
+      members: team,
+    }),
   ]);
   assert.deepEqual(participationDistribution(dataset), [
-    { type: 'CONTESTANT', count: 1 },
-    { type: 'VIRTUAL', count: 0 },
-    { type: 'OUT_OF_COMPETITION', count: 0 },
-    { type: 'PRACTICE', count: 2 },
-    { type: 'MANAGER', count: 1 },
+    { type: 'CONTESTANT', solo: 2, team: 0 },
+    { type: 'VIRTUAL', solo: 1, team: 0 },
+    { type: 'OUT_OF_COMPETITION', solo: 0, team: 0 },
+    { type: 'PRACTICE', solo: 1, team: 0 },
+    { type: 'CANCELLED', solo: 5, team: 1 },
   ]);
+  assert.deepEqual(participationDistribution(dataset, { by: 'contests' }), [
+    { type: 'CONTESTANT', solo: 1, team: 0 },
+    { type: 'VIRTUAL', solo: 1, team: 0 },
+    { type: 'OUT_OF_COMPETITION', solo: 0, team: 0 },
+    { type: 'PRACTICE', solo: 1, team: 0 },
+    { type: 'CANCELLED', solo: 2, team: 1 },
+  ]);
+  // 各项仍然互不重叠，加起来是全部提交。
+  const total = participationDistribution(dataset).reduce(
+    (sum, item) => sum + item.solo + item.team,
+    0,
+  );
+  assert.equal(total, dataset.rows.length);
+  // 不计入队伍提交时，队伍那一场不算。
+  assert.deepEqual(
+    participationDistribution(dataset, { by: 'contests', includeTeams: false }).at(-1),
+    {
+      type: 'CANCELLED',
+      solo: 2,
+      team: 0,
+    },
+  );
+});
+
+test('成绩被取消：一次被跳过的提交都没有时是 0，这一项照样列出', () => {
+  const dataset = pack([submission({ id: 1, contestId: 2000, index: 'A', type: 'CONTESTANT' })]);
+  assert.deepEqual(participationDistribution(dataset).at(-1), {
+    type: 'CANCELLED',
+    solo: 0,
+    team: 0,
+  });
 });
 
 test('比赛速度：赛中提交按分钟分段，通过数只算每题赛中的首次通过', () => {
@@ -639,4 +771,33 @@ test('按指定时区算钟点：跨过零点时回到 0 到 23 之间', () => {
   assert.equal(zoneHour(-11)(2 * HOUR), 15);
   const dataset = packSubmissions('alice', [submission({ id: 1, time: at })]);
   assert.equal(hourlyActivity(dataset, { hourOf: zoneHour(8) })[4].submissions, 1);
+});
+
+test('难度分纵轴两端对齐：上下限都是间隔的整数倍，刻度不超过六个，下面留出空', () => {
+  // 范围窄：间隔 200。
+  assert.deepEqual(difficultyAxis(1300, 1800), { min: 1000, max: 1800, interval: 200 });
+  // 常见的范围：间隔 500。
+  assert.deepEqual(difficultyAxis(800, 2400), { min: 500, max: 2500, interval: 500 });
+  // 范围宽：间隔 1000。
+  assert.deepEqual(difficultyAxis(900, 3500), { min: 0, max: 4000, interval: 1000 });
+  // 最低的只有一百出头：下限不低于 0。
+  assert.deepEqual(difficultyAxis(100, 1800), { min: 0, max: 2000, interval: 500 });
+  // 只有一种难度：间隔 100，上限正好是它。
+  assert.deepEqual(difficultyAxis(800, 800), { min: 600, max: 800, interval: 100 });
+  for (const [low, high] of [
+    [800, 800],
+    [800, 1500],
+    [1200, 3500],
+    [2600, 3500],
+    [100, 3500],
+  ]) {
+    const { min, max, interval } = difficultyAxis(low, high);
+    assert.equal(min % interval, 0);
+    assert.equal(max % interval, 0);
+    assert.ok(min < low && max >= high, `${low}–${high}`);
+    assert.ok((max - min) / interval <= 5, `${low}–${high}`);
+  }
+  // 没有数据时也给一个能画的范围。
+  const empty = difficultyAxis(Infinity, -Infinity);
+  assert.ok(empty.max > empty.min && empty.interval > 0);
 });

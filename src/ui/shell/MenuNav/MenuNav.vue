@@ -100,7 +100,7 @@ onBeforeUnmount(() => {
       @click="$emit('select', tab.id)"
     >
       <span class="cf-tab-icon"><inline-svg :source="assets.TAB_ICONS[tab.id]"></inline-svg></span
-      ><span class="cf-tab-text" data-cf-language-text>{{ t(tab.label) }}</span>
+      ><span class="cf-tab-text">{{ t(tab.label) }}</span>
     </button>
   </div>
 </template>
@@ -167,9 +167,9 @@ onBeforeUnmount(() => {
   will-change: transform;
   /* 位移与换色同一个时长、同一条缓动，与脚本里的 SWITCH_TIMING 保持一致。 */
   transition:
-    transform 0.48s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.2s ease,
-    background-color 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+    transform 0.48s var(--cf-ease-out-strong),
+    opacity var(--cf-duration-base) ease,
+    background-color 0.48s var(--cf-ease-out-strong);
   opacity: 0;
 }
 
@@ -182,8 +182,8 @@ onBeforeUnmount(() => {
   width: 3.5px;
   height: 18px;
   background-color: var(--cf-tab-accent, #1677ff);
-  border-radius: 3px;
-  transition: background-color 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: var(--cf-radius-xs);
+  transition: background-color 0.48s var(--cf-ease-out-strong);
 }
 
 .cf-nav-tab {
@@ -203,9 +203,9 @@ onBeforeUnmount(() => {
   position: relative;
   z-index: 2;
   transition:
-    color 0.48s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.18s ease,
-    transform 0.12s ease;
+    color 0.48s var(--cf-ease-out-strong),
+    background-color var(--cf-duration-base) ease,
+    transform var(--cf-duration-fast) ease;
   user-select: none;
   border: none;
   background: transparent;
@@ -240,7 +240,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   flex-shrink: 0;
   color: inherit;
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform var(--cf-duration-base) var(--cf-ease-out-strong);
 }
 
 .cf-nav-tab.active .cf-tab-icon {
@@ -249,7 +249,7 @@ onBeforeUnmount(() => {
 }
 
 .cf-tab-icon svg [fill-opacity] {
-  transition: fill-opacity 0.22s ease;
+  transition: fill-opacity var(--cf-duration-base) ease;
 }
 
 .cf-tab-icon svg {

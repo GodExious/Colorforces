@@ -117,14 +117,13 @@ export async function syncClistRatings(tFunc, onStatusChange) {
   const rawKey = (appSettings.ratings.clist && appSettings.ratings.clist.apiKey) || '';
 
   if (authMode === 'api' && !rawKey) {
-    const l = getLang();
+    // 文字给成函数：提示开着时换语言，文字跟着换。
     confirmSync({
-      title: t('clistSyncTitle', l),
+      title: () => t('clistSyncTitle', getLang()),
       type: 'warning',
-      message: t('syncNeedApiKey', l),
-      note: t('syncApiKeyMissingNote', l),
-      confirmText: t('popGotItBtn', l),
-      lang: l,
+      message: () => t('syncNeedApiKey', getLang()),
+      note: () => t('syncApiKeyMissingNote', getLang()),
+      confirmText: () => t('popGotItBtn', getLang()),
     });
     return;
   }

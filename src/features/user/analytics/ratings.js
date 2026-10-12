@@ -1,6 +1,6 @@
 import { latestRatingsMap, getPeerContests, getProblemsByContest } from '../../ratings/data.js';
 import { cleanProblemTitle } from '../../../utils/problem.js';
-import { getProblemRating } from '../../ratings/enhance.js';
+import { getProblemRating } from '../../ratings/lookup.js';
 import { isGymContest } from './pack.js';
 
 // 题目信息优先取本地题库，题库里没有的取随数据集保存的那一份。

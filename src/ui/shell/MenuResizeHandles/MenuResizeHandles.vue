@@ -82,10 +82,10 @@ defineProps({ controller: { type: Object, required: true }, open: Boolean });
   content: '';
   position: absolute;
   inset: 1px;
-  border-radius: 2px;
+  border-radius: var(--cf-radius-2xs);
   background: color-mix(in srgb, var(--cf-menu-accent) 45%, transparent);
   opacity: 0;
-  transition: opacity 140ms ease;
+  transition: opacity var(--cf-duration-fast) ease;
   pointer-events: none;
 }
 .cf-menu-resize-handle:hover::after,

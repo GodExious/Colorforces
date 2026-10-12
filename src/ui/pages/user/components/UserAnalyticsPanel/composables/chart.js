@@ -4,6 +4,7 @@ import { BarChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
 import { LabelLayout } from 'echarts/features';
 import { SVGRenderer } from 'echarts/renderers';
+import { readTickColors, fadeTickColors } from './tick-colors.js';
 
 // LabelLayout 必须在这里显式登记：柱子上的数字随数值变化滚动（valueAnimation）是由它驱动的。
 // 图表库的 core 入口本来会自己登记它，但那是一句「只有副作用」的代码，打包时被当作无用代码剔除了，
@@ -12,6 +13,8 @@ import { SVGRenderer } from 'echarts/renderers';
 use([BarChart, GridComponent, LabelLayout, SVGRenderer]);
 
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+// 图表内容更新时的过渡。
+const UPDATE_TIMING = { duration: 380, easing: 'cubicOut' };
 
 /*
  * 悬停提示不用图表库自带的那个：它用位移变换跟着鼠标走，浏览器把它单独合成，
@@ -393,18 +396,22 @@ export function useChart(option, { replaced = [], tip = null, events = {} } = {}
       labelShown = null;
       hint.hide();
     }
+    // 要整张滑动时，图表自己不做过渡，直接换成新内容。
+    const animated = !reducedMotion() && !slideTo;
+    // 刻度文字的颜色图表库不做过渡，自己补（见 tick-colors.js）；时长和缓动跟图表更新时的一样。
+    const ticks = animated ? readTickColors(chart) : null;
     chart.setOption(
       {
-        // 要整张滑动时，图表自己不做过渡，直接换成新内容。
-        animation: !reducedMotion() && !slideTo,
+        animation: animated,
         animationDuration: 520,
-        animationDurationUpdate: 380,
+        animationDurationUpdate: UPDATE_TIMING.duration,
         animationEasing: 'cubicOut',
-        animationEasingUpdate: 'cubicOut',
+        animationEasingUpdate: UPDATE_TIMING.easing,
         ...built.value,
       },
       { replaceMerge: replaced },
     );
+    if (ticks) fadeTickColors(chart, ticks, UPDATE_TIMING);
     if (slideTo) runSlide();
   }
 

@@ -1,6 +1,7 @@
 <svg data-cf-icon="navigation" xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='var(--cf-icon-ink, var(--cf-icon-primary))' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' focusable='false' style='--cf-icon-primary: #c3be65; --cf-icon-secondary: #dbd8a3'>
-  <path d='M7.5 4h9v5.5a4.5 4.5 0 0 1-9 0Z' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/>
-  <g stroke='var(--cf-icon-detail, var(--cf-icon-secondary))'><path d='M7.5 6H5a2.6 2.6 0 0 0 2.9 3.6M16.5 6H19a2.6 2.6 0 0 1-2.9 3.6'/></g>
-  <path d='M12 14v3'/>
-  <path d='M8.5 20.5h7l-1-3.5h-5Z' fill='var(--cf-icon-secondary)' fill-opacity='0.3' stroke='var(--cf-icon-detail, var(--cf-icon-secondary))'/>
+  <path d='M6.5 3.5h11V9a5.5 5.5 0 0 1-11 0Z' fill='var(--cf-icon-primary)' fill-opacity='var(--cf-icon-wash, 0.14)'/>
+  <g stroke='var(--cf-icon-detail, var(--cf-icon-secondary))'><path d='M6.5 5.5H3.9A3 3 0 0 0 7.2 9.8M17.5 5.5h2.6a3 3 0 0 1-3.3 4.3'/></g>
+  <path d='M12 14.5v3'/>
+  <rect x='7' y='17.5' width='10' height='3.5' rx='1.3' fill='var(--cf-icon-primary)' stroke='none'/>
+  <path d='M12.00 5.20L12.82 7.17L14.95 7.34L13.33 8.73L13.82 10.81L12.00 9.70L10.18 10.81L10.67 8.73L9.05 7.34L11.18 7.17Z' fill='var(--cf-icon-primary)' stroke='none'/>
 </svg>

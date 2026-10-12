@@ -1,0 +1,34 @@
+/*
+ * 换语言时的过渡（见 utils/language-wave.js）里，贴在每一项里面的「旧内容的照片」。
+ * 它是这一项原样复制出来的，带着同样的类名，所以这里把会让它和原来对不齐、或者多画出东西的属性都压掉：
+ * 贴满这一项、没有外边距和边框（边框是这一项自己的，一直在）、没有底色和阴影、不位移、不响应鼠标，
+ * 也不跟着类名里写的过渡和动画再动一遍。透明度不在这里定：它要由过渡来改。
+ *
+ * 编号：这一项要是带自动编号的（同步说明里的步骤 1、2、3），照片带着同样的类名也会跟着数一个，
+ * 后面的步骤就全都多了 1，过渡期间序号变成 2、3、4……所以照片自己不计数，它里面的编号也只在它里面算，
+ * 不传到外面去（contain: style）。
+ */
+.cf-language-ghost {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: auto !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  translate: none !important;
+  transition: none !important;
+  animation: none !important;
+  pointer-events: none !important;
+  counter-increment: none !important;
+  counter-reset: none !important;
+  counter-set: none !important;
+  contain: style !important;
+}
+
+/* 这一项自己用伪元素画的装饰（序号圆点、连线、引导线）一直都在，照片不用再画一遍。 */
+.cf-language-ghost::before,
+.cf-language-ghost::after {
+  content: none !important;
+}

@@ -32,6 +32,7 @@ const notes = [
 const options = computed(() => ({
   className: 'cf-clist-spec-modal',
   width: '560px',
+  page: 'ratings',
   iconSvg: cfAssets.clistSyncGuideIcon,
   title: t('specModalTitle'),
   confirmText: t('specConfirmBtn'),
@@ -74,7 +75,7 @@ const options = computed(() => ({
   display: flex;
   flex-direction: column;
   color: var(--cf-gray-600);
-  font-size: var(--cf-font-size-md);
+  font-size: var(--cf-font-size-lg);
   line-height: 1.65;
 }
 
@@ -102,21 +103,21 @@ const options = computed(() => ({
 }
 .cf-sync-fact strong {
   color: var(--cf-control-ink);
-  font-size: 20px;
+  font-size: calc(20px * var(--cf-font-scale));
   font-weight: var(--cf-font-weight-bold);
   line-height: 1.25;
   font-variant-numeric: tabular-nums;
 }
 .cf-sync-fact span {
   color: color-mix(in srgb, var(--cf-control-ink) 62%, var(--cf-gray-400));
-  font-size: var(--cf-font-size-sm);
+  font-size: var(--cf-font-size-base);
   line-height: 1.4;
 }
 
 .cf-sync-section-title {
   margin: 20px 0 10px;
   color: color-mix(in srgb, var(--cf-control-ink) 70%, var(--cf-gray-400));
-  font-size: var(--cf-font-size-sm);
+  font-size: var(--cf-font-size-base);
   font-weight: var(--cf-font-weight-semibold);
   letter-spacing: 0.06em;
 }
@@ -144,7 +145,7 @@ const options = computed(() => ({
   border-radius: 50%;
   background: color-mix(in srgb, var(--cf-menu-accent) 70%, #2b3a55);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--cf-menu-accent) 16%, #ffffff);
-  color: #fff;
+  color: var(--cf-white-ink);
   font:
     700 12px/1 Arial,
     sans-serif;

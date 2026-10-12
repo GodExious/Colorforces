@@ -14,7 +14,7 @@ defineProps({
         d="M9 13.5V4.5a1.5 1.5 0 0 1 3 0V11M12 9.5a1.5 1.5 0 0 1 3 0v2M15 10.5a1.5 1.5 0 0 1 3 0V12M18 11.5a1.5 1.5 0 0 1 3 0V16a6 6 0 0 1-6 6h-2.2a6 6 0 0 1-4.9-2.5L4.3 14.2a1.5 1.5 0 0 1 .5-2.1 1.8 1.8 0 0 1 2.2.3l2 2.1"
       />
     </svg>
-    <span data-cf-language-text><slot /></span>
+    <span><slot /></span>
   </p>
 </template>
 

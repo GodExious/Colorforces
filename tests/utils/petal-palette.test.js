@@ -8,6 +8,7 @@ import {
   petalColor,
   petalTone,
   petalTint,
+  menuTabColor,
 } from '../../src/utils/petal-palette.js';
 import { MENU_TAB_IDS } from '../../src/config/menu-tabs.js';
 
@@ -83,4 +84,13 @@ test('页签图标的颜色与它在色环上的位置一致', () => {
       `${id}.svg 应为 --cf-icon-primary: ${primary}; --cf-icon-secondary: ${petalTint(primary)}`,
     );
   });
+});
+
+test('弹窗按所属菜单页取花瓣色：和这一页图标的颜色一致，不认识的页回到第一片', () => {
+  MENU_TAB_IDS.forEach((id, index) => {
+    assert.equal(menuTabColor(id), petalColor(petalPosition(index, MENU_TAB_IDS.length)));
+  });
+  assert.equal(menuTabColor(MENU_TAB_IDS[0]), PETAL_COLORS[0]);
+  assert.equal(menuTabColor('no-such-page'), PETAL_COLORS[0]);
+  assert.equal(menuTabColor(undefined), PETAL_COLORS[0]);
 });

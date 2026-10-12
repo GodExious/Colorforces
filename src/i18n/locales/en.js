@@ -6,10 +6,13 @@ export default {
   predictionPerformanceHint: 'Quick performance',
   predictionRankChange: 'Rank changes and promotion analysis',
   predictionRatedRank: 'Rated-field rank',
+  predictionRatedRankHint:
+    'Rated-field rank\nTies take the last place of their group, as the rating formula does',
   predictionFollowStyle: 'Follow problem-rating style',
+  predictionSyncStandings: 'Refresh the standings along with predictions',
   predictionCacheContests: 'Cached contests',
   predictionCacheContestsHint:
-    'Predictions refresh automatically while the standings page is open: every 30 seconds during a contest; every 60 seconds after it ends and before official ratings are out; once official ratings are out, the result is kept for 24 hours without refreshing.',
+    'Up to 25 contests. Predictions refresh automatically while the standings page is open: every 60 seconds during a contest; every 15 minutes after it ends and before official ratings are out; once official ratings are out, the result is kept for 24 hours without refreshing.',
   predictionFinalDelta: 'Final rating change',
   predictionLiveDelta: 'Predicted rating change',
   predictionNotApplicable: 'N/A: not applicable or reliable data unavailable',
@@ -17,33 +20,52 @@ export default {
   predictionRankUp: 'Rank promoted',
   predictionRankDown: 'Rank demoted',
   predictionNextRank: (n, name) =>
-    `${n} rating points above the model starting rating are needed for ${name}.`,
+    `${n} rating points above the starting rating are needed for ${name}.`,
   predictionTopRank: 'Already in the highest rating tier',
   predictionAnalyze: 'Single-user rating analysis',
   predictionActions: 'Analyze',
   predictionFinalMarker: 'Final · Official rating results; performance remains calculated',
   predictionSettingsHint:
     'Official participation only. Use the flower button in the Analyze column to simulate a target rank or target rating. Classic colors are used when problem-rating colors are disabled.',
+  // The three sections a feature's options are split into, and the summary shown on the Content section.
+  settingSectionFunction: 'Function',
+  settingSectionStyle: 'Style',
+  settingSectionContent: 'Content',
+  settingSelected: (on, total) => `${on}/${total} selected`,
   participationEnable: 'Show user participation identity tags',
   participationRated: 'Show rated tags',
   participationUnrated: 'Show unrated tags',
   participationVirtual: 'Show virtual tags',
-  participationHintShort: 'View what rated, unrated, and virtual tags mean',
+  participationUntrusted: 'Show untrusted tags',
+  participationPractice: 'Show practice tags',
+  participationGhost: 'Show ghost tags',
+  participationHintShort:
+    'View what rated, unrated, untrusted, virtual, practice, and ghost tags mean',
   participationIdentityTitle: 'User participation identity',
   participationIdentityType: 'Participation type',
   participationIdentityMeaning: 'Meaning',
-  participationIdentityPreview: 'Tag preview',
+  participationIdentityPreview: 'Individual tag',
+  participationIdentityTeamPreview: 'Team tag (× size)',
   participationIdentityRated: 'rated',
-  participationIdentityRatedDesc: 'Official participation included in the contest Rating.',
+  participationIdentityRatedDesc: 'Official participation: counted in the contest Rating.',
   participationIdentityUnrated: 'unrated',
   participationIdentityUnratedDesc:
-    'Listed in the contest, but this contest does not affect Rating.',
+    'Unrated participation: listed in the contest standings, but does not affect Rating.',
   participationIdentityVirtual: 'virtual',
   participationIdentityVirtualDesc:
-    'Virtual participation; no official rating prediction is generated.',
+    'Virtual participation: does not affect Rating, and no rating prediction is generated.',
+  participationIdentityUntrusted: 'untrusted',
+  participationIdentityUntrustedDesc:
+    'Untrusted participation: rated in this round but left out of the official standings, which list only “trusted participants”. The result and prediction are worked out from submissions; where the contest format does not allow that, only the tag is shown.',
+  participationIdentityPractice: 'practice',
+  participationIdentityPracticeDesc:
+    'Practice: submitted after the contest ended, not part of its standings, and does not affect Rating.',
+  participationIdentityGhost: 'ghost',
+  participationIdentityGhostDesc:
+    'Ghost team: an onsite team whose results were imported into the standings later, not an online participant and not rated. The size is shown as a question mark when its member list cannot be recognised.',
   participationIdentityClose: 'Close',
   participationHint:
-    'rated / unrated indicate whether this contest affects Rating, not whether the account has a Rating. virtual marks virtual participation, with no rating prediction. Unknown states are not tagged.',
+    'rated / unrated indicate whether this contest affects Rating, not whether the account has a Rating. untrusted marks participants who are rated but left out of the official standings. virtual marks virtual participation, with no rating prediction. practice marks submissions made after the contest. ghost marks onsite teams imported into the standings. Unknown states are not tagged.',
   predictionLoading: 'Fetching contest data…',
   predictionStageStandings: 'Fetching standings…',
   predictionStageRatings: 'Fetching ratings…',
@@ -52,6 +74,13 @@ export default {
   predictionScanning: (n) => `Checking submission history · ${n.toLocaleString()} scanned`,
   predictionWaiting: 'Waiting for a contest snapshot',
   predictionRefresh: 'Refresh prediction',
+  predictionAutoRefreshEvery: (seconds) =>
+    seconds >= 120
+      ? `Refreshes automatically every ${Math.round(seconds / 60)} minutes`
+      : `Refreshes automatically every ${seconds} seconds`,
+  predictionAutoRefreshOff: 'The result is final and no longer refreshes automatically',
+  predictionAutoRefreshIdle:
+    'The contest is not running, so nothing refreshes automatically; press Refresh prediction to update',
   predictionDataTime: 'Standings snapshot',
   predictionPhaselive: 'Live prediction',
   predictionPhasebefore: 'Contest has not started · awaiting standings',
@@ -64,6 +93,15 @@ export default {
   predictionReasonnotOfficial: 'Not included in official rating changes for this contest',
   predictionReasonunofficial: 'Unofficial, virtual or practice participation',
   predictionReasonvirtual: 'Virtual participation: no official rating change or prediction',
+  predictionReasonuntrusted:
+    'Rated in this round but outside the official standings; the result is worked out from submissions',
+  predictionReasonuntrustedNoResult:
+    'Rated in this round but outside the official standings. This round was cached by an older version, so no result or prediction is available until you press Refresh prediction',
+  predictionReasonuntrustedUnsupported:
+    'Rated in this round but outside the official standings. Their result and prediction cannot be worked out for this contest format yet',
+  predictionReasonpractice: 'Practice after the contest: not ranked and does not affect Rating',
+  predictionReasonghost:
+    'Ghost team: onsite results imported into the standings; not an online participant and not rated',
   predictionReasonoutOfCompetition:
     'Out-of-competition participation: no official rating change or prediction',
   predictionReasonunratedContest: 'This contest does not affect Rating',
@@ -87,7 +125,7 @@ export default {
     'Integer adjustments make this boundary unstable. No exact conclusion is shown.',
   predictionSnapshotChanged: 'The contest snapshot changed. Please calculate again.',
   predictionClose: 'Close analysis',
-  predictionModelRating: 'Model starting rating',
+  predictionModelRating: 'Starting rating',
   predictionTargetRatingInput: 'Target post-contest Rating',
   predictionTargetRankInput: 'Target rank',
   predictionCurrentRank: 'Current rank',
@@ -95,6 +133,15 @@ export default {
   predictionEstimateHint: 'Estimate, not final yet',
   predictionFlagCurrent: 'Now',
   predictionFlagBefore: 'Before',
+  predictionFlagKeep: 'No loss',
+  predictionNewcomer: (n) => `New account · contest ${n}`,
+  predictionNewcomerBonus: (n) => `bonus +${n}`,
+  predictionTeamMember: (n) => `Team-rated · ${n} members`,
+  predictionTeamRating: (rating) => `Team rating ${rating}`,
+  predictionTeamMemberTip:
+    "In a team-rated contest a team takes part with its team rating, and every member gets the same rank and rating change.\nThe what-if here is shared by the whole team; the ratings shown are this member's own.",
+  predictionNewcomerTip:
+    'Accounts with fewer than 6 rated contests get a new-account bonus.\nOn top of the normal change, the first six contests add 500, 350, 250, 150, 100 and 50.',
   predictionQuickCurrent: 'Back to current standings',
   predictionQuickKeep: 'No rating loss',
   predictionQuickPromote: (name) => `Reach ${name}`,
@@ -103,7 +150,7 @@ export default {
   predictionInputHint: 'Drag a slider or enter a value to explore a scenario under this snapshot',
   predictionTips: 'Tips',
   predictionBiasHint:
-    'For accounts in their 2nd–6th rated contest, the shown rating is lower than the one Codeforces actually uses, and only the shown rating is available here. In rounds with many such accounts (e.g. Div. 2, Div. 3), predictions run low, by about 10–25 points in our tests.',
+    'For accounts in their 2nd–6th rated contest, the shown rating is lower than the one Codeforces actually uses, and only the shown rating is available here. In rounds with many such accounts (e.g. Div. 2, Div. 3), most predictions run low, by about 10–25 points in our tests; long-standing accounts near the top may run slightly high, by under 10 points.',
   predictionScenarioHint:
     'Ranks include rated participants only and may differ from the visible standings. All adjustments are recalculated; this is not a guaranteed final result or attainable rank.',
   storageUserTitle: 'CF user data',
@@ -155,6 +202,7 @@ export default {
     'Got an awesome idea, feature request, or optimization tip? Feel free to open an issue on GitHub and build Colorforces together!',
   roadmapProposalBtn: 'Propose on GitHub',
   langLabel: 'Menu Language',
+  fontSizeLabel: 'Plugin Font Size',
   menuSizeCustom: 'Custom Settings Panel Size',
   menuLayoutReset: 'Restore default values without changing the switch',
   menuLayoutResetAction: 'Reset to default',
@@ -178,10 +226,12 @@ export default {
   statusUpdateLatest: 'Up to date',
   statusUpdatePreview: 'Preview version',
   statusUpdateFailed: 'Check failed',
-  updateModalTitle: '🔔 New Version Available',
+  updateModalTitle: 'New Version Available',
   updateModalDesc: (remoteVer, curVer) =>
     `A new version of Colorforces is available: <span class="cf-update-version">v${remoteVer}</span> (current installed version is v${curVer}).`,
   updateModalSubDesc: 'Updating is recommended to experience the latest features and improvements.',
+  updateModalNotes: 'What’s new',
+  updateModalItemCount: (count) => `${count} ${count === 1 ? 'item' : 'items'}`,
   updateModalStopCheck: 'Do not check for updates automatically',
   updateModalBtnUpdate: 'Update Now',
   updateModalBtnLater: 'Remind Later (in 3h)',
@@ -193,20 +243,23 @@ export default {
   shortcutsSectionNoteLabel: 'Tip: ',
   shortcutsSectionNote:
     'If you do not wish to use a shortcut for a feature, simply clear its shortcut key.',
+  shortcutMenuLanguageTitle: 'Switch Menu Language',
+  shortcutMenuLanguageDesc:
+    'Switch between Chinese and English menus. Default: Shift+M (Menu language).',
   shortcutHideTagsTitle: 'Toggle Problem Tags',
   shortcutHideTagsDesc: 'Quickly toggle visibility of algorithm tags on problem pages.',
+  shortcutHideVerdictTestsTitle: 'Toggle Test Numbers',
+  shortcutHideVerdictTestsDesc:
+    'Show or hide the test number in verdicts (such as "on test 3"). Default: Shift+N (Number).',
+  shortcutAcHighlightTitle: 'Toggle Attempted Row Highlighting',
+  shortcutAcHighlightDesc:
+    'Toggle full-row backgrounds for attempted problems. Default: Shift+B (Background).',
+  shortcutLangIconTitle: 'Toggle Language Icons',
+  shortcutLangIconDesc: 'Toggle display of programming language icons in submission lists.',
   shortcutShortVerdictTitle: 'Toggle Verdict Abbreviations',
   shortcutShortVerdictDesc: 'Switch between full verdict text and compact abbreviations (AC / WA).',
   shortcutTimeFormatTitle: 'Toggle Time Formatting',
   shortcutTimeFormatDesc: 'Quickly toggle custom formatting of dates and times across the site.',
-  shortcutMenuLanguageTitle: 'Switch Menu Language',
-  shortcutMenuLanguageDesc:
-    'Switch between Chinese and English menus. Default: Shift+M (Menu language).',
-  shortcutAcHighlightTitle: 'Toggle Solved Row Highlighting',
-  shortcutAcHighlightDesc:
-    'Toggle full-row backgrounds for solved problems. Default: Shift+B (Background).',
-  shortcutLangIconTitle: 'Toggle Language Icons',
-  shortcutLangIconDesc: 'Toggle display of programming language icons in submission lists.',
   shortcutClistEnabledTitle: 'Toggle CList Ratings',
   shortcutClistEnabledDesc: 'Quickly turn on or off CList fine-grained difficulty ratings.',
   shortcutColorRatingsTitle: 'Toggle Colored Ratings',
@@ -219,19 +272,26 @@ export default {
     'Turn the rating prediction columns on standings on or off. Default: Shift+P (Prediction).',
   shortcutUserAvatarTitle: 'Toggle User Avatars',
   shortcutUserAvatarDesc: 'Toggle visibility of user avatars in standings and status tables.',
+  shortcutUserAnalyticsTitle: 'Toggle User Data Analytics',
+  shortcutUserAnalyticsDesc:
+    'Turn the analytics panel on profile pages on or off. Default: Shift+D (Data).',
   shortcutRecording: 'Press keys...',
   shortcutEditTooltip: 'Click to edit shortcut',
-  shortcutEmpty: '(None)',
+  shortcutEmpty: 'Not set',
   shortcutClearBtn: 'Clear shortcut',
   shortcutResetBtn: 'Reset to default',
   shortcutResetAllBtn: 'Reset All to Defaults',
+  shortcutClearAllBtn: 'Clear All Shortcuts',
   masterColorRatings: 'Colored Ratings',
   displayStyleTitle: 'Ratings Display Format',
   locTagFillCell: 'Fill Table Cells with Tag Style',
   styleBlock: 'Block',
   styleTag: 'Tag',
   acColor: 'AC Background',
-  locAcHighlight: 'Highlight entire rows of solved problems',
+  rejectedColor: 'Attempted, Not AC Background',
+  locAcHighlight: 'Highlight entire rows of attempted problems',
+  locFormatRecentActions: 'Format Recent Actions in the Sidebar',
+  locIndentRecentActionTitles: 'Indent titles to align with the author',
   locationsTitle: 'Ratings Display Locations',
   locSubmissions: 'Submissions',
   locStatus: 'Status',
@@ -257,7 +317,6 @@ export default {
   analyticsCacheUsersHint:
     'A cache stays valid for 15 minutes; reopening the same profile within that time sends no request. After it expires, the data refreshes when you enter the profile if automatic loading is on, or when you click the load or refresh button otherwise. Your own account is always kept and does not take a slot.',
   analyticsRecentCount: 'Problems in the recent average',
-  analyticsChartsTitle: 'Analytics shown',
   analyticsChartSummary: 'Summary',
   analyticsChartHeatmap: 'Rating heatmap',
   analyticsChartActivity: 'Monthly activity',
@@ -323,13 +382,12 @@ export default {
   analyticsZoneUp: 'One hour later',
   analyticsZoneDown: 'One hour earlier',
   analyticsCoverage: 'Problemset coverage',
-  analyticsCoverageNote: (covered, total) => `${covered} / ${total}`,
+  analyticsCoverageNote: (covered, total) => `${covered} / ${total} problems`,
   analyticsRatingsTitle: 'Problem ratings',
   analyticsModeLabel: 'What the chart shows',
   analyticsModeCount: 'Count',
   analyticsModeShare: 'Of solved',
-  analyticsModeCoverage: 'Of bucket',
-  analyticsModeAll: 'Of all',
+  analyticsModeCoverage: 'Coverage',
   analyticsSourceOfficial: 'Official ratings',
   analyticsSourceClist: 'CList ratings',
   // Small tables inside chart tooltips: the functions below ending in Tip return [[label, value], ...].
@@ -350,6 +408,7 @@ export default {
   analyticsHeatmapTipRepeat: (count) => `${count} re-solved`,
   analyticsHeatmapRepeatHeading: 'Solved before, solved again that day',
   analyticsPeriodNow: 'Now',
+  analyticsPeriodPick: 'Choose a period',
   analyticsPeriodEarlier: 'Earlier',
   analyticsPeriodLater: 'Later',
   analyticsWeekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -476,8 +535,19 @@ export default {
     VIRTUAL: 'Virtual',
     OUT_OF_COMPETITION: 'Out of competition',
     PRACTICE: 'Practice',
+    CANCELLED: 'Results cancelled',
     MANAGER: 'Manager',
   },
+  analyticsTypeCancelledNote: 'Every in-contest submission was skipped.',
+  // Captions of the two groups of the participation types chart, and the switch between counting submissions and contests.
+  analyticsTypeSolo: 'Individual',
+  analyticsTypeTeam: 'As a team',
+  analyticsTypesBySubmissions: 'Submissions',
+  analyticsTypesByContests: 'Contests',
+  analyticsTypeTip: (submissions, contests) => [
+    ['Submissions', submissions],
+    ['Contests', contests],
+  ],
   analyticsLanguagesNote: 'By the language of the first accepted solution',
   analyticsLanguagesMore: (count) => `Show all ${count} languages`,
   analyticsVerdictsMore: (count) => `Show all ${count} verdicts`,
@@ -571,16 +641,18 @@ export default {
   guideStep1Desc: 'Make sure you are logged in to your account at:',
   guideStep2Title: 'Step 2: Navigate to the API Documentation',
   guideStep2Desc: 'Visit the API v4 documentation:',
-  guideStep3Title: 'Step 3: Click the "here" link with left mouse button',
-  guideStep3Desc: 'Find the following sentence at the top of the documentation:',
+  guideStep3Title:
+    'Step 3: Left-click "here" at the top of the documentation and copy the Request Header',
+  guideStep3Desc:
+    'In the Authentication block at the top, click the blue "here"; after a moment it turns into your key and a popover opens below it:',
+  guidePhaseClick: 'Click "here"',
+  guidePhaseCopy: 'Copy this whole line',
   guideNoteLabel: 'Note:',
   guideStep3Note:
     'Please <strong>left-click the blue "here" directly</strong> on the page.<br>Do not open in a new tab to avoid a 403 error.',
-  guideStep4Title: 'Step 4: Copy the entire Request Header',
-  guideStep4Desc: 'Upon clicking, a popover dialog will appear as simulated below:',
   guideNoticeLabel: 'Notice:',
-  guideStep4Notice:
-    'The code block above is an example. Please copy your personal header from the CList popover and paste it into the plugin settings.',
+  guideStep3Notice:
+    'The above is only an example. Copy the whole line under Request header in the popover and paste it into the CList API Key field in the plugin settings.',
   guideConfirmBtn: 'Got it',
 
   // CList Sync Specification Modal

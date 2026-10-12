@@ -1,8 +1,10 @@
 import { getRuntimeValue, setRuntimeValues } from '../../storage/runtime.js';
 import { appSettings } from '../../settings.js';
 import { UPDATE_CHECK_COOLDOWN } from '../../config/cache-policy.js';
-import { fetchRemoteRelease } from '../../api/updates.js';
+import { fetchRemoteRelease, fetchChangelogText } from '../../api/updates.js';
 import { CURRENT_VERSION } from '../../config/runtime.js';
+import { CHANGELOG_URLS } from '../../config/release.js';
+import { parseReleaseNotes } from './release-notes.js';
 
 // 读出更新检查状态：上次检查时间与最近已知版本。
 function readCheckState() {
@@ -34,6 +36,24 @@ export function compareVersions(v1, v2) {
   return 0;
 }
 
+// 新版本的更新内容：当前版本之后、到新版本为止的各个版本，每种语言各取一份（弹窗开着时切换语言，内容跟着换）。
+// 返回 { 语言: [{ version, sections }] }，见 parseReleaseNotes。文档取不到或读不出时那种语言是空的，
+// 弹窗照常显示，只是不列内容。
+async function loadReleaseNotes(remoteVersion) {
+  const wanted = ({ version }) =>
+    compareVersions(version, CURRENT_VERSION) > 0 && compareVersions(version, remoteVersion) <= 0;
+  const entries = await Promise.all(
+    Object.keys(CHANGELOG_URLS).map(async (lang) => {
+      try {
+        return [lang, parseReleaseNotes(await fetchChangelogText(lang)).filter(wanted)];
+      } catch {
+        return [lang, []];
+      }
+    }),
+  );
+  return Object.fromEntries(entries);
+}
+
 // 按设置和冷却规则检查更新，必要时请求显示提醒。
 export async function checkScriptUpdate(force = false) {
   if (!force && appSettings.general.disableUpdateCheck) {
@@ -58,7 +78,7 @@ export async function checkScriptUpdate(force = false) {
   const hasUpdate = comp > 0;
   const isPreview = comp < 0;
   if (hasUpdate) {
-    announceUpdate?.(remoteVersion, downloadUrl);
+    announceUpdate?.(remoteVersion, downloadUrl, await loadReleaseNotes(remoteVersion));
   }
 
   return { success: true, hasUpdate, isPreview, remoteVersion, currentVersion: CURRENT_VERSION };

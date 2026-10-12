@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 import { appStorage } from './storage/gm.js';
 import { SETTINGS_KEY, LEGACY_SETTINGS_KEY } from './storage/keys.js';
-import { DEFAULT_SETTINGS } from './config/defaults.js';
+import { DEFAULT_SETTINGS, FONT_SIZE, PREDICTION_CACHE_CONTESTS } from './config/defaults.js';
 import { upgradeLegacySettings } from './storage/migrations/settings.js';
 const listeners = new Set();
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -87,6 +87,13 @@ function readSettings(stored) {
   const general = part(stored, 'general');
   take(settings.general, general, 'lang', isText);
   takeFlags(settings.general, general);
+  // 字体大小只接受范围之内的整数。
+  take(
+    settings.general,
+    general,
+    'fontSize',
+    (value) => Number.isInteger(value) && value >= FONT_SIZE.min && value <= FONT_SIZE.max,
+  );
   readMenuSize(settings.general.menuSize, part(general, 'menuSize'));
   readMenuPosition(settings.general.menuPosition, part(general, 'menuPosition'));
 
@@ -95,6 +102,7 @@ function readSettings(stored) {
   const acHighlight = part(appearance, 'acHighlight');
   takeFlags(settings.appearance.acHighlight, acHighlight);
   take(settings.appearance.acHighlight, acHighlight, 'color', isText);
+  take(settings.appearance.acHighlight, acHighlight, 'rejectedColor', isText);
   const langIcon = part(appearance, 'langIcon');
   takeFlags(settings.appearance.langIcon, langIcon);
   takeScale(settings.appearance.langIcon, langIcon, 'size', 0.8, 3.0);
@@ -116,12 +124,16 @@ function readSettings(stored) {
   const contest = part(stored, 'contest');
   const prediction = part(contest, 'prediction');
   takeFlags(settings.contest.prediction, prediction);
-  // 预测缓存的比赛场数至少为 1：正在看的这一场总要留着。
+  // 预测缓存的比赛场数至少为 1：正在看的这一场总要留着。比上限大的（有上限之前存下的）收到上限。
   take(
     settings.contest.prediction,
     prediction,
     'cacheContests',
-    (value) => Number.isInteger(value) && value >= 1,
+    (value) => Number.isInteger(value) && value >= PREDICTION_CACHE_CONTESTS.min,
+  );
+  settings.contest.prediction.cacheContests = Math.min(
+    PREDICTION_CACHE_CONTESTS.max,
+    settings.contest.prediction.cacheContests,
   );
   takeFlags(settings.contest.participationTags, part(contest, 'participationTags'));
 
@@ -133,9 +145,8 @@ function readSettings(stored) {
   // 数据分析：缓存用户数只接受非负整数，图表开关只接受已知项。
   const analytics = part(user, 'analytics');
   takeFlags(settings.user.analytics, analytics);
-  for (const key of ['ratingsMode', 'tagsMode']) {
-    take(settings.user.analytics, analytics, key, oneOf('count', 'share', 'coverage'));
-  }
+  take(settings.user.analytics, analytics, 'ratingsMode', oneOf('count', 'share', 'coverage'));
+  take(settings.user.analytics, analytics, 'typesMode', oneOf('submissions', 'contests'));
   take(
     settings.user.analytics,
     analytics,

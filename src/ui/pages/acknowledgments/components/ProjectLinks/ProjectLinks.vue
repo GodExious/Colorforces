@@ -132,7 +132,7 @@ onBeforeUnmount(() => {
       :aria-controls="panelId"
       @click="toggle"
     >
-      <span data-cf-language-text>{{ t('ackVisitProject') }}</span
+      <span>{{ t('ackVisitProject') }}</span
       ><span
         class="cf-project-links-chevron"
         :class="{ 'is-open': open }"
@@ -155,9 +155,7 @@ onBeforeUnmount(() => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <InlineSvg :source="link.icon" /><span data-cf-language-text>{{
-              t(link.labelKey)
-            }}</span>
+            <InlineSvg :source="link.icon" /><span>{{ t(link.labelKey) }}</span>
           </a>
         </li>
       </ul>
@@ -220,7 +218,7 @@ onBeforeUnmount(() => {
   line-height: 20px;
   font-weight: var(--cf-font-weight-medium);
   white-space: nowrap;
-  transition: background-color 160ms ease;
+  transition: background-color var(--cf-duration-fast) ease;
 }
 .cf-settings-modal .cf-project-link-option:is(:hover, :focus-visible) {
   background: color-mix(in srgb, var(--cf-ack-accent) 18%, var(--cf-card-surface));
@@ -235,8 +233,8 @@ onBeforeUnmount(() => {
 .cf-project-links-enter-active,
 .cf-project-links-leave-active {
   transition:
-    opacity 160ms ease,
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity var(--cf-duration-fast) ease,
+    transform var(--cf-duration-base) var(--cf-ease-out);
 }
 .cf-project-links-enter-from,
 .cf-project-links-leave-to {

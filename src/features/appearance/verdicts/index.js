@@ -1,4 +1,6 @@
-import { appSettings } from '../../settings.js';
+import { appSettings } from '../../../settings.js';
+import { PLUGIN_UI_SELECTOR } from '../../page/plugin-ui.js';
+import { findTestInfo } from './test-info.js';
 const running = new WeakMap();
 export const VERDICT_SELECTOR =
   '.status-verdict-cell, [data-cf-verdict-processed], #sidebar .verdict-accepted, #sidebar .verdict-rejected, #sidebar .verdict-waiting';
@@ -15,8 +17,56 @@ const verdicts = [
 ];
 const fullPattern = new RegExp(`\\b(${verdicts.map(([full]) => full).join('|')})\\b`, 'gi');
 const shortPattern = /^(AC|WA|TLE|MLE|RE|CE|ILE|PE|SK)(?=\s|$)/i;
-const nativeSelector = '.verdict-accepted, .verdict-rejected, .verdict-waiting, .verdict-failed';
+// 原站自己的判题文字节点。状态表格、侧栏之外的地方（提交详情页、源码弹窗的标题等）用的也是这些类名。
+export const NATIVE_VERDICT_SELECTOR =
+  '.verdict-accepted, .verdict-rejected, .verdict-waiting, .verdict-failed';
+const nativeSelector = NATIVE_VERDICT_SELECTOR;
 const auxiliarySelector = '.diagnosticsHint, .diagnostics-icon, script, style';
+
+// 是否开着「隐藏测试点信息」。
+const hidesVerdictTests = () => appSettings.appearance.hideVerdictTests;
+
+// 把一段判题文字里的测试点信息（on test 3 这样的）藏起来，返回新的 HTML；没有测试点时原样返回。
+// 藏起来的部分不丢：换成一个不显示的占位节点，原来的内容记在它的 data-cf-verdict-test 上。
+// 原站重写整格 HTML（比如追加诊断图标）之后，还能从占位节点把测试点放回去。
+function hideTestInfo(html) {
+  // 先粗筛一遍，绝大多数判题文字（Accepted 等）不用往下解析。
+  if (!html || !/test|тест/i.test(html)) return html;
+  const holder = document.createElement('template');
+  holder.innerHTML = html;
+  const texts = [];
+  const walker = document.createTreeWalker(holder.content, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) texts.push(walker.currentNode);
+  let changed = false;
+  for (const text of texts) {
+    const found = findTestInfo(text.textContent);
+    if (!found) continue;
+    const rest = text.textContent.slice(found.end);
+    const hidden = document.createElement('div');
+    hidden.append(text.textContent.slice(found.start, found.end));
+    // 编号常常单独包在紧跟着的一个节点里（verdict-format-judged），一起藏。
+    const next = text.nextSibling;
+    const numberNext =
+      !found.numbered &&
+      !rest.trim() &&
+      next?.nodeType === Node.ELEMENT_NODE &&
+      /^\s*\d+\s*$/.test(next.textContent);
+    if (numberNext) hidden.append(rest, next);
+    const marker = document.createElement('span');
+    marker.hidden = true;
+    marker.dataset.cfVerdictTest = hidden.innerHTML;
+    text.textContent = text.textContent.slice(0, found.start);
+    text.after(marker, ...(numberNext || !rest ? [] : [rest]));
+    changed = true;
+  }
+  return changed ? holder.innerHTML : html;
+}
+
+// 判题文字现在该显示哪一种写法：缩写不缩写、测试点藏不藏，各看各的开关。
+function chosenVerdict(original, short) {
+  const html = appSettings.appearance.shortVerdict ? short : original;
+  return hidesVerdictTests() ? hideTestInfo(html) : html;
+}
 
 // 原站在动画途中更新正文时取消旧交接，旧回调不再覆盖新内容。
 function cancelVerdictTransition(span) {
@@ -98,6 +148,13 @@ function verdictForms(nodes) {
   full.querySelectorAll('[data-cf-verdict-full]').forEach((node) => {
     node.replaceWith(document.createTextNode(node.dataset.cfVerdictFull));
   });
+  // 藏起来的测试点先放回去，下面按完整的内容生成各种写法。
+  full.querySelectorAll('[data-cf-verdict-test]').forEach((node) => {
+    const holder = document.createElement('template');
+    holder.innerHTML = node.dataset.cfVerdictTest;
+    node.replaceWith(holder.content);
+  });
+  full.normalize();
   // 兼容已经被旧版改成缩写的正文，不再把 WA、AC 当作无法恢复的普通文本。
   const walker = document.createTreeWalker(full, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
@@ -137,11 +194,15 @@ function verdictForms(nodes) {
     fragment.append(document.createTextNode(text.textContent.slice(offset)));
     text.replaceWith(fragment);
   }
-  return type ? { original: full.innerHTML, short: short.innerHTML, type } : null;
+  // 认不出判题名称（Running、俄文界面）但带着测试点的也算：它们没有缩写，只用来隐藏测试点。
+  const original = full.innerHTML;
+  const tests = hideTestInfo(original) !== original;
+  return type || tests ? { original, short: short.innerHTML, type, tests } : null;
 }
 
 // 只包装判题正文，原生 submissionVerdictWrapper、颜色节点和诊断提示始终留在原位。
 function formatVerdictBody(body) {
+  const hide = hidesVerdictTests();
   let span = body.querySelector(':scope > .cf-verdict-text[data-cf-verdict-native]');
   let current = span?.querySelector(':scope > .cf-verdict-current');
   // 原站追加诊断图标会序列化整格 HTML；克隆节点没有动画实例，不能留下旧文字层。
@@ -154,20 +215,28 @@ function formatVerdictBody(body) {
     span.replaceWith(...span.childNodes);
     span = null;
   }
-  if (current && [span.dataset.original, span.dataset.short].includes(current.innerHTML)) {
-    displayVerdict(
-      span,
-      appSettings.appearance.shortVerdict ? span.dataset.short : span.dataset.original,
-    );
-    return;
+  if (current) {
+    const { original, short } = span.dataset;
+    const known = [original, short, hideTestInfo(original), hideTestInfo(short)];
+    if (known.includes(current.innerHTML)) {
+      displayVerdict(span, chosenVerdict(original, short));
+      return;
+    }
   }
   const nodes = [...(current || body).childNodes].filter(
     (node) => node.nodeType !== Node.ELEMENT_NODE || !node.matches(auxiliarySelector),
   );
   const forms = verdictForms(nodes);
   if (span) cancelVerdictTransition(span);
-  if (!forms) {
-    if (span && current) span.replaceWith(...current.childNodes);
+  // 认得出名称的判题文字一直包着（缩写要用）。认不出名称的（Running、俄文界面）
+  // 只在要隐藏测试点、并且真带着测试点时才包起来，平时不动它们。
+  const wanted = forms && (forms.type || (hide && forms.tests));
+  if (!wanted) {
+    if (span && current) {
+      // 拆掉包装前，把藏起来的测试点放回去。
+      if (forms) current.innerHTML = forms.original;
+      span.replaceWith(...current.childNodes);
+    }
     return;
   }
   if (!span) {
@@ -182,11 +251,17 @@ function formatVerdictBody(body) {
   }
   // 仅修复旧版已丢失语义节点的纯文本行；有原站配色时不覆盖它。
   for (const name of ['verdict-accepted', 'verdict-rejected']) span.classList.remove(name);
-  if (forms.type[2] && !body.closest(nativeSelector) && !current.querySelector(nativeSelector))
+  if (forms.type?.[2] && !body.closest(nativeSelector) && !current.querySelector(nativeSelector))
     span.classList.add(forms.type[2]);
   span.dataset.original = forms.original;
   span.dataset.short = forms.short;
-  displayVerdict(span, appSettings.appearance.shortVerdict ? forms.short : forms.original);
+  // 原站刚写进来的新内容，测试点直接藏起来，不走交接：
+  // 否则评测中每判完一个测试点，编号都会露一下再滑走。
+  if (hide) {
+    const hidden = hideTestInfo(current.innerHTML);
+    if (hidden !== current.innerHTML) current.innerHTML = hidden;
+  }
+  displayVerdict(span, chosenVerdict(forms.original, forms.short));
 }
 
 // 将站点更新定位到真正的判题正文；旧包装拆开时移动节点，绝不用 textContent 丢弃结构。
@@ -230,7 +305,24 @@ export function walkAndReplaceVerdict(node) {
     formatVerdictBody(root);
 }
 
+// 状态表格和侧栏之外的判题文字（提交详情页、源码弹窗的标题等）：按原站的判题类名找，
+// 缩写和隐藏测试点同样作用到它们身上。
+export function refreshLooseVerdicts(root = document) {
+  const bodies = [...root.querySelectorAll(NATIVE_VERDICT_SELECTOR)];
+  if (root.matches?.(NATIVE_VERDICT_SELECTOR)) bodies.unshift(root);
+  for (const body of bodies) {
+    // 插件自己界面里的、已经包在判题文字里面的、归状态表格和侧栏那条路管的，都不在这里处理。
+    if (
+      !body.isConnected ||
+      body.closest(`${PLUGIN_UI_SELECTOR}, .cf-verdict-text, ${VERDICT_SELECTOR}`)
+    )
+      continue;
+    formatVerdictBody(body);
+  }
+}
+
 // 设置切换与侧栏提交历史共用同一转换路径，避免两个更新循环互相覆盖。
 export function refreshVerdicts() {
-  document.querySelectorAll(VERDICT_SELECTOR).forEach(walkAndReplaceVerdict);
+  document.querySelectorAll(VERDICT_SELECTOR).forEach((cell) => walkAndReplaceVerdict(cell));
+  refreshLooseVerdicts();
 }

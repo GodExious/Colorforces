@@ -7,8 +7,23 @@ import {
   snapshotTime,
   predictionNumberColor,
 } from './presentation.js';
-import { updateParticipationTag, clearParticipationTags } from './participation-tags.js';
+import {
+  updateParticipationTag,
+  clearParticipationTags,
+  resetParticipationMeasures,
+} from './participation-tags.js';
 import { syncPredictionColumns } from './column-motion.js';
+import { untrustedHandles } from '../trusted.js';
+import {
+  teamIndex,
+  teamRecordFor,
+  teamIsUnrated,
+  teamSize,
+  memberParts,
+  textBefore,
+} from './team-rows.js';
+import { hiddenMembers, isMoreMark, parseGhostTeam } from '../../../user/avatars/team-members.js';
+import { snapshotLifetime } from '../data.js';
 let observer = null,
   updateTimer = null;
 const toolbarAnimations = new WeakMap();
@@ -27,8 +42,16 @@ function flowerIcon() {
   return `<svg class="cf-prediction-flower" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="12" cy="12" r="11.5"><stop class="cf-prediction-flower-inner" offset=".2"/><stop class="cf-prediction-flower-outer" offset="1"/></radialGradient></defs>${petals}<circle class="cf-prediction-flower-core" cx="12" cy="12" r="2.2"/></svg>`;
 }
 
-// 根据主页地址识别用户，图片链接无文字也能正常匹配。
-export function handleForCell(cell) {
+// 成绩算不出来、只能打标签的那些不在官方榜单内的参赛者（见 trusted.js）。按快照记着，同一份快照反复重画时不用每次重算。
+const untrustedOf = new WeakMap();
+function untrustedIn(snapshot) {
+  if (!snapshot) return new Set();
+  if (!untrustedOf.has(snapshot)) untrustedOf.set(snapshot, untrustedHandles(snapshot));
+  return untrustedOf.get(snapshot);
+}
+
+// 这一格里的全部账号（小写）。根据主页地址识别，图片链接无文字也能正常匹配；队伍的格子里有好几个。
+function handlesForCell(cell) {
   const names = new Set();
   for (const link of cell.querySelectorAll('a[href]')) {
     try {
@@ -36,7 +59,33 @@ export function handleForCell(cell) {
       if (parts[1] === 'profile' && parts[2]) names.add(decodeURIComponent(parts[2]).toLowerCase());
     } catch {}
   }
-  return names.size === 1 ? [...names][0] : null;
+  return [...names];
+}
+// 这一行是队伍的话有几个人（不是队伍为 0）。原站折叠进「...」里的成员从它的提示里数，
+// 提示可能已经被插件的提示功能接管（原来的 title 挪到了 data-cf-native-tooltip）。
+function teamSizeForCell(cell, handles) {
+  const more = [...cell.querySelectorAll('span')].find((span) => isMoreMark(span.textContent));
+  const hidden = more
+    ? hiddenMembers(more.getAttribute('title') ?? more.getAttribute('data-cf-native-tooltip'))
+    : [];
+  return teamSize(handles.length, !!cell.querySelector('a[href*="/team/"]'), hidden.length);
+}
+/*
+ * Ghost 队伍有几个人。成员只是那段文字里的名单：队伍格式化之后数排出来的成员行，没格式化时照同一套写法从文字里认。
+ * 没写成员、或者写法不认得的，返回 '?'.
+ */
+function ghostSizeForCell(cell) {
+  const lines = cell.querySelectorAll('.cf-team-members > .cf-member-line').length;
+  if (lines) return lines;
+  const label = cell.querySelector(
+    'span[title="Ghost participant"], span[data-cf-native-tooltip="Ghost participant"]',
+  );
+  return (label && parseGhostTeam(label.textContent).members.length) || '?';
+}
+// 这一格是哪个用户；队伍的格子不是某一个用户，返回 null。
+export function handleForCell(cell) {
+  const names = handlesForCell(cell);
+  return names.length === 1 ? names[0] : null;
 }
 // 新节点带归属标记，关闭功能不删除原站或头像节点。
 function node(tag, className) {
@@ -69,22 +118,20 @@ function fillToolbarText(el, value, zone, tail) {
 function toolbarText(el, value, zone = '', tail = '') {
   const key = zone || tail ? [value, zone, tail].join('\n') : value;
   if (!el || el.dataset.cfToolbarText === key) return;
-  const initialized = el.hasAttribute('data-cf-toolbar-text');
-  const before = el.getBoundingClientRect();
+  // 首次填入、页面不可见或用户关闭了动效时直接换文字，不做宽度过渡，也就不用量宽度：
+  // 量一次，浏览器就得把之前攒着没排的版（比如刚加了几列的整张榜单）当场排完。
+  const animated =
+    el.hasAttribute('data-cf-toolbar-text') &&
+    !document.hidden &&
+    el.isConnected &&
+    !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const before = animated ? el.getBoundingClientRect().width : 0;
   toolbarAnimations.get(el)?.cancel();
   toolbarAnimations.delete(el);
   el.dataset.cfToolbarText = key;
   fillToolbarText(el, value, zone, tail);
-  const after = el.getBoundingClientRect();
-  if (
-    !initialized ||
-    !before.width ||
-    document.hidden ||
-    !el.isConnected ||
-    matchMedia('(prefers-reduced-motion: reduce)').matches
-  )
-    return;
-  animateWidth(el, before.width, after.width);
+  if (!before) return;
+  animateWidth(el, before, el.getBoundingClientRect().width);
 }
 // 宽度从旧值过渡到新值，结束后撤掉动画，交还给样式表。
 // 表格单元格要同时压住最小和最大宽度，否则列宽会被新文字直接撑开，过渡不起作用。
@@ -206,12 +253,9 @@ function participationTypeForCell(cell) {
       !a.classList.contains('cf-avatar-container') &&
       a.textContent.trim(),
   );
-  if (link) {
-    const prefix = document.createRange();
-    prefix.setStart(cell, 0);
-    prefix.setEndBefore(link);
-    if (prefix.toString().includes('*')) return 'OUT_OF_COMPETITION';
-  }
+  // 名字前面的星号是非正式参赛的记号；队名（队伍主页的链接）里的星号不算。
+  const isTeamName = (node) => node.matches('a[href*="/team/"]');
+  if (link && textBefore(cell, link, isTeamName).includes('*')) return 'OUT_OF_COMPETITION';
   return '';
 }
 // 同一用户可能同时参加正赛和赛后练习，先验证当前行，不能仅按用户名复用结果。
@@ -222,13 +266,115 @@ export function isOfficialStandingsRow(cell) {
   if (!/^\s*\d/.test(row.cells[0]?.textContent || '')) return false;
   return true;
 }
+/*
+ * 计分队伍的头衔变化和分析入口按成员分开：一格等分成几段，细线隔开，一人一段，先后和原站榜单上的成员一致。
+ * 开不开头像、队伍格式化都分；表现分、涨跌分、计评级名次是全队共用的，不分。
+ * 分出来的几段叠在格子上（绝对定位，才能跟着这一行的高度等分），格子自己就没有内容撑宽度和高度了：
+ * 宽度由头衔变化那一列里一份不显示的内容（sizer）撑住；高度按段数给一个下限，每段至少一个单人行那么高
+ *（队伍没排成一人一行时这一行只有一行字，不给下限的话几段会挤在一起），单人行多高见 renderPrediction。
+ */
+function fadeIn(element) {
+  if (
+    !element?.isConnected ||
+    document.hidden ||
+    matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+    return;
+  element.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease' });
+}
+// 把一格分成 count 段，返回这几段。原来是整格内容的，先把整格用的记号清掉。
+function splitCell(cell, count) {
+  let box = cell.querySelector(':scope > .cf-prediction-parts');
+  if (!box) {
+    for (const key of [
+      'cfRankMode',
+      'cfRankShape',
+      'rankSignature',
+      'tooltip',
+      'tooltipVariant',
+      'cfRatingMode',
+      'cfRatingEmpty',
+      'rating',
+    ])
+      delete cell.dataset[key];
+    cell.style.removeProperty('background-color');
+    box = node('div', 'cf-prediction-parts');
+    cell.replaceChildren(node('span', 'cf-prediction-sizer'), box);
+    cell.classList.add('cf-prediction-split');
+    fadeIn(box);
+  }
+  cell.style.setProperty('--cf-prediction-parts', String(count));
+  while (box.children.length > count) box.lastElementChild.remove();
+  while (box.children.length < count) box.append(node('div', 'cf-prediction-part'));
+  return [...box.children];
+}
+// 分开的格子改回整格。返回原来是不是分开的（是的话新内容要淡入，不能直接换）。
+function unsplitCell(cell) {
+  if (!cell.classList.contains('cf-prediction-split')) return false;
+  cell.classList.remove('cf-prediction-split');
+  cell.style.removeProperty('--cf-prediction-parts');
+  cell.replaceChildren();
+  delete cell.dataset.rankSignature;
+  return true;
+}
+// 每个成员自己的头衔变化：赛前、赛后评级取官方记录里他自己的，涨跌是全队相同的那一个。
+function renderMemberRanks(output, parts, result, phase) {
+  const boxes = splitCell(output, parts.length);
+  parts.forEach((part, index) =>
+    renderRankProgress(
+      boxes[index],
+      {
+        status: 'rated',
+        rating: part.before,
+        reportedRating: part.before,
+        newRating: part.after,
+        label: part.handle,
+      },
+      { delta: part.after - part.before, rank: result?.rank },
+      phase,
+    ),
+  );
+  const sizer = output.querySelector(':scope > .cf-prediction-sizer');
+  const key = parts.map((part) => part.before + '>' + part.after).join(',');
+  if (sizer.dataset.key === key) return;
+  sizer.dataset.key = key;
+  sizer.replaceChildren(
+    ...boxes.map((box) => {
+      const line = document.createElement('span');
+      const content = box.querySelector('.cf-prediction-rank-change');
+      if (content) line.append(content.cloneNode(true));
+      return line;
+    }),
+  );
+}
+// 每个成员一个分析入口。推演是全队共用的，点开后显示的是这个成员自己的评级（见 index.js）。
+function renderMemberActions(output, parts, result, analyze) {
+  const boxes = splitCell(output, parts.length);
+  parts.forEach((part, index) => {
+    analysisButton(
+      boxes[index],
+      predictionNumberColor(result.performance) || predictionNumberColor(part.before) || '',
+      part.handle,
+      analyze,
+    );
+    // 几段和左边的成员不一定对得齐（队伍没排成一人一行时），提示里写明是谁的。
+    boxes[index].firstElementChild.dataset.tooltip = t('predictionAnalyze') + ' · ' + part.handle;
+  });
+}
 // 填写当前可见用户，单用户分析只有操作入口，不逐行建立组件。
-function renderRow(cell, record, result, columns, state, analyze) {
+// members：这一行是队伍的话有几个人；parts：计分队伍按成员分开时每一段是谁（不分时为 null）。
+function renderRow(cell, record, result, columns, state, analyze, members = 0, parts = null) {
   for (const key of columns) {
     const output = column(cell.parentElement, key),
       value = result?.[key];
     if (key === 'actions') {
+      if (parts && canAnalyze(record, result, state)) {
+        renderMemberActions(output, parts, result, analyze);
+        continue;
+      }
+      const restored = unsplitCell(output);
       renderAnalysisAction(output, record, result, state, analyze);
+      if (restored) fadeIn(output.firstElementChild);
       continue;
     }
     if (key === 'ratedRank') {
@@ -241,7 +387,13 @@ function renderRow(cell, record, result, columns, state, analyze) {
       continue;
     }
     if (key === 'rank') {
+      if (parts) {
+        renderMemberRanks(output, parts, result, state.snapshot?.phase);
+        continue;
+      }
+      const restored = unsplitCell(output);
       renderRankProgress(output, record, result, state.snapshot?.phase);
+      if (restored) fadeIn(output.firstElementChild);
       continue;
     }
     renderScore(output, key, value);
@@ -259,45 +411,57 @@ function renderRow(cell, record, result, columns, state, analyze) {
         ? t('predictionReason' + record.reason)
         : t('predictionUnknown');
   }
+  // 非可信参赛者（不在官方榜单里、成绩是从提交记录里算的）也是计分的，但单独用一种标签标出来。
+  const tag = record?.untrusted ? 'untrusted' : record?.status;
   const show =
     appSettings.contest.participationTags.enabled &&
     record &&
     record.reason !== 'unofficial' &&
-    ['rated', 'unrated', 'virtual'].includes(record.status) &&
-    appSettings.contest.participationTags[record.status];
+    ['rated', 'unrated', 'virtual', 'untrusted', 'practice', 'ghost'].includes(tag) &&
+    appSettings.contest.participationTags[tag];
   updateParticipationTag(
     cell,
-    show ? record.status : null,
+    show ? tag : null,
     record ? t('predictionReason' + record.reason) : '',
+    members,
   );
   cell.querySelector('.cf-prediction-open')?.remove();
 }
-// 操作独立成列，不挤占昵称和参与状态的位置。
-function renderAnalysisAction(output, record, result, state, analyze) {
-  let button = output.querySelector('.cf-prediction-open');
-  const canAnalyze =
+// 这一行能不能开单用户分析。
+function canAnalyze(record, result, state) {
+  return (
     appSettings.contest.prediction.enabled &&
     appSettings.contest.prediction.analysis &&
     record?.status === 'rated' &&
     record.valid &&
     !!result &&
-    !state.snapshot?.warnings.includes('predictionIncompleteData');
-  if (canAnalyze) {
-    if (!button) {
-      button = node('button', 'cf-prediction-open');
-      button.type = 'button';
-      button.innerHTML = flowerIcon();
-      output.replaceChildren(button);
-    }
+    !state.snapshot?.warnings.includes('predictionIncompleteData')
+  );
+}
+// 在 box 里放一朵分析入口的小花（已有就沿用），点了分析 handle。
+function analysisButton(box, color, handle, analyze) {
+  let button = box.querySelector(':scope > .cf-prediction-open');
+  if (!button) {
+    button = node('button', 'cf-prediction-open');
+    button.type = 'button';
+    button.innerHTML = flowerIcon();
+    box.replaceChildren(button);
+  }
+  if (button.style.getPropertyValue('--cf-flower-color') !== color)
+    button.style.setProperty('--cf-flower-color', color);
+  button.dataset.tooltip = t('predictionAnalyze');
+  button.setAttribute('aria-label', t('predictionAnalyze') + ' ' + handle);
+  button.onclick = () => analyze(handle);
+}
+// 操作独立成列，不挤占昵称和参与状态的位置。
+function renderAnalysisAction(output, record, result, state, analyze) {
+  // 队伍整支没有分析入口：面板里的赛前评级是对一个人说的。队伍排成一人一行时按成员各给一个（见 renderMemberActions）。
+  if (canAnalyze(record, result, state) && !record.members) {
     // 花的颜色跟随这一行的表现分；没有表现分时退回赛前评级的颜色。
     const color =
       predictionNumberColor(result.performance) || predictionNumberColor(record.rating) || '';
-    if (button.style.getPropertyValue('--cf-flower-color') !== color)
-      button.style.setProperty('--cf-flower-color', color);
     delete output.dataset.tooltip;
-    button.dataset.tooltip = t('predictionAnalyze');
-    button.setAttribute('aria-label', t('predictionAnalyze') + ' ' + record.handle);
-    button.onclick = () => analyze(record.handle);
+    analysisButton(output, color, record.handle, analyze);
   } else {
     renderScore(output, 'actions', null);
     output.dataset.tooltip = t('predictionNotApplicable');
@@ -366,6 +530,8 @@ export function renderPrediction(state, actions) {
     let bar = document.querySelector('.cf-prediction-bar');
     if (!bar) {
       bar = node('div', 'cf-prediction-bar');
+      // 换语言时状态栏里的文字走和菜单、弹窗一样的逐项淡出淡入（见 utils/language-wave.js）。
+      bar.dataset.cfLanguageSurface = '';
       // 状态栏里分上下两行：上面一行是进度、状态文字、快照时间和刷新按钮，下面一行是临时的提醒。
       const row = node('div', 'cf-prediction-row');
       const steps = node('span', 'cf-prediction-steps');
@@ -401,9 +567,22 @@ export function renderPrediction(state, actions) {
       state.snapshot ? taken.zone : '',
       state.snapshot?.warnings.length ? ' ⚠' : '',
     );
-    note.dataset.tooltip = (state.snapshot?.warnings || []).map((key) => t(key)).join(' · ');
+    // 多久自动刷新一次：比赛进行中和等待出分时定时刷新，间隔不同；结果已经固定的（已出分、不计分的比赛）和别的阶段各有各的说法。
+    const phase = state.snapshot?.phase;
+    const cadence = !phase
+      ? ''
+      : ['live', 'pending'].includes(phase)
+        ? t('predictionAutoRefreshEvery', Math.round(snapshotLifetime(state.snapshot) / 1000))
+        : ['final', 'unrated'].includes(phase)
+          ? t('predictionAutoRefreshOff')
+          : t('predictionAutoRefreshIdle');
+    note.dataset.tooltip = [cadence, ...(state.snapshot?.warnings || []).map((key) => t(key))]
+      .filter(Boolean)
+      .join(' · ');
     const refresh = bar.querySelector('button');
     toolbarText(refresh, t('predictionRefresh'));
+    if (cadence) refresh.dataset.tooltip = cadence;
+    else delete refresh.dataset.tooltip;
     refresh.disabled = state.loading;
     const records = new Map(
       (state.snapshot?.participants || []).map((r) => [r.handle.toLowerCase(), r]),
@@ -416,6 +595,15 @@ export function renderPrediction(state, actions) {
           reason: 'unofficial',
           valid: false,
         });
+    // 队伍的行按队员的账号找记录（见 team-rows.js）。
+    const teams = teamIndex(state.snapshot?.participants);
+    // 按成员分开的格子，每段至少一个单人行那么高：量页面上一个单人的行。只在有队伍时量；
+    // 这一页没有单人的行（整场都是队伍）时不量，样式里有默认的高度。
+    if (teams.size) {
+      const single = table.querySelector('td.contestant-cell.cf-single-user-cell');
+      const height = single?.parentElement.offsetHeight;
+      if (height > 0) table.style.setProperty('--cf-prediction-part-min', height + 'px');
+    }
     const columns = appSettings.contest.prediction.enabled
       ? ['performance', 'delta', 'rank', 'ratedRank', 'actions'].filter(
           (key) =>
@@ -440,7 +628,9 @@ export function renderPrediction(state, actions) {
         const ratedMark = node('span', 'cf-prediction-rated-r-mark');
         ratedMark.textContent = 'R';
         el.append(ratedMark);
-        el.dataset.tooltip = t('predictionRatedRank');
+        // 表头的提示里说明并列时取哪一名：这一列和原站的名次一列取法不同，数字会差出一截。说明另起一行。
+        el.dataset.tooltip = t('predictionRatedRankHint');
+        el.dataset.tooltipVariant = 'lines';
       } else {
         text(el, key === 'delta' ? 'Δ' : 'Π');
         el.dataset.tooltip = t(
@@ -467,22 +657,48 @@ export function renderPrediction(state, actions) {
         output.classList.add('cf-prediction-placeholder');
       }
     }
+    const untrusted = untrustedIn(state.snapshot);
+    resetParticipationMeasures();
     for (const cell of table.querySelectorAll('td.contestant-cell')) {
-      const handle = handleForCell(cell);
+      const handles = handlesForCell(cell);
+      const handle = handles.length === 1 ? handles[0] : null;
+      // Ghost 队伍：现场赛的队伍，成绩是导入榜单的，没有账号。原站给它配一个小幽灵图标，认图标（队伍格式化之后也留着）。
+      const ghost = !!cell.querySelector('img[src*="ghost.png"]');
       const type = participationTypeForCell(cell);
-      const known = records.get(handle);
-      const record =
-        type === 'VIRTUAL'
+      const known = handle ? records.get(handle) : teamRecordFor(handles, teams);
+      // 已出分的比赛里，这一行没有评级记录就是不计分；队伍的行有一种情况不下结论，见 teamIsUnrated。
+      const settled =
+        state.snapshot?.phase === 'final' && (handle || teamIsUnrated(handles, records));
+      const record = ghost
+        ? { handle: null, status: 'ghost', reason: 'ghost', valid: false }
+        : type === 'VIRTUAL'
           ? { handle, status: 'virtual', reason: 'virtual', valid: false }
           : type === 'OUT_OF_COMPETITION' ||
               (isOfficialStandingsRow(cell) && known?.reason === 'unofficial')
             ? { handle, status: 'unrated', reason: 'outOfCompetition', valid: false }
             : !isOfficialStandingsRow(cell)
-              ? { handle, status: 'unrated', reason: 'unofficial', valid: false }
+              ? // 没有名次的行是赛后练习：比赛结束后才交的题，不在本场的排名里。单独标一种标签。
+                type === 'PRACTICE'
+                ? { handle, status: 'practice', reason: 'practice', valid: false }
+                : { handle, status: 'unrated', reason: 'unofficial', valid: false }
               : known ||
-                (handle && state.snapshot?.phase === 'final'
-                  ? { handle, status: 'unrated', reason: 'notOfficial', valid: false }
-                  : null);
+                // 认得出是不在官方榜单内的参赛者，但成绩算不出来，只标标签，没有预测。
+                // 原因有两种：这种赛制算不了，或者这一场是旧版本缓存的（那时没记赛制，也没存逐题的统计）。
+                (handle && untrusted.has(handle)
+                  ? {
+                      handle,
+                      status: 'untrusted',
+                      reason:
+                        // 两种算得出成绩的赛制里还没有结果，是因为这一场的缓存来自旧版本；别的赛制是算不了。
+                        state.snapshot.scoring && !['ICPC', 'CF'].includes(state.snapshot.scoring)
+                          ? 'untrustedUnsupported'
+                          : 'untrustedNoResult',
+                      untrusted: true,
+                      valid: false,
+                    }
+                  : settled
+                    ? { handle, status: 'unrated', reason: 'notOfficial', valid: false }
+                    : null);
       renderRow(
         cell,
         record,
@@ -490,6 +706,9 @@ export function renderPrediction(state, actions) {
         columns,
         state,
         actions.analyze,
+        ghost ? ghostSizeForCell(cell) : teamSizeForCell(cell, handles),
+        // 计分的队伍，头衔变化和分析入口按成员分开。
+        record?.status === 'rated' ? memberParts(record, handles) : null,
       );
     }
     syncPredictionColumns(table, columns);

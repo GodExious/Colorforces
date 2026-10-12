@@ -54,6 +54,75 @@ export function createTooltipController() {
     });
     await nextTick();
     if (!element || current !== revision) return;
+    locate(anchor);
+    await nextTick();
+    if (!element || current !== revision) return;
+    // 先提交最终定位，再让浮层从该位置进入，避免首帧从旧位置跳来。
+    element.getBoundingClientRect();
+    if (current === revision) {
+      state.positioning = false;
+      await nextTick();
+      if (!element || current !== revision) return;
+      element.getBoundingClientRect();
+      state.visible = true;
+    }
+  }
+  /*
+   * 提示正显示着时只换里面的文字：外框不收起、不重新淡入。
+   * 用在目标没变、要说的话变了的时候（菜单按钮：鼠标一直停在上面，点一下，「打开」换成「收起」）。
+   * 旧文字先淡出，换成新的再淡入；两句话宽度不一样时外框滑到新的宽度，不跳。没显示着就照常显示。
+   */
+  async function retext(anchor, text, options = {}) {
+    if (!anchor || !text) return;
+    if (!state.visible || !state.mounted) {
+      await show(anchor, text, options);
+      return;
+    }
+    if (state.text === text) return;
+    const current = ++revision;
+    clearTimeout(hideTimer);
+    const live = () => element && current === revision;
+    const swap = async () => {
+      Object.assign(state, { text, pad: 0, variant: options.variant || '' });
+      await nextTick();
+      if (live()) locate(anchor);
+    };
+    const content = element?.querySelector('.cf-tip-content');
+    if (!content?.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      await swap();
+      return;
+    }
+    const fading = content.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 90,
+      easing: 'ease-in',
+      fill: 'forwards',
+    });
+    await fading.finished.catch(() => {});
+    if (!live()) {
+      fading.cancel();
+      return;
+    }
+    const width = getComputedStyle(element).width;
+    const left = state.left;
+    await swap();
+    // 等新位置写进样式再量。
+    await nextTick();
+    fading.cancel();
+    if (!live()) return;
+    const nextWidth = getComputedStyle(element).width;
+    // 只有单行的入口提示才滑宽度：多行的提示宽度一变会重新折行。
+    if (state.variant === 'launcher' && width !== nextWidth)
+      element.animate(
+        [
+          { width, left: left + 'px', whiteSpace: 'nowrap' },
+          { width: nextWidth, left: state.left + 'px', whiteSpace: 'nowrap' },
+        ],
+        { duration: 180, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+      );
+    content.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: 'ease-out' });
+  }
+  // 量出提示的大小，按目标的位置摆好（边缘避让和箭头的算法）。
+  function locate(anchor) {
     const tipRect = element.getBoundingClientRect();
     const rect = anchor.getBoundingClientRect();
     // 左上角对齐到设备像素，文字才落在整像素上、清晰且不会在淡入前后错位
@@ -101,17 +170,6 @@ export function createTooltipController() {
       arrow: Math.max(10, Math.min(tipRect.width - 10, rect.left + rect.width / 2 - left)),
       arrowTop: Math.max(10, Math.min(height - 10, rect.top + rect.height / 2 - top)),
     });
-    await nextTick();
-    if (!element || current !== revision) return;
-    // 先提交最终定位，再让浮层从该位置进入，避免首帧从旧位置跳来。
-    element.getBoundingClientRect();
-    if (current === revision) {
-      state.positioning = false;
-      await nextTick();
-      if (!element || current !== revision) return;
-      element.getBoundingClientRect();
-      state.visible = true;
-    }
   }
   // 仅为被省略的文字显示完整内容，供快捷键和存储图注共用。
   function showIfTruncated(event) {
@@ -244,6 +302,7 @@ export function createTooltipController() {
   return {
     state,
     show,
+    retext,
     showIfTruncated,
     hide,
     bind,
@@ -268,6 +327,7 @@ const classes = computed(() => [
     'cf-menu-theme': state.themed,
     'cf-tip-launcher': state.variant === 'launcher',
     'cf-tip-prediction-rank': state.variant === 'prediction-rank',
+    'cf-tip-lines': state.variant === 'lines',
   },
 ]);
 const styles = computed(() => ({
@@ -300,15 +360,18 @@ onBeforeUnmount(tooltip.dispose);
       :class="classes"
       :style="styles"
     >
-      <template v-if="state.variant === 'prediction-rank'">
-        <span
-          v-for="(line, index) in state.text.split('\n')"
-          :key="index"
-          class="cf-tip-rank-line"
-          >{{ line }}</span
-        >
-      </template>
-      <template v-else>{{ state.text }}</template>
+      <!-- 文字单独包一层：只换文字时（见 retext）淡出淡入的是这一层，外框不动。 -->
+      <span class="cf-tip-content"
+        ><template v-if="state.variant === 'prediction-rank'">
+          <span
+            v-for="(line, index) in state.text.split('\n')"
+            :key="index"
+            class="cf-tip-rank-line"
+            >{{ line }}</span
+          >
+        </template>
+        <template v-else>{{ state.text }}</template></span
+      >
     </div></Teleport
   >
 </template>
@@ -317,14 +380,15 @@ onBeforeUnmount(tooltip.dispose);
 .cf-floating-tooltip {
   --cf-tip-surface: rgba(15, 23, 42, 0.92);
   position: fixed;
-  z-index: 10000030;
+  /* 提示要盖在所有东西上面，包括单用户评分分析的遮罩（它已经用到了倒数第二大的层级）。 */
+  z-index: 2147483647;
   max-width: 280px;
   padding: 7px 11px calc(7px + var(--cf-tip-pad, 0px));
   background: var(--cf-tip-surface);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  color: #ffffff;
-  font-size: var(--cf-font-size-sm);
+  color: var(--cf-white-ink);
+  font-size: var(--cf-font-size-base);
   font-weight: normal;
   line-height: 1.5;
   border-radius: var(--cf-radius-sm);
@@ -344,12 +408,20 @@ onBeforeUnmount(tooltip.dispose);
   display: none;
 }
 
+.cf-tip-content {
+  display: block;
+}
+
 .cf-floating-tooltip.visible {
   visibility: visible;
   opacity: 1;
-  transition: opacity 130ms ease;
+  transition: opacity var(--cf-duration-fast) ease;
 }
 
+/* 文字里的换行照着换（一般的提示不认换行，原站的 title 里常夹着排版用的换行）。 */
+.cf-floating-tooltip.cf-tip-lines {
+  white-space: pre-line;
+}
 .cf-floating-tooltip.cf-tip-prediction-rank {
   box-sizing: border-box;
   width: max-content;
@@ -404,7 +476,7 @@ onBeforeUnmount(tooltip.dispose);
 }
 .cf-floating-tooltip.cf-menu-theme.visible {
   transition:
-    opacity 130ms ease,
+    opacity var(--cf-duration-fast) ease,
     --cf-menu-accent 480ms ease,
     --cf-menu-secondary 480ms ease;
 }
@@ -423,8 +495,8 @@ onBeforeUnmount(tooltip.dispose);
   clip-path: inset(-12px -12px -12px 100% round 16px);
   transform: translateX(5px);
   transition:
-    clip-path 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path var(--cf-duration-base) var(--cf-ease-out),
+    transform var(--cf-duration-base) var(--cf-ease-out),
     --cf-menu-accent 480ms ease,
     --cf-menu-secondary 480ms ease;
 }

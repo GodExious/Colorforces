@@ -58,7 +58,7 @@ function resetLayout() {
 <template>
   <div class="cf-setting-item cf-menu-layout-toggle" @click="toggleFromRow">
     <span class="cf-setting-label cf-menu-layout-label"
-      ><label :for="control" data-cf-language-text>{{ t(titleKey) }}</label
+      ><label :for="control">{{ t(titleKey) }}</label
       ><InfoHint :text="t(hintKey)"
     /></span>
     <div class="cf-menu-layout-actions">
@@ -72,7 +72,7 @@ function resetLayout() {
         @click="resetLayout"
       >
         <InlineSvg :source="resetIcon" />
-        <span data-cf-language-text>{{ t('menuLayoutResetAction') }}</span>
+        <span>{{ t('menuLayoutResetAction') }}</span>
       </ActionButton>
       <ToggleSwitch
         as="label"
@@ -86,7 +86,7 @@ function resetLayout() {
   <ExpandTransition :show="controller.enabled">
     <div class="cf-menu-layout-fields">
       <label v-for="field in fields" :key="field.key" class="cf-menu-layout-field">
-        <span data-cf-language-text>{{ t(field.label) }}</span>
+        <span>{{ t(field.label) }}</span>
         <span class="cf-menu-layout-value">
           <input
             v-model="drafts[field.key]"
@@ -152,7 +152,7 @@ function resetLayout() {
   box-sizing: border-box;
   padding: 6px 8px;
   border: 1px solid color-mix(in srgb, var(--cf-menu-accent) 24%, #dce2eb);
-  border-radius: 7px;
+  border-radius: var(--cf-radius-sm);
   background: color-mix(in srgb, var(--cf-menu-accent) 9%, var(--cf-gray-50));
   color: var(--cf-gray-700);
   font: inherit;

@@ -31,7 +31,8 @@ function streakRange(summary) {
   if (summary.streakStart === null) return null;
   const start = dateText(summary.streakStart);
   const end = dateText(summary.streakEnd);
-  return { text: start === end ? start : `${start} – ${end}` };
+  const text = start === end ? start : `${start} – ${end}`;
+  return { text, key: text };
 }
 // 只有小字真的被省略时，悬停才显示完整内容；看得全的不再重复提示。
 function showFullNote(event, note) {
@@ -60,36 +61,47 @@ const vFit = {
     fitted.get(element)?.disconnect();
   },
 };
-// 八项数字各取标志上的一片花瓣作点缀色。note 是数字下方的一行小字。
+// 八项数字各取标志上的一片花瓣作点缀色。note 是数字下方的一行小字：text 是文字；
+// key 标明内容是不是同一份，只由数字、日期这些和语言无关的东西组成。内容变了（key 变了）小字淡出再淡入；
+// 只是换了语言时 key 不变，文字原地换掉，跟着面板里别的文字一起展开，不会先闪一下旧的再换。
 const cards = computed(() => {
   const s = props.summary;
   // 两项难度分下面的小字标出用的是哪一种难度分。
-  const source = { text: t(usesClist.value ? 'analyticsSourceClist' : 'analyticsSourceOfficial') };
+  const source = {
+    text: t(usesClist.value ? 'analyticsSourceClist' : 'analyticsSourceOfficial'),
+    key: usesClist.value ? 'clist' : 'official',
+  };
   return [
     // 提交数是全部提交，一道题通过之后再交的也算在内，下面的小字说明这一点。
     {
       label: 'analyticsSubmissions',
       value: s.submissions,
       format: count,
-      note: { text: t('analyticsSubmissionsNote') },
+      note: { text: t('analyticsSubmissionsNote'), key: 'all' },
     },
     {
       label: 'analyticsSolved',
       value: s.solved,
       format: count,
-      note: { text: t('analyticsSolvedNote', count(s.tried)) },
+      note: { text: t('analyticsSolvedNote', count(s.tried)), key: s.tried },
     },
     {
       label: 'analyticsAcceptRate',
       value: s.acceptRate,
       format: percent,
-      note: { text: t('analyticsAcceptNote', count(s.accepted), count(s.submissions)) },
+      note: {
+        text: t('analyticsAcceptNote', count(s.accepted), count(s.submissions)),
+        key: `${s.accepted}/${s.submissions}`,
+      },
     },
     {
       label: 'analyticsFirstTry',
       value: s.firstTryRate,
       format: percent,
-      note: { text: t('analyticsFirstTryNote', count(s.firstTry), count(s.solved)) },
+      note: {
+        text: t('analyticsFirstTryNote', count(s.firstTry), count(s.solved)),
+        key: `${s.firstTry}/${s.solved}`,
+      },
     },
     { label: 'analyticsMaxRating', value: s.maxRating, format: count, rating: true, note: source },
     {
@@ -110,7 +122,10 @@ const cards = computed(() => {
       label: 'analyticsCoverage',
       value: s.coverage,
       format: percent,
-      note: { text: t('analyticsCoverageNote', count(s.covered), count(s.problemsetSize)) },
+      note: {
+        text: t('analyticsCoverageNote', count(s.covered), count(s.problemsetSize)),
+        key: `${s.covered}/${s.problemsetSize}`,
+      },
     },
   ].map((card, index) => ({ ...card, accent: PETAL_COLORS[index % PETAL_COLORS.length] }));
 });
@@ -122,7 +137,7 @@ const ratingColor = (card) =>
 <template>
   <ul class="cf-analytics-summary">
     <li v-for="card in cards" :key="card.label" :style="{ '--cf-analytics-card': card.accent }">
-      <span class="cf-analytics-summary-label" data-cf-language-text>{{ t(card.label) }}</span>
+      <span class="cf-analytics-summary-label">{{ t(card.label) }}</span>
       <span class="cf-analytics-summary-value" :style="ratingColor(card)">
         <AnimatedNumber :value="card.value" :format="card.format" empty="N/A" />
       </span>
@@ -130,10 +145,9 @@ const ratingColor = (card) =>
       <Transition name="cf-analytics-swap" mode="out-in">
         <span
           v-if="card.note"
-          :key="card.note.text"
+          :key="card.note.key"
           v-fit
           class="cf-analytics-summary-note"
-          data-cf-language-text
           @mouseenter="showFullNote($event, card.note)"
           @mouseleave="tooltip.hide"
           >{{ card.note.text }}</span
@@ -192,10 +206,10 @@ const ratingColor = (card) =>
   align-items: center;
   min-height: 26px;
   color: var(--cf-gray-800);
-  font-size: 20px;
+  font-size: calc(20px * var(--cf-font-scale));
   line-height: 26px;
   white-space: nowrap;
-  transition: color 0.3s ease;
+  transition: color var(--cf-duration-slow) ease;
 }
 /* 小字向右多占 8 像素（卡片右侧留白原为 12 像素），给较长的内容多留一点位置。 */
 .cf-analytics-summary-note {

@@ -19,6 +19,7 @@ import {
 import ToggleSwitch from '../../components/forms/ToggleSwitch/ToggleSwitch.vue';
 import SegmentedSwitch from '../../components/forms/SegmentedSwitch/SegmentedSwitch.vue';
 import InfoHint from '../../components/tooltips/InfoHint/InfoHint.vue';
+import SettingSection from '../../components/settings/SettingSection/SettingSection.vue';
 import { getRatingBgColor, getRatingTagStyle } from '../../../features/ratings/rules.js';
 // 打开评分页面专用指南。
 function openGuide(kind, event) {
@@ -78,6 +79,8 @@ const locations = [
   ['standings', 'locStandings'],
   ['problemTags', 'locProblemTags'],
 ];
+// 「难度分展示区域」平时收成一行，标题右边写开着几处（见 SettingSection）。
+const shownLocations = () => locations.filter(([key]) => appSettings.ratings.show[key]).length;
 
 const ratingSliderStyle = computed(() => {
   const tag = getRatingTagStyle(2400);
@@ -234,16 +237,13 @@ const ratingSliderStyle = computed(() => {
         </div></div
     ></ExpandTransition>
     <ExpandTransition :show="appSettings.ratings.enabled"
-      ><div
-        class="cf-show-group"
-        style="display: flex; flex-direction: column; gap: 8px; padding-left: 12px"
-      >
-        <div
-          class="cf-setting-sublabel"
-          style="margin-bottom: 2px"
-          v-text="t().locationsTitle"
-        ></div>
-        <div class="cf-nested-options">
+      ><div class="cf-show-group" style="padding-left: 12px">
+        <SettingSection
+          :title="t().locationsTitle"
+          foldable
+          :summary="t('settingSelected', shownLocations(), locations.length)"
+          :muted="shownLocations() === 0"
+        >
           <label
             v-for="[key, label] in locations"
             :key="key"
@@ -255,7 +255,7 @@ const ratingSliderStyle = computed(() => {
               @change="saveSettings()"
             ></toggle-switch
           ></label>
-        </div></div
+        </SettingSection></div
     ></ExpandTransition>
   </div>
 </template>
@@ -281,7 +281,7 @@ const ratingSliderStyle = computed(() => {
   flex-direction: column;
   gap: 10px;
   padding-left: 12px;
-  transition: all 0.25s ease;
+  transition: all var(--cf-duration-moderate) ease;
 }
 
 /* 子选项下面再分一级的选项行；左侧细线与缩进来自公共样式 cf-nested-options。 */
@@ -314,7 +314,7 @@ const ratingSliderStyle = computed(() => {
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1;
   box-sizing: border-box;
-  transition: all 0.2s ease;
+  transition: all var(--cf-duration-base) ease;
   vertical-align: middle;
 }
 
@@ -326,7 +326,7 @@ const ratingSliderStyle = computed(() => {
 
 .cf-clist-icon-help:hover {
   background: #0284c7;
-  color: #ffffff;
+  color: var(--cf-white-ink);
   box-shadow: 0 0 6px rgba(2, 132, 199, 0.4);
 }
 
@@ -338,7 +338,7 @@ const ratingSliderStyle = computed(() => {
 
 .cf-clist-icon-warn:hover {
   background: #d97706;
-  color: #ffffff;
+  color: var(--cf-white-ink);
   box-shadow: 0 0 6px rgba(217, 119, 6, 0.4);
 }
 </style>

@@ -56,11 +56,11 @@ const detail = computed(() => {
         :class="{ 'is-done': index < current, 'is-active': index === current }"
       >
         <i class="cf-analytics-step-bar" aria-hidden="true"></i>
-        <span data-cf-language-text>{{ t(label) }}</span>
+        <span>{{ t(label) }}</span>
       </li>
     </ol>
     <p class="cf-analytics-progress-detail">
-      <span data-cf-language-text
+      <span
         >{{ detail }}<template v-if="updating"> · {{ t('analyticsUpdating') }}</template></span
       >
     </p>
@@ -88,14 +88,14 @@ const detail = computed(() => {
   color: var(--cf-gray-400);
   font-size: var(--cf-font-size-xs);
   line-height: 1.4;
-  transition: color 0.2s ease;
+  transition: color var(--cf-duration-base) ease;
 }
 .cf-analytics-step-bar {
   display: block;
   height: 4px;
-  border-radius: 2px;
+  border-radius: var(--cf-radius-2xs);
   background: color-mix(in srgb, var(--cf-analytics-accent) 14%, #eef0f4);
-  transition: background-color 0.3s ease;
+  transition: background-color var(--cf-duration-slow) ease;
 }
 .cf-analytics-steps .is-done {
   color: var(--cf-gray-500);

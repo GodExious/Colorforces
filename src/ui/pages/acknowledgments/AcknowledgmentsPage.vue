@@ -236,7 +236,9 @@ onBeforeUnmount(() => {
             ><inline-svg v-bind:source="assets.menuAcknowledgmentsIcon"></inline-svg></span
           ><span class="cf-ack-title-text">{{ t('ackSectionTitle') }}</span>
         </h3>
-        <p class="cf-ack-subtitle" v-text="t().ackSectionSubtitle"></p>
+        <p class="cf-ack-subtitle">
+          <span>{{ t().ackSectionSubtitle }}</span>
+        </p>
       </div>
       <!-- 绽放时与页尾同样的间隔逐片点亮；收起时一起变回去。 -->
       <PetalFlower
@@ -288,7 +290,9 @@ onBeforeUnmount(() => {
     </div>
     <div class="cf-ack-finale" :class="{ 'is-gathered': gathered }" ref="finale">
       <PetalFlower :colors="petals" :size="88" :gathered="gathered" :stagger="FINALE_STAGGER" />
-      <strong class="cf-ack-finale-title">{{ t('ackFinaleTitle', projects.length) }}</strong>
+      <strong class="cf-ack-finale-title"
+        ><span>{{ t('ackFinaleTitle', projects.length) }}</span></strong
+      >
       <span class="cf-ack-finale-text">{{ t('ackFinaleText') }}</span>
     </div>
   </div>
@@ -314,7 +318,7 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(12px);
   -webkit-mask-image: linear-gradient(#000 calc(100% - 10px), transparent);
   mask-image: linear-gradient(#000 calc(100% - 10px), transparent);
-  transition: background-color 0.2s ease;
+  transition: background-color var(--cf-duration-base) ease;
 }
 
 .cf-ack-header.is-stuck {
@@ -365,8 +369,8 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 9px;
   transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color var(--cf-duration-base) ease,
+    box-shadow var(--cf-duration-base) ease;
   position: relative;
   box-shadow: inset 0 1px 0 #ffffff60;
   box-sizing: border-box;
@@ -433,7 +437,7 @@ onBeforeUnmount(() => {
   width: 22px;
   height: 22px;
   object-fit: contain;
-  border-radius: 3px;
+  border-radius: var(--cf-radius-xs);
   display: block;
 }
 
@@ -442,7 +446,7 @@ onBeforeUnmount(() => {
 }
 
 .cf-ack-project-name {
-  font-size: 13.5px;
+  font-size: var(--cf-font-size-xl);
   font-weight: var(--cf-font-weight-bold);
   color: var(--cf-gray-800);
   white-space: nowrap;
@@ -463,7 +467,7 @@ onBeforeUnmount(() => {
 }
 
 .cf-ack-desc {
-  font-size: var(--cf-font-size-md);
+  font-size: var(--cf-font-size-lg);
   color: var(--cf-gray-600);
   line-height: 1.6;
   margin: 0;
@@ -497,7 +501,7 @@ onBeforeUnmount(() => {
 }
 
 .cf-ack-finale-title {
-  font-size: 13.5px;
+  font-size: var(--cf-font-size-xl);
   font-weight: var(--cf-font-weight-bold);
   color: var(--cf-gray-800);
 }
@@ -536,10 +540,10 @@ onBeforeUnmount(() => {
   font-weight: var(--cf-font-weight-semibold);
   text-decoration: none !important;
   transition:
-    color 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    color var(--cf-duration-base) ease,
+    background-color var(--cf-duration-base) ease,
+    border-color var(--cf-duration-base) ease,
+    box-shadow var(--cf-duration-base) ease;
   cursor: pointer;
   background: color-mix(in srgb, var(--cf-ack-accent) 28%, var(--cf-content-surface));
   color: color-mix(in srgb, var(--cf-ack-accent) 40%, #243447);

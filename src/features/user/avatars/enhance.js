@@ -6,6 +6,18 @@ import { CACHE_EXPIRY } from '../../../config/cache-policy.js';
 import { normalizeAvatarUrl, DEFAULT_AVATAR_URL } from './data.js';
 import { syncSecondLevelMenuLava } from '../../page/navigation.js';
 import { isTeamCell } from './structure.js';
+import { rankClass, rankTitle } from './team-members.js';
+
+// 队伍里补出来的成员（原站折叠掉的那几个，见 team-members.js）页面上没有名字的颜色，
+// 查到头衔后按原站的写法补上类名和提示。rank 为 undefined 表示不知道（旧缓存里没记），不动。
+function paintExtraMembers(elements, rank, handle) {
+  if (rank === undefined) return;
+  for (const element of elements || []) {
+    if (element.dataset.cfTeamExtra === undefined) continue;
+    element.classList.add('rated-user', rankClass(rank));
+    element.title = rankTitle(rank, handle);
+  }
+}
 
 // 收集页面用户链接，按缓存及官方信息补齐头像。
 export async function applyUserAvatars() {
@@ -63,6 +75,7 @@ export async function applyUserAvatars() {
         cachedData.fallbackUrl,
         handle,
       );
+      paintExtraMembers(handleToElements[handle.toLowerCase()], cachedData.rank, handle);
     } else {
       missingHandles.push(handle);
     }
@@ -79,13 +92,16 @@ export async function applyUserAvatars() {
             const handle = user.handle;
             const avatarUrl = normalizeAvatarUrl(user.avatar);
             const titlePhotoUrl = normalizeAvatarUrl(user.titlePhoto);
-            avatarCache[handle] = { url: avatarUrl, fallbackUrl: titlePhotoUrl, time: now };
+            // 头衔跟着头像一起记下（未评级的记成空字符串），给队伍里补出来的成员上色用。
+            const rank = user.rank || '';
+            avatarCache[handle] = { url: avatarUrl, fallbackUrl: titlePhotoUrl, time: now, rank };
             injectAvatar(
               handleToElements[handle.toLowerCase()] || [],
               avatarUrl,
               titlePhotoUrl,
               handle,
             );
+            paintExtraMembers(handleToElements[handle.toLowerCase()], rank, handle);
           }
           appStorage.setJSON(AVATAR_CACHE_KEY, avatarCache);
           break;

@@ -20,8 +20,8 @@ const active = inject('cf-menu-motion-active', true);
   --cf-paint-secondary: var(--cf-menu-secondary);
   /* 与侧栏指示条的位移同一个时长和缓动，指示条停下时玻璃的颜色也正好变完。 */
   transition:
-    --cf-paint-accent 480ms cubic-bezier(0.16, 1, 0.3, 1),
-    --cf-paint-secondary 480ms cubic-bezier(0.16, 1, 0.3, 1);
+    --cf-paint-accent 480ms var(--cf-ease-out-strong),
+    --cf-paint-secondary 480ms var(--cf-ease-out-strong);
 }
 
 /* 内容可向上弹出；只有独立的装饰层裁切，不截断贡献者名单。 */

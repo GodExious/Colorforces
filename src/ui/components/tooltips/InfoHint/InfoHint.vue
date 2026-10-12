@@ -64,9 +64,9 @@ const emit = defineEmits(['click']);
   color: var(--cf-hint-color);
   cursor: help;
   transition:
-    color 160ms ease,
-    transform 160ms ease,
-    box-shadow 160ms ease;
+    color var(--cf-duration-fast) ease,
+    transform var(--cf-duration-fast) ease,
+    box-shadow var(--cf-duration-fast) ease;
 }
 .cf-info-hint svg {
   display: block;
@@ -79,7 +79,7 @@ const emit = defineEmits(['click']);
   stroke: currentColor;
   stroke-width: 1.3;
   stroke-linejoin: round;
-  transition: fill 160ms ease;
+  transition: fill var(--cf-duration-fast) ease;
 }
 .cf-info-hint-glyph {
   fill: none;
@@ -115,7 +115,7 @@ const emit = defineEmits(['click']);
 /* 三角用粗圆角描边补足体量，颜色比问号深一档以示提醒；外形不是圆，悬停时不加圆形光晕。 */
 .cf-info-hint--warning {
   --cf-hint-color: color-mix(in srgb, var(--cf-menu-accent, #6b8fd6) 74%, #3f2f2a);
-  border-radius: 5px;
+  border-radius: var(--cf-radius-sm);
 }
 .cf-info-hint--warning .cf-info-hint-shape {
   stroke-width: 1.8;

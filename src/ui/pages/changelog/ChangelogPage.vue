@@ -67,7 +67,9 @@ function formatChangelogText(text) {
           ><inline-svg v-bind:source="assets.menuChangelogIcon"></inline-svg></span
         ><span class="cf-changelog-title-text">{{ t('changelogTitle') }}</span>
       </h3>
-      <p class="cf-changelog-subtitle" v-text="t().changelogSubtitle" ref="changelogSubtitleEl"></p>
+      <p class="cf-changelog-subtitle" ref="changelogSubtitleEl">
+        <span>{{ t().changelogSubtitle }}</span>
+      </p>
     </div>
     <div class="cf-changelog-list" ref="changelogListContainer">
       <div
@@ -122,7 +124,9 @@ function formatChangelogText(text) {
                   v-bind:key="itemIndex"
                 >
                   <span class="cf-changelog-item-index" v-text="itemIndex + 1 + '.'"></span>
-                  <div class="cf-changelog-item-content" v-html="formatChangelogText(text)"></div>
+                  <div class="cf-changelog-item-content">
+                    <span v-html="formatChangelogText(text)"></span>
+                  </div>
                 </div>
               </div>
             </div></div
@@ -166,8 +170,8 @@ function formatChangelogText(text) {
   border-radius: var(--cf-radius-lg);
   overflow: hidden;
   transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color var(--cf-duration-base) ease,
+    box-shadow var(--cf-duration-base) ease;
 }
 
 .cf-changelog-card:hover {
@@ -187,7 +191,7 @@ function formatChangelogText(text) {
   cursor: pointer;
   user-select: none;
   background: var(--cf-card-hover, #fcfdfe);
-  transition: background 0.15s ease;
+  transition: background var(--cf-duration-fast) ease;
 }
 
 .cf-changelog-card-header:hover {
@@ -209,7 +213,7 @@ function formatChangelogText(text) {
 }
 
 .cf-changelog-version {
-  font-size: 13.5px;
+  font-size: var(--cf-font-size-xl);
   font-weight: var(--cf-font-weight-bold);
   color: var(--cf-gray-900);
   font-family:
@@ -221,7 +225,7 @@ function formatChangelogText(text) {
 .cf-changelog-badge-latest {
   font-size: var(--cf-font-size-xs);
   font-weight: var(--cf-font-weight-bold);
-  color: #fff;
+  color: var(--cf-white-ink);
   background: color-mix(in srgb, var(--cf-menu-accent) 55%, #174338);
   border: 1px solid color-mix(in srgb, var(--cf-menu-accent) 48%, #174338);
   border-radius: 999px;
@@ -231,7 +235,7 @@ function formatChangelogText(text) {
 }
 
 .cf-changelog-date {
-  font-size: var(--cf-font-size-sm);
+  font-size: var(--cf-font-size-base);
   color: var(--cf-gray-400);
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -243,13 +247,13 @@ function formatChangelogText(text) {
 .cf-changelog-zone {
   margin-left: 1px;
   vertical-align: super;
-  font-size: 9px;
+  font-size: calc(9px * var(--cf-font-scale));
   line-height: 0;
 }
 
 .cf-changelog-chevron {
   color: var(--cf-gray-400);
-  transition: transform 0.2s ease;
+  transition: transform var(--cf-duration-base) ease;
   display: flex;
   align-items: center;
 }
@@ -262,7 +266,7 @@ function formatChangelogText(text) {
   padding: 12px 16px 14px 16px;
   border-top: 1px solid var(--cf-surface-border);
   background: transparent;
-  font-size: var(--cf-font-size-md);
+  font-size: var(--cf-font-size-lg);
   color: var(--cf-gray-700);
   line-height: 1.6;
 }
@@ -319,7 +323,7 @@ function formatChangelogText(text) {
   display: flex;
   align-items: flex-start;
   gap: 6px;
-  font-size: var(--cf-font-size-md);
+  font-size: var(--cf-font-size-lg);
   color: var(--cf-gray-700);
   line-height: 1.6;
 }

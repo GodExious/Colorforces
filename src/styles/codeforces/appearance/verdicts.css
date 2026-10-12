@@ -29,6 +29,10 @@
   white-space: normal;
   pointer-events: none;
 }
+/* 「隐藏测试点信息」藏起来的那一段：只留一个不显示的占位节点。 */
+[data-cf-verdict-test] {
+  display: none !important;
+}
 .status-verdict-cell .cf-verdict-text {
   max-width: 110px;
 }

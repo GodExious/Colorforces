@@ -7,7 +7,7 @@ import ExpandTransition from '../../../../components/transitions/ExpandTransitio
 
 <template>
   <label class="cf-setting-item cf-tag-visibility-setting">
-    <span class="cf-setting-label" data-cf-language-text v-text="t().locHideTags"></span>
+    <span class="cf-setting-label" v-text="t().locHideTags"></span>
     <ToggleSwitch
       as="div"
       v-model="appSettings.appearance.tags.hide"
@@ -20,7 +20,7 @@ import ExpandTransition from '../../../../components/transitions/ExpandTransitio
     <label
       class="cf-setting-item cf-sub-setting-item cf-tag-visibility-setting cf-tag-visibility-subitem"
     >
-      <span class="cf-setting-sublabel" data-cf-language-text v-text="t().locHideRatingTag"></span>
+      <span class="cf-setting-sublabel" v-text="t().locHideRatingTag"></span>
       <ToggleSwitch
         as="div"
         v-model="appSettings.appearance.tags.hideRating"
@@ -33,7 +33,7 @@ import ExpandTransition from '../../../../components/transitions/ExpandTransitio
     <label
       class="cf-setting-item cf-sub-setting-item cf-tag-visibility-setting cf-tag-visibility-subitem"
     >
-      <span class="cf-setting-sublabel" data-cf-language-text v-text="t().locNotHideAcTags"></span>
+      <span class="cf-setting-sublabel" v-text="t().locNotHideAcTags"></span>
       <ToggleSwitch
         as="div"
         v-model="appSettings.appearance.tags.keepSolved"

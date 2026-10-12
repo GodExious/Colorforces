@@ -26,9 +26,44 @@ let motionPreference;
 const FAN_SPREAD = 1.4;
 const FAN_FLOOR = 0.13;
 const FAN_CURVE = 1.5;
-let turn = 0;
+/*
+ * 花的转角（度），由这里记着、写进一个变量，样式只管照着转。
+ * 规矩：收起时花总是正的（转角是整圈数）。鼠标移上来正着转一整圈，移开倒着转回去；
+ * rest 是鼠标不在按钮上时该停的那个整圈，悬停着就停在它后面一圈。
+ * 展开时从悬停的那一圈接着往前转到指向当前页的角度，收起时再往前转回正的，都不倒转。
+ * 原来悬停是靠样式在 0 和 360 度之间切换的，悬停着点开时会先倒转一圈再转过来。
+ */
+let angle = 0;
+let rest = 0;
+let hovered = false;
+const sector = () => 360 / PETAL_COLORS.length;
+function turnTo(value) {
+  angle = value;
+  button.value?.style.setProperty('--cf-launcher-angle', `${angle}deg`);
+}
+// 从 from 往前转，转到最亮的那片朝正上方为止。
+function aimFrom(from) {
+  const target = -props.spot * sector();
+  return target + Math.ceil((from - target) / 360) * 360;
+}
+function hoverIn() {
+  hovered = true;
+  if (!props.open && !props.dragging) turnTo(rest + 360);
+  showHint();
+}
+function hoverOut() {
+  hovered = false;
+  if (!props.open) turnTo(rest);
+  tooltip.hide();
+}
+// 收起：往前转到最近的整圈。鼠标还在按钮上就算停在悬停的那一圈，移开时照常倒转一圈回去。
+function settle() {
+  const upright = Math.ceil(angle / 360) * 360;
+  rest = hovered ? upright - 360 : upright;
+  turnTo(upright);
+}
 // 菜单展开时，花用明暗指出当前页：离当前位置最近的那片最亮，并直接换成当前页的准确颜色；
-// 整朵花再转动，把最亮的那片转到正上方。这里只算好每片的亮度和转角，交给样式在展开时生效。
+// 整朵花再转动，把最亮的那片转到正上方。这里算好每片的亮度；展开着换页时顺带把花转过去。
 function lightPetals() {
   const root = button.value;
   if (!root) return;
@@ -44,10 +79,11 @@ function lightPetals() {
     else petal.style.removeProperty('--cf-petal-lit');
     petal.toggleAttribute('data-cf-lead', index === lead);
   });
-  // 走最近的方向，避免从最后一页回到第一页时倒转一整圈。
-  const target = -props.spot * (360 / size);
-  turn = target + Math.round((turn - target) / 360) * 360;
-  root.style.setProperty('--cf-launcher-turn', `${turn}deg`);
+  // 展开着换页：走最近的方向，避免从最后一页回到第一页时倒转一整圈。
+  if (props.open) {
+    const target = -props.spot * sector();
+    turnTo(target + Math.round((angle - target) / 360) * 360);
+  }
 }
 // 取消尚未结束的收放动画，释放动画对节点样式的占用。
 function stopPetalTransition() {
@@ -111,10 +147,13 @@ function showHint() {
     variant: 'launcher',
   });
 }
-// 点击或键盘展开前收起提示，避免指引遮住刚打开的菜单。
+// 提示在鼠标停在按钮上（或键盘焦点在按钮上）时一直留着：点一下不收起，只把「打开」换成「收起」（见下面对 open 的监听）。
 function toggle() {
-  tooltip.hide();
   emit('toggle');
+}
+// 鼠标点按钮之后焦点会被放掉（见 App.vue）。鼠标还停在按钮上时提示留着。
+function blurred() {
+  if (!hovered) tooltip.hide();
 }
 // 后台标签页暂停所有循环，不增加逐帧 JavaScript 工作。
 function updateVisibility() {
@@ -128,8 +167,16 @@ function updateVisibility() {
 watch(() => [props.spot, props.appearance], lightPetals, { flush: 'post' });
 watch(
   () => [props.open, props.appearance],
-  ([open, appearance]) => {
-    tooltip.hide();
+  ([open, appearance], previous) => {
+    // 鼠标或焦点还在按钮上：提示留着，换成现在该说的那一句。否则（比如用快捷键开关菜单）收起。
+    if (hovered || document.activeElement === button.value)
+      tooltip.retext(button.value, t(open ? 'launcherCloseHint' : 'launcherOpenHint'), {
+        variant: 'launcher',
+      });
+    else tooltip.hide();
+    // 展开：从悬停的那一圈接着转到指向当前页（没悬停着，比如用快捷键打开，也先转过这一圈）。
+    if (open && !previous?.[0]) turnTo(aimFrom(rest + 360));
+    else if (!open && previous?.[0]) settle();
     if (appearance === 'aurora') animatePetals(open);
     else stopPetalTransition();
   },
@@ -161,10 +208,10 @@ onBeforeUnmount(() => {
         ? 'cf-floating-tooltip'
         : undefined
     "
-    @mouseenter="showHint"
-    @mouseleave="tooltip.hide()"
+    @mouseenter="hoverIn"
+    @mouseleave="hoverOut"
     @focus="showHint"
-    @blur="tooltip.hide()"
+    @blur="blurred"
     @keydown.escape="tooltip.hide()"
     @click="toggle"
     @keydown.enter.prevent="toggle"
@@ -218,8 +265,8 @@ onBeforeUnmount(() => {
   cursor: pointer !important;
   user-select: none !important;
   transition:
-    --cf-launcher-accent 480ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 240ms ease,
+    --cf-launcher-accent 480ms var(--cf-ease-out-strong),
+    transform var(--cf-duration-moderate) ease,
     box-shadow 480ms ease;
 }
 /* 外圈保留纤细玻璃高光，颜色过渡沿用菜单主题，不再额外混入异色。 */
@@ -250,10 +297,6 @@ onBeforeUnmount(() => {
 #cf-ratings-settings-btn:hover {
   transform: translateY(-0.5px);
   box-shadow: 0 3px 11px #71669330;
-}
-#cf-ratings-settings-btn:not(.is-open):is(:hover, :focus-visible) .cf-launcher-flower {
-  /* 与初态保持相同变换列表，避免整圈旋转被矩阵插值视作静止。 */
-  transform: scale(1) rotate(360deg);
 }
 #cf-ratings-settings-btn.is-open {
   box-shadow:
@@ -296,11 +339,13 @@ onBeforeUnmount(() => {
 .cf-launcher-flower,
 .cf-launcher-current {
   transition:
-    transform 780ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 780ms var(--cf-ease-out),
     opacity 420ms ease;
 }
+/* 转角由脚本写在 --cf-launcher-angle 里（见上面的说明）。各种状态下变换的写法保持一样，
+   整圈的旋转才会被当成真的转了一圈，而不是「前后一样、不用动」。 */
 .cf-launcher-flower {
-  transform: scale(1) rotate(0deg);
+  transform: scale(1) rotate(var(--cf-launcher-angle, 0deg));
   opacity: 1;
 }
 .cf-launcher-current {
@@ -308,10 +353,9 @@ onBeforeUnmount(() => {
   opacity: 0;
 }
 #cf-ratings-settings-btn.is-open .cf-launcher-flower {
-  transform: scale(1) rotate(360deg);
   opacity: 0;
   transition:
-    transform 580ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 580ms var(--cf-ease-out),
     opacity 380ms ease 80ms;
 }
 #cf-ratings-settings-btn.is-open .cf-launcher-current {
@@ -428,7 +472,7 @@ onBeforeUnmount(() => {
  * 花瓣聚光：收起时是原样的花。展开后用明暗指出当前页——
  * 对应的那片花瓣最亮，并换成当前页的准确颜色；紧邻的两片稍亮，其余很淡；
  * 整朵花转动，把最亮的那片转到正上方，换页时跟着转过去。花瓣的大小始终不变。
- * 每片的亮度（--cf-petal-light）、最亮那片的颜色（--cf-petal-lit）和转角（--cf-launcher-turn）由脚本算好。
+ * 每片的亮度（--cf-petal-light）、最亮那片的颜色（--cf-petal-lit）和转角（--cf-launcher-angle）由脚本算好。
  */
 #cf-ratings-settings-btn.is-flower .cf-launcher-motion {
   animation: none;
@@ -448,11 +492,10 @@ onBeforeUnmount(() => {
 #cf-ratings-settings-btn.is-flower.is-open .cf-flower-petal[data-cf-lead] > use:first-child {
   fill: var(--cf-petal-lit, var(--cf-petal-color));
 }
-/* 展开时先转满一圈再停到指向当前页的角度；之后换页只转过相差的那一段。 */
+/* 展开时花留着，转到指向当前页的角度；之后换页只转过相差的那一段。 */
 #cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower {
   opacity: 1;
-  transform: scale(1) rotate(calc(360deg + var(--cf-launcher-turn, 0deg)));
-  transition: transform 780ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 780ms var(--cf-ease-out);
 }
 @keyframes cf-flower-sway {
   0%,
@@ -507,10 +550,6 @@ onBeforeUnmount(() => {
   #cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower {
     transition: none;
   }
-  /* 关闭动效时不再先转一圈，直接停在指向当前页的角度。 */
-  #cf-ratings-settings-btn.is-flower.is-open .cf-launcher-flower {
-    transform: rotate(var(--cf-launcher-turn, 0deg));
-  }
   #cf-ratings-settings-btn .cf-launcher-motion {
     animation: none;
   }
@@ -520,9 +559,6 @@ onBeforeUnmount(() => {
   .cf-launcher-current,
   #cf-ratings-settings-btn.is-open .cf-launcher-flower {
     transition: none;
-  }
-  #cf-ratings-settings-btn:not(.is-open):is(:hover, :focus-visible) .cf-launcher-flower {
-    transform: none;
   }
 }
 </style>

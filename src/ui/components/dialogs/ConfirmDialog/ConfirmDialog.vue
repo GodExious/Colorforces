@@ -5,19 +5,23 @@ import { appSettings } from '../../../../settings.js';
 import { tGlobal as t } from '../../../../i18n/index.js';
 const pending = shallowRef(null);
 // 打开确认提示，新的提示替换旧提示。
+// 标题、正文、补充说明、按钮文字可以直接给文字，也可以给一个返回文字的函数。
+// 给函数的话每次显示时现取：提示开着的时候换了语言，文字跟着换（带着和别的弹窗一样的过渡）。
 export function showConfirmPop(options) {
   pending.value = options;
 }
+const read = (value) => (typeof value === 'function' ? value() : value) || '';
 // 按提示类型决定图标、语气和按钮组合；配色由样式按语气处理。
-function buildAppearance({
-  message = '',
-  note = '',
-  confirmText = '',
-  cancelText = '',
-  type = 'danger',
-  lang = (typeof appSettings !== 'undefined' && appSettings && appSettings.general.lang) || 'zh',
-  onConfirm = null,
-} = {}) {
+function buildAppearance(options = {}) {
+  const {
+    type = 'danger',
+    lang = (typeof appSettings !== 'undefined' && appSettings && appSettings.general.lang) || 'zh',
+    onConfirm = null,
+  } = options;
+  const message = read(options.message);
+  const note = read(options.note);
+  const confirmText = read(options.confirmText);
+  const cancelText = read(options.cancelText);
   const tone = type === 'info' || type === 'warning' ? type : 'danger';
   const isAlertOnly = tone === 'info' || typeof onConfirm !== 'function';
   const icons = {
@@ -35,6 +39,7 @@ function buildAppearance({
   }
 
   return {
+    title: read(options.title),
     tone,
     isAlertOnly,
     iconSvg: icons[tone],
@@ -100,7 +105,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', keydown));
               <inline-svg v-bind:source="appearance.iconSvg"></inline-svg>
             </div>
             <div class="cf-confirm-text">
-              <div class="cf-confirm-title" v-text="displayed.title"></div>
+              <div class="cf-confirm-title" v-text="appearance.title"></div>
               <div class="cf-confirm-message" v-html="appearance.mainHtml"></div>
               <div
                 class="cf-confirm-note"
@@ -149,8 +154,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', keydown));
 .cf-confirm-pop-card {
   --cf-confirm-tone: #d6587c;
   --cf-confirm-tint: #fbe6ec;
-  width: 420px;
-  max-width: 92vw;
+  /* 宽度跟着内容走：短的提示不会被固定的宽度挤成两行、最后剩几个字单独一行；
+     内容多的到上限再折行，太短的也不比原来窄多少。 */
+  width: max-content;
+  min-width: min(360px, 92vw);
+  max-width: min(560px, 92vw);
   overflow: hidden;
   box-sizing: border-box;
   overscroll-behavior: contain;
@@ -174,16 +182,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', keydown));
   padding: 22px 22px 16px;
 }
 
+/* 图标底块跟着语气换颜色：红、黄、蓝。 */
 .cf-confirm-pop-card .cf-confirm-icon {
+  --cf-emblem-petal: var(--cf-confirm-tone);
   width: 42px;
   height: 42px;
-  border-radius: 13px;
-  background: linear-gradient(135deg, var(--cf-confirm-tint), #ffffffcc);
-  color: var(--cf-confirm-tone);
 }
 
 .cf-confirm-icon svg {
-  --cf-icon-primary: var(--cf-confirm-tone) !important;
+  width: 26px;
+  height: 26px;
 }
 
 .cf-confirm-text {
@@ -194,16 +202,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', keydown));
 .cf-confirm-title {
   margin-bottom: 5px;
   color: #3b4868;
-  font-size: 15px;
+  font-size: calc(15px * var(--cf-font-scale));
   font-weight: var(--cf-font-weight-bold);
   line-height: 1.35;
 }
 
 .cf-confirm-message {
   color: var(--cf-aurora-text);
-  font-size: var(--cf-font-size-md);
+  font-size: var(--cf-font-size-lg);
   line-height: 1.55;
   word-break: break-word;
+  text-wrap: pretty;
 }
 
 .cf-confirm-note {
@@ -213,8 +222,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', keydown));
   border-radius: var(--cf-radius-lg);
   background: color-mix(in srgb, var(--cf-confirm-tint) 78%, transparent);
   color: color-mix(in srgb, var(--cf-confirm-tone) 82%, #2b3550);
-  font-size: var(--cf-font-size-sm);
+  font-size: var(--cf-font-size-base);
   line-height: 1.5;
+  /* 非折行不可时，尽量不让最后一行只剩一两个字。 */
+  text-wrap: pretty;
 }
 
 .cf-confirm-actions {

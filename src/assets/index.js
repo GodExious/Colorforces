@@ -9,6 +9,8 @@ import menuStorageIcon from './icons/menu/storage.svg?raw';
 import menuChangelogIcon from './icons/menu/changelog.svg?raw';
 import menuRoadmapIcon from './icons/menu/roadmap.svg?raw';
 import menuAcknowledgmentsIcon from './icons/menu/acknowledgments.svg?raw';
+import sectionFunctionIcon from './icons/sections/function.svg?raw';
+import sectionStyleIcon from './icons/sections/style.svg?raw';
 import codeforcesIcon from './icons/storage/cf.svg?raw';
 import clistImage from './images/brands/clist-icon.png?inline';
 import cfHelperImage from './images/brands/cf-helper-icon.png?inline';
@@ -62,6 +64,8 @@ export {
   menuChangelogIcon,
   menuRoadmapIcon,
   menuAcknowledgmentsIcon,
+  sectionFunctionIcon,
+  sectionStyleIcon,
   codeforcesIcon,
   clistImage,
   cfHelperImage,
@@ -129,6 +133,8 @@ export const CARROT_ICON_DATA_URI = carrotImage;
 export const GODEXIOUS_AVATAR_DATA_URI = godexiousAvatar;
 export const ANTIGRAVITY_LOGO_DATA_URI = antigravityLogo;
 export { default as dialogWarningIcon } from './icons/actions/dialog-warning.svg?raw';
+export { default as participationIdentityIcon } from './icons/actions/participation-identity-icon.svg?raw';
+export { default as updateBellIcon } from './icons/actions/update-bell-icon.svg?raw';
 export { default as dialogInfoIcon } from './icons/actions/dialog-info.svg?raw';
 export { default as dialogDeleteIcon } from './icons/actions/dialog-delete.svg?raw';
 export { default as timeFormatGuideIcon } from './icons/actions/time-format-guide-icon.svg?raw';

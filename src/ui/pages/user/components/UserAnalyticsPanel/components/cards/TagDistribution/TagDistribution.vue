@@ -13,23 +13,24 @@ const props = defineProps({
   solved: { type: Number, required: true },
 });
 // 图表显示哪一种数值，由标题栏的切换按钮决定；选择记在设置里，换页面后保持。
+// 这项设置和「题目难度分布」共用（所以名字是 ratingsMode）：在哪一张图上切换，两张图都跟着换。
 // 题数：带这个标签的题通过了多少。
 // 解决占比：带这个标签的通过题数 ÷ 全部已解决的题数（一道题有多个标签，所以各标签加起来会超过 100%）。
-// 全部占比：覆盖了题库里带这个标签的多少题 ÷ 题库里带这个标签的共有多少题。
+// 题库覆盖：覆盖了题库里带这个标签的多少题 ÷ 题库里带这个标签的共有多少题。
 const modes = [
   ['count', 'analyticsModeCount'],
   ['share', 'analyticsModeShare'],
-  ['coverage', 'analyticsModeAll'],
+  ['coverage', 'analyticsModeCoverage'],
 ];
 function setMode(id) {
-  appSettings.user.analytics.tagsMode = id;
+  appSettings.user.analytics.ratingsMode = id;
   saveSettings();
 }
 const percentOf = (part, whole) => (whole > 0 ? (part / whole) * 100 : 0);
 const percentText = (value) => (value >= 99.95 ? '100%' : `${value.toFixed(1)}%`);
 // 某个标签在当前模式下要画的数值；两种占比都是百分数。
 function valueOf(item) {
-  const mode = appSettings.user.analytics.tagsMode;
+  const mode = appSettings.user.analytics.ratingsMode;
   if (mode === 'coverage') return percentOf(item.covered, item.total);
   if (mode === 'share') return percentOf(item.count, props.solved);
   return item.count;
@@ -60,7 +61,7 @@ const rows = computed(() =>
 );
 // 数字滚动时是小数：题数取整后显示，占比保留一位。
 const format = computed(() =>
-  appSettings.user.analytics.tagsMode === 'count'
+  appSettings.user.analytics.ratingsMode === 'count'
     ? (value) => String(Math.round(value))
     : percentText,
 );
@@ -70,12 +71,12 @@ const format = computed(() =>
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsTagsTitle') }}</span>
+        <span>{{ t('analyticsTagsTitle') }}</span>
       </h4>
       <div class="cf-analytics-card-tools">
         <ModeSwitch
           :modes="modes"
-          :model-value="appSettings.user.analytics.tagsMode"
+          :model-value="appSettings.user.analytics.ratingsMode"
           :label="t('analyticsModeLabel')"
           @update:model-value="setMode"
         />

@@ -52,7 +52,7 @@ function change(event) {
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  transition: 0.2s;
+  transition: var(--cf-duration-base);
   border-radius: 18px;
 }
 
@@ -63,8 +63,8 @@ function change(event) {
   width: 14px;
   left: 2px;
   bottom: 2px;
-  background-color: white;
-  transition: 0.2s;
+  background-color: var(--cf-white-surface);
+  transition: var(--cf-duration-base);
   border-radius: 50%;
 }
 
@@ -75,5 +75,35 @@ function change(event) {
 
 .cf-toggle-switch input:checked + .cf-toggle-slider:before {
   transform: translateX(16px);
+}
+
+/*
+ * 子选项里的开关：小一号，开着时的颜色也淡一些，和上面父选项的开关分出主次。
+ * 子选项的行就是带着小标签（cf-setting-sublabel）的那些行，各页面不用单独标。
+ * 右边缘仍和父选项的开关对齐（都是贴着行的右端）。
+ */
+.cf-setting-item:has(.cf-setting-sublabel) .cf-toggle-switch {
+  width: 28px;
+  height: 15px;
+}
+
+.cf-setting-item:has(.cf-setting-sublabel) .cf-toggle-slider {
+  background-color: #d7dce5;
+}
+
+.cf-setting-item:has(.cf-setting-sublabel) .cf-toggle-slider:before {
+  width: 11px;
+  height: 11px;
+}
+
+.cf-setting-item:has(.cf-setting-sublabel) .cf-toggle-switch input:checked + .cf-toggle-slider {
+  background-color: color-mix(in srgb, var(--cf-menu-accent, #1890ff) 66%, #fff);
+}
+
+.cf-setting-item:has(.cf-setting-sublabel)
+  .cf-toggle-switch
+  input:checked
+  + .cf-toggle-slider:before {
+  transform: translateX(13px);
 }
 </style>

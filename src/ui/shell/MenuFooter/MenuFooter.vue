@@ -91,10 +91,10 @@ onBeforeUnmount(() => {
                   vertical-align: -2px;
                   flex-shrink: 0;
                   display: inline-block;
-                  border-radius: 2px;
+                  border-radius: var(--cf-radius-2xs);
                 "
                 alt="CList" /><inline-svg v-else="" :source="assets.CF_ICON_SVG"></inline-svg></span
-            ><span data-cf-language-text>{{ statusText }}</span>
+            ><span>{{ statusText }}</span>
           </div>
           <button
             v-else
@@ -131,12 +131,12 @@ onBeforeUnmount(() => {
           class="cf-footer-link"
           ><span style="display: flex; align-items: center; justify-content: center"
             ><inline-svg v-bind:source="assets.ideaBulbIcon"></inline-svg></span
-          ><span data-cf-language-text v-text="t().footerIssue"></span
+          ><span v-text="t().footerIssue"></span
         ></a>
       </div>
     </div>
     <div class="cf-footer-bottom-row">
-      <span class="cf-footer-motto" data-cf-language-text v-text="t().footerMotto"></span>
+      <span class="cf-footer-motto" v-text="t().footerMotto"></span>
       <ContributorsMenu />
     </div>
   </MenuGlassSurface>
@@ -157,8 +157,8 @@ onBeforeUnmount(() => {
 .cf-footer-swap-enter-active,
 .cf-footer-swap-leave-active {
   transition:
-    opacity 180ms ease,
-    transform 180ms ease;
+    opacity var(--cf-duration-base) ease,
+    transform var(--cf-duration-base) ease;
 }
 .cf-footer-swap-leave-active {
   pointer-events: none;
@@ -229,7 +229,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 4px;
   font-size: var(--cf-font-size-base);
-  transition: color 0.15s ease;
+  transition: color var(--cf-duration-fast) ease;
   cursor: pointer;
   user-select: none;
 }
@@ -279,8 +279,8 @@ onBeforeUnmount(() => {
   user-select: none;
   cursor: pointer;
   transition:
-    background 0.2s ease,
-    transform 0.15s ease;
+    background var(--cf-duration-base) ease,
+    transform var(--cf-duration-fast) ease;
 }
 
 .cf-footer-mini-progress:hover {
@@ -297,11 +297,11 @@ onBeforeUnmount(() => {
   width: 76px;
   height: 6px;
   background: var(--cf-gray-200);
-  border-radius: 3px;
+  border-radius: var(--cf-radius-xs);
   overflow: hidden;
   position: relative;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow var(--cf-duration-base) ease;
 }
 
 .cf-footer-mini-progress:hover .cf-mini-progress-bar {
@@ -312,8 +312,8 @@ onBeforeUnmount(() => {
   display: block;
   height: 100%;
   background: linear-gradient(90deg, #3b82f6, #06b6d4);
-  border-radius: 3px;
-  transition: width 0.3s ease;
+  border-radius: var(--cf-radius-xs);
+  transition: width var(--cf-duration-slow) ease;
 }
 
 .cf-mini-progress-text {
@@ -321,7 +321,7 @@ onBeforeUnmount(() => {
   font-weight: var(--cf-font-weight-semibold);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   color: var(--cf-gray-700);
-  transition: color 0.2s ease;
+  transition: color var(--cf-duration-base) ease;
 }
 
 .cf-footer-mini-progress:hover .cf-mini-progress-text {

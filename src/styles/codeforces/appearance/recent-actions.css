@@ -1,0 +1,63 @@
+/*
+ * 侧栏「最新动态」的格式化，见 features/appearance/recent-actions.js。
+ * 每条动态分成两行：第一行是作者（连同头像），图标靠右排成一列；标题另起一行，完整显示，和作者名的左边对齐。
+ * 条目之间一条分隔线。只在页面根元素带着 cf-format-recent-actions 时生效；各部分的类名由脚本标上。
+ */
+:root.cf-format-recent-actions .cf-recent-action {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 5px;
+  align-items: center;
+  /* 原站在这个元素上直接写了字号和上下留白，这里要盖过它。 */
+  padding: 6px 0 !important;
+  border-bottom: 1px solid #eef0f3;
+  font-size: 12px !important;
+  line-height: 1.45;
+}
+:root.cf-format-recent-actions .recent-actions li:last-child .cf-recent-action {
+  border-bottom: 0;
+}
+/* 作者和标题之间的箭头、标题后面的空格：分成两行之后用不着了。 */
+:root.cf-format-recent-actions .cf-recent-action-sep {
+  display: none;
+}
+/* 第一行：作者在左，名字太长时省略；图标靠右，各条的图标上下排成一列。 */
+:root.cf-format-recent-actions .cf-recent-action-user {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: start;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:root.cf-format-recent-actions .cf-recent-action-icons {
+  grid-row: 1;
+  grid-column: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  /* 图标之间原来靠空白隔开，这里改用上面的间距，空白不再占地方。 */
+  font-size: 0;
+}
+/* 第二行：标题占满整行，完整显示，放不下就折行。 */
+:root.cf-format-recent-actions .cf-recent-action-title {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  padding-left: 0;
+  overflow-wrap: anywhere;
+  /* 和头像收放用同样的时长：头像显示或隐藏时，标题跟着一起挪。 */
+  transition: padding-left 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* 作者前面有头像时，标题缩进一个头像的位置，和作者名的左边对齐。头像占的宽度见 user/avatars/avatars.css。
+   两种情况不缩进，标题从这一条的最左边起：设置里选了标题不缩进（根元素带 cf-recent-actions-flush）；
+   头像被整个隐藏了（根元素带 cf-hide-userAvatar）。两个条件直接写在这条规则里，不另写规则去盖它。 */
+:root.cf-format-recent-actions:not(.cf-recent-actions-flush, .cf-hide-userAvatar)
+  .cf-recent-action:has(.cf-avatar-slot:not(.cf-avatar-loading))
+  .cf-recent-action-title {
+  padding-left: calc(var(--cf-avatar-size, 1.6em) + 5px);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root.cf-format-recent-actions .cf-recent-action-title {
+    transition: none;
+  }
+}

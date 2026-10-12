@@ -6,6 +6,10 @@ export function fetchContestList() {
 export function fetchProblemset() {
   return fetch('https://codeforces.com/api/problemset.problems?lang=en');
 }
+// 重新取一遍当前这个页面（同源，带着登录状态，不走缓存），用来把页面上的榜单表格换成最新的。
+export function fetchCurrentPage(signal) {
+  return fetch(location.href, { signal, cache: 'no-store', credentials: 'same-origin' });
+}
 // 公开比赛获取全场榜单，不附带分页或语言参数。
 export function fetchContestStandings(contestId, signal) {
   return fetch(`/api/contest.standings?contestId=${encodeURIComponent(contestId)}`, { signal });
@@ -20,6 +24,16 @@ export function fetchRatedUsers(contestId, signal) {
     `/api/user.ratedList?activeOnly=false&includeRetired=true&contestId=${encodeURIComponent(contestId)}`,
     { signal },
   );
+}
+// 按账号查用户资料，用来补评级名单里漏掉的人。一次要查的人可能上千，放在地址里太长，所以用 POST。
+// 返回的顺序和请求的一样；改过名的账号用旧名字也查得到。
+export function fetchUsersByHandle(handles, signal) {
+  return fetch('/api/user.info', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ handles: handles.join(';') }),
+    signal,
+  });
 }
 // 分页确认提交情况，后续仅追加新记录。
 export function fetchContestSubmissions(contestId, from, signal) {

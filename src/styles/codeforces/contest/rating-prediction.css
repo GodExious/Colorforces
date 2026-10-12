@@ -208,6 +208,10 @@ table.standings .highlighted-row .cf-prediction-cell.dark {
   color: #aaa;
   font-size: 0.9em;
 }
+/* 计评级名次一列的数字不加粗，文字直接写在格子里；缺值的 N/A 要和别的列一样加粗，一整行的 N/A 才一致。 */
+table.standings td.cf-prediction-cell.cf-prediction-unavailable {
+  font-weight: bold;
+}
 .cf-prediction-rank-change {
   position: relative;
   z-index: 1;
@@ -240,7 +244,8 @@ table.standings .highlighted-row .cf-prediction-cell.dark {
   inherits: true;
   initial-value: transparent;
 }
-table.standings .cf-prediction-cell[data-cf-rank-mode] {
+table.standings .cf-prediction-cell[data-cf-rank-mode],
+.cf-prediction-part[data-cf-rank-mode] {
   position: relative;
   isolation: isolate;
   transition:
@@ -272,16 +277,54 @@ table.standings .cf-prediction-cell[data-cf-rank-mode] {
 [data-cf-rank-mode='plain']::before {
   opacity: 0;
 }
-/* 紧凑标签：底板收到内容四周，宽度取脚本量出的内容宽度。 */
 [data-cf-rank-shape='compact']::before {
   inset: calc((100% - 20px) / 2) max(0px, calc((100% - var(--cf-rank-content, 56px) - 14px) / 2));
   border-radius: 4px;
 }
 @media (prefers-reduced-motion: reduce) {
   table.standings .cf-prediction-cell[data-cf-rank-mode],
+  .cf-prediction-part[data-cf-rank-mode],
   [data-cf-rank-mode]::before {
     transition: none;
   }
+}
+/*
+ * 计分队伍的头衔变化和分析入口按成员分开：一格等分成几段，细线隔开，一人一段。
+ * 几段叠在格子上、跟着这一行的高度等分；每一段自己带底板，底色和形状照旧跟着「沿用难度分样式」和难度分的样式走。
+ * 格子没有内容撑宽度，由不显示的 sizer 撑住（里面是各段内容的副本，一行一份，取最宽的）。
+ * 高度有下限：段数（--cf-prediction-parts）乘以一个单人行的高度（--cf-prediction-part-min，从页面上量来；
+ * 整场都是队伍、量不到时用 30 像素）。表格里格子的 height 就是最低高度，这一行本来更高时不受影响。
+ */
+table.standings td.cf-prediction-cell.cf-prediction-split {
+  position: relative;
+  height: calc(var(--cf-prediction-parts, 1) * var(--cf-prediction-part-min, 30px));
+  padding: 0 !important;
+}
+.cf-prediction-sizer {
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+.cf-prediction-sizer > span {
+  display: block;
+  padding: 0 8px;
+}
+.cf-prediction-parts {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cf-prediction-part {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cf-prediction-part + .cf-prediction-part {
+  border-top: 1px solid #e1e1e1;
 }
 .cf-prediction-tier {
   display: inline-block;
@@ -312,10 +355,19 @@ table.standings td.contestant-cell[data-cf-participation-host] {
 table.standings td.contestant-cell[data-cf-participation-visible='true'] {
   padding-right: calc(var(--cf-participation-padding) + 78px) !important;
 }
+/* untrusted 比别的标签多两个字母，多留一点位置。 */
+table.standings
+  td.contestant-cell[data-cf-participation-visible='true']:has(
+    > .cf-participation-tag[data-status='untrusted']
+  ) {
+  padding-right: calc(var(--cf-participation-padding) + 90px) !important;
+}
 /*
- * 参赛身份标签：三种身份统一为实底实线框，靠颜色和前置标记区分。
- * rated 为绿底加实心圆点；unrated 为暖杏色底加空心圆环；virtual 为靛蓝底加菱形。
- * 三种底色明度相近、色相分开，都不取灰色，避免与表格的隔行底色混在一起。
+ * 参赛身份标签：几种身份统一为实底实线框，靠颜色和前置标记区分。
+ * rated 为绿底加实心圆点；unrated 为暖杏色底加空心圆环；virtual 为靛蓝底加菱形；
+ * untrusted 为玫瑰色底加一个问号（计分，但不在官方榜单里）；practice 为天蓝底加一个加号（赛后练习，是比赛之外另加的）；
+ * ghost 为淡紫底加一个小幽灵（现场赛导入榜单的队伍）。
+ * 几种底色明度相近、色相分开，都不取灰色，避免与表格的隔行底色混在一起。
  */
 .cf-participation-tag {
   position: absolute;
@@ -387,6 +439,104 @@ table.standings td.contestant-cell[data-cf-participation-visible='true'] {
   background: #6670e2;
   box-shadow: none;
   transform: rotate(45deg);
+}
+.cf-participation-tag[data-status='untrusted'] {
+  background: #fdeaf1;
+  border-color: #eeb4c8;
+  color: #a43b63;
+}
+/* 问号直接用字符写，不是画出来的图形。 */
+.cf-participation-tag[data-status='untrusted']::before {
+  content: '?';
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: #d5608a;
+  font:
+    800 10.5px/1 Arial,
+    sans-serif;
+}
+.cf-participation-tag[data-status='practice'] {
+  background: #e3f1fd;
+  border-color: #a9d0f2;
+  color: #1f6aa8;
+}
+/* 加号：一横一竖两道细线叠在一起。 */
+.cf-participation-tag[data-status='practice']::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 0;
+  background:
+    linear-gradient(#4a9bdc, #4a9bdc) center / 7px 1.6px no-repeat,
+    linear-gradient(#4a9bdc, #4a9bdc) center / 1.6px 7px no-repeat;
+  box-shadow: none;
+}
+.cf-participation-tag[data-status='ghost'] {
+  --cf-participation-edge: #cdbdee;
+  background: #f1ecfb;
+  border-color: #cdbdee;
+  color: #6a4aa8;
+}
+/* 小幽灵：用图形当蒙版，颜色跟着这一种身份的标记色。 */
+.cf-participation-tag[data-status='ghost']::before {
+  width: 8px;
+  height: 9px;
+  border-radius: 0;
+  background: #9577d6;
+  box-shadow: none;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 9'%3E%3Cpath fill-rule='evenodd' d='M4 0a4 4 0 0 0-4 4v5l1.35-1.2L2.7 9 4 7.8 5.3 9l1.35-1.2L8 9V4a4 4 0 0 0-4-4zM2.7 3.1a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zm2.6 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 9'%3E%3Cpath fill-rule='evenodd' d='M4 0a4 4 0 0 0-4 4v5l1.35-1.2L2.7 9 4 7.8 5.3 9l1.35-1.2L8 9V4a4 4 0 0 0-4-4zM2.7 3.1a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zm2.6 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+/*
+ * 队伍参赛的标签：颜色和个人的一样，末尾多接一小段、写队伍的人数（×1、×2……），一个人的队也有。
+ * 这一小段的底色取各种身份自己的边框色。标签因此宽出二十来个像素，位置多留一些；人数是两位数时再多留一个字。
+ */
+.cf-participation-tag {
+  --cf-participation-edge: #9ad5b4;
+}
+.cf-participation-tag[data-status='unrated'] {
+  --cf-participation-edge: #ecc894;
+}
+.cf-participation-tag[data-status='virtual'] {
+  --cf-participation-edge: #b6bbf0;
+}
+.cf-participation-tag[data-status='untrusted'] {
+  --cf-participation-edge: #eeb4c8;
+}
+.cf-participation-tag[data-status='practice'] {
+  --cf-participation-edge: #a9d0f2;
+}
+.cf-participation-tag[data-team-size] {
+  padding-right: 0;
+  overflow: hidden;
+}
+.cf-participation-tag[data-team-size]::after {
+  content: '×' attr(data-team-size);
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 1px;
+  padding: 0 6px 0 5px;
+  background: var(--cf-participation-edge);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0;
+}
+table.standings
+  td.contestant-cell[data-cf-participation-visible='true']:has(
+    > .cf-participation-tag[data-team-size]
+  ) {
+  padding-right: calc(var(--cf-participation-padding) + 100px) !important;
+}
+table.standings
+  td.contestant-cell[data-cf-participation-visible='true']:has(
+    > .cf-participation-tag[data-team-wide]
+  ) {
+  padding-right: calc(var(--cf-participation-padding) + 106px) !important;
 }
 /*
  * 单用户分析入口：一朵五片花瓣的小花，没有底座。

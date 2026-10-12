@@ -2,9 +2,14 @@ import { appSettings, subscribeSettings } from '../settings.js';
 import { startPredictionFeature } from './contest/rating-prediction/index.js';
 import { startAnalyticsFeature } from './user/analytics/index.js';
 import { updateDynamicStyle } from './appearance/dynamic-style.js';
-import { refreshVerdicts } from './appearance/verdicts.js';
+import {
+  refreshVerdicts,
+  VERDICT_SELECTOR,
+  NATIVE_VERDICT_SELECTOR,
+} from './appearance/verdicts/index.js';
 import { applyTimeFormatting, wrapVirtualParticipationTime } from './appearance/time/format.js';
 import { applyProblemTagsVisibility } from './appearance/problem-tags/visibility.js';
+import { applyRecentActionsFormat } from './appearance/recent-actions.js';
 import { getRatings } from './ratings/data.js';
 import { applyRatings, refreshRatingsOnPage } from './ratings/enhance.js';
 import { applyUserAvatars } from './user/avatars/enhance.js';
@@ -24,8 +29,17 @@ export function connectSettingsEffects() {
       apply: applyProblemTagsVisibility,
     },
     {
-      read: () => appSettings.appearance.shortVerdict,
-      selector: '.cf-verdict-text',
+      read: () => [
+        appSettings.appearance.formatRecentActions,
+        appSettings.appearance.indentRecentActionTitles,
+      ],
+      selector: '.recent-actions',
+      apply: () => applyRecentActionsFormat({ animate: true }),
+    },
+    {
+      // 还没包起来的判题文字（Running 等）也要处理，所以连原站的类名一起找。
+      read: () => [appSettings.appearance.shortVerdict, appSettings.appearance.hideVerdictTests],
+      selector: `.cf-verdict-text, ${VERDICT_SELECTOR}, ${NATIVE_VERDICT_SELECTOR}`,
       apply: refreshVerdicts,
     },
     {
@@ -69,9 +83,11 @@ export function connectSettingsEffects() {
     },
     {
       read: () => [
+        appSettings.general.fontSize,
         appSettings.user.avatar.size,
         appSettings.appearance.langIcon.size,
         appSettings.appearance.acHighlight.color,
+        appSettings.appearance.acHighlight.rejectedColor,
         appSettings.appearance.acHighlight.enabled,
       ],
       selector: '',
@@ -112,6 +128,7 @@ export async function startFeatures() {
   updateDynamicStyle();
   refreshVerdicts();
   applyProblemTagsVisibility();
+  applyRecentActionsFormat();
   // 先记录原站队伍结构，避免将稍后插入的头像链接当作第二位成员。
   formatStandingsCells();
   applyUserAvatars();

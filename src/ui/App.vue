@@ -12,6 +12,8 @@ import FloatingTooltip, {
 } from './components/tooltips/FloatingTooltip/FloatingTooltip.vue';
 import ConfirmDialog from './components/dialogs/ConfirmDialog/ConfirmDialog.vue';
 import { preventScrollChaining } from '../utils/scroll.js';
+import { runLanguageWave, finishLanguageWave } from '../utils/language-wave.js';
+import { PLUGIN_UI_SELECTOR } from '../features/page/plugin-ui.js';
 import { petalPosition } from '../utils/petal-palette.js';
 import { MENU_TAB_IDS } from '../config/menu-tabs.js';
 import MenuNav from './shell/MenuNav/MenuNav.vue';
@@ -103,133 +105,38 @@ function resetScrollFloor() {
   panelHost.value?.style.removeProperty('--cf-scroll-floor');
 }
 provide('cf-collapse-anchor', holdCollapsePosition);
-let languageRevision = 0;
-let languageAnimations = [];
+// 换语言：菜单、弹窗、数据分析面板等各个界面带着逐项波浪的过渡一起换成新的文字，见 utils/language-wave.js。
+// 过渡还在播的时候又换了一次，就结束上一轮、从当前的画面开始新的一轮，只认最后一次选择。
 let releaseLanguagePosition;
-let languageChanging = false;
-let requestedLanguage = null;
-// 切页或关闭时清理遮罩和位移，并保留用户最后选择的语言。
+// 切页或关闭时结束正在播的过渡，界面直接到位。
 function finishLanguageChange() {
-  languageRevision++;
-  languageAnimations.forEach((animation) => animation.cancel());
-  languageAnimations = [];
-  languageChanging = false;
+  finishLanguageWave();
   releaseLanguagePosition?.();
   releaseLanguagePosition = null;
-  const requested = requestedLanguage;
-  requestedLanguage = null;
-  if (requested && requested !== appSettings.general.lang) setSetting('general.lang', requested);
 }
-// 只收放可见文案，图标、控件底色与点击区域始终保持原样。
-function languageTextElements() {
-  return [...modal.value.querySelectorAll('[data-cf-language-text]')].filter(
-    (element) => element.getClientRects().length && element.textContent.trim(),
-  );
-}
-// 选择独立布局单元；固定玻璃背景不参与文案位移，父子也不重复移动。
-function languageLayoutElements() {
-  return [
-    ...modal.value.querySelectorAll(
-      '.cf-tab-panel.active .cf-setting-item, .cf-tab-panel.active .cf-setting-label, ' +
-        '.cf-tab-panel.active .cf-setting-sublabel, .cf-tab-panel.active button, ' +
-        '.cf-tab-panel.active input, .cf-tab-panel.active .cf-segmented-switch, ' +
-        '.cf-tab-panel.active .cf-toggle-switch, .cf-tab-panel.active .cf-expand-region, ' +
-        '.cf-modal-footer > :not(.cf-menu-glass-light), .cf-footer-links, .cf-footer-link, ' +
-        '.cf-modal-footer button, .cf-footer-motto, .cf-tab-panel.active > *',
-    ),
-  ].filter((element) => element.getClientRects().length);
-}
-// 旧文案收拢后展开新文案，同时迁移控件尺寸；连续点击只处理最后一次选择。
 async function changeLanguage(code) {
-  if (languageChanging) {
-    requestedLanguage = code;
-    return;
-  }
   if (code === appSettings.general.lang) return;
   cleanup?.();
-  if (!visible.value || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    setSetting('general.lang', code);
-    return;
-  }
-  const elements = languageLayoutElements();
-  const before = new Map(elements.map((element) => [element, element.getBoundingClientRect()]));
-  finishLanguageChange();
-  const revision = languageRevision;
-  languageChanging = true;
-  requestedLanguage = code;
   tooltip.hide();
-  releaseLanguagePosition = holdCollapsePosition();
-  const leaving = languageTextElements().map((element) =>
-    element.animate(
-      [{ clipPath: 'inset(-0.2em 0% -0.2em 0)' }, { clipPath: 'inset(-0.2em 100% -0.2em 0)' }],
-      { duration: 100, easing: 'ease-in', fill: 'both' },
-    ),
-  );
-  languageAnimations.push(...leaving);
-  await Promise.allSettled(leaving.map((animation) => animation.finished));
-  if (revision !== languageRevision) return;
-  const target = requestedLanguage;
-  requestedLanguage = null;
-  setSetting('general.lang', target);
-  await nextTick();
-  if (revision !== languageRevision) return;
-  languageAnimations.push(
-    ...languageTextElements().map((element) =>
-      element.animate(
-        [{ clipPath: 'inset(-0.2em 100% -0.2em 0)' }, { clipPath: 'inset(-0.2em 0% -0.2em 0)' }],
-        { duration: 220, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' },
-      ),
-    ),
-  );
-  leaving.forEach((animation) => animation.cancel());
-  languageAnimations = languageAnimations.filter((animation) => !leaving.includes(animation));
-  const after = new Map(elements.map((element) => [element, element.getBoundingClientRect()]));
-  const timing = { duration: 280, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' };
-  for (const element of elements) {
-    const old = before.get(element),
-      next = after.get(element);
-    if (!next.width || !next.height) continue;
-    let parent = element.parentElement;
-    while (parent && !after.has(parent)) parent = parent.parentElement;
-    const parentOld = before.get(parent),
-      parentNext = after.get(parent);
-    const x = old.x - next.x - (parentOld ? parentOld.x - parentNext.x : 0);
-    const y = old.y - next.y - (parentOld ? parentOld.y - parentNext.y : 0);
-    if (Math.abs(x) > 0.1 || Math.abs(y) > 0.1) {
-      languageAnimations.push(
-        element.animate([{ translate: `${x}px ${y}px` }, { translate: '0px 0px' }], timing),
-      );
-    }
-    // 带底色的独立按钮/徽标过渡宽度，文字始终按自然字号显示。
-    if (element.matches('button') && Math.abs(old.width - next.width) > 0.5) {
-      languageAnimations.push(
-        element.animate(
-          [old, next].map((rect) => ({
-            width: `${rect.width}px`,
-            minWidth: `${rect.width}px`,
-            maxWidth: `${rect.width}px`,
-            boxSizing: 'border-box',
-            overflow: 'clip',
-          })),
-          timing,
-        ),
-      );
-    }
-  }
-  navigation.value?.updateIndicator(false);
-  scrollbar.value?.sync(true);
-  await Promise.allSettled(languageAnimations.map((animation) => animation.finished));
-  if (revision === languageRevision) {
-    const queued = requestedLanguage;
-    requestedLanguage = null;
-    finishLanguageChange();
-    if (queued && queued !== appSettings.general.lang) changeLanguage(queued);
+  finishLanguageChange();
+  // 菜单开着时，换了语言内容可能变短：和折叠收起时一样先把滚动位置撑住，播完再放开。
+  const release = visible.value ? holdCollapsePosition() : null;
+  releaseLanguagePosition = release;
+  await runLanguageWave(async () => {
+    setSetting('general.lang', code);
+    await nextTick();
+    navigation.value?.updateIndicator(false);
+    scrollbar.value?.sync(true);
+  });
+  if (release && releaseLanguagePosition === release) {
+    release();
+    releaseLanguagePosition = null;
   }
 }
 provide('cf-change-language', changeLanguage);
-// 连续按键以最后请求的语言为起点，复用菜单已有的文案和布局过渡。
+// 快捷键切到下一种语言。语言是立刻换的，连续按几下就是连着往后切。
 function cycleMenuLanguage() {
-  const current = requestedLanguage ?? appSettings.general.lang;
+  const current = appSettings.general.lang;
   const index = languages.findIndex((language) => language.code === current);
   const next = languages[(index + 1) % languages.length];
   if (next) changeLanguage(next.code);
@@ -346,13 +253,32 @@ function switchTab(id) {
     scrollbar.value?.sync(false);
   }
 }
+/*
+ * 打开和关闭的过渡：菜单从挨着按钮的那一边展开，关闭时朝那一边收起（见 MenuLayout.vue）。
+ * visible 一关就变成 false，各页据此停下自己的事；closing 让菜单在收起的这段时间里还留在页面上，
+ * 收完（MenuLayout 发来 folded）才撤掉。
+ */
+const closing = ref(false);
+let closeTimer = 0;
+const motionless = () =>
+  document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function onFolded() {
+  clearTimeout(closeTimer);
+  closing.value = false;
+}
 // 关闭菜单时取消动画和提示，但不销毁页面状态。
 function closeMenu() {
   finishLanguageChange();
+  const animated = visible.value && !motionless();
   visible.value = false;
-  tooltip.hide();
+  // 菜单里面的提示跟着菜单一起收起；菜单按钮自己的提示不归这里管（鼠标还停在按钮上时它要留着）。
+  if (tooltip.state.variant !== 'launcher') tooltip.hide();
   cleanup?.();
   resetScrollFloor();
+  clearTimeout(closeTimer);
+  closing.value = animated;
+  // 正常是等收起的过渡自己报完成；这里只是兜底，万一没报也不会一直留着。
+  if (animated) closeTimer = setTimeout(onFolded, 800);
 }
 // 打开菜单后重置滚动并校准侧栏指示条。
 function toggleMenu() {
@@ -360,6 +286,8 @@ function toggleMenu() {
     closeMenu();
     return;
   }
+  // 还在收起的途中又点开：从收到的地方接着展开。
+  onFolded();
   visible.value = true;
   contentArea.value.scrollTop = 0;
   nextTick(() => requestAnimationFrame(() => navigation.value.updateIndicator(false)));
@@ -368,17 +296,43 @@ function toggleMenu() {
 function syncMenuVisibility() {
   documentHidden.value = document.hidden;
 }
+// 用鼠标点过的控件不留焦点。留着的话，之后一按键盘（比如按住 Shift 准备用快捷键），
+// 浏览器就认为是在用键盘操作，给还握着焦点的那个控件画出焦点框，看起来像凭空多了一圈边。
+// 菜单、弹窗、数据分析面板都这样处理。用键盘触发的点击（点击次数为 0）不管，Tab 键操作时焦点框照常显示；
+// 输入文字的框也不管，点进去就是要打字的。
+// 哪些地方的控件点过之后要放掉焦点：插件自己的界面、弹窗，以及画在原站页面上的控件（榜单里的小花按钮、刷新预测）。
+const OWN_CONTROLS = PLUGIN_UI_SELECTOR + ', .cf-aurora-dialog, [data-cf-prediction]';
+const TYPING =
+  'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="color"]), textarea, select, [contenteditable]';
+function releasePointerFocus(event) {
+  if (event.type === 'click' && !event.detail) return;
+  const active = document.activeElement;
+  if (!active?.closest || !active.closest(OWN_CONTROLS)) return;
+  if (!active.matches(TYPING)) active.blur();
+}
+// 鼠标按下的那一刻控件就拿到焦点了，要等松开才算一次点击。按着没松开时按键盘，焦点框照样会出来，
+// 所以按下之后也放一次：等浏览器把焦点给过去（按下这个事件处理完之后），再把它放掉。
+// 放掉焦点不影响这次点击，松开时照常触发。滑动条除外：它在拖动的过程中要一直握着。
+function releasePressFocus(event) {
+  if (event.target?.closest?.('input[type="range"]')) return;
+  setTimeout(() => releasePointerFocus(event));
+}
 onMounted(() => {
+  document.addEventListener('click', releasePointerFocus);
+  document.addEventListener('pointerdown', releasePressFocus);
   document.addEventListener('visibilitychange', syncMenuVisibility);
   releaseLanguageShortcut = configureLanguageShortcut(cycleMenuLanguage);
   panelHost.value.children[0].classList.add('active');
   preventScrollChaining(modal.value);
 });
 onBeforeUnmount(() => {
+  document.removeEventListener('click', releasePointerFocus);
+  document.removeEventListener('pointerdown', releasePressFocus);
   document.removeEventListener('visibilitychange', syncMenuVisibility);
   releaseLanguageShortcut?.();
   cleanup?.();
   finishLanguageChange();
+  clearTimeout(closeTimer);
 });
 </script>
 <template>
@@ -394,13 +348,14 @@ onBeforeUnmount(() => {
         -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     "
   >
-    <MenuLayout :layout="menuLayout">
+    <MenuLayout :layout="menuLayout" :open="visible" @folded="onFolded">
       <div
         class="cf-settings-modal"
+        data-cf-language-surface
         style="display: flex"
         :style="menuLayout.modalStyle"
         ref="modal"
-        v-show="visible"
+        v-show="visible || closing"
       >
         <MenuGlassSurface
           class="cf-modal-header"
@@ -453,7 +408,10 @@ onBeforeUnmount(() => {
                 ><prediction-page :active="activeTab === 'prediction'"></prediction-page
                 ><user-page :active="activeTab === 'user'"></user-page
                 ><shortcuts-page :active="visible && activeTab === 'shortcuts'"></shortcuts-page
-                ><storage-page :active="visible && activeTab === 'storage'"></storage-page
+                ><storage-page
+                  :active="visible && activeTab === 'storage'"
+                  :menu-open="visible"
+                ></storage-page
                 ><changelog-page :active="activeTab === 'changelog'"></changelog-page
                 ><roadmap-page :active="activeTab === 'roadmap'"></roadmap-page
                 ><acknowledgments-page
@@ -521,11 +479,6 @@ onBeforeUnmount(() => {
   line-height: 20px;
 }
 
-/* 文字拥有独立绘制区域，遮罩不会带走按钮底色或旁边的图标。 */
-.cf-menu-theme [data-cf-language-text] {
-  display: inline-block;
-}
-
 /* 自绘图标使用深轮廓与浅点缀；品牌图标不进入此配色规则。 */
 .cf-menu-theme svg[data-cf-icon] {
   --cf-icon-ink: color-mix(in srgb, var(--cf-icon-primary) 70%, #2b3d50);
@@ -553,8 +506,8 @@ onBeforeUnmount(() => {
   --cf-paint-accent: var(--cf-menu-accent);
   --cf-paint-secondary: var(--cf-menu-secondary);
   transition:
-    --cf-paint-accent 480ms cubic-bezier(0.16, 1, 0.3, 1),
-    --cf-paint-secondary 480ms cubic-bezier(0.16, 1, 0.3, 1);
+    --cf-paint-accent 480ms var(--cf-ease-out-strong),
+    --cf-paint-secondary 480ms var(--cf-ease-out-strong);
 }
 
 .cf-menu-theme
@@ -563,9 +516,9 @@ onBeforeUnmount(() => {
   color: var(--cf-gray-700);
   border: 1px solid var(--cf-surface-border);
   transition:
-    background-color 220ms ease,
-    border-color 220ms ease,
-    box-shadow 220ms ease;
+    background-color var(--cf-duration-base) ease,
+    border-color var(--cf-duration-base) ease,
+    box-shadow var(--cf-duration-base) ease;
 }
 
 .cf-menu-theme
@@ -610,20 +563,11 @@ onBeforeUnmount(() => {
   overscroll-behavior: contain;
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  /* 玻璃祖先层保持不透明，避免淡入期间无法采样并模糊原网页。 */
-  animation: cf-menu-open 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  /* 打开和关闭的过渡是展开、收起，写在 MenuLayout.vue 里。菜单这一层自己不能变透明：它是里面几块玻璃的祖先，
+     它一透明，玻璃就采样不到菜单背后的页面，模糊效果在过渡期间会失效。 */
   transition:
-    border-color 480ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 480ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes cf-menu-open {
-  from {
-    transform: translateY(var(--cf-menu-open-y, -6px)) scale(0.98);
-  }
-  to {
-    transform: translateY(0) scale(1);
-  }
+    border-color 480ms var(--cf-ease-out-strong),
+    box-shadow 480ms var(--cf-ease-out-strong);
 }
 
 .cf-modal-header {
@@ -745,7 +689,7 @@ onBeforeUnmount(() => {
   border-radius: var(--cf-radius-md);
   color: var(--cf-gray-400);
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition: color var(--cf-duration-fast) ease;
   padding: 0;
   line-height: 1;
   box-shadow: none;

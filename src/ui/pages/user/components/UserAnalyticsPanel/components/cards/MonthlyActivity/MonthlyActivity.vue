@@ -85,7 +85,7 @@ const legend = computed(() => [
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head is-stacked">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsActivityTitle') }}</span>
+        <span>{{ t('analyticsActivityTitle') }}</span>
       </h4>
       <!-- 右侧分两行：时间段和时区；图例。 -->
       <div class="cf-analytics-card-tools">

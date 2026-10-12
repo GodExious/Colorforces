@@ -76,11 +76,11 @@ function update(event) {
   margin-top: calc((var(--cf-range-track) - var(--cf-range-thumb)) / 2);
   border: 3px solid var(--cf-menu-accent);
   border-radius: 50%;
-  background: #fff;
+  background: var(--cf-white-surface);
   box-shadow:
     0 1px 3px #26345333,
     0 0 0 0 color-mix(in srgb, var(--cf-menu-accent) 22%, transparent);
-  transition: box-shadow 0.18s ease;
+  transition: box-shadow var(--cf-duration-base) ease;
 }
 .cf-range-slider:is(:hover, :focus-visible)::-webkit-slider-thumb {
   box-shadow:
@@ -108,11 +108,11 @@ function update(event) {
   height: var(--cf-range-thumb);
   border: 3px solid var(--cf-menu-accent);
   border-radius: 50%;
-  background: #fff;
+  background: var(--cf-white-surface);
   box-shadow:
     0 1px 3px #26345333,
     0 0 0 0 color-mix(in srgb, var(--cf-menu-accent) 22%, transparent);
-  transition: box-shadow 0.18s ease;
+  transition: box-shadow var(--cf-duration-base) ease;
 }
 .cf-range-slider:is(:hover, :focus-visible)::-moz-range-thumb {
   box-shadow:

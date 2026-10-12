@@ -6,8 +6,9 @@ export const CLIST_SYNC_COOLDOWN = 10 * 60 * 1000;
 export const UPDATE_CHECK_COOLDOWN = 3 * 60 * 60 * 1000;
 
 // 按快照时间调度，不将缓存有效期叠加到轮询间隔上。
-export const PREDICTION_REFRESH = 30 * 1000;
-export const PREDICTION_PENDING_REFRESH = 60 * 1000;
+// 比赛进行中每 60 秒刷新一次；比赛结束后、官方出分前（包括公开 hack 阶段）每 15 分钟一次。
+export const PREDICTION_REFRESH = 60 * 1000;
+export const PREDICTION_PENDING_REFRESH = 15 * 60 * 1000;
 export const PREDICTION_FINAL_CACHE = 24 * 60 * 60 * 1000;
 export const PREDICTION_API_GAP = 2200;
 

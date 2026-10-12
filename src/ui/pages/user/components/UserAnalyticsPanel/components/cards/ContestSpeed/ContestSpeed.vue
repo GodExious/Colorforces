@@ -52,17 +52,15 @@ const legend = computed(() => [
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsChartSpeed') }}</span>
+        <span>{{ t('analyticsChartSpeed') }}</span>
       </h4>
       <div class="cf-analytics-card-tools">
-        <span class="cf-analytics-card-note" data-cf-language-text>{{
-          t('analyticsSpeedNote')
-        }}</span>
+        <span class="cf-analytics-card-note">{{ t('analyticsSpeedNote') }}</span>
         <ChartLegend :items="legend" />
       </div>
     </header>
     <p v-if="!any" class="cf-analytics-card-empty">
-      <span data-cf-language-text>{{ t('analyticsSpeedEmpty') }}</span>
+      <span>{{ t('analyticsSpeedEmpty') }}</span>
     </p>
     <ColumnChart v-else :labels="labels" :series="series" :tip="tipOf" />
   </section>

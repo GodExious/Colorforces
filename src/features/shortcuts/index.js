@@ -12,14 +12,21 @@ export function configureLanguageShortcut(handler) {
 export function startShortcuts() {
   startModifierTracking();
   const actions = {
+    menuLanguage: () => cycleMenuLanguage?.(),
     hideTags: () => {
       const tags = appSettings.appearance.tags;
       tags.hide = !tags.hide;
     },
-    menuLanguage: () => cycleMenuLanguage?.(),
+    hideVerdictTests: () => {
+      appSettings.appearance.hideVerdictTests = !appSettings.appearance.hideVerdictTests;
+    },
     acHighlight: () => {
       const highlight = appSettings.appearance.acHighlight;
       highlight.enabled = !highlight.enabled;
+    },
+    langIcon: () => {
+      const langIcon = appSettings.appearance.langIcon;
+      langIcon.enabled = !langIcon.enabled;
     },
     shortVerdict: () => {
       appSettings.appearance.shortVerdict = !appSettings.appearance.shortVerdict;
@@ -27,10 +34,6 @@ export function startShortcuts() {
     timeFormat: () => {
       const timeFormat = appSettings.appearance.timeFormat;
       timeFormat.enabled = !timeFormat.enabled;
-    },
-    langIcon: () => {
-      const langIcon = appSettings.appearance.langIcon;
-      langIcon.enabled = !langIcon.enabled;
     },
     clistEnabled: () => {
       const clist = appSettings.ratings.clist;
@@ -49,6 +52,10 @@ export function startShortcuts() {
     userAvatar: () => {
       const avatar = appSettings.user.avatar;
       avatar.enabled = !avatar.enabled;
+    },
+    userAnalytics: () => {
+      const analytics = appSettings.user.analytics;
+      analytics.enabled = !analytics.enabled;
     },
   };
   const keydown = (event) => {

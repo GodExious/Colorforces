@@ -8,9 +8,10 @@ defineProps({
 
 <template>
   <div class="cf-analytics-legend">
-    <span v-for="[color, text] in items" :key="text">
+    <!-- 各项按位置对应，不按文字：换语言时文字变了，还是原来那一项，才能原地换字、带着过渡挪位置。 -->
+    <span v-for="([color, text], index) in items" :key="index">
       <i :style="{ background: color }" aria-hidden="true"></i>
-      <span data-cf-language-text>{{ text }}</span>
+      <span>{{ text }}</span>
     </span>
   </div>
 </template>
@@ -33,6 +34,6 @@ defineProps({
 .cf-analytics-legend i {
   width: 9px;
   height: 9px;
-  border-radius: 2px;
+  border-radius: var(--cf-radius-2xs);
 }
 </style>

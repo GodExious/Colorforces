@@ -12,6 +12,7 @@ import {
 import { problemLink } from '../../../../../../../../utils/problem.js';
 import { useChart } from '../../../composables/chart.js';
 import { grays } from '../../../utils/grays.js';
+import { scaled } from '../../../../../../../../utils/font-scale.js';
 import { ratingPaint } from '../../../utils/rating-paint.js';
 import PeriodSwitch from '../../controls/PeriodSwitch/PeriodSwitch.vue';
 import ZonePicker from '../../controls/ZonePicker/ZonePicker.vue';
@@ -114,9 +115,9 @@ const totals = computed(() => {
   return { days, count };
 });
 
-// 版式：左边留给星期，上边留给月份。
-const LEFT = 26;
-const TOP = 18;
+// 版式：左边留给星期，上边留给月份。放的都是字，跟着插件字体大小走。
+const leftRoom = () => scaled(26);
+const topRoom = () => scaled(18);
 // 这段时间在日历上占几列（一列一周，从星期日起）：一年是 53 列，个别年份 54 列。
 const weeks = computed(() => {
   const [start, end] = range.value;
@@ -129,24 +130,63 @@ const GAP = 3;
 const CELL_MIN = 6;
 const CELL_MAX = 20;
 const cellSize = (width) =>
-  Math.max(CELL_MIN, Math.min(CELL_MAX, (width - LEFT + GAP / 2 - 1) / weeks.value));
+  Math.max(CELL_MIN, Math.min(CELL_MAX, (width - leftRoom() + GAP / 2 - 1) / weeks.value));
+// 上一次各个位置上写的星期、月份，以及它换掉的前一个。换了字的要做淡出淡入，见 captions。
+let lastCaptions = new Map();
 function buildOption(width) {
   const ink = grays();
   const list = cells.value;
   const size = cellSize(width);
-  const label = { fontSize: 10, color: ink.muted, fontFamily: 'verdana, arial, sans-serif' };
+  // 日历左边的星期和上面的月份。位置照日历组件原来自带的文字算（在 Node 里和它逐个对过，完全一致）：
+  // 星期在每一行的左边，靠右对齐；月份在这个月所占的那几列的正上方居中——
+  // 左端是这个月第一天所在的那一列，右端是下个月的第一个星期日所在的那一列。
+  const [start, end] = range.value;
+  const firstWeekday = new Date(start * DAY).getUTCDay();
+  const column = (day) => Math.floor((firstWeekday + day - start) / 7);
+  const sundayColumn = (day) => Math.ceil((firstWeekday + day - start) / 7);
+  const weekdays = t('analyticsWeekdays');
+  const monthNames = t('analyticsMonths');
+  const captions = weekdays.map((text, index) => ({
+    text,
+    x: leftRoom() - 6,
+    y: topRoom() + (index + 0.5) * size,
+    align: 'right',
+    verticalAlign: 'middle',
+  }));
+  for (let cursor = start; cursor <= end;) {
+    const date = new Date(cursor * DAY);
+    const next = dayOfDate(date.getUTCFullYear(), date.getUTCMonth() + 1, 1);
+    captions.push({
+      text: monthNames[date.getUTCMonth()],
+      x: leftRoom() + ((column(cursor) + sundayColumn(Math.min(next, end + 1))) / 2) * size,
+      y: topRoom() - 5,
+      align: 'center',
+      verticalAlign: 'bottom',
+    });
+    cursor = next;
+  }
+  // 各个位置的前一个文字：这次换了字的是刚被换掉的那个；没换的沿用原来记着的，那个图形就不会被重画。
+  const before = lastCaptions;
+  lastCaptions = new Map();
+  const previous = captions.map(({ text }, index) => {
+    const last = before.get(index);
+    const from = last && last.name !== text ? last.name : last ? last.from : '';
+    lastCaptions.set(index, { name: text, from });
+    return from;
+  });
   return {
     calendar: {
       range: [list[0].date, list.at(-1).date],
-      left: LEFT,
-      top: TOP,
+      left: leftRoom(),
+      top: topRoom(),
       cellSize: [size, size],
       splitLine: { show: false },
       itemStyle: { color: 'transparent', borderWidth: 0 },
       yearLabel: { show: false },
-      // 第一行是星期日，往下依次是星期一到星期六。
-      dayLabel: { ...label, firstDay: 0, margin: 6, nameMap: t('analyticsWeekdays') },
-      monthLabel: { ...label, margin: 5, nameMap: t('analyticsMonths') },
+      // 第一行是星期日，往下依次是星期一到星期六。星期和月份的文字不用日历自带的：
+      // 那种文字换了字（换语言）是直接换掉的，没有过渡。由下面的 captions 自己画。
+      dayLabel: { show: false, firstDay: 0 },
+      monthLabel: { show: false },
     },
     series: [
       {
@@ -177,6 +217,56 @@ function buildOption(width) {
           };
         },
       },
+      // 文字排在格子的后面：悬停判断是按「第一个系列」找格子的，格子那个系列必须排第一。
+      /*
+       * 星期和月份的文字。换语言时旧的先淡出、新的再淡入，做法和柱状图横轴的文字一样（见 ColumnChart 的 captions）：
+       * 每个位置两个文字图形，一个画现在的字，一个平时看不见、专门画前一个字；两个都按自己画的字起名，
+       * 图表库按名字对应新旧图形，字一换就都算新出现的，各自走入场的过渡。字没换时图形不动。
+       * 换年份时整张图是横向滑过去的，那时图表自己不做过渡，这些文字也跟着直接到位。
+       */
+      {
+        id: 'captions',
+        type: 'custom',
+        coordinateSystem: 'none',
+        silent: true,
+        data: captions.map((_, index) => index),
+        renderItem(params) {
+          const at = params.dataIndex;
+          const caption = captions[at];
+          if (!caption) return null;
+          const HALF = 130;
+          const place = { type: 'text', x: caption.x, y: caption.y };
+          const style = {
+            fill: ink.muted,
+            fontSize: scaled(10),
+            fontFamily: 'verdana, arial, sans-serif',
+            align: caption.align,
+            verticalAlign: caption.verticalAlign,
+          };
+          return {
+            type: 'group',
+            diffChildrenByName: true,
+            children: [
+              {
+                ...place,
+                name: `now:${caption.text}`,
+                style: { ...style, text: caption.text },
+                transition: ['x', 'y'],
+                enterFrom: { style: { opacity: 0 } },
+                enterAnimation: { duration: HALF, delay: HALF },
+              },
+              {
+                ...place,
+                name: `was:${previous[at]}`,
+                style: { ...style, text: previous[at], opacity: 0 },
+                transition: ['x', 'y'],
+                enterFrom: { style: { opacity: 1 } },
+                enterAnimation: { duration: HALF },
+              },
+            ],
+          };
+        },
+      },
     ],
   };
 }
@@ -184,7 +274,13 @@ function buildOption(width) {
 function hit(x, y, chart) {
   // 先看鼠标是否在日历的范围里；范围之外不必去换算日期。
   const size = cellSize(chart.getWidth());
-  if (x < LEFT || x > LEFT + weeks.value * size || y < TOP || y > TOP + 7 * size) return null;
+  if (
+    x < leftRoom() ||
+    x > leftRoom() + weeks.value * size ||
+    y < topRoom() ||
+    y > topRoom() + 7 * size
+  )
+    return null;
   const time = chart.convertFromPixel({ seriesIndex: 0 }, [x, y]);
   if (!time) return null;
   // 日历按本机时区解读日期文字，换算回来的时刻也按本机时区读出年月日，正好还原成同一个日期。
@@ -251,9 +347,11 @@ const { element, width, resize, slide } = useChart(buildOption, {
 // 换到更晚的一段，从右边滑进来。左边的星期标注留在原地。「近一年」排在所有年份之后。
 // 这个侦听在图表更新之前运行，slide 才来得及把换之前的画面留下来。
 const order = (value) => (value === 'now' ? Infinity : value);
-watch(period, (next, previous) => slide(order(next) < order(previous) ? -1 : 1, { keep: LEFT }));
+watch(period, (next, previous) =>
+  slide(order(next) < order(previous) ? -1 : 1, { keep: leftRoom() }),
+);
 // 图表的高度跟着格子的大小走：七行格子加上方的月份。
-const height = computed(() => Math.ceil(TOP + cellSize(width.value || 800) * 7 + 4));
+const height = computed(() => Math.ceil(topRoom() + cellSize(width.value || 800) * 7 + 4));
 // 面板变宽变窄时格子大小会变，图表跟着调整到新的高度。
 watch(height, (value) => resize(value), { flush: 'post' });
 </script>
@@ -262,7 +360,7 @@ watch(height, (value) => resize(value), { flush: 'post' });
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head is-stacked">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsHeatmapTitle') }}</span>
+        <span>{{ t('analyticsHeatmapTitle') }}</span>
       </h4>
       <!-- 右侧分三行：时间段和时区；难度分来源；这段时间的小计。 -->
       <div class="cf-analytics-card-tools">
@@ -274,12 +372,9 @@ watch(height, (value) => resize(value), { flush: 'post' });
         <!-- 格子的颜色按难度分取，标出用的是哪一种难度分。 -->
         <RatingSource />
         <Transition name="cf-analytics-swap" mode="out-in">
-          <span
-            :key="`${period}-${totals.days}-${totals.count}`"
-            class="cf-analytics-card-note"
-            data-cf-language-text
-            >{{ t('analyticsHeatmapNote', totals.days, totals.count) }}</span
-          >
+          <span :key="`${period}-${totals.days}-${totals.count}`" class="cf-analytics-card-note">{{
+            t('analyticsHeatmapNote', totals.days, totals.count)
+          }}</span>
         </Transition>
       </div>
     </header>
@@ -289,6 +384,6 @@ watch(height, (value) => resize(value), { flush: 'post' });
       :style="{ height: `${height}px` }"
     ></div>
     <!-- 说明从日历格子开始的位置起，不压在左边的星期标注下面。 -->
-    <ChartHint :inset="LEFT">{{ t('analyticsHeatmapPinHint') }}</ChartHint>
+    <ChartHint :inset="leftRoom()">{{ t('analyticsHeatmapPinHint') }}</ChartHint>
   </section>
 </template>

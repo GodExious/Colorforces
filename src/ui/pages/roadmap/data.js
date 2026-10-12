@@ -22,6 +22,10 @@ export default [
     completed: false,
   },
   {
+    id: 'problem-filter',
+    completed: false,
+  },
+  {
     id: 'data-analytics',
     completed: true,
   },

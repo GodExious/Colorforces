@@ -20,7 +20,14 @@ export function calculateSnapshot(rows) {
   );
 }
 
-// 将单个选手移入指定的预估名次，忽略现有同分同罚时并列组。
+/*
+ * 把一位选手放到指定的预估名次上，算他的结果。
+ * 他自己的名次就是给定的那个整数，不受榜单上现有并列的限制（不然能取的名次只有各个并列组的那几个，没法连续变化）。
+ * 其他人之间原来并列的仍然算并列，都取这一组的最后一名，和整场一起算时（reassignRanks）一样。
+ * 不能把别人的并列也拆开一人一个名次：那样别人的名次整体变好、涨跌分整体变高，全场修正就会把每个人多压几分，
+ * 这里的结果就和榜单上的预测对不上了（实测并列多的一场里统一低 2 分）。
+ * 他正好接在自己实际成绩所在的那一组后面时，算作和这一组并列——这就是他现在的名次，结果要和榜单上的一样。
+ */
 function rankScenario(rows, handle, position) {
   const calc = calculator(rows);
   calc.calcSeed();
@@ -29,9 +36,16 @@ function rankScenario(rows, handle, position) {
     .sort((a, b) => b.points - a.points || a.penalty - b.penalty);
   const target = calc.contestants.find((c) => c.handle === handle);
   if (!target) throw new Error('predictionMissingUser');
-  const index = position - 1;
-  others.splice(index, 0, target);
-  for (let i = 0; i < others.length; i++) others[i].rank = i + 1;
+  // others 里第 index 个人（从 0 数）排在第几位：在这位选手前面的不变，在他后面的往后挪一位。
+  const placeOf = (index) => (index < position - 1 ? index + 1 : index + 2);
+  const tied = (a, b) => a.points === b.points && a.penalty === b.penalty;
+  let rank;
+  for (let i = others.length - 1; i >= 0; i--) {
+    if (i === others.length - 1 || !tied(others[i], others[i + 1]))
+      rank = i === position - 2 && tied(others[i], target) ? position : placeOf(i);
+    others[i].rank = rank;
+  }
+  target.rank = position;
   calc.calcDeltas();
   calc.adjustDeltas();
   return { rank: position, delta: target.delta, rating: target.effectiveRating + target.delta };

@@ -40,12 +40,10 @@ const rows = computed(() =>
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsChartLanguages') }}</span>
+        <span>{{ t('analyticsChartLanguages') }}</span>
       </h4>
       <div class="cf-analytics-card-tools">
-        <span class="cf-analytics-card-note" data-cf-language-text>{{
-          t('analyticsLanguagesNote')
-        }}</span>
+        <span class="cf-analytics-card-note">{{ t('analyticsLanguagesNote') }}</span>
       </div>
     </header>
     <BarList

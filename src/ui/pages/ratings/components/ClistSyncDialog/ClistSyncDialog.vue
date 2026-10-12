@@ -1,6 +1,7 @@
 <script>
 import * as cfAssets from '../../../../../assets/index.js';
 import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
+import { menuTabColor } from '../../../../../utils/petal-palette.js';
 import { reactive } from 'vue';
 import { translate as t } from '../../../../../i18n/index.js';
 const initial = {
@@ -160,7 +161,9 @@ watch(overlay, (node) => {
         <div class="cf-clist-modal-card cf-aurora-card" style="width: 520px">
           <div class="cf-clist-modal-header">
             <div class="cf-clist-modal-title">
-              <span class="cf-modal-title-icon cf-aurora-emblem"
+              <span
+                class="cf-modal-title-icon cf-aurora-emblem"
+                :style="{ '--cf-emblem-petal': menuTabColor('ratings') }"
                 ><span class="cf-progress-sync-icon"
                   ><InlineSvg :source="cfAssets.clistSyncDialogIcon" /></span
               ></span>
@@ -268,7 +271,7 @@ watch(overlay, (node) => {
 }
 .cf-clist-progress-modal .cf-progress-percent {
   flex: none;
-  font-size: 15px;
+  font-size: calc(15px * var(--cf-font-scale));
   font-variant-numeric: tabular-nums;
 }
 .cf-clist-progress-modal .cf-clist-progress-track {
@@ -285,7 +288,7 @@ watch(overlay, (node) => {
   overflow: hidden;
   border-radius: inherit;
   background: linear-gradient(100deg, var(--cf-menu-secondary), var(--cf-menu-accent));
-  transition: width 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 650ms var(--cf-ease-out);
 }
 .cf-clist-progress-modal.is-syncing .cf-clist-progress-fill::after {
   content: '';

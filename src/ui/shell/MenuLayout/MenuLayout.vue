@@ -560,12 +560,13 @@ export function useMenuLayout(root, visible) {
       left: `${clamp(rendered.x + rendered.offsetX, margin, viewport.width - margin - rendered.width) - rendered.x}px`,
       top: `${clamp(rendered.y + rendered.offsetY, margin, viewport.height - margin - rendered.height) - rendered.y}px`,
     })),
+    // 菜单挨着按钮的是上边还是下边：展开从这一边开始。
+    foldEdge: computed(() => (anchor.value.bottom ? 'bottom' : 'top')),
     modalStyle: computed(() => ({
       width: `${rendered.width}px`,
       height: `${rendered.height}px`,
       minHeight: '0px',
       maxHeight: 'none',
-      '--cf-menu-open-y': anchor.value.bottom ? '6px' : '-6px',
       transformOrigin: `${anchor.value.right ? 'right' : 'left'} ${anchor.value.bottom ? 'bottom' : 'top'}`,
     })),
     startMove: (event, source = 'button') => startDrag(event, 'move', '', source),
@@ -577,15 +578,124 @@ export function useMenuLayout(root, visible) {
 }
 </script>
 <script setup>
-defineProps({ layout: { type: Object, required: true } });
+import { ref, watch, nextTick, onBeforeUnmount } from 'vue';
+const props = defineProps({
+  layout: { type: Object, required: true },
+  // 菜单开着没有。
+  open: Boolean,
+});
+// 收起的过渡走完了：这时才能把菜单撤掉。
+const emit = defineEmits(['folded']);
+
+/*
+ * 菜单的展开和收起：和菜单里各处的展开一样，只裁外面这一层的高度，里面的内容一直按完整的尺寸排着、不动，
+ * 像卷帘一样从挨着按钮的那一边露出来、收回去。
+ * 不能用淡入淡出：菜单是里面几块玻璃的祖先，它一透明，玻璃就采样不到背后的页面，模糊会失效；
+ * 裁切（overflow）和位移不影响采样。
+ * 过渡期间这一层往四周各多留 48 像素放菜单的阴影：左右两边一直留着，挨着按钮的那一边跟着过渡从 0 留到 48，
+ * 活动的那一边靠多露出 48 像素。这样收到底时什么都不剩（连阴影也没有），展开到头、不再裁切的那一刻画面也没有变化。
+ * 展开和收起是同一段过渡正着放、倒着放：半路上再点一次，就从当前的位置接着往回走，不会先跳到头再开始。
+ */
+const SHADOW = 48;
+const TIMING = { duration: 280, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' };
+// 收起比展开快一点。
+const FOLD_SPEED = 1.4;
+const placement = ref(null);
+let motions = null;
+const motionless = () => document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches;
+function stop() {
+  motions?.forEach((motion) => motion.cancel());
+  motions = null;
+  placement.value?.classList.remove('is-folding');
+}
+function start(root) {
+  const modal = root.firstElementChild;
+  const height = parseFloat(props.layout.modalStyle.height) || modal?.offsetHeight || 0;
+  const full = height + SHADOW + 'px';
+  root.classList.add('is-folding');
+  if (props.layout.foldEdge === 'top')
+    return [
+      root.animate(
+        [
+          { height: '0px', paddingTop: '0px', marginTop: '0px' },
+          { height: full, paddingTop: SHADOW + 'px', marginTop: -SHADOW + 'px' },
+        ],
+        TIMING,
+      ),
+    ];
+  // 菜单在按钮上方时从下边往上展开：下边不动，这一层一边变高一边往上挪；里面的菜单反着挪同样的距离，
+  // 所以菜单本身在屏幕上一动不动，只是露出来的部分从下往上变多。
+  return [
+    root.animate(
+      [
+        { height: '0px', paddingBottom: '0px', transform: `translateY(${height}px)` },
+        { height: full, paddingBottom: SHADOW + 'px', transform: `translateY(${-SHADOW}px)` },
+      ],
+      TIMING,
+    ),
+    ...(modal
+      ? [
+          modal.animate(
+            [{ transform: `translateY(${-height}px)` }, { transform: `translateY(${SHADOW}px)` }],
+            TIMING,
+          ),
+        ]
+      : []),
+  ];
+}
+watch(
+  () => props.open,
+  (open) => {
+    const root = placement.value;
+    if (!root?.animate || motionless()) {
+      stop();
+      if (!open) emit('folded');
+      return;
+    }
+    if (!motions) {
+      motions = start(root);
+      motions[0].onfinish = () => {
+        if (props.open) {
+          stop();
+          return;
+        }
+        // 收到底了：先让菜单撤掉，再解除裁切，中间不会闪出完整的菜单。
+        emit('folded');
+        nextTick(stop);
+      };
+    }
+    for (const motion of motions) {
+      motion.playbackRate = open ? 1 : -FOLD_SPEED;
+      motion.play();
+    }
+  },
+  { flush: 'post' },
+);
+onBeforeUnmount(stop);
 </script>
 <template>
-  <div class="cf-menu-placement" :style="layout.panelStyle"><slot /></div>
+  <div
+    ref="placement"
+    class="cf-menu-placement"
+    :data-fold-edge="layout.foldEdge"
+    :style="layout.panelStyle"
+  >
+    <slot />
+  </div>
 </template>
 <style>
 .cf-menu-placement {
   position: absolute;
   z-index: 1;
+}
+/* 展开、收起的过渡期间（见上面的脚本）：裁切，左右两边留出放阴影的位置，不接收点击。 */
+.cf-menu-placement.is-folding {
+  box-sizing: content-box;
+  overflow: hidden;
+  padding-right: 48px;
+  padding-left: 48px;
+  margin-left: -48px;
+  pointer-events: none;
 }
 #cf-ratings-settings-btn {
   z-index: 2;

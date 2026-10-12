@@ -91,7 +91,7 @@ const { element } = useCompareChart({
       <!-- 选中的这一类比赛谁都没参加过：图表留着空的坐标轴，中间写一句说明。 -->
       <Transition name="cf-analytics-swap">
         <p v-if="!lines.length" class="cf-analytics-compare-none">
-          <span data-cf-language-text>{{ t('analyticsCompareRankEmpty') }}</span>
+          <span>{{ t('analyticsCompareRankEmpty') }}</span>
         </p>
       </Transition>
     </div>

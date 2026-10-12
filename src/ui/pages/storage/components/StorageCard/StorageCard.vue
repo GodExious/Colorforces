@@ -26,7 +26,7 @@ const countLabel = computed(() =>
           :src="assets.clistImage"
           width="18"
           height="18"
-          style="border-radius: 2px"
+          style="border-radius: var(--cf-radius-2xs)"
           alt="CList"
         /><InlineSvg v-else :source="assets.STORAGE_ICONS[group.id]" />
       </div>
@@ -59,6 +59,8 @@ const countLabel = computed(() =>
         </div>
       </div>
     </div>
-    <p class="cf-storage-item-desc" v-text="t(group.description)"></p>
+    <p class="cf-storage-item-desc">
+      <span>{{ t(group.description) }}</span>
+    </p>
   </div>
 </template>

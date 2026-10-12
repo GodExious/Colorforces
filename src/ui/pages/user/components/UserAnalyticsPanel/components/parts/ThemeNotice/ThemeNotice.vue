@@ -8,7 +8,7 @@ import { translate as t } from '../../../../../../../../i18n/index.js';
 
 <template>
   <div class="cf-analytics-notice" role="note">
-    <span data-cf-language-text>{{ t('themeNotice') }}</span>
+    <span>{{ t('themeNotice') }}</span>
   </div>
 </template>
 

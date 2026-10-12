@@ -5,6 +5,7 @@ import { CustomChart } from 'echarts/charts';
 import { hexToRgba, mixHex } from '../../../../../../../../utils/color.js';
 import { useChart } from '../../../composables/chart.js';
 import { grays } from '../../../utils/grays.js';
+import { scaled } from '../../../../../../../../utils/font-scale.js';
 import { useFold } from '../../../composables/fold.js';
 
 // 每行的名称和它旁边的图标是自己画的图形，在这里登记。
@@ -133,7 +134,10 @@ function buildOption(width) {
       gridIndex: index,
       type: 'category',
       inverse: true,
-      data: part.map((row) => row.name),
+      // 类别用行号，不用名称：图表库是按类别来认「哪根柱子是原来的那一根」的，用名称的话，
+      // 名称一变（换语言、判题结果切换缩写）它就当成换了一批柱子，旧的淡出、新的从零重新长出来，
+      // 可数值根本没变。用行号就只是名称换字，柱子不动。
+      data: part.map((_, line) => String(line)),
       // 名称不用坐标轴自带的文字：那种文字的位置变了是直接跳过去的，做不了滑动。名称由下面的 names 自己画。
       axisTick: { show: false },
       axisLine: { show: false },
@@ -170,7 +174,7 @@ function buildOption(width) {
         formatter: ({ value }) => props.format(value),
         position: 'right',
         distance: VALUE_GAP,
-        fontSize: 12,
+        fontSize: scaled(12),
         fontFamily: FONT,
         color: ink.label,
         valueAnimation: true,
@@ -181,10 +185,12 @@ function buildOption(width) {
   // 各列的名称和图标。名称靠右排在柱子左边，放不下时省略；图标夹在名称和柱子之间。
   // 图标的开关切换时，和提交记录页语言一栏的动法一致：图标朝柱子那一侧缩小并淡出，让出来的位置由名称滑过去补上；
   // 打开时名称先让开，图标再长出来。两者同时进行，图标的左边缘始终在名称前面，不会叠在一起。
-  // 某个位置上的名称换了字（比如提交结果在缩写和全称之间切换）：旧名称先淡出，新名称再淡入。
-  // 图表库在文字内容变了的时候是把这个文字图形整个换成新的，没法让同一个图形从旧字过渡到新字，
-  // 所以每个位置另放一个平时看不见的图形专门画「前一个名称」：换字时它带着旧名称重新出现并淡出，
-  // 同时新名称的图形稍后淡入，两段各占一半时间，接起来就是先出后进。
+  // 某个位置上的名称换了字（换语言，或者提交结果在缩写和全称之间切换）：旧名称先淡出，新名称再淡入。
+  // 图表库没法让同一个文字图形从旧字过渡到新字（字是直接换掉的），只有新出现的图形才有入场的过渡。
+  // 所以每个位置放两个文字图形：一个画现在的名称，一个平时看不见、专门画「前一个名称」；
+  // 两个图形都按自己画的字起名，并让图表库按名字对应新旧图形（diffChildrenByName）。
+  // 这样字一换，两个图形的名字都变了，都算新出现的：画前一个名称的带着旧字出现并淡出，
+  // 画现在名称的稍后淡入，两段各占一半时间，接起来就是先出后进。字没换的时候名字不变，图形不动。
   function names(part, index) {
     const margin = labelMargin.value;
     const room = nameRoom.value;
@@ -214,7 +220,7 @@ function buildOption(width) {
         const [x, y] = api.coord([0, api.value(1)]);
         const style = {
           fill: ink.name,
-          fontSize: 12,
+          fontSize: scaled(12),
           fontFamily: FONT,
           align: 'right',
           verticalAlign: 'middle',
@@ -224,6 +230,7 @@ function buildOption(width) {
         const children = [
           {
             type: 'text',
+            name: `now:${row.name}`,
             x: x - margin,
             y,
             style: { ...style, text: row.name },
@@ -233,6 +240,7 @@ function buildOption(width) {
           },
           {
             type: 'text',
+            name: `was:${previous[params.dataIndex]}`,
             x: x - margin,
             y,
             style: { ...style, text: previous[params.dataIndex], opacity: 0 },
@@ -245,6 +253,7 @@ function buildOption(width) {
         if (row.icon)
           children.push({
             type: 'image',
+            name: 'icon',
             x: x - ICON_GAP,
             y,
             scaleX: scale,
@@ -260,7 +269,7 @@ function buildOption(width) {
             transition: ['x', 'y', 'scaleX', 'scaleY', 'style'],
             enterFrom: { style: { opacity: 0 } },
           });
-        return { type: 'group', children };
+        return { type: 'group', diffChildrenByName: true, children };
       },
     };
   }
@@ -270,7 +279,7 @@ function buildOption(width) {
 let ruler;
 function textWidth(text, bold = false) {
   ruler ??= document.createElement('canvas').getContext('2d');
-  ruler.font = `${bold ? 'bold ' : ''}12px ${FONT}`;
+  ruler.font = `${bold ? 'bold ' : ''}${scaled(12)}px ${FONT}`;
   return ruler.measureText(text).width;
 }
 // 鼠标落在第几列第几行；不在任何一行上时返回 null。
@@ -343,7 +352,7 @@ watch(height, (value) => resize(value), { flush: 'post' });
       @click="expanded = !expanded"
     >
       <Transition name="cf-analytics-swap" mode="out-in">
-        <span :key="expanded" data-cf-language-text>{{ expanded ? lessText : moreText }}</span>
+        <span :key="expanded">{{ expanded ? lessText : moreText }}</span>
       </Transition>
       <svg viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" /></svg>
     </button>
@@ -354,7 +363,7 @@ watch(height, (value) => resize(value), { flush: 'post' });
 /* 展开和收起时容器高度平滑变化，图表在里面同步调整。 */
 .cf-analytics-barlist {
   overflow: hidden;
-  transition: height 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: height var(--cf-duration-slow) var(--cf-ease-out);
 }
 /* 列表下方的展开 / 收起：居中的一行小字加一个箭头，上面一条细线把它和列表分开。 */
 .cf-analytics-more-row {
@@ -379,8 +388,8 @@ watch(height, (value) => resize(value), { flush: 'post' });
   line-height: 18px;
   cursor: pointer;
   transition:
-    background-color 0.18s ease,
-    color 0.18s ease;
+    background-color var(--cf-duration-base) ease,
+    color var(--cf-duration-base) ease;
 }
 .cf-analytics-more:hover {
   background: color-mix(in srgb, var(--cf-analytics-accent) 10%, #fff);
@@ -399,7 +408,7 @@ watch(height, (value) => resize(value), { flush: 'post' });
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--cf-duration-slow) var(--cf-ease-out);
 }
 .cf-analytics-more.is-open svg {
   transform: rotate(180deg);

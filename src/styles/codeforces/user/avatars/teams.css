@@ -53,6 +53,16 @@ table.standings .cf-single-user-cell .cf-avatar-line-wrapper {
   margin-left: 2px;
 }
 
+/* 队伍里补出来的成员（原站折叠成「...」的那几个）：还不知道头衔时用中性的深灰，知道之后换成原站的颜色，颜色渐变过去。 */
+.cf-team-extra-member {
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.cf-team-extra-member:not(.rated-user) {
+  color: #555 !important;
+}
+
 .cf-team-header sup,
 .cf-team-formatted sup {
   display: inline-block !important;

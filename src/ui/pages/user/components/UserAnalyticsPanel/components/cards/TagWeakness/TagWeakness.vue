@@ -46,16 +46,14 @@ const rows = computed(() =>
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsChartWeakness') }}</span>
+        <span>{{ t('analyticsChartWeakness') }}</span>
       </h4>
       <div class="cf-analytics-card-tools">
-        <span class="cf-analytics-card-note" data-cf-language-text>{{
-          t('analyticsWeaknessNote', minSolved)
-        }}</span>
+        <span class="cf-analytics-card-note">{{ t('analyticsWeaknessNote', minSolved) }}</span>
       </div>
     </header>
     <p v-if="!tags.length" class="cf-analytics-card-empty">
-      <span data-cf-language-text>{{ t('analyticsWeaknessEmpty', minSolved) }}</span>
+      <span>{{ t('analyticsWeaknessEmpty', minSolved) }}</span>
     </p>
     <BarList
       v-else

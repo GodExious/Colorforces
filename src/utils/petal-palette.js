@@ -1,6 +1,8 @@
 // 菜单的主题色取自标志上的八片花瓣。页签不一定正好八个，
 // 所以把八片花瓣首尾相接看成一个色环，各页在环上均分取色，页数变了颜色自动重新分配。
 
+import { MENU_TAB_IDS } from '../config/menu-tabs.js';
+
 // 标志的八片花瓣颜色，从正上方起顺时针，与 colorforces.svg 中的顺序一致。
 export const PETAL_COLORS = [
   '#e45b96',
@@ -69,6 +71,11 @@ export function petalColor(position) {
   const start = toOklab(PETAL_COLORS[from]);
   const end = toOklab(PETAL_COLORS[(from + 1) % size]);
   return fromOklab(start.map((value, at) => value + (end[at] - value) * share));
+}
+
+// 某个菜单页的主题色。弹窗不在菜单里面，取不到菜单当前的颜色，按它所属的页来取。
+export function menuTabColor(id) {
+  return petalColor(petalPosition(MENU_TAB_IDS.indexOf(id), MENU_TAB_IDS.length));
 }
 
 // 只保留色相，换成指定的明度与彩度：一组颜色深浅一致，放在一起不会有的偏亮、有的偏灰。

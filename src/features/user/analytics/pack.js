@@ -47,7 +47,8 @@ export function packSubmissions(
       indexOf('langs', entry.programmingLanguage || ''),
       indexOf('types', author.participantType || ''),
       Number.isFinite(relative) && relative !== NO_RELATIVE_TIME ? relative : -1,
-      (author.members?.length || 0) > 1 ? 1 : 0,
+      // 是不是以队伍的名义交的：接口给了队伍编号的就是，只有一名成员的队伍也算。
+      author.teamId != null || (author.members?.length || 0) > 1 ? 1 : 0,
     ]);
   }
   return { version: DATASET_VERSION, handle, fetchedAt, ...tables, extra, rows };

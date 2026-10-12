@@ -23,6 +23,7 @@ function showVerdictGuideModal(lang) {
     className: 'cf-verdict-guide-modal',
     width: '680px',
     maxWidth: '96vw',
+    page: 'appearance',
     iconSvg: `${cfAssets.verdictGuideIcon}`,
     title: t('verdictGuideModalTitle', l),
     confirmText: t('verdictGuideCloseBtn', l),
@@ -45,63 +46,63 @@ function showVerdictGuideModal(lang) {
                         <tbody>
                             <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: var(--cf-font-weight-medium); color: var(--cf-gray-700);">Accepted</td>
-                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #dcfce7; color: #15803d; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-sm);">AC</code></td>
+                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #dcfce7; color: #15803d; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-base);">AC</code></td>
                                 <td style="padding: 6px 10px; color: var(--cf-gray-600);">${t('verdictAcMeaning', l)}</td>
-                                <td style="padding: 6px 10px;"><span style="color: #00aa00; font-weight: bold;">Accepted</span></td>
-                                <td style="padding: 6px 10px;"><span style="color: #00aa00; font-weight: bold;">AC</span></td>
+                                <td style="padding: 6px 10px;"><span style="color: #00aa00; font-weight: var(--cf-font-weight-bold);">Accepted</span></td>
+                                <td style="padding: 6px 10px;"><span style="color: #00aa00; font-weight: var(--cf-font-weight-bold);">AC</span></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: var(--cf-font-weight-medium); color: var(--cf-gray-700);">Wrong answer</td>
-                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #fee2e2; color: #b91c1c; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-sm);">WA</code></td>
+                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #fee2e2; color: #b91c1c; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-base);">WA</code></td>
                                 <td style="padding: 6px 10px; color: var(--cf-gray-600);">${t('verdictWaMeaning', l)}</td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;">Wrong answer on test 3</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;"><b>WA</b> on test 3</span></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: var(--cf-font-weight-medium); color: var(--cf-gray-700);">Time limit exceeded</td>
-                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #ffedd5; color: #c2410c; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-sm);">TLE</code></td>
+                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #ffedd5; color: #c2410c; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-base);">TLE</code></td>
                                 <td style="padding: 6px 10px; color: var(--cf-gray-600);">${t('verdictTleMeaning', l)}</td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;">Time limit exceeded on test 5</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;"><b>TLE</b> on test 5</span></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: var(--cf-font-weight-medium); color: var(--cf-gray-700);">Memory limit exceeded</td>
-                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #fef3c7; color: #b45309; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-sm);">MLE</code></td>
+                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #fef3c7; color: #b45309; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-base);">MLE</code></td>
                                 <td style="padding: 6px 10px; color: var(--cf-gray-600);">${t('verdictMleMeaning', l)}</td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;">Memory limit exceeded on test 2</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;"><b>MLE</b> on test 2</span></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: var(--cf-font-weight-medium); color: var(--cf-gray-700);">Runtime error</td>
-                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #f3e8ff; color: #7e22ce; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-sm);">RE</code></td>
+                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #f3e8ff; color: #7e22ce; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-base);">RE</code></td>
                                 <td style="padding: 6px 10px; color: var(--cf-gray-600);">${t('verdictReMeaning', l)}</td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;">Runtime error on test 1</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;"><b>RE</b> on test 1</span></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: var(--cf-font-weight-medium); color: var(--cf-gray-700);">Compilation error</td>
-                                <td style="padding: 6px 10px; text-align: center;"><code style="background: var(--cf-control-surface); color: var(--cf-gray-600); font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-sm);">CE</code></td>
+                                <td style="padding: 6px 10px; text-align: center;"><code style="background: var(--cf-control-surface); color: var(--cf-gray-600); font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-base);">CE</code></td>
                                 <td style="padding: 6px 10px; color: var(--cf-gray-600);">${t('verdictCeMeaning', l)}</td>
                                 <td style="padding: 6px 10px;"><span style="color: #000000;">Compilation error</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #000000;"><b>CE</b></span></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: var(--cf-font-weight-medium); color: var(--cf-gray-700);">Idleness limit exceeded</td>
-                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #e0e7ff; color: #4338ca; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-sm);">ILE</code></td>
+                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #e0e7ff; color: #4338ca; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-base);">ILE</code></td>
                                 <td style="padding: 6px 10px; color: var(--cf-gray-600);">${t('verdictIleMeaning', l)}</td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;">Idleness limit exceeded on test 4</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;"><b>ILE</b> on test 4</span></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--cf-surface-border);">
                                 <td style="padding: 6px 10px; font-weight: var(--cf-font-weight-medium); color: var(--cf-gray-700);">Presentation error</td>
-                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #e0f2fe; color: #0369a1; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-sm);">PE</code></td>
+                                <td style="padding: 6px 10px; text-align: center;"><code style="background: #e0f2fe; color: #0369a1; font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-base);">PE</code></td>
                                 <td style="padding: 6px 10px; color: var(--cf-gray-600);">${t('verdictPeMeaning', l)}</td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;">Presentation error on test 1</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #0000aa;"><b>PE</b> on test 1</span></td>
                             </tr>
                             <tr>
                                 <td style="padding: 6px 10px; font-weight: var(--cf-font-weight-medium); color: var(--cf-gray-700);">Skipped</td>
-                                <td style="padding: 6px 10px; text-align: center;"><code style="background: var(--cf-control-surface); color: var(--cf-gray-500); font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-sm);">SK</code></td>
+                                <td style="padding: 6px 10px; text-align: center;"><code style="background: var(--cf-control-surface); color: var(--cf-gray-500); font-weight: var(--cf-font-weight-bold); padding: 2px 6px; border-radius: var(--cf-radius-xs); font-size: var(--cf-font-size-base);">SK</code></td>
                                 <td style="padding: 6px 10px; color: var(--cf-gray-600);">${t('verdictSkMeaning', l)}</td>
                                 <td style="padding: 6px 10px;"><span style="color: #000000;">Skipped</span></td>
                                 <td style="padding: 6px 10px;"><span style="color: #000000;"><b>SK</b></span></td>

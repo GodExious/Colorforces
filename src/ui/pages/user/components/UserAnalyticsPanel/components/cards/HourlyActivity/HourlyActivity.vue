@@ -56,7 +56,7 @@ function tipOf(index) {
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsChartHours') }}</span>
+        <span>{{ t('analyticsChartHours') }}</span>
       </h4>
       <div class="cf-analytics-card-tools">
         <ModeSwitch

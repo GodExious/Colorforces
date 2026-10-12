@@ -12,6 +12,7 @@ import { grays } from '../../../utils/grays.js';
 import { ratingPaint } from '../../../utils/rating-paint.js';
 import { tipRows } from '../../../utils/tips.js';
 import { AXIS_LEFT, axisCountText } from '../../../utils/numbers.js';
+import { scaled } from '../../../../../../../../utils/font-scale.js';
 import ModeSwitch from '../../controls/ModeSwitch/ModeSwitch.vue';
 import RatingSource from '../../parts/RatingSource/RatingSource.vue';
 
@@ -22,9 +23,10 @@ const props = defineProps({
 });
 const FONT = 'Arial, Helvetica, sans-serif';
 // 图表显示哪一种数值，由标题栏的切换按钮决定；选择记在设置里，换页面后保持。
+// 这项设置和「题目标签分布」共用：在哪一张图上切换，两张图都跟着换。
 // 题数：这一档通过了多少题。
 // 解决占比：这一档通过的题数 ÷ 全部已解决的题数。
-// 分段占比：这一档覆盖了题库里的多少题 ÷ 题库里这一档共有多少题。
+// 题库覆盖：这一档覆盖了题库里的多少题 ÷ 题库里这一档共有多少题。
 const modes = [
   ['count', 'analyticsModeCount'],
   ['share', 'analyticsModeShare'],
@@ -124,12 +126,16 @@ function buildOption(width) {
   const list = painted.value;
   const shown = values.value;
   // 窄屏上横轴的数字放不下，斜着写。
-  const narrow = (width - AXIS_LEFT - SIDE) / list.length < 25;
+  // 字号，以及给字留的位置，都跟着插件字体大小走。
+  const left = scaled(AXIS_LEFT);
+  const narrow = (width - left - SIDE) / list.length < scaled(25);
   return {
-    grid: { left: AXIS_LEFT, right: SIDE, top: 20, bottom: narrow ? 34 : 22 },
+    grid: { left, right: SIDE, top: scaled(20), bottom: scaled(narrow ? 34 : 22) },
     xAxis: {
       type: 'category',
-      data: list.map((column) => column.name),
+      // 类别用序号，文字由下面的 formatter 写：「未评级」这一栏的名称随语言变，
+      // 直接拿名称当类别的话，换语言时图表库会把这一栏当成新的，柱子重新长一遍。
+      data: list.map((_, index) => String(index)),
       axisTick: { show: false },
       axisLine: { lineStyle: { color: ink.line } },
       // 每一档都标出来，文字用该档难度的颜色。
@@ -137,9 +143,10 @@ function buildOption(width) {
         interval: 0,
         margin: 7,
         rotate: narrow ? 55 : 0,
-        fontSize: 10,
+        fontSize: scaled(10),
         fontFamily: FONT,
         color: (_value, index) => list[index]?.text,
+        formatter: (_value, index) => list[index]?.name ?? '',
       },
     },
     // 左边的刻度：题数，或者占比（百分数）。上限交给图表库取整到好读的刻度；全是 0 时给个 1，不然没有范围。
@@ -153,7 +160,7 @@ function buildOption(width) {
       splitNumber: 3,
       axisLabel: {
         margin: 6,
-        fontSize: 10,
+        fontSize: scaled(10),
         fontFamily: FONT,
         color: ink.label,
         formatter: (value) => (share ? `${+value.toFixed(1)}%` : axisCountText(value)),
@@ -207,7 +214,7 @@ function buildOption(width) {
           },
           position: 'top',
           distance: 3,
-          fontSize: 10,
+          fontSize: scaled(10),
           fontFamily: FONT,
           valueAnimation: true,
         },
@@ -227,9 +234,9 @@ function hit(x, y, chart) {
   const top = chart.convertToPixel({ seriesIndex: 0 }, [index, value]);
   if (!top) return null;
   // 鼠标要在这一栏的左右范围内，并且不高于数字的上沿。
-  const band = (chart.getWidth() - AXIS_LEFT - SIDE) / list.length;
+  const band = (chart.getWidth() - scaled(AXIS_LEFT) - SIDE) / list.length;
   if (Math.abs(x - top[0]) > band / 2) return null;
-  if (y < top[1] - (value ? LABEL_REACH : 4)) return null;
+  if (y < top[1] - (value ? scaled(LABEL_REACH) : 4)) return null;
   return { seriesIndex: 0, dataIndex: index, value };
 }
 const { element } = useChart(buildOption, {
@@ -241,7 +248,7 @@ const { element } = useChart(buildOption, {
   <section class="cf-analytics-card">
     <header class="cf-analytics-card-head is-stacked">
       <h4>
-        <span data-cf-language-text>{{ t('analyticsRatingsTitle') }}</span>
+        <span>{{ t('analyticsRatingsTitle') }}</span>
       </h4>
       <!-- 右侧分两行：显示哪一种数值；难度分来源。 -->
       <div class="cf-analytics-card-tools">

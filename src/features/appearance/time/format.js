@@ -171,7 +171,9 @@ function updateContestTimeHeaders() {
       label.className = 'cf-contest-time-zone cf-time-timezone-label';
       start.append(label);
     }
-    if (label.textContent !== offsets[0]) label.textContent = offsets[0];
+    // 和提交表表头的时区标注同一种写法：带括号。
+    const text = `(${offsets[0]})`;
+    if (label.textContent !== text) label.textContent = text;
   }
 }
 
@@ -185,8 +187,9 @@ export function applyTimeFormatting() {
     if (inPluginUi(span)) return;
     // 表格单元格可能包含真正的时间节点，不重复包装整格及其链接。
     if (span.querySelector('.format-time, .format-date, .cf-formatted-time')) return;
+    // 提交表的时间格整格替换：时区已经写在表头，格内的时区上标不再保留，关闭设置时随原文一起恢复。
     const zone = span.querySelector('sup.tz-superscript');
-    if (zone && zone.parentElement === span) {
+    if (zone && zone.parentElement === span && !span.classList.contains('cf-table-time-cell')) {
       const content = document.createElement('span');
       content.className = 'cf-formatted-time';
       const range = document.createRange();

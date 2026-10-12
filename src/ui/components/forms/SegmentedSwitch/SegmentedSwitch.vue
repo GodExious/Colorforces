@@ -27,7 +27,7 @@ const sliderStyle = computed(() => ({
       }"
       @click="$emit(`update:modelValue`, option.value)"
     >
-      {{ option.label }}
+      <span>{{ option.label }}</span>
     </div>
   </div>
 </template>
@@ -42,7 +42,7 @@ const sliderStyle = computed(() => ({
   padding: 2px;
   cursor: pointer;
   font-size: var(--cf-font-size-base);
-  font-weight: bold;
+  font-weight: var(--cf-font-weight-bold);
   user-select: none;
   box-sizing: border-box;
 }
@@ -54,8 +54,8 @@ const sliderStyle = computed(() => ({
   width: calc(50% - 2px);
   border-radius: var(--cf-radius-lg);
   transition:
-    left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    background-color 0.25s ease;
+    left var(--cf-duration-moderate) cubic-bezier(0.4, 0, 0.2, 1),
+    background-color var(--cf-duration-moderate) ease;
   box-shadow:
     0 1px 3px color-mix(in srgb, var(--cf-menu-accent) 20%, transparent),
     inset 0 0 0 1px var(--cf-surface-border);
@@ -69,7 +69,7 @@ const sliderStyle = computed(() => ({
   padding: 3px 0;
   font-size: var(--cf-font-size-base);
   z-index: 1;
-  transition: color 0.25s;
+  transition: color var(--cf-duration-moderate);
   box-sizing: border-box;
   margin: 1px;
   color: #888;

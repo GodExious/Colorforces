@@ -5,6 +5,7 @@ import { computed, ref, watch } from 'vue';
 import { preventScrollChaining } from '../../../../utils/scroll.js';
 import { backdropClose } from '../../../../utils/backdrop.js';
 import InlineSvg from '../../icons/InlineSvg/InlineSvg.vue';
+import { menuTabColor } from '../../../../utils/petal-palette.js';
 const props = defineProps({
   options: { type: Object, required: true },
   visible: Boolean,
@@ -35,7 +36,9 @@ watch(overlay, (node) => {
         <div class="cf-clist-modal-card cf-aurora-card" :style="cardStyle">
           <div class="cf-clist-modal-header">
             <div class="cf-clist-modal-title">
-              <span class="cf-modal-title-icon cf-aurora-emblem"
+              <span
+                class="cf-modal-title-icon cf-aurora-emblem"
+                :style="{ '--cf-emblem-petal': menuTabColor(options.page) }"
                 ><InlineSvg :source="options.iconSvg" /></span
               ><span>{{ options.title }}</span>
             </div>
@@ -104,7 +107,7 @@ watch(overlay, (node) => {
 }
 
 .cf-clist-modal-title {
-  font-size: 16px;
+  font-size: calc(16px * var(--cf-font-scale));
   font-weight: var(--cf-font-weight-semibold);
   letter-spacing: 0.01em;
   color: #3b4868;
@@ -115,14 +118,13 @@ watch(overlay, (node) => {
 }
 
 .cf-modal-title-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 11px;
+  width: 34px;
+  height: 34px;
 }
 
 .cf-modal-title-icon svg {
-  width: 17px;
-  height: 17px;
+  width: 21px;
+  height: 21px;
 }
 
 .cf-clist-modal-body {
@@ -150,7 +152,7 @@ watch(overlay, (node) => {
   border-color: #8590cf;
   border-radius: var(--cf-radius-lg);
   background: linear-gradient(135deg, #8b9ddd, #9c8fd6);
-  color: #fff;
+  color: var(--cf-white-ink);
   font-weight: var(--cf-font-weight-semibold);
   box-shadow:
     0 6px 16px -7px #8590cf,
@@ -158,7 +160,7 @@ watch(overlay, (node) => {
 }
 
 .cf-action-button.cf-modal-primary-btn {
-  transition: filter 160ms ease;
+  transition: filter var(--cf-duration-fast) ease;
 }
 
 .cf-action-button.cf-modal-primary-btn:not(:disabled):hover {
@@ -174,50 +176,11 @@ watch(overlay, (node) => {
   box-shadow: 0 1px 3px #5a6a8f14;
 }
 
-.cf-clist-code-block {
-  background: var(--cf-guide-code-bg, var(--cf-gray-900));
-  color: var(--cf-guide-code-ink, #38bdf8);
-  border-radius: var(--cf-radius-md);
-  padding: 10px 14px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: var(--cf-font-size-base);
-  overflow-x: auto;
-  margin: 8px 0;
-  border: 1px solid var(--cf-guide-code-border, var(--cf-gray-800));
-  user-select: all;
-}
-
-.cf-clist-popover-demo {
-  --cf-popover-surface: #ffffffe6;
-  background: var(--cf-popover-surface);
-  border: 1px solid var(--cf-surface-border, var(--cf-gray-300));
-  border-radius: var(--cf-radius-lg);
-  box-shadow:
-    0 12px 24px -10px #4f5f8a47,
-    0 2px 6px #4f5f8a14;
-  padding: 12px;
-  margin-top: 10px;
-  position: relative;
-}
-
-.cf-clist-popover-demo::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: 28px;
-  width: 10px;
-  height: 10px;
-  background: #fdfdff;
-  border-top: 1px solid var(--cf-surface-border, var(--cf-gray-300));
-  border-left: 1px solid var(--cf-surface-border, var(--cf-gray-300));
-  transform: rotate(45deg);
-}
-
 .cf-clist-progress-track {
   width: 100%;
   height: 10px;
   background: var(--cf-surface-border, var(--cf-gray-200));
-  border-radius: 5px;
+  border-radius: var(--cf-radius-sm);
   overflow: hidden;
   margin: 12px 0 8px;
   position: relative;
@@ -231,8 +194,8 @@ watch(overlay, (node) => {
     var(--cf-menu-secondary, #3b82f6),
     var(--cf-menu-accent, #6366f1)
   );
-  border-radius: 5px;
-  transition: width 0.3s ease;
+  border-radius: var(--cf-radius-sm);
+  transition: width var(--cf-duration-slow) ease;
 }
 
 /* 说明框内的表格：不用斑马纹，表头是一条横向的幻彩渐变。 */
@@ -255,8 +218,8 @@ watch(overlay, (node) => {
 .cf-guide-theme .cf-guide-table th {
   background: transparent;
   color: #4b5778;
-  font-size: var(--cf-font-size-sm);
-  font-weight: 650;
+  font-size: var(--cf-font-size-base);
+  font-weight: var(--cf-font-weight-semibold);
   letter-spacing: 0.02em;
 }
 .cf-guide-theme .cf-guide-table tbody tr,
@@ -264,7 +227,7 @@ watch(overlay, (node) => {
   background: transparent;
 }
 .cf-guide-theme .cf-guide-table tbody tr {
-  transition: background-color 140ms ease;
+  transition: background-color var(--cf-duration-fast) ease;
 }
 .cf-guide-theme .cf-guide-table tbody tr:hover {
   background: #eef1fc99;

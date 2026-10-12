@@ -88,11 +88,23 @@ export function renderScore(cell, key, value) {
   );
 }
 
+// 图标的文字只交给浏览器解析一次，之后每个格子复制一份解析好的节点：榜单一页两百行，
+// 逐格解析同一段文字是白费的。复制出来的和逐格解析出来的结构一样。
+const iconNodes = {};
+function iconNode(direction) {
+  if (!iconNodes[direction]) {
+    const holder = document.createElement('template');
+    holder.innerHTML = icons[direction];
+    iconNodes[direction] = holder.content;
+  }
+  return iconNodes[direction].cloneNode(true);
+}
+
 // 图标资源仅来自本项目，方向不依赖平台是否支持特殊 Unicode 字符。
 export function setRankIcon(element, direction) {
   if (element.dataset.direction === direction) return;
   element.dataset.direction = direction;
-  element.innerHTML = icons[direction];
+  element.replaceChildren(iconNode(direction));
 }
 
 // 档位缩写保留 CF 经典色，完整解释统一放在单元格。
@@ -186,8 +198,9 @@ export function renderRankProgress(cell, record, result, phase) {
         : direction === 'down'
           ? 'predictionRankDown'
           : 'predictionRankSame';
+    // 队伍按成员分开的那几段要说清是谁的（record.label 是这个成员的账号）。
     cell.dataset.tooltip = [
-      `${current.name} → ${next.name}`,
+      (record.label ? record.label + ': ' : '') + `${current.name} → ${next.name}`,
       `${progress.before} → ${progress.after}` + (ratedRank === null ? '' : ` (#${ratedRank})`),
       t(key),
     ].join('\n');

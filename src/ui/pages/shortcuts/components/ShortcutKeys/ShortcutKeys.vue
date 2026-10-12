@@ -49,8 +49,8 @@ const parts = computed(() => (props.combo ? props.combo.split('+') : []));
 .cf-shortcut-recording-label {
   grid-area: 1 / 1;
   transition:
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 140ms ease,
+    transform var(--cf-duration-base) var(--cf-ease-out),
+    opacity var(--cf-duration-fast) ease,
     visibility 0s;
 }
 

@@ -9,8 +9,13 @@ const uiDir = join(root, 'src/ui');
 const tokensSource = readFileSync(join(root, 'src/styles/tokens.css'), 'utf8');
 
 // 从变量文件读出「变量名 → 数值」，测试始终以它为准，新增变量无需改测试。
+// 字号写成「数值 × 字号倍数」，这里取出其中的数值。
+const plain = (value) => value.replace(/^calc\(([\d.]+px) \* var\(--cf-font-scale\)\)$/, '$1');
 const tokens = new Map(
-  [...tokensSource.matchAll(/(--cf-[a-z0-9-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]),
+  [...tokensSource.matchAll(/(--cf-[a-z0-9-]+):\s*([^;]+);/g)].map((m) => [
+    m[1],
+    plain(m[2].trim()),
+  ]),
 );
 const valuesOf = (prefix) =>
   [...tokens].filter(([name]) => name.startsWith(prefix)).map(([, value]) => value);
@@ -58,6 +63,11 @@ test('同一类别内没有数值重复的变量', () => {
     const values = valuesOf(prefix);
     assert.equal(new Set(values).size, values.length, `${prefix} 存在重复数值`);
   }
+});
+
+test('字号都是整数像素，不用半像素', () => {
+  for (const value of valuesOf('--cf-font-size-')) assert.match(value, /^\d+px$/);
+  assert.deepEqual(findAll(/font-size:\s*(?:calc\()?\d*\.\d+px/g), []);
 });
 
 test('组件引用的设计变量都已定义', () => {

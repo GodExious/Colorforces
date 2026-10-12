@@ -59,6 +59,18 @@ test('练习提交没有赛中时间，记为 -1；队伍提交打上标记', ()
   );
 });
 
+test('有队伍编号的提交算队伍提交，队伍里只有一个人也算', () => {
+  const dataset = packSubmissions('alice', [
+    submission({ id: 1 }),
+    submission({ id: 2, teamId: 7 }),
+    submission({ id: 3, teamId: 8, members: ['alice', 'bob'] }),
+  ]);
+  assert.deepEqual(
+    dataset.rows.map((row) => row[ROW.team]),
+    [0, 1, 1],
+  );
+});
+
 test('只有本地题库查不到的题才另存名称、难度分和标签', () => {
   const dataset = packSubmissions(
     'alice',

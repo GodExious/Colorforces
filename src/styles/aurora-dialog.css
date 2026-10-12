@@ -51,17 +51,35 @@
   --cf-icon-detail: #7fc4b6;
 }
 
-/* 图标底板：标题图标、确认框图标共用的半透明小方块。 */
+/*
+ * 图标底板：标题图标、确认框图标共用的底块，做成一片花瓣的轮廓（左上、右下圆得多）。
+ * 颜色只有一个来源 --cf-emblem-petal：各个弹窗写上自己所属菜单页的花瓣色，确认框写语气色；
+ * 底是这个颜色的浅色，图标是同色系的深色。弹窗别的地方仍然不随页面换色。
+ */
 .cf-aurora-emblem {
+  --cf-emblem-petal: #8f9fd8;
   display: inline-grid;
   place-items: center;
   flex: none;
-  border: 1px solid #ffffffdc;
-  background: linear-gradient(135deg, #dce7f9cc, #eee4f5cc);
+  border: 1px solid color-mix(in srgb, var(--cf-emblem-petal) 34%, #fff);
+  border-radius: 44% 26%;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--cf-emblem-petal) 24%, #fff),
+    color-mix(in srgb, var(--cf-emblem-petal) 10%, #fff)
+  );
   box-shadow:
-    0 3px 10px -4px #5a6c9a47,
+    0 4px 10px -5px color-mix(in srgb, var(--cf-emblem-petal) 60%, transparent),
     inset 0 1px 0 #ffffffcc;
-  color: #6b7cb8;
+}
+/* 底块里的图标：主线压深一些，点缀线接近花瓣本色，带底色的部分是一层半透明的本色。
+   图标文件自己在标签上写了颜色变量，所以这里要压过它。 */
+.cf-aurora-emblem svg {
+  --cf-icon-ink: color-mix(in srgb, var(--cf-emblem-petal) 64%, #26364a) !important;
+  --cf-icon-detail: color-mix(in srgb, var(--cf-emblem-petal) 92%, #26364a) !important;
+  --cf-icon-primary: var(--cf-emblem-petal) !important;
+  --cf-icon-secondary: color-mix(in srgb, var(--cf-emblem-petal) 92%, #26364a) !important;
+  --cf-icon-wash: 0.34;
 }
 
 /* 关闭按钮：圆形，悬停时浮出半透明白底。 */

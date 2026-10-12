@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { appSettings, subscribeSettings } from '../../../settings.js';
 import { analyticsState as state } from './state.js';
 import { fetchDataset, readDataset, saveDataset, isFresh, pruneDatasets } from './data.js';
+import { startOfficialGraphPin } from './official-graph.js';
 
 const HOST_ID = 'cf-analytics-host';
 
@@ -113,11 +114,13 @@ function sync() {
     Object.assign(state, readProfile());
     state.host = host;
   }
+  // 先加载、后展开：有缓存时数据在这一步就放进来了，面板展开时里面的图表已经在，量到的是完整的高度。
+  // 反过来的话，面板和里面的图表区同时开始展开，面板量高度的那一刻图表区还是收着的，
+  // 面板只展开到标题那么高，等它的过渡结束，下面一大片内容才一下子冒出来，看起来就像没有过渡。
+  if (appSettings.user.analytics.autoLoad && !state.started) loadAnalytics();
   // 等面板先以收起状态挂上，下一拍再展开，展开的过渡才播得出来。
   nextTick(() => {
-    if (!appSettings.user.analytics.enabled) return;
-    state.active = true;
-    if (appSettings.user.analytics.autoLoad && !state.started) loadAnalytics();
+    if (appSettings.user.analytics.enabled) state.active = true;
   });
 }
 
@@ -132,6 +135,7 @@ export function startAnalyticsFeature() {
   if (!profileHandle()) return;
   // 刚改完时区就离开页面时，赶在离开前写回。
   window.addEventListener('pagehide', flushZoneSave);
+  startOfficialGraphPin();
   sync();
   subscribeSettings(sync);
 }

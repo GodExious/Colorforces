@@ -1,7 +1,6 @@
 <script setup>
-import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { translate as t } from '../../../../../i18n/index.js';
-import { appSettings } from '../../../../../settings.js';
 import * as assets from '../../../../../assets/index.js';
 import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
 
@@ -49,37 +48,8 @@ watch(
   { flush: 'sync' },
 );
 
-// 名单开着的时候切换语言：各人的分工说明长短不一样，换了语言可能从一行变成两行，名单的高度会变。
-// 名单是贴着页脚往上长的，高度直接变的话上边缘会跳一下。这里让它带着过渡长到新的高度，
-// 下面被挤开的几行也滑到新位置。先在界面更新之前量好原来的高度和各行的位置，更新之后再量一次。
+// 名单的元素。它是一个单独的界面：切换语言时自己走一道波浪，高度的变化也由那套过渡带着走，见 utils/language-wave.js。
 const panel = ref(null);
-watch(
-  () => appSettings.general.lang,
-  async () => {
-    const box = panel.value;
-    if (!box || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const measure = () => ({
-      height: box.offsetHeight,
-      rows: [...box.querySelectorAll('li')].map((row) => row.offsetTop),
-    });
-    const before = measure();
-    await nextTick();
-    if (panel.value !== box) return;
-    const after = measure();
-    const timing = { duration: 280, easing: 'cubic-bezier(.22,1,.36,1)' };
-    if (Math.abs(before.height - after.height) > 0.5)
-      box.animate(
-        [before, after].map(({ height }) => ({ height: `${height}px`, overflow: 'clip' })),
-        timing,
-      );
-    box.querySelectorAll('li').forEach((row, index) => {
-      const shift = before.rows[index] - after.rows[index];
-      if (Math.abs(shift) > 0.5)
-        row.animate([{ translate: `0 ${shift}px` }, { translate: '0 0' }], timing);
-    });
-  },
-  { flush: 'pre' },
-);
 
 // 收起名单；键盘关闭时把焦点还给入口。
 function close(restoreFocus = false) {
@@ -126,7 +96,7 @@ onBeforeUnmount(() => {
       <span class="cf-contributors-avatars" aria-hidden="true">
         <img v-for="person in avatarPreview" :key="person.name" :src="person.image" alt="" />
       </span>
-      <span data-cf-language-text>{{ t('footerContributors') }}</span>
+      <span>{{ t('footerContributors') }}</span>
       <span class="cf-contributors-count">{{ contributors.length }}</span>
       <InlineSvg
         class="cf-contributors-chevron"
@@ -140,12 +110,13 @@ onBeforeUnmount(() => {
         ref="panel"
         id="cf-contributors-panel"
         class="cf-contributors-panel"
+        data-cf-language-surface
         role="region"
         :aria-label="t('footerContributors')"
       >
         <div class="cf-contributors-heading">
-          <strong data-cf-language-text>{{ t('footerContributors') }}</strong>
-          <span data-cf-language-text>{{ t('footerContributorsNote') }}</span>
+          <strong>{{ t('footerContributors') }}</strong>
+          <span>{{ t('footerContributorsNote') }}</span>
         </div>
         <ul class="cf-contributors-list">
           <li v-for="person in contributors" :key="person.name">
@@ -158,16 +129,14 @@ onBeforeUnmount(() => {
               <img class="cf-contributor-image" :src="person.image" alt="" />
               <span class="cf-contributor-info">
                 <span class="cf-contributor-name">{{ person.name }}</span>
-                <span class="cf-contributor-role" data-cf-language-text>{{ t(person.role) }}</span>
+                <span class="cf-contributor-role">{{ t(person.role) }}</span>
               </span>
               <InlineSvg
                 class="cf-contributor-external"
                 :source="assets.brandExternalLinkIcon"
                 aria-hidden="true"
               />
-              <span class="cf-contributor-description" data-cf-language-text>{{
-                t(person.description)
-              }}</span>
+              <span class="cf-contributor-description">{{ t(person.description) }}</span>
             </a>
           </li>
         </ul>
@@ -178,7 +147,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .cf-contributors-motion-enter-active,
 .cf-contributors-motion-leave-active {
-  transition: clip-path 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: clip-path var(--cf-duration-moderate) var(--cf-ease-out);
 }
 .cf-contributors-panel.cf-contributors-motion-enter-from,
 .cf-contributors-panel.cf-contributors-motion-leave-to {
@@ -210,7 +179,7 @@ onBeforeUnmount(() => {
   cursor: pointer;
   border-radius: var(--cf-radius-xs);
   user-select: none;
-  transition: color 0.15s ease;
+  transition: color var(--cf-duration-fast) ease;
 }
 
 .cf-contributors-trigger::-webkit-details-marker {
@@ -256,7 +225,7 @@ onBeforeUnmount(() => {
 .cf-contributors-chevron {
   display: inline-flex;
   transform: rotate(180deg);
-  transition: transform 0.15s ease;
+  transition: transform var(--cf-duration-fast) ease;
 }
 
 .cf-contributors-chevron :deep(svg) {
@@ -331,12 +300,12 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 4px 10px;
   padding: 10px 8px;
-  border-radius: 7px;
+  border-radius: var(--cf-radius-sm);
   color: var(--cf-gray-700);
   text-decoration: none;
   transition:
-    background 0.15s ease,
-    color 0.15s ease;
+    background var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease;
 }
 
 .cf-footer-contributors .cf-contributor-link:hover,

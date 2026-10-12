@@ -43,7 +43,8 @@ function loadStore() {
 }
 // 只做上面的迁移，不取数据。存储页在列出各个键之前调用，旧键就不会被算进已弃用的缓存。
 export function migrateDatasets() {
-  loadStore();
+  // 没有旧键就没有要迁的，不必把整份数据（账号多时有好几兆）解析一遍。
+  if (appStorage.keys().some((key) => key.startsWith(LEGACY_ANALYTICS_PREFIX))) loadStore();
 }
 // 自己的账号一直保留；其他账号按刷新时间只留最近的若干个，数量由设置决定。keep 里的账号也保留，并占名额。
 const prune = (store, keep) =>

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { SETTINGS_KEY, LEGACY_SETTINGS_KEY } from '../src/storage/keys.js';
 import { DEFAULT_SETTINGS } from '../src/config/defaults.js';
-import { legacySettings, upgradedSettings } from './helpers/legacy-settings.js';
+import { legacySettings, loadedSettings, ADDED_LATER } from './helpers/legacy-settings.js';
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 // 用一张表顶替油猴存储，并记下设置模块登记的「别的标签页改了值」的回调。
@@ -118,18 +118,22 @@ test('老用户的设置（旧键里平铺的旧结构）载入后每一项都�
   const store = legacyStore();
   const before = store.get(LEGACY_SETTINGS_KEY);
   const tab = await openTab(store);
-  assert.deepEqual(clone(tab.settings.appSettings), upgradedSettings);
-  assert.deepEqual(tab.saved(), upgradedSettings);
+  assert.deepEqual(clone(tab.settings.appSettings), loadedSettings);
+  assert.deepEqual(tab.saved(), loadedSettings);
   assert.deepEqual(tab.writes, [SETTINGS_KEY]);
   assert.equal(store.get(LEGACY_SETTINGS_KEY), before);
   // 旧数据里每一项都特意设成了非默认值：迁移后没有哪一项落回默认值，说明没有漏掉的。
   const defaults = new Map(leaves(DEFAULT_SETTINGS));
-  const kept = leaves(upgradedSettings).filter(([path]) => path !== 'version');
+  // 后来才加的项旧数据里没有，本来就该是默认值，不在这项核对里。
+  const kept = leaves(loadedSettings).filter(
+    ([path]) => path !== 'version' && !(path in ADDED_LATER),
+  );
   for (const [path, value] of kept) {
     if (defaults.has(path)) assert.notDeepEqual(value, defaults.get(path), path);
   }
   for (const path of defaults.keys()) {
-    if (path === 'version' || path === 'general.menuPosition.panelSize') continue;
+    if (path === 'version' || path === 'general.menuPosition.panelSize' || path in ADDED_LATER)
+      continue;
     assert.ok(
       kept.some(([name]) => name === path),
       path,
@@ -137,7 +141,7 @@ test('老用户的设置（旧键里平铺的旧结构）载入后每一项都�
   }
   // 迁移只做一次：再开一个标签页读到的已经是新结构，内容不变。
   const next = await openTab(store);
-  assert.deepEqual(clone(next.settings.appSettings), upgradedSettings);
+  assert.deepEqual(clone(next.settings.appSettings), loadedSettings);
 });
 
 test('升级时还开着的旧版本页面：它改写旧键不影响本页，本页保存也不碰旧键', async () => {
@@ -153,7 +157,7 @@ test('升级时还开着的旧版本页面：它改写旧键不影响本页，�
   const overwritten = JSON.stringify({ lang: 'en', show: { langIcon: true }, avatarSize: 1.6 });
   store.set(LEGACY_SETTINGS_KEY, overwritten);
   assert.equal(syncSettingsFromStorage(), false);
-  assert.deepEqual(clone(appSettings), upgradedSettings);
+  assert.deepEqual(clone(appSettings), loadedSettings);
 
   tab.writes.length = 0;
   appSettings.user.avatar.size = 2.8;
@@ -163,8 +167,8 @@ test('升级时还开着的旧版本页面：它改写旧键不影响本页，�
   // 再开一个新版本的标签页，读到的是新键里那份，不是旧键里被改写的默认值。
   const next = await openTab(store);
   assert.deepEqual(clone(next.settings.appSettings), {
-    ...upgradedSettings,
-    user: { ...upgradedSettings.user, avatar: { enabled: false, size: 2.8 } },
+    ...loadedSettings,
+    user: { ...loadedSettings.user, avatar: { enabled: false, size: 2.8 } },
   });
 });
 
@@ -175,9 +179,9 @@ test('新键已有设置时不再看旧键；旧键里已经是新结构时直�
   assert.equal(tab.settings.appSettings.general.lang, 'zh');
   assert.equal(tab.settings.appSettings.user.avatar.size, DEFAULT_SETTINGS.user.avatar.size);
 
-  const adopted = await openTab(legacyStore(upgradedSettings));
-  assert.deepEqual(clone(adopted.settings.appSettings), upgradedSettings);
-  assert.deepEqual(adopted.saved(), upgradedSettings);
+  const adopted = await openTab(legacyStore(loadedSettings));
+  assert.deepEqual(clone(adopted.settings.appSettings), loadedSettings);
+  assert.deepEqual(adopted.saved(), loadedSettings);
 });
 
 test('什么都没保存过时用默认设置，不写存储', async () => {
@@ -190,6 +194,8 @@ test('已保存的设置里类型或取值不对的项落回默认值，不认�
   const store = storeWith((stored) => {
     stored.general.lang = '';
     stored.general.disableUpdateCheck = 'yes';
+    stored.general.fontSize = 12.3;
+    stored.appearance.acHighlight.rejectedColor = 5;
     stored.appearance.langIcon.size = 9;
     stored.appearance.timeFormat.format = '';
     stored.appearance.tags = null;
@@ -214,6 +220,15 @@ test('已保存的设置里类型或取值不对的项落回默认值，不认�
   expected.appearance.timeFormat.format = '';
   assert.deepEqual(clone(tab.settings.appSettings), expected);
   assert.deepEqual(tab.saved(), expected);
+});
+
+test('预测缓存的比赛场数比上限大时收到上限', async () => {
+  const store = storeWith((stored) => {
+    stored.contest.prediction.cacheContests = 500;
+  });
+  const tab = await openTab(store);
+  assert.equal(tab.settings.appSettings.contest.prediction.cacheContests, 25);
+  assert.equal(tab.saved().contest.prediction.cacheContests, 25);
 });
 
 test('新加的快捷键：默认键已被别的绑定占用时保持未绑定', async () => {

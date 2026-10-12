@@ -21,7 +21,6 @@ export const legacySettings = {
     followRatingStyle: false,
     includeTeams: false,
     ratingsMode: 'coverage',
-    tagsMode: 'share',
     hoursSpan: 'quarter',
     cacheUsers: 9,
     recentCount: 35,
@@ -93,6 +92,7 @@ export const legacySettings = {
     displayStyle: 'Ctrl+9',
     predictionEnabled: '',
     userAvatar: 'Ctrl+0',
+    userAnalytics: 'Ctrl+D',
   },
 };
 
@@ -156,7 +156,6 @@ export const upgradedSettings = {
       followRatingStyle: false,
       includeTeams: false,
       ratingsMode: 'coverage',
-      tagsMode: 'share',
       hoursSpan: 'quarter',
       cacheUsers: 9,
       recentCount: 35,
@@ -195,5 +194,51 @@ export const upgradedSettings = {
     displayStyle: 'Ctrl+9',
     predictionEnabled: '',
     userAvatar: 'Ctrl+0',
+    userAnalytics: 'Ctrl+D',
   },
+};
+
+// 旧结构之后才加的设置项（路径 → 默认值）。旧数据里没有它们，迁移带不出来，读取设置时落到默认值上。
+export const ADDED_LATER = {
+  'general.fontSize': 12,
+  'appearance.acHighlight.rejectedColor': 'rgba(255, 167, 167, 0.3)',
+  'appearance.formatRecentActions': true,
+  'appearance.hideVerdictTests': false,
+  'appearance.indentRecentActionTitles': false,
+  'contest.participationTags.untrusted': true,
+  'contest.participationTags.practice': true,
+  'contest.participationTags.ghost': true,
+  'contest.prediction.syncStandings': true,
+  'user.analytics.typesMode': 'submissions',
+  'shortcuts.hideVerdictTests': 'Shift+N',
+};
+// 旧设置载入之后应有的样子：迁移的结果，加上后来才有的那些项的默认值。
+export const loadedSettings = {
+  ...upgradedSettings,
+  general: { ...upgradedSettings.general, fontSize: 12 },
+  appearance: {
+    ...upgradedSettings.appearance,
+    acHighlight: {
+      ...upgradedSettings.appearance.acHighlight,
+      rejectedColor: 'rgba(255, 167, 167, 0.3)',
+    },
+    formatRecentActions: true,
+    indentRecentActionTitles: false,
+    hideVerdictTests: false,
+  },
+  contest: {
+    ...upgradedSettings.contest,
+    prediction: { ...upgradedSettings.contest.prediction, syncStandings: true },
+    participationTags: {
+      ...upgradedSettings.contest.participationTags,
+      untrusted: true,
+      practice: true,
+      ghost: true,
+    },
+  },
+  user: {
+    ...upgradedSettings.user,
+    analytics: { ...upgradedSettings.user.analytics, typesMode: 'submissions' },
+  },
+  shortcuts: { ...upgradedSettings.shortcuts, hideVerdictTests: 'Shift+N' },
 };

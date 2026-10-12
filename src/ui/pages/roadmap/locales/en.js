@@ -27,6 +27,10 @@ export default {
     title: 'Friends Custom Tagging & Grouping',
     desc: 'Allow custom category tagging, nicknames, color markers, group icons or images, and even custom avatar frames for friends.',
   },
+  'problem-filter': {
+    title: 'Multi-criteria Problem Filtering',
+    desc: 'Filter and search problems by combining multiple conditions.',
+  },
   'cf-official-data': {
     title: 'Codeforces Official Problem Data Integration',
     desc: 'Fetches official CF problem data, updates it automatically, and displays problem ratings.',

@@ -77,13 +77,13 @@ function step(delta) {
   cursor: default;
   white-space: nowrap;
   transition:
-    border-color 0.18s ease,
-    background-color 0.18s ease,
-    color 0.18s ease;
+    border-color var(--cf-duration-base) ease,
+    background-color var(--cf-duration-base) ease,
+    color var(--cf-duration-base) ease;
 }
 .cf-analytics-zone-picker:is(:hover, :focus-visible) {
   border-color: color-mix(in srgb, var(--cf-zone-accent) 40%, #e3e7ee);
-  background: #fff;
+  background: var(--cf-white-surface);
   color: var(--cf-gray-700);
 }
 .cf-analytics-zone-picker:focus-visible {
@@ -101,13 +101,13 @@ function step(delta) {
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 2px;
+  border-radius: var(--cf-radius-2xs);
   background: transparent;
   color: var(--cf-gray-400);
   cursor: pointer;
   transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+    background-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease;
 }
 .cf-analytics-zone-steps svg {
   width: 8px;

@@ -4,7 +4,16 @@
  * 只服务插件自己的界面；Codeforces 原站页面上的增强样式不使用这些变量。
  * 组件 <style> 中凡是等于下列数值的写法，都应引用变量，由 tests/styles/tokens.test.js 检查。
  */
+/* 字号的倍数：菜单「通用」页的「插件字体大小」写进来（见 features/appearance/dynamic-style.js），默认 1。
+   注册成数字，改的时候才能平滑过渡。 */
+@property --cf-font-scale {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
 :root {
+  --cf-font-scale: 1;
+
   /* 灰阶：数字越大越深。文字、边框、分隔线与中性底色共用。 */
   --cf-gray-50: #f8fafc;
   --cf-gray-100: #f1f5f9;
@@ -17,16 +26,16 @@
   --cf-gray-800: #1e293b;
   --cf-gray-900: #0f172a;
 
-  /* 字号：base 为正文，向两侧各三档。 */
-  --cf-font-size-2xs: 10px;
-  --cf-font-size-xs: 11px;
-  --cf-font-size-sm: 11.5px;
-  --cf-font-size-base: 12px;
-  --cf-font-size-md: 12.5px;
-  --cf-font-size-lg: 13px;
-  --cf-font-size-xl: 14px;
+  /* 字号：base 为正文，向两侧各两档，都是整数像素（不用半像素）。都乘上字号的倍数；
+     不在这五档里的字号（标题用的大字等）也照这个写法乘上它。 */
+  --cf-font-size-2xs: calc(10px * var(--cf-font-scale));
+  --cf-font-size-xs: calc(11px * var(--cf-font-scale));
+  --cf-font-size-base: calc(12px * var(--cf-font-scale));
+  --cf-font-size-lg: calc(13px * var(--cf-font-scale));
+  --cf-font-size-xl: calc(14px * var(--cf-font-scale));
 
-  /* 圆角：xs 用于小标签与滚动条，sm 用于按钮与输入框，md 以上用于卡片与弹窗。 */
+  /* 圆角：2xs 用于细条（进度条、图例色块），xs 用于小标签与滚动条，sm 用于按钮与输入框，md 以上用于卡片与弹窗。 */
+  --cf-radius-2xs: 2px;
   --cf-radius-xs: 4px;
   --cf-radius-sm: 6px;
   --cf-radius-md: 8px;
@@ -37,4 +46,30 @@
   --cf-font-weight-medium: 500;
   --cf-font-weight-semibold: 600;
   --cf-font-weight-bold: 700;
+
+  /* 白色按用途分开命名：surface 是白色的底，ink 是深色底上的白字。将来做深色主题时两者走向相反。 */
+  --cf-white-surface: #ffffff;
+  --cf-white-ink: #ffffff;
+
+  /* 过渡时长：悬停变色这类小变化用 fast，一般的显隐和位移用 base，稍大的块用 moderate，整块展开收起用 slow。
+     只用在 transition 上；成套编排的关键帧动画各有各的时间，不走这几档。 */
+  --cf-duration-fast: 150ms;
+  --cf-duration-base: 200ms;
+  --cf-duration-moderate: 250ms;
+  --cf-duration-slow: 300ms;
+
+  /* 缓动：减速停下的两条曲线，strong 的收得更猛。 */
+  --cf-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --cf-ease-out-strong: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 用户改字号的那一下，倍数平滑地变过去。 */
+:root.cf-font-scale-transition {
+  transition: --cf-font-scale 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root.cf-font-scale-transition {
+    transition: none;
+  }
 }

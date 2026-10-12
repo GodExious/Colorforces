@@ -35,14 +35,14 @@ defineEmits(['click']);
   padding: 0;
   box-sizing: border-box;
   border: 1px solid transparent;
-  border-radius: 5px;
+  border-radius: var(--cf-radius-sm);
   background: transparent;
   color: var(--cf-gray-400);
   cursor: pointer;
   transition:
-    background-color 150ms ease,
-    color 150ms ease,
-    border-color 150ms ease;
+    background-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease;
 }
 .cf-reset-button:not(:disabled):hover,
 .cf-reset-button:focus-visible {

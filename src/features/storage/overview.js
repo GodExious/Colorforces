@@ -17,6 +17,7 @@ import {
 import { migrateDatasets } from '../user/analytics/data.js';
 import { getCurrentUserHandle } from '../general/solved.js';
 import { sortProblemIds } from '../../utils/problem.js';
+import { textFingerprint } from '../../utils/fingerprint.js';
 // 一份存储值占多少字节。
 const bytesOf = (val) => {
   try {
@@ -27,8 +28,33 @@ const bytesOf = (val) => {
     return 0;
   }
 };
+// 量过、数过的结果按键记着：存着的内容没变就直接用。
+// 最大的几项有十几兆，量一次大小、解析一次各要几十毫秒；存储页每次打开都重来的话，点了之后要卡一下才切得过去。
+// 内容变没变看指纹（见 utils/fingerprint.js），不把原文留着：原文有十几兆，缓存场数设得多时上百兆。
+// 指纹认不出来的改动，长度必定没变，字节数顶多差在个别非英文字符上，场数不会变，界面上看不出差别。
+const remembered = new Map();
+function recall(key, name, compute) {
+  const raw = appStorage.getItem(key);
+  // 不是文字的（没存过，或早期版本直接存下的对象）不记，每次现算。
+  if (typeof raw !== 'string') {
+    remembered.delete(key);
+    return compute(raw);
+  }
+  const print = textFingerprint(raw);
+  let entry = remembered.get(key);
+  if (!entry || entry.print !== print) remembered.set(key, (entry = { print }));
+  if (!(name in entry)) entry[name] = compute(raw);
+  return entry[name];
+}
 // 读取原版单键存储字节数。
-export const getStorageItemBytes = (key) => bytesOf(appStorage.getItem(key));
+export const getStorageItemBytes = (key) => recall(key, 'bytes', bytesOf);
+// 预测缓存里存了几场比赛。要把整份缓存解析一遍才数得出来。
+const predictionContestCount = () =>
+  recall(
+    PREDICTION_CACHE_KEY,
+    'contests',
+    () => Object.keys(appStorage.getJSON(PREDICTION_CACHE_KEY, {})?.contests || {}).length,
+  );
 // 读取原版当前有效键列表。
 export const ACTIVE_STORAGE_KEYS = [
   ...PREDICTION_STORAGE_KEYS,
@@ -39,6 +65,12 @@ export const ACTIVE_STORAGE_KEYS = [
   AVATAR_CACHE_KEY,
   RUNTIME_DATA_KEY,
   ANALYTICS_KEY,
+];
+// 把统计里费时间的部分拆成一小步一小步：每一步只量一个键，或者只数一次预测缓存。
+// 菜单打开后趁页面空闲时逐步做完（见 StoragePage），之后打开存储页就都是现成的。
+export const storageWarmupSteps = () => [
+  ...ACTIVE_STORAGE_KEYS.map((key) => () => getStorageItemBytes(key)),
+  predictionContestCount,
 ];
 // 读取原版已解决题目缓存详情。
 export const getUserSolvedStorageDetails = () => {
@@ -244,7 +276,7 @@ export function readStorageOverview() {
   const predictionKeys = PREDICTION_STORAGE_KEYS.filter((key) => appStorage.getItem(key) != null);
   items.prediction = {
     bytes: predictionKeys.reduce((sum, key) => sum + getStorageItemBytes(key), 0),
-    count: Object.keys(appStorage.getJSON(PREDICTION_CACHE_KEY, {})?.contests || {}).length,
+    count: predictionContestCount(),
     keys: predictionKeys,
     countKey: 'storageContestCount',
   };
