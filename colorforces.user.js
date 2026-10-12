@@ -2,7 +2,7 @@
 // @name               Colorforces
 // @name:zh-CN         Colorforces 算法竞赛视觉增强
 // @namespace          https://github.com/GodExious/Colorforces
-// @version            1.8.1
+// @version            1.9.0
 // @author             GodExious & Antigravity & Codex & ClaudeCode
 // @description        Enhance Codeforces with user data analytics, contest rating predictions, CF/CList problem ratings, verdict abbreviations, avatars, custom time formats, tag visibility controls, keyboard shortcuts, and an animated settings menu. Led by GodExious with AI-assisted development by Antigravity, Codex, and ClaudeCode.
 // @description:zh-CN  增强 Codeforces 视觉与使用体验，支持用户数据分析、比赛评分预测、CF/CList 难度分、判题状态缩写、头像、自定义时间格式、标签显示控制、快捷键及动态设置菜单。由 GodExious 主导，Antigravity、Codex 与 ClaudeCode 协助开发。
@@ -5713,7 +5713,7 @@ SOFTWARE.
 		if (isString$2(container)) return document.querySelector(container);
 		return container;
 	}
-	var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info && GM_info.script && GM_info.script.version ? GM_info.script.version : "1.8.1";
+	var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info && GM_info.script && GM_info.script.version ? GM_info.script.version : "1.9.0";
 	var writeListeners = new Set();
 	var noticeQueued = false;
 	function notifyStorageWrites() {
