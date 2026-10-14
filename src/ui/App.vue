@@ -32,6 +32,7 @@ import PredictionPage from './pages/prediction/PredictionPage.vue';
 import UserPage from './pages/user/UserPage.vue';
 import GroupsPage from './pages/groups/GroupsPage.vue';
 import GroupsDialog from './pages/groups/components/GroupsDialog/GroupsDialog.vue';
+import UserMenu from './pages/groups/components/UserMenu/UserMenu.vue';
 import PredictionAnalysisDialog from './pages/prediction/components/PredictionAnalysisDialog/PredictionAnalysisDialog.vue';
 import UserAnalyticsPanel from './pages/user/components/UserAnalyticsPanel/UserAnalyticsPanel.vue';
 import ShortcutsPage from './pages/shortcuts/ShortcutsPage.vue';
@@ -467,7 +468,7 @@ onBeforeUnmount(() => {
   </div>
   <PredictionAnalysisDialog />
   <UserAnalyticsPanel />
-  <FloatingTooltip /><ConfirmDialog /><UpdateDialog /><ClistSyncDialog /><ClistKeyGuide /><ClistSyncGuide /><TimeFormatGuide /><VerdictGuide /><StorageJsonDialog /><GroupsDialog />
+  <FloatingTooltip /><ConfirmDialog /><UpdateDialog /><ClistSyncDialog /><ClistKeyGuide /><ClistSyncGuide /><TimeFormatGuide /><VerdictGuide /><StorageJsonDialog /><GroupsDialog /><UserMenu />
 </template>
 <style>
 @property --cf-menu-accent {

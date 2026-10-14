@@ -10,18 +10,14 @@ export function showGroupsDialog(groupId = '') {
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import { translate as t } from '../../../../../i18n/index.js';
 import * as assets from '../../../../../assets/index.js';
-import { appSettings } from '../../../../../settings.js';
+import { appSettings, saveSettings } from '../../../../../settings.js';
 import { FONT_SIZE } from '../../../../../config/defaults.js';
-import {
-  menuTabColor,
-  nearestPetalPosition,
-  petalColor,
-  PETAL_COLORS,
-} from '../../../../../utils/petal-palette.js';
+import { menuTabColor, PETAL_COLORS } from '../../../../../utils/petal-palette.js';
 import { preventScrollChaining } from '../../../../../utils/scroll.js';
 import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
 import DialogTransition from '../../../../components/transitions/DialogTransition/DialogTransition.vue';
 import ExpandTransition from '../../../../components/transitions/ExpandTransition/ExpandTransition.vue';
+import SmoothText from '../../../../components/transitions/SmoothText/SmoothText.vue';
 import { showConfirmPop } from '../../../../components/dialogs/ConfirmDialog/ConfirmDialog.vue';
 import { tooltip } from '../../../../components/tooltips/FloatingTooltip/FloatingTooltip.vue';
 import { getCurrentUserHandle } from '../../../../../features/page/account.js';
@@ -34,6 +30,7 @@ import {
 } from '../../../../../features/user/groups/data.js';
 import { profileOf, subscribeProfiles } from '../../../../../features/user/groups/profiles.js';
 import GroupMark from '../GroupMark/GroupMark.vue';
+import ColorPanel from '../ColorPanel/ColorPanel.vue';
 import MemberName, {
   compareByName,
   compareByRating,
@@ -42,9 +39,11 @@ import MemberName, {
 } from '../MemberName/MemberName.vue';
 import {
   FRIENDS_GROUP,
+  MARK_LIMIT,
   MEMO_LIMIT,
   NAME_LIMIT,
   addGroup,
+  clipMark,
   editGroup,
   groupIdsOf,
   groupNamed,
@@ -53,10 +52,12 @@ import {
   joinGroup,
   leaveGroup,
   listGroups,
+  markLength,
   membersOf,
   memoOf,
   removeGroup,
   setMemo,
+  shownMark,
 } from '../../../../../features/user/groups/store.js';
 
 const overlay = ref(null);
@@ -121,14 +122,22 @@ const rows = computed(() => {
   return list.sort((a, b) => (sortDown.value ? compareByName(b, a) : compareByName(a, b)));
 });
 
-// 勾选：只在自建的分组里有，用来批量移出。换分组时清空。
+// 勾选：用来批量移出（「好友」里是批量取消关注），或者一起加进别的分组。换分组时清空。
 const checked = ref([]);
 const toggleChecked = (handle) =>
   (checked.value = checked.value.includes(handle)
     ? checked.value.filter((item) => item !== handle)
     : [...checked.value, handle]);
+// 表头的全选框：一个都没勾、勾了一部分、全勾上三种样子。点它：没全勾上时全勾上，全勾上了就全去掉。
+const checkedAll = computed(
+  () => rows.value.length > 0 && rows.value.every((row) => checked.value.includes(row.handle)),
+);
+const checkedSome = computed(() => !checkedAll.value && checked.value.length > 0);
+const toggleAll = () =>
+  (checked.value = checkedAll.value ? [] : rows.value.map((row) => row.handle));
 function select(id) {
   selected.value = id;
+  copyOpen.value = false;
   checked.value = [];
   notes.value = [];
   adding.value = '';
@@ -151,6 +160,37 @@ function leave(handles) {
   change((own) => (left = leaveGroup(own, selected.value, handles)) > 0);
   if (left) notes.value = [['groupsRemoved', left]];
 }
+
+// 把勾选的人一起加进另一个自建的分组：点按钮展开一个小列表，列出别的自建分组，点哪个加进哪个。
+// 人还留在当前的分组里（是加进去，不是挪过去）。列表里每个分组后面写着这次会新加几个人，都已经在里面的点不了。
+// 加进「好友」就是关注，有自己的输入框，这里不列。
+const copyOpen = ref(false);
+const copyTargets = computed(() => {
+  const own = account.value;
+  return groups.value
+    .filter((group) => !group.builtin && group.id !== selected.value)
+    .map((group) => ({
+      ...group,
+      fresh: own
+        ? checked.value.filter((handle) => !groupIdsOf(own, handle).includes(group.id)).length
+        : 0,
+    }));
+});
+// 没有勾选的人了、没有别的分组了（比如在别的标签页里删了）：列表收起来。
+watch(
+  () => !checked.value.length || !copyTargets.value.length,
+  (off) => off && (copyOpen.value = false),
+);
+function copyTo(group) {
+  copyOpen.value = false;
+  let added = 0;
+  change((own) => (added = joinGroup(own, group.id, checked.value).added.length) > 0);
+  if (added) notes.value = [['groupsCopied', added, group.name]];
+  checked.value = [];
+}
+// 点到列表和按钮以外的地方：收起来。
+const closeCopy = (event) =>
+  copyOpen.value && !event.target.closest?.('.cf-groups-copy') && (copyOpen.value = false);
 
 // 「好友」这一组的增减就是在原站关注、取消关注：一个接一个地发请求，两次之间隔一会儿。working 为真时正在发。
 // 返回 { done: 成了的, missing: 没有这个用户的, failed: 没成的, message: 原站给的原因 }。
@@ -262,30 +302,66 @@ function pickColor(color) {
   customOpen.value = false;
   setColor(color);
 }
-// 自定义颜色：不给完整的取色器，只在花瓣的色环上选一个位置。环上任何一处的深浅、鲜艳程度都和八个预设色差不多，
-// 选出来的颜色和别的分组放在一起不会突兀。拖的时候只改预览（见上面的 draftColor），松手才存。
+// 自定义颜色：点「自定义」色块展开取色（见 ColorPanel），什么颜色都能选。展开时停在现在这个颜色上，
+// 没设颜色时停在分组页的主题色上；还没动就不改颜色。拖的时候只改预览（见上面的 draftColor），松手才存。
 const RING = [...PETAL_COLORS, PETAL_COLORS[0]].join(', ');
-const HUE_STEP = 0.05;
-const customOpen = ref(false),
-  huePosition = ref(0);
-const hueColor = computed(() => petalColor(huePosition.value));
+const customOpen = ref(false);
 const isCustom = computed(
   () => Boolean(current.value?.color) && !PETAL_COLORS.includes(current.value.color),
 );
-function toggleCustom() {
-  customOpen.value = !customOpen.value;
-  // 打开时滑块停在现在这个颜色上（没设颜色时停在最左边）；还没拖动就不改颜色。
-  if (customOpen.value) huePosition.value = nearestPetalPosition(current.value.color, HUE_STEP);
-}
-function dragHue(event) {
-  huePosition.value = Number(event.target.value);
-  draftColor.value = hueColor.value;
-}
+const toggleCustom = () => (customOpen.value = !customOpen.value);
 // 松手：存下来。存好之后这个分组的颜色已经是它了，预览撤掉也不会跳。
-function commitHue() {
-  setColor(hueColor.value);
+function commitColor(color) {
+  setColor(color);
   draftColor.value = '';
 }
+
+// 编辑行下面的预览：这个分组在页面上显示成什么样，写名字的标签和小标各一个，跟着正在改的名字、标记、颜色当场变。
+// 眼睛按钮：展开、收起预览。
+// 每次打开弹窗都是收着的；开着的这段时间里换分组不收。
+const showPreview = ref(false);
+const togglePreview = () => (showPreview.value = !showPreview.value);
+// 点预览里的卡片：页面上的标签换成那一种。
+function chooseTagStyle(style) {
+  if (appSettings.groups.tagStyle === style) return;
+  appSettings.groups.tagStyle = style;
+  saveSettings();
+}
+// 名字：一个都没勾时用自己；勾了人时用勾选的人里在成员表里排最前的那个（跟着表格眼下的排序）。
+const previewName = computed(() => {
+  const first = rows.value.find((row) => checked.value.includes(row.handle));
+  return first ? first.profile?.handle || first.handle : owner.value;
+});
+const previewInk = computed(() =>
+  profilesSeen.value >= 0 ? rankInk(profileOf(previewName.value)) : null,
+);
+const previewTags = computed(() => {
+  const group = current.value;
+  if (!group) return [];
+  const color = group.color || menuTabColor('groups');
+  const chars = shownMark({ ...group, mark: markDraft.value });
+  return [
+    {
+      key: 'name',
+      text: group.builtin ? nameOf(group) : renaming.value.trim() || group.name,
+      kind: null,
+      width: null,
+    },
+    {
+      key: 'mark',
+      text: chars.join(''),
+      kind: chars.length > 1 ? 'marks' : 'mark',
+      // 一个字符的是 18px 的圆，没有图标的是 8px 的色点，两个字符的按字的宽度。
+      width: chars.length > 1 ? null : chars.length ? '18px' : '8px',
+    },
+  ].map((tag) => ({
+    ...tag,
+    // 字变了时淡出再淡入，只在「好友」上做：它的名字跟着语言变。自建分组的名字、标记是正在输入框里改的，
+    // 每打一个字都淡一下太晃，直接变。
+    swap: group.builtin ? tag.text : '',
+    style: { '--cf-group-color': color, '--cf-group-width': tag.width, color: previewInk.value },
+  }));
+});
 
 // 「所在分组」一格里放得下几个分组：按名字的长短估，放不下的收成「+N」，鼠标移上去看全部。
 // 估的是这一格大约 140px 宽、标签里半角字符约 6.5px、别的字符约 11px 一个，随菜单的字号放大缩小。
@@ -308,16 +384,102 @@ function fitGroups(list) {
   }
   return shown;
 }
+// 一项出现、消失时从零长出来、收回去：成员表「所在分组」里的分组标签横着长（连同它和下一个之间的间隔），
+// 左边的分组竖着长。按量好的确切大小过渡，不用最大宽度、最大高度的办法（那样前大半段看不出变化，最后一下子没了）。
+const growing = (element) =>
+  element.classList.contains('cf-groups-chip')
+    ? ['width', 'paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth', 'marginRight']
+    : ['height', 'minHeight', 'paddingTop', 'paddingBottom'];
+function sizeFrames(element) {
+  const style = getComputedStyle(element);
+  const rect = element.getBoundingClientRect();
+  const open = { boxSizing: 'border-box', opacity: 1 },
+    shut = { boxSizing: 'border-box', opacity: 0 };
+  for (const key of growing(element)) {
+    open[key] =
+      key === 'width' ? rect.width + 'px' : key === 'height' ? rect.height + 'px' : style[key];
+    // 收起来时连同后面那 4px 的间隔一起收掉。
+    shut[key] = key === 'marginRight' ? '-4px' : '0px';
+  }
+  return [shut, open];
+}
+function sizeMotion(element, done, entering) {
+  if (!element.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) return done();
+  const [shut, open] = sizeFrames(element);
+  element.style.overflow = 'hidden';
+  const motion = element.animate(entering ? [shut, open] : [open, shut], {
+    duration: 200,
+    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+  });
+  motion.onfinish = motion.oncancel = () => {
+    element.style.overflow = '';
+    done();
+  };
+  if (element.classList.contains('cf-groups-side-row')) followSideMark(performance.now() + 240);
+}
+// 左边选中的那一块：量出选中的分组在这一栏里的位置和高度，滑过去。打开弹窗时直接到位，不滑。
+// 分组在长出来、收回去的时候（新建、删掉），选中的那个会跟着挪，这期间每一帧都跟上。
+const side = ref(null),
+  sideMark = ref(null);
+let sideSpot = null,
+  following = 0;
+function placeSideMark(animate = true) {
+  const mark = sideMark.value;
+  const row = side.value?.querySelector('.cf-groups-side-row.active');
+  if (!mark) return;
+  if (!row) {
+    mark.style.opacity = '0';
+    sideSpot = null;
+    return;
+  }
+  const spot = { top: row.offsetTop, height: row.offsetHeight };
+  if (sideSpot && sideSpot.top === spot.top && sideSpot.height === spot.height) return;
+  const moving =
+    animate && sideSpot !== null && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  mark.style.transition = moving ? '' : 'none';
+  mark.style.transform = `translateY(${spot.top}px)`;
+  mark.style.height = spot.height + 'px';
+  mark.style.opacity = '1';
+  if (!moving) {
+    void mark.offsetHeight;
+    mark.style.transition = '';
+  }
+  sideSpot = spot;
+}
+function followSideMark(until) {
+  cancelAnimationFrame(following);
+  const step = () => {
+    placeSideMark(false);
+    if (performance.now() < until) following = requestAnimationFrame(step);
+  };
+  following = requestAnimationFrame(step);
+}
+watch(selected, () => nextTick(() => placeSideMark()));
+const growIn = (element, done) => sizeMotion(element, done, true);
+const growOut = (element, done) => sizeMotion(element, done, false);
 function showGroups(event, row) {
   const cell = event.currentTarget;
   const cut = [...cell.children].some((chip) => chip.scrollWidth > chip.clientWidth + 1);
   if (row.groups.length > row.shown || cut)
     tooltip.show(cell, row.groups.map(nameOf).join(t('groupsListJoin')));
 }
-function setMark(event) {
-  change((own) => editGroup(own, selected.value, { mark: event.target.value }));
-  // 标记最多留两个字符，输入框里换成实际存下的。
-  event.target.value = current.value?.mark || '';
+// 标记：边打边截到两个字符（一个表情算一个），下面的字数跟着变；输入法还在拼字时不截。失去焦点或回车时存。
+const markDraft = ref('');
+watch(
+  () => [current.value?.id, current.value?.mark],
+  () => (markDraft.value = current.value?.mark || ''),
+  { immediate: true },
+);
+function typeMark(event) {
+  if (event.isComposing) return;
+  const clipped = clipMark(event.target.value);
+  if (clipped !== event.target.value) event.target.value = clipped;
+  markDraft.value = clipped;
+}
+function setMark() {
+  change((own) => editGroup(own, selected.value, { mark: markDraft.value }));
+  // 存下的是去掉首尾空白之后的，输入框里换成它。
+  markDraft.value = current.value?.mark || '';
 }
 // 备注太长、在格子里被省略了时，鼠标移上去显示完整的；正在改的时候不显示。
 function showMemo(event) {
@@ -398,15 +560,20 @@ watch(request, (value) => {
   adding.value = '';
   cancelCreate();
   reload();
+  sideSpot = null;
+  showPreview.value = false;
+  nextTick(() => placeSideMark(false));
 });
 watch(overlay, (node) => {
   if (node) preventScrollChaining(node);
 });
 onMounted(() => {
+  document.addEventListener('pointerdown', closeCopy, true);
   stop = subscribeGroups(() => request.value && reload());
   stopProfiles = subscribeProfiles(() => profilesSeen.value++);
 });
 onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', closeCopy, true);
   stop?.();
   stopProfiles?.();
   close();
@@ -435,19 +602,25 @@ onBeforeUnmount(() => {
             </button>
           </div>
           <div class="cf-groups-dialog-body">
-            <div class="cf-groups-side">
-              <button
-                v-for="group in groups"
-                :key="group.id"
-                type="button"
-                class="cf-groups-side-row"
-                :class="{ active: group.id === selected, 'has-conflict': conflict === group.id }"
-                @click="select(group.id)"
-              >
-                <GroupMark :group="group" />
-                <span class="cf-groups-side-name">{{ nameOf(group) }}</span>
-                <span class="cf-groups-side-count">{{ group.count }}</span>
-              </button>
+            <div ref="side" class="cf-groups-side">
+              <!-- 选中的那个分组底下垫的一块，换分组时滑过去（和菜单左边的页签一样）。 -->
+              <span ref="sideMark" class="cf-groups-side-mark" aria-hidden="true"></span>
+              <TransitionGroup :css="false" @enter="growIn" @leave="growOut">
+                <button
+                  v-for="group in groups"
+                  :key="group.id"
+                  type="button"
+                  class="cf-groups-side-row"
+                  :class="{ active: group.id === selected, 'has-conflict': conflict === group.id }"
+                  @click="select(group.id)"
+                >
+                  <GroupMark :group="group" />
+                  <span class="cf-groups-side-name">{{ nameOf(group) }}</span>
+                  <span class="cf-groups-side-count"
+                    ><SmoothText :text="String(group.count)"
+                  /></span>
+                </button>
+              </TransitionGroup>
               <form
                 v-if="creating"
                 class="cf-groups-side-form"
@@ -476,29 +649,46 @@ onBeforeUnmount(() => {
               <Transition name="cf-groups-swap" mode="out-in">
                 <div class="cf-groups-pane" :key="current.id">
                   <div class="cf-groups-editor">
-                    <input
-                      class="cf-groups-input cf-groups-editor-mark"
-                      type="text"
-                      :value="current.mark"
-                      :placeholder="current.builtin ? '★' : t('groupsMarkPlaceholder')"
-                      :data-tooltip="
-                        t(current.builtin ? 'groupsFriendsMarkHint' : 'groupsMarkHint')
-                      "
-                      @change="setMark"
-                    />
+                    <!-- 输入框里面的最右边一直显示已经写了几个字、最多几个。 -->
+                    <label class="cf-groups-field">
+                      <input
+                        class="cf-groups-input cf-groups-editor-mark"
+                        type="text"
+                        :value="markDraft"
+                        :placeholder="current.builtin ? '★' : t('groupsMarkPlaceholder')"
+                        :data-tooltip="
+                          t(current.builtin ? 'groupsFriendsMarkHint' : 'groupsMarkHint')
+                        "
+                        @input="typeMark"
+                        @compositionend="typeMark"
+                        @change="setMark"
+                        @keydown.enter="$event.target.blur()"
+                      />
+                      <span
+                        class="cf-groups-count"
+                        :class="{ 'is-full': markLength(markDraft) >= MARK_LIMIT }"
+                        >{{ markLength(markDraft) }}/{{ MARK_LIMIT }}</span
+                      >
+                    </label>
                     <!-- 「好友」的名字是固定的，跟着菜单的语言。 -->
                     <span v-if="current.builtin" class="cf-groups-editor-name is-fixed">{{
                       nameOf(current)
                     }}</span>
-                    <input
-                      v-else
-                      v-model="renaming"
-                      class="cf-groups-input cf-groups-editor-name"
-                      type="text"
-                      :maxlength="NAME_LIMIT"
-                      @blur="commitName"
-                      @keydown.enter="$event.target.blur()"
-                    />
+                    <label v-else class="cf-groups-field is-name">
+                      <input
+                        v-model="renaming"
+                        class="cf-groups-input cf-groups-editor-name"
+                        type="text"
+                        :maxlength="NAME_LIMIT"
+                        @blur="commitName"
+                        @keydown.enter="$event.target.blur()"
+                      />
+                      <span
+                        class="cf-groups-count"
+                        :class="{ 'is-full': renaming.length >= NAME_LIMIT }"
+                        >{{ renaming.length }}/{{ NAME_LIMIT }}</span
+                      >
+                    </label>
                     <div class="cf-groups-swatches" :style="{ '--cf-groups-ring': RING }">
                       <button
                         type="button"
@@ -523,7 +713,7 @@ onBeforeUnmount(() => {
                         :class="{ active: isCustom, 'is-set': isCustom || customOpen }"
                         :style="{
                           '--cf-group-color': customOpen
-                            ? hueColor
+                            ? current.color || menuTabColor('groups')
                             : isCustom
                               ? current.color
                               : null,
@@ -532,6 +722,18 @@ onBeforeUnmount(() => {
                         @click="toggleCustom"
                       ></button>
                     </div>
+                    <!-- 眼睛：展开、收起下面的预览。 -->
+                    <button
+                      type="button"
+                      class="cf-groups-eye"
+                      :class="{ 'is-on': showPreview }"
+                      :aria-pressed="showPreview"
+                      :aria-label="t('groupsPreviewToggle')"
+                      :data-tooltip="t('groupsPreviewToggle')"
+                      @click="togglePreview"
+                    >
+                      <InlineSvg :source="assets.previewEyeIcon" />
+                    </button>
                     <button
                       v-if="!current.builtin"
                       type="button"
@@ -541,21 +743,53 @@ onBeforeUnmount(() => {
                       {{ t('groupsDelete') }}
                     </button>
                   </div>
-                  <ExpandTransition :show="customOpen">
-                    <div class="cf-groups-hue-row" :style="{ '--cf-groups-ring': RING }">
-                      <input
-                        class="cf-groups-hue"
-                        type="range"
-                        min="0"
-                        :max="PETAL_COLORS.length - HUE_STEP"
-                        :step="HUE_STEP"
-                        :value="huePosition"
-                        :style="{ '--cf-group-color': hueColor }"
-                        :aria-label="t('groupsColorCustom')"
-                        @input="dragHue"
-                        @change="commitHue"
-                      />
+                  <!-- 这个分组在页面上的样子：标签、小标各一张小卡片，页面上现在用的那张描一圈主题色、带「使用中」。 -->
+                  <ExpandTransition :show="showPreview">
+                    <div class="cf-groups-preview">
+                      <!-- 点一张卡片，页面上的标签就换成这种（和分组页里「分组标签展示形式」是同一个设置）。 -->
+                      <div
+                        v-for="tag in previewTags"
+                        :key="tag.key"
+                        class="cf-groups-preview-card"
+                        :class="{ 'is-on': appSettings.groups.tagStyle === tag.key }"
+                        role="radio"
+                        :aria-checked="appSettings.groups.tagStyle === tag.key"
+                        tabindex="0"
+                        @click="chooseTagStyle(tag.key)"
+                        @keydown.enter.space.prevent="chooseTagStyle(tag.key)"
+                      >
+                        <span class="cf-groups-preview-cap"
+                          ><span>{{
+                            t(tag.key === 'name' ? 'groupsTagStyleName' : 'groupsTagStyleMark')
+                          }}</span
+                          ><Transition name="cf-groups-swap"
+                            ><i v-if="appSettings.groups.tagStyle === tag.key">{{
+                              t('groupsTagStyleInUse')
+                            }}</i></Transition
+                          ></span
+                        >
+                        <span class="cf-groups-preview-sample">
+                          <!-- 标签的字写在属性里、由样式画出来，换语言的过渡管不到它：「好友」换了语言时整个淡出、淡入。 -->
+                          <Transition name="cf-groups-swap" mode="out-in">
+                            <span
+                              :key="tag.swap"
+                              class="cf-groups-preview-user"
+                              :data-cf-group="tag.text"
+                              :data-cf-group-kind="tag.kind"
+                              :style="tag.style"
+                              >{{ previewName }}</span
+                            >
+                          </Transition>
+                        </span>
+                      </div>
                     </div>
+                  </ExpandTransition>
+                  <ExpandTransition :show="customOpen">
+                    <ColorPanel
+                      :color="current.color || menuTabColor('groups')"
+                      @preview="draftColor = $event"
+                      @commit="commitColor"
+                    />
                   </ExpandTransition>
                   <p class="cf-groups-friends-note" v-if="current.builtin">
                     {{ t('groupsFriendsNote') }}
@@ -572,35 +806,86 @@ onBeforeUnmount(() => {
                       class="cf-aurora-btn"
                       :disabled="working || !adding.trim()"
                     >
-                      {{
-                        t(
-                          current.builtin
-                            ? working
-                              ? 'groupsWorking'
-                              : 'groupsFollow'
-                            : 'groupsAdd',
-                        )
-                      }}
+                      <!-- 按钮上的字会变（勾选的人数、处理中、换了语言）：宽度跟着滑，不跳。 -->
+                      <SmoothText
+                        :text="
+                          t(
+                            current.builtin
+                              ? working
+                                ? 'groupsWorking'
+                                : 'groupsFollow'
+                              : 'groupsAdd',
+                          )
+                        "
+                      />
                     </button>
+                    <div
+                      class="cf-groups-copy"
+                      :data-tooltip="copyTargets.length ? null : t('groupsCopyNoTarget')"
+                    >
+                      <button
+                        type="button"
+                        class="cf-aurora-btn"
+                        :class="{ 'is-open': copyOpen }"
+                        :disabled="!checked.length || working || !copyTargets.length"
+                        :aria-expanded="copyOpen"
+                        @click="copyOpen = !copyOpen"
+                      >
+                        <SmoothText :text="t('groupsCopyChecked', checked.length)" /><i
+                          class="cf-groups-copy-caret"
+                          aria-hidden="true"
+                        ></i>
+                      </button>
+                      <Transition name="cf-groups-pop">
+                        <div v-if="copyOpen" class="cf-groups-copy-menu">
+                          <button
+                            v-for="group in copyTargets"
+                            :key="group.id"
+                            type="button"
+                            class="cf-groups-copy-item"
+                            :disabled="!group.fresh"
+                            @click="copyTo(group)"
+                          >
+                            <GroupMark :group="group" />
+                            <span class="cf-groups-copy-name">{{ group.name }}</span>
+                            <span class="cf-groups-copy-end">{{
+                              group.fresh ? t('groupsCopyFresh', group.fresh) : t('groupsCopyAllIn')
+                            }}</span>
+                          </button>
+                        </div>
+                      </Transition>
+                    </div>
                     <button
                       type="button"
                       class="cf-aurora-btn"
                       :disabled="!checked.length || working"
                       @click="removeChecked"
                     >
-                      {{
-                        t(
-                          current.builtin ? 'groupsUnfollowChecked' : 'groupsRemoveChecked',
-                          checked.length,
-                        )
-                      }}
+                      <SmoothText
+                        :text="
+                          t(
+                            current.builtin ? 'groupsUnfollowChecked' : 'groupsRemoveChecked',
+                            checked.length,
+                          )
+                        "
+                      />
                     </button>
                   </form>
                   <ExpandTransition :show="Boolean(feedback)">
                     <p class="cf-groups-feedback">{{ feedback }}</p>
                   </ExpandTransition>
                   <div class="cf-groups-table-row is-head">
-                    <span></span>
+                    <button
+                      type="button"
+                      class="cf-groups-check"
+                      :class="{ on: checkedAll, 'is-some': checkedSome }"
+                      role="checkbox"
+                      :aria-checked="checkedSome ? 'mixed' : checkedAll"
+                      :aria-label="t(checkedAll ? 'groupsSelectNone' : 'groupsSelectAll')"
+                      :data-tooltip="t(checkedAll ? 'groupsSelectNone' : 'groupsSelectAll')"
+                      :disabled="!rows.length"
+                      @click="toggleAll"
+                    ></button>
                     <button
                       v-for="column in ['name', 'rating']"
                       :key="column"
@@ -641,8 +926,13 @@ onBeforeUnmount(() => {
                             }}</span></Transition
                           ></span
                         >
-                        <span
+                        <!-- 在别处（右键菜单、别的标签页）把这个人加进、移出分组时，标签横着长出来、收回去。 -->
+                        <TransitionGroup
+                          tag="span"
                           class="cf-groups-tags"
+                          :css="false"
+                          @enter="growIn"
+                          @leave="growOut"
                           @mouseenter="showGroups($event, row)"
                           @mouseleave="tooltip.hide"
                         >
@@ -653,10 +943,13 @@ onBeforeUnmount(() => {
                             :style="{ '--cf-group-color': group.color || null }"
                             >{{ nameOf(group) }}</span
                           >
-                          <span v-if="row.groups.length > row.shown" class="cf-groups-chip is-more"
-                            >+{{ row.groups.length - row.shown }}</span
-                          >
-                        </span>
+                          <span
+                            v-if="row.groups.length > row.shown"
+                            key=":more"
+                            class="cf-groups-chip is-more"
+                            ><SmoothText :text="'+' + (row.groups.length - row.shown)"
+                          /></span>
+                        </TransitionGroup>
                         <input
                           class="cf-groups-memo"
                           type="text"
@@ -780,6 +1073,28 @@ onBeforeUnmount(() => {
 .cf-groups-side-row:hover {
   background: var(--cf-card-hover);
 }
+/* 选中的那一块垫在分组底下；选中的分组自己不再画底色，悬停时也不画（不然盖在这一块上面）。 */
+.cf-groups-side {
+  position: relative;
+}
+.cf-groups-side-mark {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  left: 8px;
+  border-radius: var(--cf-radius-md);
+  background: var(--cf-control-active);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform;
+  transition:
+    transform 0.48s var(--cf-ease-out-strong),
+    height 0.48s var(--cf-ease-out-strong),
+    opacity var(--cf-duration-base) ease;
+}
+.cf-groups-side-row {
+  position: relative;
+}
 /* 新建时重名的那个分组：标红（输入框的样子在分组页的样式里）。 */
 .cf-groups-side-row.has-conflict,
 .cf-groups-side-row.has-conflict:hover {
@@ -787,8 +1102,9 @@ onBeforeUnmount(() => {
   box-shadow: inset 0 0 0 1px #e65b70;
   color: #bd2542;
 }
-.cf-groups-side-row.active {
-  background: var(--cf-control-active);
+.cf-groups-side-row.active,
+.cf-groups-side-row.active:hover {
+  background: none;
   color: var(--cf-control-ink);
   font-weight: var(--cf-font-weight-semibold);
 }
@@ -836,10 +1152,46 @@ onBeforeUnmount(() => {
   gap: 8px;
   padding: 12px 16px 0;
 }
-.cf-groups-editor-mark {
+/* 输入框和它的字数：字数一直显示在输入框里面的最右边，输入框右边留出它的位置，打的字不会盖到它、也不会被它挤。 */
+.cf-groups-field {
+  position: relative;
+  display: flex;
   flex: none;
-  width: 38px;
+  min-width: 0;
+}
+.cf-groups-field.is-name {
+  flex: 1;
+}
+/* 「20/20」这样的字数大约 30px 宽，离右边 8px。 */
+.cf-groups-editor .cf-groups-field .cf-groups-input {
+  padding-right: 42px;
+}
+/* 标记最多两个字符：字在左边那一块里居中，右边是字数。 */
+.cf-groups-editor .cf-groups-editor-mark {
+  flex: none;
+  width: 64px;
+  padding-left: 6px;
   text-align: center;
+}
+.cf-groups-editor .cf-groups-field .cf-groups-editor-mark {
+  padding-right: 26px;
+}
+.cf-groups-count {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  color: var(--cf-gray-400);
+  font-size: var(--cf-font-size-2xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 12px;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: color var(--cf-duration-fast) ease;
+}
+/* 写满了：换成主题的深色，提醒已经到上限。 */
+.cf-groups-count.is-full {
+  color: var(--cf-control-ink);
 }
 .cf-groups-editor-name {
   flex: 1;
@@ -886,9 +1238,6 @@ onBeforeUnmount(() => {
   background: var(--cf-group-color);
 }
 /* 自定义颜色的滑杆：一条色环展开成的彩带，滑块是当前选到的颜色。 */
-.cf-groups-hue-row {
-  padding: 10px 16px 2px;
-}
 .cf-groups-hue {
   display: block;
   width: 100%;
@@ -934,6 +1283,39 @@ onBeforeUnmount(() => {
     transparent 55%
   );
 }
+/* 眼睛按钮：紧跟在色块后面，和编辑行的输入框一样高的小方块；开着时是选中的样子。 */
+.cf-groups-eye {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--cf-surface-border);
+  border-radius: var(--cf-radius-sm);
+  background: var(--cf-control-surface);
+  color: var(--cf-aurora-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease;
+}
+.cf-groups-eye:hover {
+  background: var(--cf-card-hover);
+  color: var(--cf-control-ink);
+}
+.cf-groups-eye.is-on {
+  border-color: color-mix(in srgb, var(--cf-menu-accent) 55%, var(--cf-surface-border));
+  background: var(--cf-control-active);
+  color: var(--cf-control-ink);
+}
+.cf-groups-eye svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
 .cf-groups-delete {
   flex: none;
   margin: 0;
@@ -948,6 +1330,78 @@ onBeforeUnmount(() => {
 }
 .cf-groups-delete:hover {
   background: #c7474714;
+}
+/* 编辑行下面：这个分组在页面上的样子，标签、小标各一张小卡片。卡片的底是输入框那种半透明的白；
+   页面上现在用的那张描一圈主题色。名字照原站表格里用户名的字，标签用的是页面上的样式。
+   */
+.cf-groups-preview {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 0;
+}
+.cf-groups-preview-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px 12px 8px;
+  border: 1px solid color-mix(in srgb, var(--cf-surface-border) 70%, transparent);
+  border-radius: var(--cf-radius-md);
+  background: color-mix(in srgb, var(--cf-control-surface) 45%, transparent);
+  transition:
+    border-color var(--cf-duration-fast) ease,
+    background-color var(--cf-duration-fast) ease,
+    box-shadow var(--cf-duration-fast) ease;
+}
+.cf-groups-preview-card:not(.is-on) {
+  cursor: pointer;
+}
+.cf-groups-preview-card:not(.is-on):hover {
+  border-color: color-mix(in srgb, var(--cf-menu-accent) 35%, var(--cf-surface-border));
+  background: color-mix(in srgb, var(--cf-control-surface) 80%, transparent);
+}
+.cf-groups-preview-card:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--cf-menu-accent) 45%, transparent);
+  outline-offset: 1px;
+}
+.cf-groups-preview-card.is-on {
+  border-color: color-mix(in srgb, var(--cf-menu-accent) 60%, var(--cf-surface-border));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cf-menu-accent) 18%, transparent);
+}
+.cf-groups-preview-cap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cf-aurora-muted);
+  font-size: var(--cf-font-size-xs);
+  line-height: 16px;
+}
+.cf-groups-preview-cap i {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--cf-control-active);
+  color: var(--cf-control-ink);
+  font-size: var(--cf-font-size-2xs);
+  font-style: normal;
+  line-height: 16px;
+}
+.cf-groups-preview-sample {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 22px;
+  overflow: hidden;
+}
+.cf-groups-preview-user {
+  display: inline-flex;
+  align-items: center;
+  color: var(--cf-gray-700);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: var(--cf-font-size-lg);
+  font-weight: var(--cf-font-weight-bold);
+  white-space: nowrap;
+  transition: color var(--cf-duration-base) ease;
 }
 .cf-groups-friends-note,
 .cf-groups-feedback {
@@ -976,6 +1430,101 @@ onBeforeUnmount(() => {
     box-shadow 160ms ease,
     filter 160ms ease,
     opacity 160ms ease;
+}
+/* 「加入其他分组」：按钮后面一个小箭头，展开时转过来；下面弹出别的自建分组的列表。 */
+.cf-groups-copy {
+  position: relative;
+  flex: none;
+}
+.cf-groups-copy .cf-aurora-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cf-groups-copy-caret {
+  width: 5px;
+  height: 5px;
+  margin-top: -3px;
+  border: solid currentColor;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  transition: transform var(--cf-duration-fast) ease;
+}
+.cf-groups-copy .is-open .cf-groups-copy-caret {
+  margin-top: 3px;
+  transform: rotate(-135deg);
+}
+.cf-groups-copy-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 5;
+  min-width: 220px;
+  max-height: 240px;
+  padding: 6px;
+  border: 1px solid var(--cf-surface-border);
+  border-radius: var(--cf-radius-md);
+  background: var(--cf-white-surface);
+  box-shadow: 0 10px 28px #2634531f;
+  box-sizing: border-box;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.cf-groups-copy-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 30px;
+  margin: 0;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--cf-radius-sm);
+  background: none;
+  color: var(--cf-aurora-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--cf-duration-fast) ease,
+    opacity var(--cf-duration-fast) ease;
+}
+.cf-groups-copy-item:hover:not(:disabled) {
+  background: var(--cf-card-hover);
+}
+.cf-groups-copy-item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.cf-groups-copy-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cf-groups-copy-end {
+  flex: none;
+  color: var(--cf-aurora-muted);
+  font-size: var(--cf-font-size-xs);
+}
+.cf-groups-pop-enter-active,
+.cf-groups-pop-leave-active {
+  transition:
+    opacity var(--cf-duration-fast) ease,
+    transform var(--cf-duration-fast) var(--cf-ease-out);
+}
+.cf-groups-pop-enter-from,
+.cf-groups-pop-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-groups-pop-enter-active,
+  .cf-groups-pop-leave-active,
+  .cf-groups-copy-caret {
+    transition: none;
+  }
 }
 .cf-groups-add-bar .cf-aurora-btn:disabled,
 .cf-groups-remove:disabled {
@@ -1077,7 +1626,11 @@ onBeforeUnmount(() => {
   color: var(--cf-aurora-muted);
   font-weight: normal;
 }
+/* 勾选框：勾上时填满主题色，里面一个白色的对号（两条边画出来），弹一下出现。
+   表头的全选框勾了一部分时，里面是一条横线。和右键菜单里的勾选框是同一种画法。 */
 .cf-groups-check {
+  display: grid;
+  place-items: center;
   width: 16px;
   height: 16px;
   margin: 0;
@@ -1085,17 +1638,41 @@ onBeforeUnmount(() => {
   border: 2px solid var(--cf-surface-border);
   border-radius: var(--cf-radius-xs);
   background: var(--cf-content-surface);
+  box-sizing: border-box;
   cursor: pointer;
   transition:
     background-color var(--cf-duration-fast) ease,
-    border-color var(--cf-duration-fast) ease;
+    border-color var(--cf-duration-fast) ease,
+    opacity var(--cf-duration-fast) ease;
 }
-.cf-groups-check.on {
+.cf-groups-check::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  margin-top: -2px;
+  border: solid var(--cf-white-ink);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform var(--cf-duration-fast) var(--cf-ease-out);
+}
+.cf-groups-check.on,
+.cf-groups-check.is-some {
   border-color: var(--cf-menu-accent);
-  background:
-    linear-gradient(-45deg, transparent 42%, #fff 42% 58%, transparent 58%) 3px 1px / 8px 8px
-      no-repeat,
-    var(--cf-menu-accent);
+  background: var(--cf-menu-accent);
+}
+.cf-groups-check.on::after {
+  transform: rotate(45deg) scale(1);
+}
+.cf-groups-check.is-some::after {
+  width: 8px;
+  height: 0;
+  margin-top: 0;
+  border-width: 0 0 2px;
+  transform: none;
+}
+.cf-groups-check:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 .cf-groups-tags {
   display: flex;

@@ -4,7 +4,7 @@
 export default [
   {
     version: 'v 1.9.0',
-    time: 1791915420000, // 2026-10-14 02:17 UTC+8
+    time: 1791961920000, // 2026-10-14 15:12 UTC+8
     sections: [
       { type: 'added', contentKey: 'v 1.9.0:0' },
       { type: 'fixed', contentKey: 'v 1.9.0:1' },

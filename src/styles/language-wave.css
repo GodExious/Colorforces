@@ -27,6 +27,14 @@
   contain: style !important;
 }
 
+/* 换语言时空着的输入框里的提示文字：先藏起来，再带着过渡显示出来（见 utils/language-wave.js 的 PLACEHOLDER）。 */
+.cf-language-placeholder-fade::placeholder {
+  transition: color 190ms ease-out !important;
+}
+.cf-language-placeholder-hidden::placeholder {
+  color: transparent !important;
+}
+
 /* 这一项自己用伪元素画的装饰（序号圆点、连线、引导线）一直都在，照片不用再画一遍。 */
 .cf-language-ghost::before,
 .cf-language-ghost::after {

@@ -13,7 +13,7 @@ import { menuTabColor } from '../../../utils/petal-palette.js';
 import { getCurrentUserHandle } from '../../page/account.js';
 import { PLUGIN_UI_SELECTOR } from '../../page/plugin-ui.js';
 import { readAccount } from './data.js';
-import { everyoneIn, listGroups, markGroupOf, shownMark, userId } from './store.js';
+import { everyoneIn, listGroups, markGroupOf, profileHandle, shownMark, userId } from './store.js';
 
 const ATTRIBUTE = 'data-cf-group';
 const COLOR = '--cf-group-color';
@@ -62,7 +62,7 @@ function buildTags() {
 let ruler = null;
 const widths = new Map();
 function widthOf(tag) {
-  if (tag.kind === 'mark') return tag.name ? 16 : 8;
+  if (tag.kind === 'mark') return tag.name ? 18 : 8;
   const key = tag.kind + '\n' + tag.name;
   if (!widths.has(key)) {
     if (!ruler) {
@@ -79,13 +79,7 @@ function widthOf(tag) {
 
 // 这个链接该不该有标签，有的话是哪个；没有返回 null。
 function tagFor(link) {
-  const match = /\/profile\/([^/?#]+)(?:[?#]|$)/.exec(link.getAttribute('href') || '');
-  let handle = '';
-  try {
-    handle = match ? decodeURIComponent(match[1]) : '';
-  } catch {
-    // 地址里的编码不完整：不当成用户链接。
-  }
+  const handle = profileHandle(link.getAttribute('href'));
   const tag = handle ? tags.get(userId(handle)) : null;
   // 只标文字就是用户名的链接（「查看主页」之类的不标），插件自己界面里的也不标。
   return tag &&
@@ -180,13 +174,23 @@ export function groupTagAt(host, x) {
   range.selectNodeContents(host);
   const inner = range.getBoundingClientRect();
   if (!inner.width && !inner.height) return null;
-  const left = inner.right + GAP;
-  const right = Math.min(left + width, Math.max(left, host.getBoundingClientRect().right));
+  // 标签一般排在元素的内容后面，被挤窄时到元素的右边为止。
+  // 绝对定位在留白里的（头像画在链接里的那种链接，见 groups.css）贴着元素的右边，宽度按它实际画出来的算：
+  // 名字太长时它被最大宽度截短了，比写下的宽度窄，这时也要算成「被省略了」，提示才会出来。
+  const after = getComputedStyle(host, '::after');
+  let left = inner.right + GAP,
+    right;
+  if (after.position === 'absolute') {
+    right =
+      host.getBoundingClientRect().right - parseFloat(getComputedStyle(host).borderRightWidth);
+    left = right - parseFloat(after.width);
+  } else right = Math.min(left + width, Math.max(left, host.getBoundingClientRect().right));
   if (right - left < 2 || x < left - 1 || x > right + 1) return null;
-  const top = (inner.top + inner.bottom) / 2 - 8;
+  // 标签高 18px，和它所在那一行的文字上下居中。
+  const top = (inner.top + inner.bottom) / 2 - 9;
   const cut = width - (right - left) > 0.5;
   return {
-    rect: { left, right, top, bottom: top + 16, width: right - left, height: 16 },
+    rect: { left, right, top, bottom: top + 18, width: right - left, height: 18 },
     title: host.hasAttribute(KIND) || cut ? host.getAttribute(TITLE) || '' : '',
   };
 }
@@ -207,7 +211,9 @@ export function applyGroupTags() {
       mark(host, tag);
     }
   // 不该再有标签的：人不在分组里了，或者链接后来被包进了头像那一行、标签挪到了那一层上。
-  for (const host of document.querySelectorAll(`[${ATTRIBUTE}]`)) if (!hosts.has(host)) clear(host);
+  // 插件自己界面里的（分组弹窗里的预览）由界面自己管，不动。
+  for (const host of document.querySelectorAll(`[${ATTRIBUTE}]`))
+    if (!hosts.has(host) && !host.closest(PLUGIN_UI_SELECTOR)) clear(host);
 }
 
 // 分组、设置或语言变了：按新的重新标一遍。

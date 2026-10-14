@@ -18,6 +18,8 @@
  *   这时按它原来在界面里的位置（第几层的第几个）找到顶替它的新元素，在新元素上接着做过渡。
  * - 点开的浮层（标了 data-cf-language-keep，比如图表标题栏里的年份小表）要一直完整地盖在别的东西上面，
  *   所以装着它的元素不能整个当一项，见 unitsOf。
+ * - 输入框里的提示文字（placeholder）不是页面上的文字，上面的办法管不到。空着的输入框单独算一项：
+ *   换语言的那一刻提示文字先藏起来，轮到它时淡入新的（见 PLACEHOLDER）。旧的提示文字没法拍照，所以只有淡入这一半。
  */
 
 const SURFACES = '[data-cf-language-surface], .cf-aurora-card';
@@ -31,6 +33,10 @@ const TABLE_PARTS = new Set(['TR', 'TBODY', 'THEAD', 'TFOOT', 'TABLE']);
 // 上一层里的文字超过这么多段，就不拿上一层当项了。
 const CROWD = 8;
 const GHOST_CLASS = 'cf-language-ghost';
+// 输入框的提示文字：带上 HIDDEN 时藏起来；FADE 在过渡期间一直带着，提示文字的颜色变化才有过渡（样式见 language-wave.css）。
+const PLACEHOLDER = 'input[placeholder], textarea[placeholder]';
+const PLACEHOLDER_HIDDEN = 'cf-language-placeholder-hidden';
+const PLACEHOLDER_FADE = 'cf-language-placeholder-fade';
 
 // 各段的时长（毫秒）：旧内容淡出、新内容淡入、大小和位置的过渡。
 const OUT = 80;
@@ -157,13 +163,23 @@ function successor(shot) {
   return same ? node : null;
 }
 
-// 换语言之前：记下各个界面里看得见的项的样子。
+// 换语言之前：记下各个界面里看得见的项的样子，和空着的输入框的提示文字。
 function capture() {
   const shots = [];
   for (const surface of document.querySelectorAll(SURFACES)) {
     if (surface.closest(`.${GHOST_CLASS}`) || !shown(surface)) continue;
     // 界面自己原来的大小：换完之后它的高度要是有没管住的变化，靠这个做过渡，见 start。
     const frame = surface.getBoundingClientRect();
+    for (const field of surface.querySelectorAll(PLACEHOLDER)) {
+      if (field.value || field.closest(SURFACES) !== surface || !shown(field)) continue;
+      shots.push({
+        surface,
+        frame,
+        field,
+        placeholder: field.placeholder,
+        rect: field.getBoundingClientRect(),
+      });
+    }
     for (const unit of unitsOf(surface)) {
       if (!shown(unit)) continue;
       shots.push({
@@ -208,17 +224,43 @@ const sizeFrame = (rect, width, height) => ({
 // 换完语言之后：文字变了的项开始过渡。返回这一轮的动画和收尾的办法。
 function start(shots) {
   const live = shots
+    .filter((shot) => !shot.field)
     .map((shot) => ({ ...shot, unit: successor(shot) }))
     .filter((shot) => shot.unit && shot.unit.textContent !== shot.text);
+  // 提示文字变了的输入框（还在页面上、还是空着的）。
+  const fields = shots.filter(
+    (shot) =>
+      shot.field?.isConnected && !shot.field.value && shot.field.placeholder !== shot.placeholder,
+  );
   const animations = [];
   const undo = [];
-  // 各项晚多久开始：各界面各排各的，按原来的位置从上到下、从左到右。
+  // 各项晚多久开始：各界面各排各的，按原来的位置从上到下、从左到右。输入框和别的项排在一起。
   const delays = new Map();
-  for (const surface of new Set(live.map((shot) => shot.surface))) {
-    const own = live
+  for (const surface of new Set([...live, ...fields].map((shot) => shot.surface))) {
+    const own = [...live, ...fields]
       .filter((shot) => shot.surface === surface)
       .sort((a, b) => a.rect.top - b.rect.top || a.rect.left - b.rect.left);
     waveDelays(own.length).forEach((delay, index) => delays.set(own[index], delay));
+  }
+  // 输入框的提示文字：先藏起来（不带过渡，一下子藏），轮到它时去掉「藏」，颜色带着过渡回来。
+  for (const shot of fields) {
+    const { field } = shot;
+    field.classList.add(PLACEHOLDER_HIDDEN);
+    field.getBoundingClientRect();
+    field.classList.add(PLACEHOLDER_FADE);
+    const show = setTimeout(
+      () => field.classList.remove(PLACEHOLDER_HIDDEN),
+      delays.get(shot) + OUT,
+    );
+    const settle = setTimeout(
+      () => field.classList.remove(PLACEHOLDER_FADE),
+      delays.get(shot) + OUT + IN,
+    );
+    undo.push(() => {
+      clearTimeout(show);
+      clearTimeout(settle);
+      field.classList.remove(PLACEHOLDER_HIDDEN, PLACEHOLDER_FADE);
+    });
   }
   // 各个界面换完之后本来的高度，趁还没把各项按住的时候量。
   const surfaces = new Map();

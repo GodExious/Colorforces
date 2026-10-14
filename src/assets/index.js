@@ -10,6 +10,11 @@ import menuStorageIcon from './icons/menu/storage.svg?raw';
 import menuChangelogIcon from './icons/menu/changelog.svg?raw';
 import menuRoadmapIcon from './icons/menu/roadmap.svg?raw';
 import menuAcknowledgmentsIcon from './icons/menu/acknowledgments.svg?raw';
+import userMenuPlusIcon from './icons/user-menu/plus.svg?raw';
+import userMenuQuillIcon from './icons/user-menu/quill.svg?raw';
+import userMenuOpenIcon from './icons/user-menu/open.svg?raw';
+import userMenuCopyIcon from './icons/user-menu/copy.svg?raw';
+import userMenuLinkIcon from './icons/user-menu/link.svg?raw';
 import sectionFunctionIcon from './icons/sections/function.svg?raw';
 import sectionStyleIcon from './icons/sections/style.svg?raw';
 import codeforcesIcon from './icons/storage/cf.svg?raw';
@@ -47,6 +52,7 @@ import roadmapCompletedIcon from './icons/actions/roadmap-completed-icon.svg?raw
 import brandExternalLinkIcon from './icons/actions/brand-external-link-icon.svg?raw';
 import ojBetterIcon from './icons/actions/oj-better-icon.svg?raw';
 import loadingIcon from './icons/actions/loading-icon.svg?raw';
+import previewEyeIcon from './icons/actions/preview-eye-icon.svg?raw';
 import footerGithubIcon from './icons/actions/footer-github-icon.svg?raw';
 import launcherIcon from './icons/actions/launcher-icon.svg?raw';
 export { default as colorforcesMark } from './icons/brands/colorforces.svg?raw';
@@ -102,6 +108,7 @@ export {
   brandExternalLinkIcon,
   ojBetterIcon,
   loadingIcon,
+  previewEyeIcon,
   footerGithubIcon,
   launcherIcon,
 };
@@ -117,6 +124,14 @@ export const TAB_ICONS = {
   changelog: menuChangelogIcon,
   roadmap: menuRoadmapIcon,
   acknowledgments: menuAcknowledgmentsIcon,
+};
+// 用户名上的右键菜单。
+export const USER_MENU_ICONS = {
+  plus: userMenuPlusIcon,
+  quill: userMenuQuillIcon,
+  open: userMenuOpenIcon,
+  copy: userMenuCopyIcon,
+  link: userMenuLinkIcon,
 };
 export const STORAGE_ICONS = {
   user: storageAvatarIcon,

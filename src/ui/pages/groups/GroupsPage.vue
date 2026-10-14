@@ -9,6 +9,7 @@ import ToggleSwitch from '../../components/forms/ToggleSwitch/ToggleSwitch.vue';
 import ActionButton from '../../components/forms/ActionButton/ActionButton.vue';
 import SegmentedSwitch from '../../components/forms/SegmentedSwitch/SegmentedSwitch.vue';
 import ExpandTransition from '../../components/transitions/ExpandTransition/ExpandTransition.vue';
+import SettingNote from '../../components/settings/SettingNote/SettingNote.vue';
 import InfoHint from '../../components/tooltips/InfoHint/InfoHint.vue';
 import { tooltip } from '../../components/tooltips/FloatingTooltip/FloatingTooltip.vue';
 import {
@@ -18,7 +19,11 @@ import {
   syncFriends,
   refreshMembers,
 } from '../../../features/user/groups/data.js';
-import { profileOf, subscribeProfiles } from '../../../features/user/groups/profiles.js';
+import {
+  profileOf,
+  requestProfiles,
+  subscribeProfiles,
+} from '../../../features/user/groups/profiles.js';
 import {
   FRIENDS_GROUP,
   NAME_LIMIT,
@@ -43,8 +48,11 @@ const props = defineProps({ active: Boolean, owner: String });
 const account = shallowRef(null);
 function reload() {
   account.value = readAccount(props.owner);
-  // 这一页正显示着时顺带读成员的资料（评分、头像）；缓存里都有的话不会发请求。
-  if (props.active && appSettings.groups.enabled) refreshMembers(props.owner);
+  // 这一页正显示着时顺带读成员和自己的资料（评分、头像）；缓存里都有的话不会发请求。
+  if (props.active && appSettings.groups.enabled) {
+    refreshMembers(props.owner);
+    if (props.owner) requestProfiles([props.owner]).catch(() => {});
+  }
 }
 // 正拖着调整先后时，自建分组眼下的先后（一串 id）；没在拖时是 null。见下面「拖动调整先后」。
 const dragOrder = ref(null);
@@ -56,8 +64,11 @@ const groups = computed(() => {
 const nameOf = (group) => (group.builtin ? t('groupsFriends') : group.name);
 // 成员的资料读到了新的时加一，下面按它重新取。
 const profilesSeen = ref(0);
-// 成员多的分组，页面上只列前面这么多个，其余的到管理弹窗里看。
-const MEMBERS_SHOWN = 40;
+const ownerProfile = computed(() =>
+  profilesSeen.value >= 0 && props.owner ? profileOf(props.owner) : null,
+);
+// 展开一个分组时只列评分最高的这么多个人，其余的收成一个「+N」，到管理弹窗里看全部。
+const MEMBERS_SHOWN = 10;
 // 一个分组的成员，评分高的在前；每一项带着读到的资料。
 function members(group) {
   if (!account.value || profilesSeen.value < 0) return [];
@@ -298,11 +309,43 @@ watch(
       </div>
       <ExpandTransition :show="appSettings.groups.enabled">
         <div class="cf-groups-body">
+          <SettingNote class="cf-groups-tip" :label="t('groupsTipLabel')" :text="t('groupsTip')" />
+          <div class="cf-setting-item" @click="toggleFromRow">
+            <span class="cf-setting-sublabel"
+              ><label for="cf-groups-control-tags">{{ t('groupsShowTags') }}</label
+              ><InfoHint :text="t('groupsShowTagsHint')"
+            /></span>
+            <ToggleSwitch
+              as="label"
+              input-id="cf-groups-control-tags"
+              v-model="appSettings.groups.showTags"
+              data-control="groupsShowTags"
+              @change="saveSettings()"
+            />
+          </div>
+          <ExpandTransition :show="appSettings.groups.showTags">
+            <div class="cf-nested-options">
+              <div class="cf-setting-item">
+                <span class="cf-setting-sublabel">{{ t('groupsTagStyle') }}</span>
+                <SegmentedSwitch
+                  style="width: 120px"
+                  :model-value="appSettings.groups.tagStyle"
+                  :options="[
+                    { value: 'name', label: t('groupsTagStyleName') },
+                    { value: 'mark', label: t('groupsTagStyleMark') },
+                  ]"
+                  @update:model-value="chooseTagStyle"
+                />
+              </div>
+            </div>
+          </ExpandTransition>
           <div class="cf-groups-list" ref="listHost">
             <div class="cf-groups-head">
-              <span
-                ><b>{{ owner }}</b
-                >{{ t('groupsOwnerSuffix') }}</span
+              <!-- 自己的名字照原站的写法：段位的颜色，跟着「显示用户头像」带头像。 -->
+              <span class="cf-groups-owner"
+                ><MemberName :handle="owner" :profile="ownerProfile" /><span>{{
+                  t('groupsOwnerSuffix')
+                }}</span></span
               >
               <span>{{ t('groupsCount', groups.length) }}</span>
             </div>
@@ -385,12 +428,16 @@ watch(
                           >
                         </Transition>
                       </span>
-                      <span
+                      <button
                         v-if="group.count > MEMBERS_SHOWN"
                         key=":more"
+                        type="button"
                         class="cf-groups-member is-more"
-                        >{{ t('groupsMoreMembers', group.count - MEMBERS_SHOWN) }}</span
+                        :data-tooltip="t('groupsMoreMembers', group.count - MEMBERS_SHOWN)"
+                        @click="showGroupsDialog(group.id)"
                       >
+                        +{{ group.count - MEMBERS_SHOWN }}
+                      </button>
                       <span v-if="!group.count" key=":empty" class="cf-groups-empty">{{
                         t(group.builtin ? 'groupsNoFriends' : 'groupsNoMembers')
                       }}</span>
@@ -449,35 +496,6 @@ watch(
               <InlineSvg :source="assets.syncIcon" /><span>{{ syncLabel }}</span>
             </ActionButton>
           </div>
-          <div class="cf-setting-item" @click="toggleFromRow">
-            <span class="cf-setting-sublabel"
-              ><label for="cf-groups-control-tags">{{ t('groupsShowTags') }}</label
-              ><InfoHint :text="t('groupsShowTagsHint')"
-            /></span>
-            <ToggleSwitch
-              as="label"
-              input-id="cf-groups-control-tags"
-              v-model="appSettings.groups.showTags"
-              data-control="groupsShowTags"
-              @change="saveSettings()"
-            />
-          </div>
-          <ExpandTransition :show="appSettings.groups.showTags">
-            <div class="cf-nested-options">
-              <div class="cf-setting-item">
-                <span class="cf-setting-sublabel">{{ t('groupsTagStyle') }}</span>
-                <SegmentedSwitch
-                  style="width: 120px"
-                  :model-value="appSettings.groups.tagStyle"
-                  :options="[
-                    { value: 'name', label: t('groupsTagStyleName') },
-                    { value: 'mark', label: t('groupsTagStyleMark') },
-                  ]"
-                  @update:model-value="chooseTagStyle"
-                />
-              </div>
-            </div>
-          </ExpandTransition>
         </div>
       </ExpandTransition>
     </section>
@@ -497,25 +515,38 @@ watch(
   gap: 10px;
   padding: 12px 0 0 12px;
 }
+/* 提示和下面的分组列表之间按这一块的间隔排，不再另留上边距。 */
+.cf-groups-tip {
+  margin-top: 0;
+}
 /* 分组列表：一张卡片，一行一个分组。 */
+/* 和上面的设置项隔开一点（在这一块的 10px 间隔之外再多 6px）。 */
 .cf-groups-list {
+  margin-top: 6px;
   border: 1px solid var(--cf-surface-border);
   border-radius: var(--cf-radius-lg);
   background: var(--cf-card-surface);
   overflow: hidden;
 }
+/* 上下留出边距：头像开大时也不贴着上下两条边。 */
 .cf-groups-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
   min-height: 30px;
-  padding: 0 10px;
+  padding: 6px 10px;
+  box-sizing: border-box;
   color: var(--cf-gray-500);
   font-size: var(--cf-font-size-xs);
 }
-.cf-groups-head b {
-  color: var(--cf-control-ink);
-  font-weight: var(--cf-font-weight-semibold);
+.cf-groups-owner {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+/* 「的分组」前面那个空格要留着（中文的名字和「的分组」之间隔开；英文的「’s groups」本来就紧贴着名字）。 */
+.cf-groups-owner > span:last-child {
+  white-space: pre;
 }
 .cf-groups-entry {
   border-top: 1px solid var(--cf-surface-border);
@@ -755,9 +786,24 @@ watch(
 .cf-groups-member-list-leave-to {
   opacity: 0;
 }
+/* 收起来的那些人：「+N」。不能看着像一个成员，所以没有底色，一圈浅色的虚线，字是浅色的数字。点它打开管理弹窗。 */
 .cf-groups-member.is-more {
-  color: var(--cf-gray-400);
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--cf-gray-400) 60%, transparent);
+  background: none;
+  color: var(--cf-gray-500);
+  font-variant-numeric: tabular-nums;
   font-weight: normal;
+  cursor: pointer;
+  transition:
+    background-color var(--cf-duration-fast) ease,
+    border-color var(--cf-duration-fast) ease,
+    color var(--cf-duration-fast) ease;
+}
+.cf-groups-member.is-more:hover {
+  border-color: color-mix(in srgb, var(--cf-menu-accent) 55%, var(--cf-surface-border));
+  background: var(--cf-control-active);
+  color: var(--cf-control-ink);
 }
 .cf-groups-member.is-action {
   border-style: dashed;

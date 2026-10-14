@@ -177,6 +177,7 @@ function readSettings(stored) {
   const groups = part(stored, 'groups');
   takeFlags(settings.groups, groups);
   take(settings.groups, groups, 'tagStyle', oneOf('name', 'mark'));
+  take(settings.groups, groups, 'colorMode', oneOf('board', 'sliders'));
 
   readShortcuts(settings.shortcuts, part(stored, 'shortcuts'));
   return settings;

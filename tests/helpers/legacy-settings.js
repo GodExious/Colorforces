@@ -213,6 +213,7 @@ export const ADDED_LATER = {
   'groups.enabled': true,
   'groups.showTags': true,
   'groups.tagStyle': 'name',
+  'groups.colorMode': 'board',
   'shortcuts.hideVerdictTests': 'Shift+N',
   'shortcuts.groupsEnabled': 'Shift+G',
 };
@@ -244,7 +245,12 @@ export const loadedSettings = {
     ...upgradedSettings.user,
     analytics: { ...upgradedSettings.user.analytics, typesMode: 'submissions' },
   },
-  groups: { enabled: true, showTags: true, tagStyle: 'name' },
+  groups: {
+    enabled: true,
+    showTags: true,
+    tagStyle: 'name',
+    colorMode: 'board',
+  },
   shortcuts: {
     ...upgradedSettings.shortcuts,
     hideVerdictTests: 'Shift+N',

@@ -18,12 +18,16 @@ import {
   joinGroup,
   leaveGroup,
   listGroups,
+  MARK_LIMIT,
+  clipMark,
   markGroupOf,
+  markLength,
   markParts,
   memoOf,
   membersOf,
   moveAccount,
   moveGroup,
+  profileHandle,
   readStore,
   removeGroup,
   renameUser,
@@ -403,4 +407,32 @@ test('登录账号自己改名：分组整份挪到新名字下，新名字下�
   accountOf(store, 'Third');
   assert.equal(moveAccount(store, 'Owner2', 'third'), false);
   assert.equal(moveAccount(store, 'Nobody', 'Fresh'), false);
+});
+
+test('主页链接的地址读出账号名：完整地址、站内地址、带参数的；不是主页、名字不像账号、编码不完整的不算', () => {
+  assert.equal(profileHandle('https://codeforces.com/profile/tourist'), 'tourist');
+  assert.equal(profileHandle('/profile/Um_nik'), 'Um_nik');
+  assert.equal(profileHandle('/profile/a.b-c?locale=en'), 'a.b-c');
+  assert.equal(profileHandle('/profile/jiangly#top'), 'jiangly');
+  assert.equal(profileHandle('/profile/x%5Fy'), 'x_y');
+  assert.equal(profileHandle('/profile/tourist/extra'), '');
+  assert.equal(profileHandle('/contest/1/standings'), '');
+  assert.equal(profileHandle('/profile/'), '');
+  assert.equal(profileHandle('/profile/bad%name'), '');
+  assert.equal(profileHandle('/profile/%E4%BD%A0'), '');
+  assert.equal(profileHandle(null), '');
+});
+
+test('标记输入框的字数：按看得见的字符数，一个表情（含拼成的）算一个；边打边截到上限，不去掉空白', () => {
+  assert.equal(MARK_LIMIT, 2);
+  assert.equal(markLength(''), 0);
+  assert.equal(markLength(undefined), 0);
+  assert.equal(markLength('ab'), 2);
+  assert.equal(markLength('🐷'), 1);
+  assert.equal(markLength('👨‍👩‍👧'), 1);
+  assert.equal(markLength('🇨🇳猪'), 2);
+  assert.equal(clipMark('abc'), 'ab');
+  assert.equal(clipMark('🐷🐮🐔'), '🐷🐮');
+  assert.equal(clipMark('👍🏽x!'), '👍🏽x');
+  assert.equal(clipMark(' a'), ' a');
 });

@@ -9,10 +9,10 @@ All notable changes to this project will be documented in this file.
 ---
 
 ### v1.9.0
-`2026-10-14 02:17 UTC+8`
+`2026-10-14 15:12 UTC+8`
 
 **Added**
-1. Added user groups: put any user into groups you create and attach notes; the friends group follows Codeforces and lets you follow or unfollow users, and a group tag or mark is shown after user names. Manage them on the new Groups page of the menu; Shift+G turns the feature on or off.
+1. Added user groups: put any user into groups you create and attach notes; the friends group follows Codeforces and lets you follow or unfollow users, and a group tag or mark is shown after user names. Right-click a user name to add them to groups, write a note or follow them. Manage groups on the new Groups page of the menu; Shift+G turns the feature on or off.
 
 **Fixed**
 1. Fixed the Hide Test Numbers option showing its Chinese name in the English menu.

@@ -65,6 +65,8 @@ const attrs = computed(() =>
         rel: 'noopener',
         // 页面上的头像功能会给主页链接加头像；这个链接由这里自己画，让它跳过。
         'data-cf-avatar-processed': 'own',
+        // 右键点名字或头像出用户菜单（插件界面里的链接要这样标明才算，见 features/user/groups/targets.js）。
+        'data-cf-user-menu': name.value,
       }
     : {},
 );

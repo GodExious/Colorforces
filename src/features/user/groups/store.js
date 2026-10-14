@@ -16,6 +16,17 @@ export const MEMO_LIMIT = 40;
 
 const HANDLE = /^[\w.-]{1,40}$/;
 export const isHandle = (text) => typeof text === 'string' && HANDLE.test(text);
+// 个人主页链接的地址 → 账号名（原样的大小写）；不是主页链接、或者地址里的名字不像账号时是空串。
+export function profileHandle(href) {
+  const match = /\/profile\/([^/?#]+)(?:[?#]|$)/.exec(typeof href === 'string' ? href : '');
+  try {
+    const handle = match ? decodeURIComponent(match[1]) : '';
+    return isHandle(handle) ? handle : '';
+  } catch {
+    // 地址里的编码不完整：不当成主页链接。
+    return '';
+  }
+}
 const isObject = (value) => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 const text = (value, limit) => (typeof value === 'string' ? value.trim().slice(0, limit) : '');
 const cleanColor = (value) => (/^#[0-9a-f]{6}$/i.test(value) ? value.toLowerCase() : '');
@@ -24,8 +35,14 @@ const segmenter = typeof Intl !== 'undefined' && Intl.Segmenter ? new Intl.Segme
 const charsOf = (value) =>
   segmenter ? Array.from(segmenter.segment(value), (part) => part.segment) : [...value];
 // 标记是一个小图标，通常是一个表情；最多留两个字符。
-const cleanMark = (value) =>
-  typeof value === 'string' ? charsOf(value.trim()).slice(0, 2).join('') : '';
+export const MARK_LIMIT = 2;
+// 一段文字有几个看得见的字符；截到前 MARK_LIMIT 个（输入框里边打边截用，不去掉空白）。
+export const markLength = (value) => charsOf(value || '').length;
+export const clipMark = (value) =>
+  charsOf(value || '')
+    .slice(0, MARK_LIMIT)
+    .join('');
+const cleanMark = (value) => (typeof value === 'string' ? clipMark(value.trim()) : '');
 // 标记画在一个小圆里时显示哪几个字符：两个都是半角的（字母、数字、符号）才两个都放得下；
 // 里面有汉字、表情这类宽的字符时只显示第一个，免得挤到圆外面。
 export function markParts(mark) {

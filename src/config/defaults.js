@@ -148,6 +148,8 @@ export const DEFAULT_SETTINGS = {
     showTags: true,
     // 标签的样子：'name' 写分组名，'mark' 只画分组的小标（图标）。
     tagStyle: 'name',
+    // 自定义分组颜色时用哪种调法：'board' 一块色板加一条色相，'sliders' 三条滑杆。记着上次用的。
+    colorMode: 'board',
   },
   // 快捷键。键名是动作的标识，不是设置项的路径。
   shortcuts: {

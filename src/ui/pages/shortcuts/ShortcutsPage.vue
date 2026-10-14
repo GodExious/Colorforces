@@ -9,6 +9,7 @@ import { DEFAULT_SETTINGS } from '../../../config/defaults.js';
 import { isShiftActive, CODE_TO_BASE_KEY } from '../../../utils/shortcuts.js';
 import { tooltip } from '../../components/tooltips/FloatingTooltip/FloatingTooltip.vue';
 import ShortcutKeys from './components/ShortcutKeys/ShortcutKeys.vue';
+import SettingNote from '../../components/settings/SettingNote/SettingNote.vue';
 const props = defineProps({ active: Boolean });
 // 分组照菜单的页签，组里的先后照各页里选项的先后。
 const groups = [
@@ -219,16 +220,7 @@ onBeforeUnmount(stopRecording);
       <p class="cf-shortcuts-subtitle">
         <span>{{ t().shortcutsSectionTip }}</span>
       </p>
-      <div class="cf-shortcuts-note">
-        <span class="cf-shortcuts-note-icon"
-          ><inline-svg v-bind:source="assets.shortcutInfoIcon"></inline-svg
-        ></span>
-        <!-- 标题和正文是连着排的一段话，正文会折行，所以切换语言时整段一起收放，不分开标。 -->
-        <div class="cf-shortcuts-note-body">
-          <strong class="cf-shortcuts-note-label" v-text="t('shortcutsSectionNoteLabel')"></strong
-          ><span class="cf-shortcuts-note-text">{{ t('shortcutsSectionNote') }}</span>
-        </div>
-      </div>
+      <SettingNote :label="t('shortcutsSectionNoteLabel')" :text="t('shortcutsSectionNote')" />
     </div>
     <div class="cf-shortcuts-list">
       <div class="cf-shortcut-group" v-for="group in groups" v-bind:key="group.id">
@@ -339,55 +331,6 @@ onBeforeUnmount(stopRecording);
 
 .cf-shortcuts-subtitle + .cf-shortcuts-subtitle {
   margin-top: 8px;
-}
-
-.cf-shortcuts-note {
-  --cf-note-ink: color-mix(in srgb, var(--cf-menu-accent) 52%, #172b39);
-  margin-top: 10px;
-  padding: 8px 12px;
-  background: color-mix(in srgb, var(--cf-menu-accent) 11%, white);
-  border: 1px solid var(--cf-surface-border);
-  border-left: 3.5px solid var(--cf-menu-accent);
-  border-radius: var(--cf-radius-sm);
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  box-sizing: border-box;
-  font-size: var(--cf-font-size-base);
-  line-height: 1.5;
-}
-
-.cf-shortcuts-note-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 15px;
-  height: 15px;
-  color: var(--cf-note-ink);
-  flex-shrink: 0;
-  margin-top: 1.5px;
-}
-
-.cf-shortcuts-note-icon svg {
-  width: 15px;
-  height: 15px;
-  display: block;
-}
-
-.cf-shortcuts-note-body {
-  flex: 1 1 auto;
-  color: var(--cf-note-ink);
-}
-
-.cf-shortcuts-note-label {
-  font-weight: var(--cf-font-weight-bold);
-  color: var(--cf-note-ink);
-  margin-right: 2px;
-}
-
-.cf-shortcuts-note-text {
-  color: var(--cf-note-ink);
-  font-weight: var(--cf-font-weight-medium);
 }
 
 .cf-shortcuts-list {
