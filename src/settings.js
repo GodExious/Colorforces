@@ -174,6 +174,10 @@ function readSettings(stored) {
   );
   takeFlags(settings.user.analytics.charts, part(analytics, 'charts'));
 
+  const groups = part(stored, 'groups');
+  takeFlags(settings.groups, groups);
+  take(settings.groups, groups, 'tagStyle', oneOf('name', 'mark'));
+
   readShortcuts(settings.shortcuts, part(stored, 'shortcuts'));
   return settings;
 }

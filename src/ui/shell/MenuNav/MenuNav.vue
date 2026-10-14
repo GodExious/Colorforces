@@ -5,7 +5,8 @@ import { translate as t } from '../../../i18n/index.js';
 import * as assets from '../../../assets/index.js';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
 import { MENU_TAB_IDS } from '../../../config/menu-tabs.js';
-const props = defineProps({ active: String });
+// disabled：现在点不了的页签（分组页没登录时不能用）。
+const props = defineProps({ active: String, disabled: { type: Array, default: () => [] } });
 const emit = defineEmits(['select', 'theme']);
 const root = ref(null),
   indicator = ref(null);
@@ -17,6 +18,7 @@ const labels = {
   ratings: 'tabRatings',
   prediction: 'tabPrediction',
   user: 'tabUser',
+  groups: 'tabGroups',
   shortcuts: 'tabShortcuts',
   storage: 'tabStorage',
   changelog: 'changelogTitle',
@@ -95,9 +97,11 @@ onBeforeUnmount(() => {
       :key="tab.id"
       type="button"
       class="cf-nav-tab"
-      :class="{ active: active === tab.id }"
+      :class="{ active: active === tab.id, 'is-disabled': disabled.includes(tab.id) }"
       :data-tab="tab.id"
-      @click="$emit('select', tab.id)"
+      :aria-disabled="disabled.includes(tab.id)"
+      :data-tooltip="disabled.includes(tab.id) ? t('tabNeedsSignIn') : null"
+      @click="disabled.includes(tab.id) || $emit('select', tab.id)"
     >
       <span class="cf-tab-icon"><inline-svg :source="assets.TAB_ICONS[tab.id]"></inline-svg></span
       ><span class="cf-tab-text">{{ t(tab.label) }}</span>
@@ -216,6 +220,18 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
+/* 现在不能用的页签：变淡，点了没反应。不用按钮自带的禁用：那样鼠标移上去不出提示。 */
+.cf-nav-tab.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cf-nav-tab.is-disabled:hover {
+  background: transparent;
+  color: var(--cf-gray-600);
+}
+.cf-nav-tab.is-disabled:active {
+  transform: none;
+}
 .cf-nav-tab:not(.active):hover {
   background: rgba(0, 0, 0, 0.035);
   color: var(--cf-gray-900);

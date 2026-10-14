@@ -91,6 +91,17 @@ const groups = [
       },
     ],
   },
+  {
+    id: 'groups',
+    labelKey: 'tabGroups',
+    items: [
+      {
+        key: 'groupsEnabled',
+        titleKey: 'shortcutGroupsEnabledTitle',
+        descKey: 'shortcutGroupsEnabledDesc',
+      },
+    ],
+  },
 ];
 const recording = ref(null);
 const draftCombo = ref('');

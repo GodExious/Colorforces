@@ -7,6 +7,7 @@ import { normalizeAvatarUrl, DEFAULT_AVATAR_URL } from './data.js';
 import { syncSecondLevelMenuLava } from '../../page/navigation.js';
 import { isTeamCell } from './structure.js';
 import { rankClass, rankTitle } from './team-members.js';
+import { applyGroupTags } from '../groups/tags.js';
 
 // 队伍里补出来的成员（原站折叠掉的那几个，见 team-members.js）页面上没有名字的颜色，
 // 查到头衔后按原站的写法补上类名和提示。rank 为 undefined 表示不知道（旧缓存里没记），不动。
@@ -81,6 +82,8 @@ export async function applyUserAvatars() {
     }
   }
 
+  // 有要去查的：查到之后才补头像，那时名字会被包进头像那一行，分组标签得跟着挪过去（见 groups/tags.js）。
+  const fetching = missingHandles.length > 0;
   if (missingHandles.length > 0) {
     try {
       while (missingHandles.length > 0) {
@@ -92,9 +95,17 @@ export async function applyUserAvatars() {
             const handle = user.handle;
             const avatarUrl = normalizeAvatarUrl(user.avatar);
             const titlePhotoUrl = normalizeAvatarUrl(user.titlePhoto);
-            // 头衔跟着头像一起记下（未评级的记成空字符串），给队伍里补出来的成员上色用。
+            // 头衔跟着头像一起记下（未评级的记成空字符串），给队伍里补出来的成员上色用；
+            // 评分也记下（未评级的记成 null），分组的成员名单用（见 groups/profiles.js）。
             const rank = user.rank || '';
-            avatarCache[handle] = { url: avatarUrl, fallbackUrl: titlePhotoUrl, time: now, rank };
+            const rating = Number.isFinite(user.rating) ? user.rating : null;
+            avatarCache[handle] = {
+              url: avatarUrl,
+              fallbackUrl: titlePhotoUrl,
+              time: now,
+              rank,
+              rating,
+            };
             injectAvatar(
               handleToElements[handle.toLowerCase()] || [],
               avatarUrl,
@@ -112,7 +123,12 @@ export async function applyUserAvatars() {
             missingHandles = missingHandles.filter(
               (h) => h.toLowerCase() !== missing.toLowerCase(),
             );
-            avatarCache[missing] = { url: DEFAULT_AVATAR_URL, fallbackUrl: '', time: now };
+            avatarCache[missing] = {
+              url: DEFAULT_AVATAR_URL,
+              fallbackUrl: '',
+              time: now,
+              missing: true,
+            };
             injectAvatar(
               handleToElements[missing.toLowerCase()] || [],
               DEFAULT_AVATAR_URL,
@@ -135,6 +151,7 @@ export async function applyUserAvatars() {
     for (const element of elements)
       if (element.dataset.cfAvatarProcessed === 'pending')
         element.dataset.cfAvatarProcessed = 'failed';
+  if (fetching) applyGroupTags();
 }
 
 // 在用户链接旁插入头像，处理默认图与加载回退。

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import {
   PETAL_COLORS,
   petalPosition,
+  nearestPetalPosition,
   petalColor,
   petalTone,
   petalTint,
@@ -93,4 +94,15 @@ test('弹窗按所属菜单页取花瓣色：和这一页图标的颜色一致�
   assert.equal(menuTabColor(MENU_TAB_IDS[0]), PETAL_COLORS[0]);
   assert.equal(menuTabColor('no-such-page'), PETAL_COLORS[0]);
   assert.equal(menuTabColor(undefined), PETAL_COLORS[0]);
+});
+
+test('一个颜色能放回色环上它原来的位置', () => {
+  PETAL_COLORS.forEach((color, index) => assert.equal(nearestPetalPosition(color), index));
+  for (const position of [0.35, 2.5, 4.05, 7.95])
+    assert.equal(nearestPetalPosition(petalColor(position)), position);
+  // 步子大一些时落在最近的那一格上；不是颜色的当作环的起点。
+  assert.equal(nearestPetalPosition(petalColor(3.2), 0.5), 3);
+  assert.equal(nearestPetalPosition(''), 0);
+  assert.equal(nearestPetalPosition('red'), 0);
+  assert.equal(nearestPetalPosition(undefined), 0);
 });

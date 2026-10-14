@@ -22,6 +22,9 @@ export const ANALYTICS_KEY = 'cf_user_analytics_v2';
 // 合并前每个账号各占一个键，键名是这个前缀加小写账号名。这些旧键只用于把数据迁入上面的键，迁完即删。
 export const LEGACY_ANALYTICS_PREFIX = 'cf_user_analytics_v1_';
 
+// 用户分组：各个登录账号的分组、成员、备注和好友名单合存在这一个键里，结构见 features/user/groups/store.js。
+export const USER_GROUPS_KEY = 'cf_user_groups_v1';
+
 // 设置：按菜单页签归档的结构存在这个键里。
 export const SETTINGS_KEY = 'cf_plugin_settings';
 // 1.8.0 之前的设置键，各项平铺在第一层。新键还没有时从这里读一次迁过去，之后不读也不写：

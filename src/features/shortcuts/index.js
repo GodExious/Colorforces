@@ -57,6 +57,9 @@ export function startShortcuts() {
       const analytics = appSettings.user.analytics;
       analytics.enabled = !analytics.enabled;
     },
+    groupsEnabled: () => {
+      appSettings.groups.enabled = !appSettings.groups.enabled;
+    },
   };
   const keydown = (event) => {
     const active = document.activeElement;

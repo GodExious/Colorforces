@@ -21,6 +21,7 @@ const categories = [
   ['clist', '#9dc5eb'],
   ['cf', '#a8d5c2'],
   ['user', '#c4b5e4'],
+  ['groups', '#a9dcc9'],
   ['prediction', '#f1c3a9'],
   ['settings', '#e9b5cc'],
   ['runtime', '#ebd59f'],

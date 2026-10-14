@@ -3,6 +3,14 @@
 // 行尾注释是它对应的北京时间，方便人读；新增版本时用 Date.parse('2026-10-04T03:59:00+08:00') 这样的写法换算。
 export default [
   {
+    version: 'v 1.9.0',
+    time: 1791915420000, // 2026-10-14 02:17 UTC+8
+    sections: [
+      { type: 'added', contentKey: 'v 1.9.0:0' },
+      { type: 'fixed', contentKey: 'v 1.9.0:1' },
+    ],
+  },
+  {
     version: 'v 1.8.1',
     time: 1791825900000, // 2026-10-13 01:25 UTC+8
     sections: [

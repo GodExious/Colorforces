@@ -1,6 +1,8 @@
 import { appSettings, subscribeSettings } from '../settings.js';
 import { startPredictionFeature } from './contest/rating-prediction/index.js';
 import { startAnalyticsFeature } from './user/analytics/index.js';
+import { startUserGroups } from './user/groups/index.js';
+import { applyGroupTags, refreshGroupTags } from './user/groups/tags.js';
 import { updateDynamicStyle } from './appearance/dynamic-style.js';
 import {
   refreshVerdicts,
@@ -73,7 +75,23 @@ export function connectSettingsEffects() {
     {
       read: () => [appSettings.user.avatar.enabled, appSettings.user.formatTeams],
       selector: '.status-party-cell, table.standings .contestant-cell, a[href*="/profile/"]',
-      apply: refreshUserAvatarsAndStandings,
+      // 队伍的格子会按原站的内容重排一遍，里面的链接是重排前的样子，分组标签跟着补一遍。
+      apply: () => {
+        refreshUserAvatarsAndStandings();
+        applyGroupTags();
+      },
+      style: true,
+    },
+    {
+      // 「好友」这个标签的文字跟着语言走。
+      read: () => [
+        appSettings.groups.enabled,
+        appSettings.groups.showTags,
+        appSettings.groups.tagStyle,
+        appSettings.general.lang,
+      ],
+      selector: 'a[href*="/profile/"]',
+      apply: refreshGroupTags,
       style: true,
     },
     {
@@ -143,4 +161,5 @@ export async function startFeatures() {
   wrapVirtualParticipationTime();
   setTimeout(applyTimeFormatting, 500);
   setupObserver(ratings);
+  startUserGroups();
 }

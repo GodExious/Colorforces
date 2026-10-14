@@ -5,6 +5,7 @@ import { appSettings, setSetting } from '../settings.js';
 import { translate as t } from '../i18n/index.js';
 import { languages } from '../i18n/languages.js';
 import { configureLanguageShortcut } from '../features/shortcuts/index.js';
+import { bindGroupTagTips } from './pages/groups/tag-tips.js';
 import * as assets from '../assets/index.js';
 import InlineSvg from './components/icons/InlineSvg/InlineSvg.vue';
 import FloatingTooltip, {
@@ -14,6 +15,7 @@ import ConfirmDialog from './components/dialogs/ConfirmDialog/ConfirmDialog.vue'
 import { preventScrollChaining } from '../utils/scroll.js';
 import { runLanguageWave, finishLanguageWave } from '../utils/language-wave.js';
 import { PLUGIN_UI_SELECTOR } from '../features/page/plugin-ui.js';
+import { getCurrentUserHandle } from '../features/page/account.js';
 import { petalPosition } from '../utils/petal-palette.js';
 import { MENU_TAB_IDS } from '../config/menu-tabs.js';
 import MenuNav from './shell/MenuNav/MenuNav.vue';
@@ -28,6 +30,8 @@ import AppearancePage from './pages/appearance/AppearancePage.vue';
 import RatingsPage from './pages/ratings/RatingsPage.vue';
 import PredictionPage from './pages/prediction/PredictionPage.vue';
 import UserPage from './pages/user/UserPage.vue';
+import GroupsPage from './pages/groups/GroupsPage.vue';
+import GroupsDialog from './pages/groups/components/GroupsDialog/GroupsDialog.vue';
 import PredictionAnalysisDialog from './pages/prediction/components/PredictionAnalysisDialog/PredictionAnalysisDialog.vue';
 import UserAnalyticsPanel from './pages/user/components/UserAnalyticsPanel/UserAnalyticsPanel.vue';
 import ShortcutsPage from './pages/shortcuts/ShortcutsPage.vue';
@@ -45,6 +49,9 @@ import StorageJsonDialog from './pages/storage/components/StorageJsonDialog/Stor
 const visible = ref(false),
   activeTab = ref('general');
 const documentHidden = ref(document.hidden);
+// 登录着的账号，没登录时是空的。分组页按账号存数据，没登录时这一页不能用；每次打开菜单时重新认一次。
+const owner = ref('');
+const disabledTabs = computed(() => (owner.value ? [] : ['groups']));
 // 上下栏共用可见性，菜单关闭或标签页进入后台时暂停玻璃光效。
 provide(
   'cf-menu-motion-active',
@@ -142,6 +149,7 @@ function cycleMenuLanguage() {
   if (next) changeLanguage(next.code);
 }
 let releaseLanguageShortcut;
+let releaseGroupTagTips;
 // 捕获正在播放的视觉状态，让快速切页从当前画面续接而不是跳回起点。
 function readPanelFrame(panel) {
   if (!panel?.classList.contains('active')) return null;
@@ -288,6 +296,9 @@ function toggleMenu() {
   }
   // 还在收起的途中又点开：从收到的地方接着展开。
   onFolded();
+  owner.value = getCurrentUserHandle() || '';
+  // 上次停在分组页、这次没登录：回到第一页。
+  if (disabledTabs.value.includes(activeTab.value)) activeTab.value = ids[0];
   visible.value = true;
   contentArea.value.scrollTop = 0;
   nextTick(() => requestAnimationFrame(() => navigation.value.updateIndicator(false)));
@@ -322,6 +333,7 @@ onMounted(() => {
   document.addEventListener('pointerdown', releasePressFocus);
   document.addEventListener('visibilitychange', syncMenuVisibility);
   releaseLanguageShortcut = configureLanguageShortcut(cycleMenuLanguage);
+  releaseGroupTagTips = bindGroupTagTips();
   panelHost.value.children[0].classList.add('active');
   preventScrollChaining(modal.value);
 });
@@ -330,6 +342,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', releasePressFocus);
   document.removeEventListener('visibilitychange', syncMenuVisibility);
   releaseLanguageShortcut?.();
+  releaseGroupTagTips?.();
   cleanup?.();
   finishLanguageChange();
   clearTimeout(closeTimer);
@@ -389,6 +402,7 @@ onBeforeUnmount(() => {
           <menu-nav
             ref="navigation"
             :active="activeTab"
+            :disabled="disabledTabs"
             @select="switchTab"
             @theme="theme = $event"
           ></menu-nav>
@@ -407,6 +421,10 @@ onBeforeUnmount(() => {
                 ><ratings-page :active="activeTab === 'ratings'"></ratings-page
                 ><prediction-page :active="activeTab === 'prediction'"></prediction-page
                 ><user-page :active="activeTab === 'user'"></user-page
+                ><groups-page
+                  :active="visible && activeTab === 'groups'"
+                  :owner="owner"
+                ></groups-page
                 ><shortcuts-page :active="visible && activeTab === 'shortcuts'"></shortcuts-page
                 ><storage-page
                   :active="visible && activeTab === 'storage'"
@@ -449,7 +467,7 @@ onBeforeUnmount(() => {
   </div>
   <PredictionAnalysisDialog />
   <UserAnalyticsPanel />
-  <FloatingTooltip /><ConfirmDialog /><UpdateDialog /><ClistSyncDialog /><ClistKeyGuide /><ClistSyncGuide /><TimeFormatGuide /><VerdictGuide /><StorageJsonDialog />
+  <FloatingTooltip /><ConfirmDialog /><UpdateDialog /><ClistSyncDialog /><ClistKeyGuide /><ClistSyncGuide /><TimeFormatGuide /><VerdictGuide /><StorageJsonDialog /><GroupsDialog />
 </template>
 <style>
 @property --cf-menu-accent {

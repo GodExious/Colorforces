@@ -14,3 +14,6 @@ export const PREDICTION_API_GAP = 2200;
 
 // 用户提交记录的缓存有效期；已通过题目与数据分析共用这一份。
 export const USER_STATUS_CACHE = 15 * 60 * 1000;
+
+// 好友名单隔这么久自动同步一次；手动同步和打开原站的好友页时不看这个间隔。
+export const FRIENDS_SYNC_INTERVAL = 24 * 60 * 60 * 1000;

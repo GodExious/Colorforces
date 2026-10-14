@@ -210,7 +210,11 @@ export const ADDED_LATER = {
   'contest.participationTags.ghost': true,
   'contest.prediction.syncStandings': true,
   'user.analytics.typesMode': 'submissions',
+  'groups.enabled': true,
+  'groups.showTags': true,
+  'groups.tagStyle': 'name',
   'shortcuts.hideVerdictTests': 'Shift+N',
+  'shortcuts.groupsEnabled': 'Shift+G',
 };
 // 旧设置载入之后应有的样子：迁移的结果，加上后来才有的那些项的默认值。
 export const loadedSettings = {
@@ -240,5 +244,10 @@ export const loadedSettings = {
     ...upgradedSettings.user,
     analytics: { ...upgradedSettings.user.analytics, typesMode: 'submissions' },
   },
-  shortcuts: { ...upgradedSettings.shortcuts, hideVerdictTests: 'Shift+N' },
+  groups: { enabled: true, showTags: true, tagStyle: 'name' },
+  shortcuts: {
+    ...upgradedSettings.shortcuts,
+    hideVerdictTests: 'Shift+N',
+    groupsEnabled: 'Shift+G',
+  },
 };

@@ -7,6 +7,7 @@ export const MENU_TAB_IDS = [
   'ratings',
   'prediction',
   'user',
+  'groups',
   'shortcuts',
   'storage',
   'changelog',

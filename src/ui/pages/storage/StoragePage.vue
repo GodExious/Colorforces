@@ -19,6 +19,7 @@ import {
   PREDICTION_LOCK_KEY,
   RUNTIME_DATA_KEY,
   ANALYTICS_KEY,
+  USER_GROUPS_KEY,
 } from '../../../storage/keys.js';
 import { showConfirmPop } from '../../components/dialogs/ConfirmDialog/ConfirmDialog.vue';
 import { readStore, previewStore } from '../../../features/user/analytics/store.js';
@@ -70,6 +71,14 @@ const groups = [
     bar: 'storageUserTitle',
   },
   {
+    id: 'groups',
+    title: 'storageGroupsTitle',
+    description: 'storageGroupsDesc',
+    action: 'storageGroupsClearBtn',
+    confirm: 'storageGroupsClearConfirm',
+    bar: 'storageGroupsTitle',
+  },
+  {
     id: 'prediction',
     title: 'storagePredictionTitle',
     description: 'storagePredictionDesc',
@@ -95,6 +104,7 @@ const KEY_LABELS = {
   [CLIST_STORAGE_KEY]: 'storageKeyClist',
   [AVATAR_CACHE_KEY]: 'storageAvatarTitle',
   [ANALYTICS_KEY]: 'storageAnalyticsTitle',
+  [USER_GROUPS_KEY]: 'storageGroupsTitle',
   [PREDICTION_CACHE_KEY]: 'storageKeySnapshots',
   [PREDICTION_RATINGS_KEY]: 'storageKeyRatingSources',
   [PREDICTION_LOCK_KEY]: 'storageKeyRequestLease',
@@ -429,6 +439,10 @@ watch(
 .cf-storage-icon-box.icon-avatar,
 .cf-storage-icon-box.icon-user {
   --cf-storage-tone: #8869b5;
+}
+
+.cf-storage-icon-box.icon-groups {
+  --cf-storage-tone: #3f9a7d;
 }
 
 .cf-storage-icon-box.icon-solved,

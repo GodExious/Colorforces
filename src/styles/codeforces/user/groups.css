@@ -1,0 +1,146 @@
+/* 用户名后面的分组标签，见 features/user/groups/tags.js。
+   标签的文字写在 data-cf-group 属性里，颜色在 --cf-group-color 里，宽度在 --cf-group-width 里，这里用 ::after 画出来。
+   带这个属性的可能是：头像功能把「头像、名字、名字后面的小记号」包成的那一行；只放着一个用户的表格格子；
+   或者用户的主页链接。前两种里标签排在小记号（虚拟参赛的 # 等）后面。
+   宽度是脚本量好的确切数值：展开、收起按它过渡，每一帧都看得出变化（用最大宽度来收的话，
+   前大半段什么都不动、最后一下子没了）。 */
+[data-cf-group]::after {
+  content: attr(data-cf-group);
+  display: inline-block;
+  box-sizing: border-box;
+  flex: none;
+  width: var(--cf-group-width, auto);
+  max-width: 96px;
+  margin-left: 4px;
+  padding: 0 5px;
+  /* 一圈分组颜色的细边：只有淡底色的话在页面的白底、隔行的灰底上都太淡。行高减掉边线，总高还是 16px。 */
+  border: 1px solid color-mix(in srgb, var(--cf-group-color) 55%, #fff);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--cf-group-color) 16%, #fff);
+  color: color-mix(in srgb, var(--cf-group-color) 78%, #000);
+  font:
+    600 11px/14px 'Segoe UI',
+    'Microsoft YaHei',
+    Arial,
+    sans-serif;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  overflow: hidden;
+  /* 刚标上时展开出来；开关切换、换文字时在展开和收起两种状态之间过渡。 */
+  animation: cf-group-tag-in 220ms cubic-bezier(0.3, 0, 0.2, 1);
+  transition:
+    width 200ms cubic-bezier(0.3, 0, 0.2, 1),
+    margin-left 200ms cubic-bezier(0.3, 0, 0.2, 1),
+    padding 200ms cubic-bezier(0.3, 0, 0.2, 1),
+    border-width 200ms cubic-bezier(0.3, 0, 0.2, 1),
+    opacity 200ms ease,
+    background-color 200ms ease,
+    color 200ms ease;
+}
+/* 量标签宽度用的元素：看不见，字和留白与标签一样。 */
+#cf-group-tag-ruler {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  box-sizing: border-box;
+  padding: 0 5px;
+  border: 1px solid transparent;
+  font:
+    600 11px/14px 'Segoe UI',
+    'Microsoft YaHei',
+    Arial,
+    sans-serif;
+  letter-spacing: 0;
+  white-space: nowrap;
+  visibility: hidden;
+  pointer-events: none;
+}
+#cf-group-tag-ruler[data-kind='marks'] {
+  min-width: 16px;
+  padding: 0 3px;
+}
+/* 小标：不写分组名，只画分组的图标。一个字符的是 16px 的正圆，两个字符的是一个短的圆角条（宽度都由脚本给）。
+   边线比写分组名的标签深一点。 */
+[data-cf-group][data-cf-group-kind^='mark']::after {
+  max-width: 40px;
+  padding: 0;
+  border-color: color-mix(in srgb, var(--cf-group-color) 62%, #fff);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--cf-group-color) 20%, #fff);
+  color: color-mix(in srgb, var(--cf-group-color) 86%, #000);
+  text-align: center;
+  text-overflow: clip;
+}
+[data-cf-group][data-cf-group-kind='marks']::after {
+  padding: 0 3px;
+}
+/* 没设图标的分组：一个色点。 */
+[data-cf-group=''][data-cf-group-kind='mark']::after {
+  height: 8px;
+  border: 0 solid transparent;
+  border-radius: 50%;
+  background: var(--cf-group-color);
+}
+/* 提交记录的表格里，用户那一列是按「头像加名字」定的宽度（见 user/avatars/teams.css）。
+   标签另占位置、不和名字抢：带标签的这一行不再限在格子的宽度以内，格子的宽度上限跟着放开，这一列会被撑宽一些。
+   为了不撑得太宽，表格里标签最宽 72px，再长的省略，鼠标移上去看完整的（见 ui/pages/groups/tag-tips.js）。 */
+.status-party-cell .cf-avatar-line-wrapper[data-cf-group] {
+  max-width: none !important;
+}
+.status-party-cell:not(.cf-team-formatted):not(.cf-team-unformatted):has(
+    .cf-avatar-line-wrapper[data-cf-group]
+  ),
+.status-party-cell[data-cf-group]:not(.cf-team-formatted):not(.cf-team-unformatted) {
+  max-width: 260px !important;
+}
+table .cf-avatar-line-wrapper[data-cf-group]::after,
+td[data-cf-group]::after {
+  max-width: 72px;
+}
+table .cf-avatar-line-wrapper[data-cf-group][data-cf-group-kind^='mark']::after,
+td[data-cf-group][data-cf-group-kind^='mark']::after {
+  max-width: 40px;
+}
+/* 标签画在链接里面的情况（队伍的格子里有好几个人、名字后面还跟着别的文字）。提交记录的表格里链接限了宽度、放不下的用省略号，
+   标签是一整块，放不下会整块被裁掉、连名字也跟着被省略。名字应该优先：
+   带标签的链接改成弹性排布，名字不让位置，标签有多少位置用多少。
+   选择器照着 teams.css 里那两条写，多带一个属性，压得过它们。 */
+.status-party-cell:not(.cf-team-formatted):not(.cf-team-unformatted)
+  a:not(.cf-avatar-container)[href*='/profile/'][data-cf-group],
+.status-party-cell:is(.cf-team-formatted, .cf-team-unformatted)
+  a:not(.cf-avatar-container)[href*='/profile/'][data-cf-group] {
+  display: inline-flex !important;
+  align-items: center;
+}
+.status-party-cell a[data-cf-group]:not([data-cf-group-kind])::after {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+/* 分组功能或「在用户名后显示分组标签」关着：收起来，不占位置。
+   标签的文字或样子要换时（换了语言、分组改了名、换了样式）也先这样收起来，换好了再展开。写在最后，压过上面各种情况。 */
+:root.cf-hide-groupTags [data-cf-group]::after,
+[data-cf-group][data-cf-group-out]::after {
+  width: 0;
+  min-width: 0;
+  margin-left: 0;
+  padding: 0;
+  border-width: 0;
+  opacity: 0;
+}
+@keyframes cf-group-tag-in {
+  from {
+    width: 0;
+    margin-left: 0;
+    padding: 0;
+    border-width: 0;
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-cf-group]::after {
+    animation: none;
+    transition: none;
+  }
+}

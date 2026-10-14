@@ -1,6 +1,7 @@
 import { applyRatings } from '../ratings/enhance.js';
 import { formatStandingsCells } from '../user/avatars/teams.js';
 import { applyUserAvatars } from '../user/avatars/enhance.js';
+import { applyGroupTags } from '../user/groups/tags.js';
 import { applyProblemTagsVisibility } from '../appearance/problem-tags/visibility.js';
 import { wrapVirtualParticipationTime, applyTimeFormatting } from '../appearance/time/format.js';
 import {
@@ -79,6 +80,7 @@ export function setupObserver(ratingsMap) {
       applyRatings(ratingsMap);
       formatStandingsCells();
       applyUserAvatars();
+      applyGroupTags();
       applyProblemTagsVisibility();
       wrapVirtualParticipationTime();
       applyTimeFormatting();
@@ -153,6 +155,7 @@ export function setupObserver(ratingsMap) {
           applyRatings(ratingsMap);
           formatStandingsCells();
           applyUserAvatars();
+          applyGroupTags();
           applyProblemTagsVisibility();
           wrapVirtualParticipationTime();
           setTimeout(applyTimeFormatting, 300);

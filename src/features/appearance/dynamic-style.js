@@ -39,11 +39,14 @@ function syncFontScale() {
 export function updateDynamicStyle() {
   syncAcHighlightTransition();
   syncFontScale();
-  const { appearance, ratings, user } = appSettings;
+  const { appearance, ratings, user, groups } = appSettings;
   const style = document.documentElement.style;
   style.setProperty('--cf-ac-background', appearance.acHighlight.color);
   style.setProperty('--cf-rejected-background', appearance.acHighlight.rejectedColor);
   style.setProperty('--cf-avatar-em', (parseFloat(user.avatar.size) || 1.6) + 'em');
+  // 菜单里的头像（分组的成员名单）：菜单的字比原站表格里的小，按原站表格的 13px 字号算，和页面上的一样大；
+  // 用的地方再乘上菜单的字号倍数，和名字一起变。
+  style.setProperty('--cf-avatar-px', (parseFloat(user.avatar.size) || 1.6) * 13 + 'px');
   style.setProperty('--cf-lang-px', (parseFloat(appearance.langIcon.size) || 1.6) * 14 + 'px');
   const isRatingsActive = ratings.enabled !== false;
   const classMap = {
@@ -55,6 +58,7 @@ export function updateDynamicStyle() {
     'cf-hide-contestProblems': !isRatingsActive || !ratings.show.contestProblems,
     'cf-hide-standings': !isRatingsActive || !ratings.show.standings,
     'cf-hide-userAvatar': !user.avatar.enabled,
+    'cf-hide-groupTags': !groups.enabled || !groups.showTags,
     'cf-hide-langIcon': !appearance.langIcon.enabled,
     'cf-hide-timeFormat': !appearance.timeFormat.enabled,
   };

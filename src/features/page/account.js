@@ -5,3 +5,11 @@ export function getCurrentUserHandle() {
   );
   return userLink ? userLink.textContent.trim() : null;
 }
+// 页面上的防伪令牌：原站自己往服务器提交东西时都带着它。找不到时返回空串。
+export function getCsrfToken() {
+  return (
+    document.querySelector('meta[name="X-Csrf-Token"]')?.content ||
+    document.querySelector('.csrf-token')?.dataset.csrf ||
+    ''
+  );
+}

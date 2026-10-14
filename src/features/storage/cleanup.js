@@ -13,6 +13,7 @@ import { clearRatingsMemory } from '../ratings/data.js';
 import { clearClistMemory } from '../ratings/clist/sync.js';
 import { clearSolvedMemory } from '../general/solved.js';
 import { clearDatasets } from '../user/analytics/data.js';
+import { clearGroups } from '../user/groups/data.js';
 import { getUserSolvedStorageDetails, getLocalStorageDetails } from './overview.js';
 const listeners = new Set();
 // 清理后通知统计和页脚刷新，不让 UI 直接修改业务模块变量。
@@ -43,6 +44,7 @@ export function clearStorageGroup(group) {
     clearSolvedMemory();
     clearDatasets();
   }
+  if (group === 'groups' || group === 'all') clearGroups();
   if (group === 'prediction' || group === 'all')
     PREDICTION_STORAGE_KEYS.forEach((key) => appStorage.removeItem(key));
   if (group === 'local' || group === 'all') {

@@ -28,7 +28,15 @@ function exists(path) {
 test('默认设置第一层只有结构版本号和各页签的分组', () => {
   assert.equal(DEFAULT_SETTINGS.version, SETTINGS_VERSION);
   const groups = Object.keys(DEFAULT_SETTINGS).filter((key) => key !== 'version');
-  assert.deepEqual(groups, ['general', 'appearance', 'ratings', 'contest', 'user', 'shortcuts']);
+  assert.deepEqual(groups, [
+    'general',
+    'appearance',
+    'ratings',
+    'contest',
+    'user',
+    'groups',
+    'shortcuts',
+  ]);
   for (const group of groups) assert.equal(typeof DEFAULT_SETTINGS[group], 'object', group);
   // 分组名和页签标识一致；只有「比赛」页签的标识是 prediction，分组叫 contest。
   for (const group of groups) {

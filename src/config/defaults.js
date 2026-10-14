@@ -141,6 +141,14 @@ export const DEFAULT_SETTINGS = {
       },
     },
   },
+  // 分组：用户分组的总开关，以及页面上要不要在用户名后面显示分组标签。
+  // 分组本身（成员、备注、好友名单）不是设置，另存在自己的键里。
+  groups: {
+    enabled: true,
+    showTags: true,
+    // 标签的样子：'name' 写分组名，'mark' 只画分组的小标（图标）。
+    tagStyle: 'name',
+  },
   // 快捷键。键名是动作的标识，不是设置项的路径。
   shortcuts: {
     // 先后照菜单里的页签和各页里选项的顺序。
@@ -157,5 +165,6 @@ export const DEFAULT_SETTINGS = {
     predictionEnabled: 'Shift+P', // Prediction：比赛评分预测总开关。
     userAvatar: 'Shift+A',
     userAnalytics: 'Shift+D', // Data：用户数据分析总开关。
+    groupsEnabled: 'Shift+G', // Groups：用户分组总开关。
   },
 };

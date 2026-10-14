@@ -1,4 +1,8 @@
 export default {
+  'v 1.9.0:0': [
+    'Added user groups: put any user into groups you create and attach notes; the friends group follows Codeforces and lets you follow or unfollow users, and a group tag or mark is shown after user names. Manage them on the new Groups page of the menu; Shift+G turns the feature on or off.',
+  ],
+  'v 1.9.0:1': ['Fixed the Hide Test Numbers option showing its Chinese name in the English menu.'],
   'v 1.8.1:0': [
     'Added an option to format Recent Actions in the sidebar.',
     'Added one roadmap item: multi-criteria problem filtering.',

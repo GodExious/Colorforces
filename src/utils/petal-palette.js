@@ -73,6 +73,20 @@ export function petalColor(position) {
   return fromOklab(start.map((value, at) => value + (end[at] - value) * share));
 }
 
+// 一个颜色离色环上哪个位置最近（每隔 step 看一处）。用来把存下的颜色放回色环的滑杆上；不是颜色时返回 0。
+export function nearestPetalPosition(hex, step = 0.05) {
+  if (!/^#[0-9a-f]{6}$/i.test(hex || '')) return 0;
+  const target = toOklab(hex);
+  let best = 0,
+    least = Infinity;
+  for (let index = 0; index * step < PETAL_COLORS.length - 1e-9; index++) {
+    const here = toOklab(petalColor(index * step));
+    const gap = Math.hypot(...here.map((value, at) => value - target[at]));
+    if (gap < least) [least, best] = [gap, index];
+  }
+  return Number((best * step).toFixed(4));
+}
+
 // 某个菜单页的主题色。弹窗不在菜单里面，取不到菜单当前的颜色，按它所属的页来取。
 export function menuTabColor(id) {
   return petalColor(petalPosition(MENU_TAB_IDS.indexOf(id), MENU_TAB_IDS.length));
