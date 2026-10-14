@@ -497,6 +497,13 @@ onBeforeUnmount(() => {
 .cf-setting-sublabel {
   line-height: 20px;
 }
+/* 选项文字后面带着说明图标（i）时，文字和图标排在一条线上、上下居中。
+   原来是各页自己写，新加的选项容易漏掉，图标就按文字的基线摆、偏下一点，所以统一写在这里。 */
+.cf-setting-label:has(> .cf-info-hint),
+.cf-setting-sublabel:has(> .cf-info-hint) {
+  display: inline-flex;
+  align-items: center;
+}
 
 /* 自绘图标使用深轮廓与浅点缀；品牌图标不进入此配色规则。 */
 .cf-menu-theme svg[data-cf-icon] {

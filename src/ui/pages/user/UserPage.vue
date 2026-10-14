@@ -4,6 +4,7 @@ import { appSettings, saveSettings } from '../../../settings.js';
 import { translate as t } from '../../../i18n/index.js';
 import ToggleSwitch from '../../components/forms/ToggleSwitch/ToggleSwitch.vue';
 import RangeSlider from '../../components/forms/RangeSlider/RangeSlider.vue';
+import AvatarFrameSettings from './components/AvatarFrameSettings/AvatarFrameSettings.vue';
 import AnalyticsSettings from './components/AnalyticsSettings/AnalyticsSettings.vue';
 </script>
 <template>
@@ -53,6 +54,10 @@ import AnalyticsSettings from './components/AnalyticsSettings/AnalyticsSettings.
           data-control="cbFormatTeams"
           @change="saveSettings()"
         ></toggle-switch></label
+    ></ExpandTransition>
+    <!-- 头像框：显示头像框，以及它下面的动效、段位头像框。 -->
+    <ExpandTransition :show="appSettings.user.avatar.enabled"
+      ><div style="padding-left: 12px"><AvatarFrameSettings /></div
     ></ExpandTransition>
     <AnalyticsSettings />
   </div>

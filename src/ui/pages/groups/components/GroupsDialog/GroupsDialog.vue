@@ -1544,7 +1544,7 @@ onBeforeUnmount(() => {
   grid-template-columns: 18px 170px 60px minmax(0, 1fr) 160px 18px;
   align-items: center;
   gap: 10px;
-  height: max(38px, calc(var(--cf-avatar-px, 21px) * var(--cf-font-scale, 1) + 14px));
+  min-height: max(38px, calc(var(--cf-avatar-px, 21px) * var(--cf-font-scale, 1) + 14px));
   padding: 0 16px;
   border-bottom: 1px solid var(--cf-surface-border);
   box-sizing: border-box;

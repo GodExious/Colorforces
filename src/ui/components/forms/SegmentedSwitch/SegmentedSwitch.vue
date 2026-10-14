@@ -7,10 +7,19 @@ const props = defineProps({
   activeColor: { type: String, default: 'var(--cf-control-ink)' },
 });
 defineEmits(['update:modelValue']);
-const sliderStyle = computed(() => ({
-  left: props.modelValue === props.options[0].value ? '2px' : '50%',
-  ...props.activeStyle,
-}));
+// 滑块：宽度是一段，停在选中的那一段上。两段时就是原来的「左边 2px 或者正中」。
+const sliderStyle = computed(() => {
+  const count = props.options.length;
+  const at = Math.max(
+    0,
+    props.options.findIndex((option) => option.value === props.modelValue),
+  );
+  return {
+    width: `calc((100% - 4px) / ${count})`,
+    left: `calc(2px + (100% - 4px) * ${at} / ${count})`,
+    ...props.activeStyle,
+  };
+});
 </script>
 <template>
   <div class="cf-segmented-switch">
@@ -51,7 +60,6 @@ const sliderStyle = computed(() => ({
   position: absolute;
   top: 2px;
   bottom: 2px;
-  width: calc(50% - 2px);
   border-radius: var(--cf-radius-lg);
   transition:
     left var(--cf-duration-moderate) cubic-bezier(0.4, 0, 0.2, 1),

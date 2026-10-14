@@ -8,6 +8,7 @@ import { syncSecondLevelMenuLava } from '../../page/navigation.js';
 import { isTeamCell } from './structure.js';
 import { rankClass, rankTitle } from './team-members.js';
 import { applyGroupTags } from '../groups/tags.js';
+import { applyFrames } from '../frames/page.js';
 
 // 队伍里补出来的成员（原站折叠掉的那几个，见 team-members.js）页面上没有名字的颜色，
 // 查到头衔后按原站的写法补上类名和提示。rank 为 undefined 表示不知道（旧缓存里没记），不动。
@@ -97,6 +98,7 @@ export async function applyUserAvatars() {
             const titlePhotoUrl = normalizeAvatarUrl(user.titlePhoto);
             // 头衔跟着头像一起记下（未评级的记成空字符串），给队伍里补出来的成员上色用；
             // 评分也记下（未评级的记成 null），分组的成员名单用（见 groups/profiles.js）。
+            // 到过的最高段位也记下，「最高段位」的头像框用（见 frames/）。
             const rank = user.rank || '';
             const rating = Number.isFinite(user.rating) ? user.rating : null;
             avatarCache[handle] = {
@@ -104,6 +106,7 @@ export async function applyUserAvatars() {
               fallbackUrl: titlePhotoUrl,
               time: now,
               rank,
+              maxRank: user.maxRank || '',
               rating,
             };
             injectAvatar(
@@ -151,7 +154,10 @@ export async function applyUserAvatars() {
     for (const element of elements)
       if (element.dataset.cfAvatarProcessed === 'pending')
         element.dataset.cfAvatarProcessed = 'failed';
-  if (fetching) applyGroupTags();
+  if (fetching) {
+    applyGroupTags();
+    applyFrames();
+  }
 }
 
 // 在用户链接旁插入头像，处理默认图与加载回退。

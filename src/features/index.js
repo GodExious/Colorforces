@@ -3,6 +3,7 @@ import { startPredictionFeature } from './contest/rating-prediction/index.js';
 import { startAnalyticsFeature } from './user/analytics/index.js';
 import { startUserGroups } from './user/groups/index.js';
 import { applyGroupTags, refreshGroupTags } from './user/groups/tags.js';
+import { applyFrames, refreshFrames } from './user/frames/page.js';
 import { updateDynamicStyle } from './appearance/dynamic-style.js';
 import {
   refreshVerdicts,
@@ -75,10 +76,12 @@ export function connectSettingsEffects() {
     {
       read: () => [appSettings.user.avatar.enabled, appSettings.user.formatTeams],
       selector: '.status-party-cell, table.standings .contestant-cell, a[href*="/profile/"]',
-      // 队伍的格子会按原站的内容重排一遍，里面的链接是重排前的样子，分组标签跟着补一遍。
+      // 队伍的格子会按原站的内容重排一遍，里面的链接是重排前的样子，分组标签、头像框跟着补一遍。
       apply: () => {
         refreshUserAvatarsAndStandings();
         applyGroupTags();
+        // 头像关着的这段时间里段位头像框的设置可能改过，全部重新看一遍。
+        refreshFrames();
       },
       style: true,
     },
@@ -92,6 +95,19 @@ export function connectSettingsEffects() {
       ],
       selector: 'a[href*="/profile/"]',
       apply: refreshGroupTags,
+      style: true,
+    },
+    {
+      // 头像框：段位头像框的设置、分组开关（分组的头像框）变了，页面上的头像全部重新看一遍。
+      // 动效的三档只换根元素上的类（style），不用重新标。
+      read: () => [
+        appSettings.user.avatar.frames,
+        appSettings.user.avatar.rankFrame,
+        appSettings.groups.enabled,
+        appSettings.user.avatar.frameMotion,
+      ],
+      selector: '.cf-avatar-slot, .title-photo',
+      apply: refreshFrames,
       style: true,
     },
     {
@@ -150,6 +166,7 @@ export async function startFeatures() {
   // 先记录原站队伍结构，避免将稍后插入的头像链接当作第二位成员。
   formatStandingsCells();
   applyUserAvatars();
+  applyFrames();
   syncSecondLevelMenuLava();
   observeSecondLevelMenu();
   const ratings = await getRatings();

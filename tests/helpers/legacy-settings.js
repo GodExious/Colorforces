@@ -210,12 +210,16 @@ export const ADDED_LATER = {
   'contest.participationTags.ghost': true,
   'contest.prediction.syncStandings': true,
   'user.analytics.typesMode': 'submissions',
+  'user.avatar.frames': true,
+  'user.avatar.rankFrame': 'current',
+  'user.avatar.frameMotion': 'on',
   'groups.enabled': true,
   'groups.showTags': true,
   'groups.tagStyle': 'name',
   'groups.colorMode': 'board',
   'shortcuts.hideVerdictTests': 'Shift+N',
   'shortcuts.groupsEnabled': 'Shift+G',
+  'shortcuts.avatarFrames': 'Shift+K',
 };
 // 旧设置载入之后应有的样子：迁移的结果，加上后来才有的那些项的默认值。
 export const loadedSettings = {
@@ -243,6 +247,12 @@ export const loadedSettings = {
   },
   user: {
     ...upgradedSettings.user,
+    avatar: {
+      ...upgradedSettings.user.avatar,
+      frames: true,
+      rankFrame: 'current',
+      frameMotion: 'on',
+    },
     analytics: { ...upgradedSettings.user.analytics, typesMode: 'submissions' },
   },
   groups: {
@@ -255,5 +265,6 @@ export const loadedSettings = {
     ...upgradedSettings.shortcuts,
     hideVerdictTests: 'Shift+N',
     groupsEnabled: 'Shift+G',
+    avatarFrames: 'Shift+K',
   },
 };

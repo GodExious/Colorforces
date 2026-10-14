@@ -53,6 +53,10 @@ export function startShortcuts() {
       const avatar = appSettings.user.avatar;
       avatar.enabled = !avatar.enabled;
     },
+    avatarFrames: () => {
+      const avatar = appSettings.user.avatar;
+      avatar.frames = !avatar.frames;
+    },
     userAnalytics: () => {
       const analytics = appSettings.user.analytics;
       analytics.enabled = !analytics.enabled;

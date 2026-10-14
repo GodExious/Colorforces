@@ -90,7 +90,16 @@ export const DEFAULT_SETTINGS = {
   },
   // 用户
   user: {
-    avatar: { enabled: true, size: 1.6 },
+    avatar: {
+      enabled: true,
+      size: 1.6,
+      // 显示头像框：头像框的总开关。
+      frames: true,
+      // 段位头像框：'off' 不使用，'current' 按现在的段位，'max' 按到过的最高段位。
+      rankFrame: 'current',
+      // 头像框的动效：'off' 关闭（显示静止的头像框），'hover' 鼠标移上去时才播放，'on' 一直播放。
+      frameMotion: 'on',
+    },
     formatTeams: true,
     // 用户数据图表分析。charts 里每项对应个人主页上的一块内容。
     analytics: {
@@ -166,6 +175,7 @@ export const DEFAULT_SETTINGS = {
     displayStyle: 'Shift+F',
     predictionEnabled: 'Shift+P', // Prediction：比赛评分预测总开关。
     userAvatar: 'Shift+A',
+    avatarFrames: 'Shift+K', // 框（kuàng）：显示头像框；Shift+F 已经给了难度分的显示样式。
     userAnalytics: 'Shift+D', // Data：用户数据分析总开关。
     groupsEnabled: 'Shift+G', // Groups：用户分组总开关。
   },

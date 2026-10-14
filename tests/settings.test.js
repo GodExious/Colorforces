@@ -168,7 +168,7 @@ test('升级时还开着的旧版本页面：它改写旧键不影响本页，�
   const next = await openTab(store);
   assert.deepEqual(clone(next.settings.appSettings), {
     ...loadedSettings,
-    user: { ...loadedSettings.user, avatar: { enabled: false, size: 2.8 } },
+    user: { ...loadedSettings.user, avatar: { ...loadedSettings.user.avatar, size: 2.8 } },
   });
 });
 

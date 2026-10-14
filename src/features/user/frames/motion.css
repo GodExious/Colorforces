@@ -1,0 +1,325 @@
+/* 头像框的动效。头像框是一张一张的 SVG 图片（见 catalog.js），这份样式原样写进每张图片里，不放到页面上。
+   都是在静止的样子上加一点运动，起点和终点就是静止的样子；关掉动效时图片里不放这份样式。
+   由 AIdocs/ClaudeCode/tools/menu-draft/user-groups/export-frames.cjs 从草稿的样式导出，改动效请改草稿再导出。 */
+@keyframes cf-frame-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes cf-frame-glint {
+  0%,
+  30%,
+  100% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.95;
+  }
+}
+@keyframes cf-frame-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.35);
+  }
+}
+@keyframes cf-frame-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+@keyframes cf-frame-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-7deg);
+  }
+  75% {
+    transform: rotate(7deg);
+  }
+}
+@keyframes cf-frame-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+@keyframes cf-frame-flap {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-7deg);
+  }
+}
+@keyframes cf-frame-needle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(28deg);
+  }
+  60% {
+    transform: rotate(-18deg);
+  }
+  80% {
+    transform: rotate(8deg);
+  }
+}
+@keyframes cf-frame-drift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+@keyframes cf-frame-ear {
+  0%,
+  78%,
+  100% {
+    transform: rotate(0deg);
+  }
+  85% {
+    transform: rotate(-14deg);
+  }
+  92% {
+    transform: rotate(6deg);
+  }
+}
+@keyframes cf-frame-wag {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+@keyframes cf-frame-sniff {
+  0%,
+  70%,
+  100% {
+    transform: scale(1);
+  }
+  78% {
+    transform: scale(1.08, 0.94);
+  }
+  86% {
+    transform: scale(0.96, 1.05);
+  }
+}
+@keyframes cf-frame-float {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  60% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  61% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+.cf-frame-art .glint {
+  animation: cf-frame-glint 2.8s linear infinite;
+  animation-delay: calc(var(--i) * 0.1s);
+}
+.cf-frame-art .twinkle {
+  animation: cf-frame-twinkle 2.4s ease-in-out infinite;
+}
+.cf-frame-art .t2 {
+  animation-delay: 0.8s;
+}
+.cf-frame-art .t3 {
+  animation-delay: 1.5s;
+}
+.cf-frame-art .pop {
+  animation: cf-frame-pop 2.6s ease-in-out infinite;
+}
+.cf-frame-art .sway {
+  animation: cf-frame-sway 3s ease-in-out infinite;
+}
+.cf-frame-art .ring-bell {
+  animation: cf-frame-sway 1.8s ease-in-out infinite;
+}
+.cf-frame-art .bob,
+.cf-frame-art .crown {
+  animation: cf-frame-bob 2.6s ease-in-out infinite;
+}
+.cf-frame-art .wing {
+  transform-origin: 20px 62px;
+  animation: cf-frame-flap 2.2s ease-in-out infinite;
+}
+.cf-frame-art .orbit {
+  animation: cf-frame-spin 9s linear infinite;
+}
+.cf-frame-art .needle {
+  animation: cf-frame-needle 3.5s ease-in-out infinite;
+}
+.cf-frame-art .drift {
+  animation: cf-frame-drift 5s ease-in-out infinite;
+}
+.cf-frame-art .d2 {
+  animation-direction: reverse;
+}
+.cf-frame-art .pig-ear {
+  animation: cf-frame-ear 2.8s ease-in-out infinite;
+}
+.cf-frame-art .pig-tail {
+  animation: cf-frame-wag 1.2s ease-in-out infinite;
+}
+.cf-frame-art .pig-nose {
+  animation: cf-frame-sniff 2.8s ease-in-out infinite;
+}
+.cf-frame-art .float {
+  animation: cf-frame-float 3s ease-in infinite;
+}
+.cf-frame-art .s2 {
+  animation-duration: 4.2s;
+}
+.cf-frame-art .b2 {
+  animation-delay: 1.2s;
+}
+.cf-frame-art .slow {
+  animation-duration: 24s;
+}
+@keyframes cf-frame-flutter {
+  0%,
+  72%,
+  84%,
+  96%,
+  100% {
+    transform: scaleX(1);
+  }
+  78%,
+  90% {
+    transform: scaleX(0.5);
+  }
+}
+@keyframes cf-frame-lean {
+  0%,
+  50%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-1.6deg);
+  }
+  75% {
+    transform: rotate(1.2deg);
+  }
+}
+@keyframes cf-frame-slide {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  10%,
+  40% {
+    opacity: 0.85;
+  }
+  50%,
+  99% {
+    opacity: 0;
+    transform: translateY(-56px);
+  }
+}
+@keyframes cf-frame-fall {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  70% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  71% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+@keyframes cf-frame-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-14deg);
+  }
+}
+@keyframes cf-frame-flicker {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.95, 1.08);
+  }
+  70% {
+    transform: scale(1.04, 0.95);
+  }
+}
+.cf-frame-art .flutter {
+  animation: cf-frame-flutter 5s ease-in-out infinite;
+}
+.cf-frame-art .lean {
+  animation: cf-frame-lean 6s ease-in-out infinite;
+}
+.cf-frame-art .slide {
+  animation: cf-frame-slide 4s ease-in-out infinite;
+}
+.cf-frame-art .fall {
+  animation: cf-frame-fall 4s ease-in infinite;
+}
+.cf-frame-art .wave {
+  animation: cf-frame-wave 1.6s ease-in-out infinite;
+}
+.cf-frame-art .w2 {
+  animation-direction: reverse;
+}
+.cf-frame-art .s3 {
+  animation-delay: 1.5s;
+}
+.cf-frame-art .q2 {
+  animation-delay: 1.3s;
+}
+.cf-frame-art .q3 {
+  animation-delay: 2.6s;
+}
+.cf-frame-art .flicker {
+  animation: cf-frame-flicker 1.3s ease-in-out infinite;
+}
+.cf-frame-art .f2 {
+  animation-delay: 0.5s;
+}
+.cf-frame-art .p2 {
+  animation-delay: 0.6s;
+}
+.cf-frame-art .p3 {
+  animation-delay: 1.2s;
+}
+.cf-frame-art .p4 {
+  animation-delay: 1.8s;
+}

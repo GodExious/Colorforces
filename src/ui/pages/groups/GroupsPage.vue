@@ -441,14 +441,16 @@ watch(
                       <span v-if="!group.count" key=":empty" class="cf-groups-empty">{{
                         t(group.builtin ? 'groupsNoFriends' : 'groupsNoMembers')
                       }}</span>
-                      <button
-                        key=":manage"
-                        type="button"
-                        class="cf-groups-member is-action"
-                        @click="showGroupsDialog(group.id)"
-                      >
-                        {{ t('groupsManage') }}
-                      </button>
+                      <!-- 成员排完之后另起一行，靠右一个文字链接打开管理弹窗（成员戴着头像框时胶囊变高，做成胶囊会被撑成大块）。 -->
+                      <div key=":manage" class="cf-groups-members-foot">
+                        <button
+                          type="button"
+                          class="cf-groups-manage-link"
+                          @click="showGroupsDialog(group.id)"
+                        >
+                          {{ t('groupsManageMembers') }}<i aria-hidden="true"></i>
+                        </button>
+                      </div>
                     </TransitionGroup>
                   </ExpandTransition>
                 </div>
@@ -759,9 +761,10 @@ watch(
 .cf-groups-rating.is-plain {
   font-weight: normal;
 }
-/* 展开一个分组时，成员一个接一个地从下面一点的位置浮上来（收着的时候没有这条动画，所以每次展开都会播）。 */
+/* 展开一个分组时，成员一个接一个地从下面一点的位置浮上来，最后一行的「管理成员」跟着（收着的时候没有这条动画，所以每次展开都会播）。 */
 .cf-groups-row.is-open + .cf-expand-region .cf-groups-member,
-.cf-groups-row.is-open + .cf-expand-region .cf-groups-empty {
+.cf-groups-row.is-open + .cf-expand-region .cf-groups-empty,
+.cf-groups-row.is-open + .cf-expand-region .cf-groups-members-foot {
   animation: cf-groups-member-in 280ms var(--cf-ease-out) backwards;
   animation-delay: calc(var(--cf-member-order, 0) * 14ms);
 }
@@ -805,18 +808,40 @@ watch(
   background: var(--cf-control-active);
   color: var(--cf-control-ink);
 }
-.cf-groups-member.is-action {
-  border-style: dashed;
-  color: var(--cf-control-ink);
-  font-weight: normal;
-  cursor: pointer;
-  transition:
-    background-color var(--cf-duration-fast) ease,
-    border-color var(--cf-duration-fast) ease;
+/* 成员区最后一行：靠右的「管理成员 ›」。 */
+.cf-groups-members-foot {
+  display: flex;
+  flex-basis: 100%;
+  justify-content: flex-end;
 }
-.cf-groups-member.is-action:hover {
-  border-color: color-mix(in srgb, var(--cf-menu-accent) 55%, var(--cf-surface-border));
+.cf-groups-manage-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: var(--cf-radius-xs);
+  background: none;
+  color: var(--cf-control-ink);
+  font: inherit;
+  font-size: var(--cf-font-size-xs);
+  cursor: pointer;
+  transition: background-color var(--cf-duration-fast) ease;
+}
+.cf-groups-manage-link:hover {
   background: var(--cf-control-active);
+}
+.cf-groups-manage-link i {
+  width: 5px;
+  height: 5px;
+  border: solid currentColor;
+  border-width: 2px 2px 0 0;
+  transform: rotate(45deg);
+  transition: transform var(--cf-duration-fast) ease;
+}
+.cf-groups-manage-link:hover i {
+  transform: translateX(2px) rotate(45deg);
 }
 .cf-groups-empty {
   align-self: center;
@@ -940,7 +965,8 @@ watch(
 @media (prefers-reduced-motion: reduce) {
   .cf-groups-create-form.is-rejected,
   .cf-groups-row.is-open + .cf-expand-region .cf-groups-member,
-  .cf-groups-row.is-open + .cf-expand-region .cf-groups-empty {
+  .cf-groups-row.is-open + .cf-expand-region .cf-groups-empty,
+  .cf-groups-row.is-open + .cf-expand-region .cf-groups-members-foot {
     animation: none;
   }
 }

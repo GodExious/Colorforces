@@ -1,6 +1,7 @@
 // 分组成员的资料：评分、头衔、头像。和页面上的头像功能共用一份缓存（AVATAR_CACHE_KEY），一个人一条：
-//   { url, fallbackUrl, time, rank, rating }
+//   { url, fallbackUrl, time, rank, maxRank, rating }
 // rating 是后来才加的一项，未评级的记成 null；旧的条目里没有它，评分算不知道，要重新查。
+// maxRank（到过的最高段位）也是后来加的；旧的条目里没有它时不重新查，头像框按现在的段位算。
 // 查不到的账号记成 { url, fallbackUrl, time, missing: true }，有效期内不再去查。
 import { fetchUsersByHandle } from '../../../api/codeforces.js';
 import { appStorage } from '../../../storage/gm.js';
@@ -29,6 +30,7 @@ function fromEntry(handle, entry) {
     handle,
     rating: Number.isFinite(entry.rating) ? entry.rating : null,
     rank: entry.rank || '',
+    maxRank: typeof entry.maxRank === 'string' ? entry.maxRank : undefined,
     avatar: entry.url || '',
     fallback: entry.fallbackUrl || '',
   };
@@ -39,6 +41,7 @@ const toEntry = (user, time) => ({
   fallbackUrl: normalizeAvatarUrl(user.titlePhoto),
   time,
   rank: user.rank || '',
+  maxRank: user.maxRank || '',
   rating: Number.isFinite(user.rating) ? user.rating : null,
 });
 
@@ -71,7 +74,7 @@ async function ask(handles) {
   return { asked, users: asked.length ? null : [], missing };
 }
 
-async function load(handles) {
+async function load(handles, force) {
   const now = Date.now();
   const cache = appStorage.getJSON(AVATAR_CACHE_KEY, null) || {};
   const cached = new Map(Object.entries(cache).map(([handle, entry]) => [userId(handle), handle]));
@@ -86,7 +89,7 @@ async function load(handles) {
       profiles.set(userId(handle), profile);
       changed = true;
     }
-    if (!profile || !(now - entry.time < CACHE_EXPIRY)) wanted.push(handle);
+    if (force || !profile || !(now - entry.time < CACHE_EXPIRY)) wanted.push(handle);
   }
   let renames = [];
   if (wanted.length && now - failedAt >= RETRY_GAP) {
@@ -120,8 +123,9 @@ async function load(handles) {
 let running = Promise.resolve();
 // 读这些人的资料：缓存里有的直接用，没有的或过了有效期的向接口查一次（一次请求查完）。
 // 返回认出来的改名 [{ from, to }]。一次只跑一个，后来的排在后面，轮到时前一次查到的已经在缓存里了。
-export function requestProfiles(handles) {
-  const task = running.then(() => load(handles));
+// force 为真时不管缓存新不新都去查（头像框的「最高段位」给旧条目补最高段位用，见 frames/page.js）。
+export function requestProfiles(handles, { force = false } = {}) {
+  const task = running.then(() => load(handles, force));
   running = task.catch(() => {});
   return task;
 }

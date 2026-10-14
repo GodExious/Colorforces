@@ -86,6 +86,11 @@ const groups = [
     items: [
       { key: 'userAvatar', titleKey: 'shortcutUserAvatarTitle', descKey: 'shortcutUserAvatarDesc' },
       {
+        key: 'avatarFrames',
+        titleKey: 'shortcutAvatarFramesTitle',
+        descKey: 'shortcutAvatarFramesDesc',
+      },
+      {
         key: 'userAnalytics',
         titleKey: 'shortcutUserAnalyticsTitle',
         descKey: 'shortcutUserAnalyticsDesc',

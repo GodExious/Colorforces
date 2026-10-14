@@ -2,6 +2,7 @@ import { applyRatings } from '../ratings/enhance.js';
 import { formatStandingsCells } from '../user/avatars/teams.js';
 import { applyUserAvatars } from '../user/avatars/enhance.js';
 import { applyGroupTags } from '../user/groups/tags.js';
+import { applyFrames } from '../user/frames/page.js';
 import { applyProblemTagsVisibility } from '../appearance/problem-tags/visibility.js';
 import { wrapVirtualParticipationTime, applyTimeFormatting } from '../appearance/time/format.js';
 import {
@@ -40,10 +41,10 @@ export function updateWithoutObservation(update) {
   }
 }
 
-// 无需参与站点增强观察的插件浮层与侧栏：插件自己的界面，加上插件插入的头像和原站侧栏。
+// 无需参与站点增强观察的插件浮层与侧栏：插件自己的界面，加上插件插入的头像、头像框和原站侧栏。
 export const PLUGIN_IGNORE_SELECTOR =
   PLUGIN_UI_SELECTOR +
-  ', .cf-avatar-line-wrapper, .cf-avatar-container, .cf-user-avatar, .roundbox.sidebox, #sidebar';
+  ', .cf-avatar-line-wrapper, .cf-avatar-container, .cf-user-avatar, .cf-frame-pair, .cf-frame, .cf-profile-frame, .roundbox.sidebox, #sidebar';
 
 // 判断变更节点是否属于应忽略的插件区域。
 export function isPluginIgnoredElement(el) {
@@ -81,6 +82,7 @@ export function setupObserver(ratingsMap) {
       formatStandingsCells();
       applyUserAvatars();
       applyGroupTags();
+      applyFrames();
       applyProblemTagsVisibility();
       wrapVirtualParticipationTime();
       applyTimeFormatting();
@@ -156,6 +158,7 @@ export function setupObserver(ratingsMap) {
           formatStandingsCells();
           applyUserAvatars();
           applyGroupTags();
+          applyFrames();
           applyProblemTagsVisibility();
           wrapVirtualParticipationTime();
           setTimeout(applyTimeFormatting, 300);

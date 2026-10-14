@@ -34,6 +34,7 @@ export function compareByRating(a, b, descending = true) {
 import { computed, ref, watch } from 'vue';
 import { appSettings } from '../../../../../settings.js';
 import { DEFAULT_AVATAR_URL } from '../../../../../features/user/avatars/data.js';
+import AvatarFrame from '../../../../components/avatars/AvatarFrame/AvatarFrame.vue';
 // 一个成员：头像（「显示用户头像」开着时）和按段位上色的名字。
 // profile 是读到的资料（见 features/user/groups/profiles.js），还没读到时是 null。link 为真时名字是主页链接。
 const props = defineProps({
@@ -72,7 +73,7 @@ const attrs = computed(() =>
 );
 </script>
 <template>
-  <component :is="link ? 'a' : 'span'" class="cf-groups-who" v-bind="attrs">
+  <component :is="link ? 'a' : 'span'" class="cf-groups-who cf-frame-host" v-bind="attrs">
     <!-- 「显示用户头像」开关切换时（比如按快捷键），头像缩进去、展开来，名字跟着滑。 -->
     <Transition name="cf-groups-avatar">
       <span v-if="appSettings.user.avatar.enabled" class="cf-groups-avatar">
@@ -82,7 +83,7 @@ const attrs = computed(() =>
           alt=""
           loading="lazy"
           @error="failed < sources.length - 1 && failed++"
-        />
+        /><AvatarFrame :profile="profile" />
       </span>
     </Transition>
     <span
@@ -112,8 +113,10 @@ a.cf-groups-who:visited {
   font-size: var(--cf-font-size-lg);
   font-weight: var(--cf-font-weight-bold);
 }
-/* 头像：和页面上的一样是圆的，大小也一样，跟着「头像大小」的设置；还没读到时先留一个浅色的圆。 */
+/* 头像：和页面上的一样是圆的，大小也一样，跟着「头像大小」的设置；还没读到时先留一个浅色的圆。
+   头像框要伸到圆的外面，所以这一层不裁，圆形裁在图片上。 */
 .cf-groups-avatar {
+  position: relative;
   flex: none;
   width: calc(var(--cf-avatar-px, 21px) * var(--cf-font-scale, 1));
   height: calc(var(--cf-avatar-px, 21px) * var(--cf-font-scale, 1));
@@ -121,12 +124,22 @@ a.cf-groups-who:visited {
   border-radius: 50%;
   background: var(--cf-gray-100);
   box-sizing: border-box;
-  overflow: hidden;
 }
-.cf-groups-avatar img {
+/* 戴着头像框时，四周让出框比头像多出来的那一圈（头像直径的 0.375 倍；右边本来就隔着 6px，少让 6px）。 */
+.cf-groups-avatar {
+  transition: margin var(--cf-duration-moderate) var(--cf-ease-out);
+}
+.cf-groups-who .cf-groups-avatar:has(> .cf-avatar-frame) {
+  margin: calc(var(--cf-avatar-px, 21px) * var(--cf-font-scale, 1) * 0.375)
+    max(0px, calc(var(--cf-avatar-px, 21px) * var(--cf-font-scale, 1) * 0.375 - 6px))
+    calc(var(--cf-avatar-px, 21px) * var(--cf-font-scale, 1) * 0.375)
+    calc(var(--cf-avatar-px, 21px) * var(--cf-font-scale, 1) * 0.375);
+}
+.cf-groups-avatar > img {
   display: block;
   width: 100%;
   height: 100%;
+  border-radius: 50%;
   object-fit: cover;
 }
 .cf-groups-avatar-enter-active,
@@ -153,7 +166,10 @@ a.cf-groups-who:visited {
     transition: none;
   }
 }
+/* 名字压在头像框上面。 */
 .cf-groups-who-name {
+  position: relative;
+  z-index: 1;
   display: inline-block;
   min-width: 0;
   overflow: hidden;

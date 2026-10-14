@@ -7,6 +7,12 @@ import { utcOffsetLabel } from '../../../../../utils/time.js';
 import { USER_STATUS_CACHE } from '../../../../../config/cache-policy.js';
 import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
 import ExpandTransition from '../../../../components/transitions/ExpandTransition/ExpandTransition.vue';
+import AvatarFrame from '../../../../components/avatars/AvatarFrame/AvatarFrame.vue';
+import {
+  profileOf,
+  requestProfiles,
+  subscribeProfiles,
+} from '../../../../../features/user/groups/profiles.js';
 import { analyticsState as state } from '../../../../../features/user/analytics/state.js';
 import { loadAnalytics, setStreakZone } from '../../../../../features/user/analytics/index.js';
 import {
@@ -63,6 +69,29 @@ import ContestSpeed from './components/cards/ContestSpeed/ContestSpeed.vue';
 import ParticipationDistribution from './components/cards/ParticipationDistribution/ParticipationDistribution.vue';
 import LanguageDistribution from './components/cards/LanguageDistribution/LanguageDistribution.vue';
 
+// 标题旁头像的头像框：按这个人的资料（段位、最高段位）挑，资料从头像缓存里读，没有就去查一次。
+// 管理员在接口里没有段位，从主页上认：名字带管理员的颜色类，或者名字上面一行写着 Headquarters。
+const profilesSeen = ref(0);
+const ownerProfile = computed(() =>
+  profilesSeen.value >= 0 && state.handle ? profileOf(state.handle) : null,
+);
+const ownerAdmin = computed(
+  () =>
+    String(state.rankClass || '')
+      .split(' ')
+      .includes('user-admin') ||
+    (Boolean(state.handle) &&
+      document.querySelector('.main-info .user-rank')?.textContent.trim().toLowerCase() ===
+        'headquarters'),
+);
+watch(
+  () => state.handle,
+  (handle) => handle && requestProfiles([handle]).catch(() => {}),
+  { immediate: true },
+);
+let stopProfiles;
+onMounted(() => (stopProfiles = subscribeProfiles(() => profilesSeen.value++)));
+onBeforeUnmount(() => stopProfiles?.());
 const charts = computed(() => appSettings.user.analytics.charts);
 // 划分日期用的时区：「最长连续」、难度热力图、月度活跃度和刷题作息共用，这几处的时区选择改的都是它。
 // 没有单独设置时按查看者自己的时区划分。
@@ -257,7 +286,12 @@ const panel = ref(null);
             </h3>
             <!-- 头像和用户名取自主页本身：用户名沿用原站按评级着色的样式。 -->
             <span class="cf-analytics-user">
-              <img v-if="state.avatar" class="cf-analytics-avatar" :src="state.avatar" alt="" />
+              <!-- 头像套上这个人的头像框（跟着「显示头像框」和段位头像框的设置）。 -->
+              <span v-if="state.avatar" class="cf-analytics-avatar cf-frame-host"
+                ><img :src="state.avatar" alt="" /><AvatarFrame
+                  :profile="ownerProfile"
+                  :admin="ownerAdmin"
+              /></span>
               <span class="cf-analytics-username" :class="state.rankClass">{{
                 state.profileName || state.handle
               }}</span>
@@ -496,8 +530,10 @@ const panel = ref(null);
 /*
  * 主页的大头像不一定是正方形，这里裁成圆形小图。
  * 大小跟随「用户」页的头像大小设置（和页面上其他头像用同一个变量），关闭「显示用户头像」时收起。
+ * 头像框要伸到圆的外面，所以这一层不裁，圆形裁在图片上。
  */
 .cf-analytics-avatar {
+  position: relative;
   flex-shrink: 0;
   width: var(--cf-avatar-size, 1.6em);
   height: var(--cf-avatar-size, 1.6em);
@@ -505,16 +541,28 @@ const panel = ref(null);
   border: 1px solid rgb(0 0 0 / 10%);
   border-radius: 50%;
   box-sizing: border-box;
-  object-fit: cover;
   transition:
     width var(--cf-duration-moderate) var(--cf-ease-out),
     height var(--cf-duration-base) ease,
-    margin-right var(--cf-duration-moderate) var(--cf-ease-out),
+    margin var(--cf-duration-moderate) var(--cf-ease-out),
     opacity var(--cf-duration-base) ease;
+}
+.cf-analytics-avatar > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+/* 戴着头像框时，四周让出框比头像多出来的那一圈（头像直径的 0.375 倍；右边本来就隔着 6px）。 */
+.cf-analytics-avatar:has(> .cf-avatar-frame) {
+  margin: calc(var(--cf-avatar-size, 1.6em) * 0.375)
+    max(6px, calc(var(--cf-avatar-size, 1.6em) * 0.375)) calc(var(--cf-avatar-size, 1.6em) * 0.375)
+    calc(var(--cf-avatar-size, 1.6em) * 0.375);
 }
 :root.cf-hide-userAvatar .cf-analytics-avatar {
   width: 0;
-  margin-right: 0;
+  margin: 0;
   border-width: 0;
   opacity: 0;
 }

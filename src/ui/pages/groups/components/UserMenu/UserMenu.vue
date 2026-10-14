@@ -38,6 +38,7 @@ import {
   userId,
 } from '../../../../../features/user/groups/store.js';
 import GroupMark from '../GroupMark/GroupMark.vue';
+import AvatarFrame from '../../../../components/avatars/AvatarFrame/AvatarFrame.vue';
 import { rankInk } from '../MemberName/MemberName.vue';
 
 // 用户名上的右键菜单。用户分组开着、又登录着时，右键点页面上的「头像 + 用户名」（见 features/user/groups/targets.js）
@@ -311,10 +312,13 @@ onBeforeUnmount(() => {
           '--cf-menu-accent': accent,
         }"
       >
-        <div class="cf-user-menu-head">
+        <div class="cf-user-menu-head cf-frame-host">
           <Transition name="cf-user-menu-avatar">
             <span v-if="appSettings.user.avatar.enabled" class="cf-user-menu-avatar"
-              ><img :src="source" alt="" @error="failed < sources.length - 1 && failed++"
+              ><img
+                :src="source"
+                alt=""
+                @error="failed < sources.length - 1 && failed++" /><AvatarFrame :profile="profile"
             /></span>
           </Transition>
           <span class="cf-user-menu-who">
@@ -485,8 +489,16 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 10px;
   padding: 6px 8px 8px 4px;
+  transition: padding var(--cf-duration-moderate) var(--cf-ease-out);
 }
+/* 戴着头像框时，框比头像大一圈：四周多留一点，框不伸出菜单，名字也和框隔开。 */
+.cf-user-menu-head:has(.cf-avatar-frame) {
+  gap: 16px;
+  padding: 12px 8px 12px 12px;
+}
+/* 头像框要伸到圆的外面，所以这一层不裁，圆形裁在图片上。 */
 .cf-user-menu-avatar {
+  position: relative;
   flex: none;
   width: 40px;
   height: 40px;
@@ -494,12 +506,12 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   background: var(--cf-gray-100);
   box-sizing: border-box;
-  overflow: hidden;
 }
-.cf-user-menu-avatar img {
+.cf-user-menu-avatar > img {
   display: block;
   width: 100%;
   height: 100%;
+  border-radius: 50%;
   object-fit: cover;
 }
 .cf-user-menu-avatar-enter-active,
@@ -519,7 +531,10 @@ onBeforeUnmount(() => {
   border-width: 0;
   opacity: 0;
 }
+/* 名字压在头像框上面。 */
 .cf-user-menu-who {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 3px;

@@ -1,0 +1,199 @@
+/* 页面上的头像框，见 features/user/frames/page.js。
+   头像框是叠在头像上的一层（.cf-frame-pair），里面两张图片（.cf-frame）：静止的（is-still）和会动的（is-live）。图片的边长是头像直径的 2 倍，
+   头像在正中（画板四周比头像多出来的是环和装饰，见 catalog.js）。显示哪张看根元素上的动效设置：
+   关闭只显示静止的，始终只显示会动的，悬停时平时显示静止的、鼠标移到这个人上面（.cf-frame-host）时换成会动的。
+   没显示的那张不画，里面的动画也不跑。 */
+.cf-avatar-slot {
+  position: relative;
+  transition:
+    width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 180ms ease,
+    margin 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* 戴了头像框的头像：框要伸到头像外面，不能再按头像的大小裁掉。
+   四周让出框比头像多出来的那一圈（头像直径的 0.375 倍）：左右不压前后的文字，上下把这一行撑高，
+   不压上下行的字（段落里的名字、表格里的行）。右边原本就留着头像和名字之间的 5px，少让 5px。
+   头像还在加载、或者关掉了头像时不让。 */
+.cf-avatar-slot.cf-has-frame {
+  overflow: visible !important;
+}
+:root:not(.cf-hide-userAvatar) .cf-avatar-slot.cf-frame-space:not(.cf-avatar-loading) {
+  margin: calc(var(--cf-avatar-size, 1.6em) * 0.375)
+    max(0px, calc(var(--cf-avatar-size, 1.6em) * 0.375 - 5px))
+    calc(var(--cf-avatar-size, 1.6em) * 0.375) calc(var(--cf-avatar-size, 1.6em) * 0.375) !important;
+}
+/* 原站的导航栏（个人主页、比赛页那一排页签）：一行的高度是定的，灰色的滑块按页签的大小画，上下不让，左右照让。 */
+:root:not(.cf-hide-userAvatar)
+  .second-level-menu-list
+  .cf-avatar-slot.cf-frame-space:not(.cf-avatar-loading) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+/* 一个头像框：一层外壳（.cf-frame-pair）管位置和淡入淡出，里面叠着静止的、会动的两张图片（.cf-frame）。 */
+.cf-frame-pair {
+  position: absolute;
+  top: calc(var(--cf-avatar-size, 1.6em) * -0.5);
+  left: calc(var(--cf-avatar-size, 1.6em) * -0.5);
+  width: calc(var(--cf-avatar-size, 1.6em) * 2);
+  height: calc(var(--cf-avatar-size, 1.6em) * 2);
+  pointer-events: none;
+  /* 显示出来（打开头像时）要等四周的边距让出来再淡入；淡掉（摘掉、关掉头像）不用等，见下面。 */
+  transition: opacity 240ms ease 220ms;
+}
+/* 刚戴上：从小一点、透明的样子长出来；换下来的淡掉（页面上过一会儿拿掉）。 */
+.cf-frame-pair.is-entering {
+  animation: cf-frame-in 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* 第一次戴上：等头像四周的边距让出来、头像挪到位了再淡入，框不跟着头像滑。 */
+.cf-frame-pair.is-entering.is-after-space {
+  animation-delay: 220ms;
+  animation-fill-mode: backwards;
+}
+.cf-frame-pair.is-leaving {
+  opacity: 0;
+  transition-delay: 0s;
+}
+@keyframes cf-frame-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+/* 头像还在加载、或者关掉了头像：头像框也不显示。
+   关掉、打开头像时，戴着框的头像和框不跟着滑：关的时候头像和框先在原处淡掉，再收起位置和边距；
+   开的时候先让出位置和边距，头像和框再淡入。 */
+.cf-avatar-loading .cf-frame-pair,
+:root.cf-hide-userAvatar .cf-frame-pair {
+  opacity: 0;
+  transition-delay: 0s;
+}
+
+/* 两张图片铺满外壳。换动效设置（或者鼠标移上、移开）时，要换上去的那张马上显示，要换下来的那张多留一小会儿（150ms）再藏，
+   中间两张叠着（画的是同一个头像框，看不出来）。直接换的话，刚显示出来的那张要等下一帧才画好，头像框会空一下。
+   会动的那张藏起来用 display: none（不画，里面的动画也不跑）；静止的那张用 visibility（它不动，留着排好的版不费什么，
+   换回来时马上就能画）。 */
+.cf-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  pointer-events: none;
+  user-select: none;
+}
+.cf-frame.is-still {
+  transition: visibility 0s linear 0s;
+}
+.cf-frame.is-live {
+  display: none;
+  transition: display 0s 150ms allow-discrete;
+}
+:root.cf-frame-motion-on .cf-frame.is-still,
+:root.cf-frame-motion-hover .cf-frame-host:hover .cf-frame.is-still {
+  visibility: hidden;
+  transition: visibility 0s linear 150ms;
+}
+:root.cf-frame-motion-on .cf-frame.is-live,
+:root.cf-frame-motion-hover .cf-frame-host:hover .cf-frame.is-live {
+  display: block;
+  transition: display 0s 0s allow-discrete;
+}
+/* 头像功能收起头像时把头像那一格里的图片往左滑出去（avatars.css 里写的是「格子里的 img」），
+   头像框的两张图片也是 img，会被一起挪走、在左边淡掉。头像框不挪，就在原处淡掉。 */
+:root.cf-hide-userAvatar .cf-avatar-slot img.cf-frame,
+.cf-avatar-loading img.cf-frame {
+  transform: none;
+}
+.cf-avatar-slot.cf-has-frame img.cf-user-avatar {
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 180ms ease,
+    height 180ms ease,
+    opacity 200ms ease 220ms;
+}
+:root.cf-hide-userAvatar .cf-avatar-slot.cf-has-frame img.cf-user-avatar {
+  transform: none;
+  opacity: 0;
+  transition-delay: 0s;
+}
+:root.cf-hide-userAvatar .cf-avatar-slot.cf-has-frame {
+  transition:
+    width 260ms cubic-bezier(0.22, 1, 0.36, 1) 200ms,
+    height 180ms ease 200ms,
+    margin 260ms cubic-bezier(0.22, 1, 0.36, 1) 200ms;
+}
+
+/* 名字和分组标签压在头像框上面：装饰大的头像框会伸到名字、隔壁行的名字底下。
+   表格里名字是头像那一行里的另一个链接，抬到框的上面一层。
+   别处头像画在名字的链接里：链接自成一层（isolation，不改它原来的层级——原站导航栏里的链接要压在灰色的滑块上面，
+   改了层级会被滑块盖住），头像连同框压到这一层的最底下（文字下面、链接的底色上面）。 */
+:root.cf-frames-on .cf-avatar-line-wrapper > a:not(.cf-avatar-container) {
+  position: relative;
+  z-index: 1;
+}
+:root.cf-frames-on .cf-avatar-inline-user {
+  isolation: isolate;
+}
+:root.cf-frames-on .cf-avatar-inline-user > .cf-avatar-slot {
+  z-index: -1;
+}
+:root.cf-frames-on [data-cf-group]:not(.cf-avatar-inline-user)::after {
+  position: relative;
+  z-index: 1;
+}
+
+/* 个人主页：标题照片换成圆形的大头像，套上头像框，照片外面原站画的那个灰色方框也去掉（奖牌照旧）。
+   原来的照片藏起来，它自己的样式里写着 display，所以要压过它；关掉头像时换回来。
+   方框的位置和宽度不动（页面靠它排版），只是边线淡掉；里面那一层原来定着 200px 的最小高度和行高，换成按头像框的大小来。
+   头像 150px，头像框 300px 正好是方框的宽度；上面留得多一点（帽子、皇冠伸得高），下面只留绶带的位置。 */
+.cf-photo-box-framed {
+  border-color: transparent !important;
+  transition: border-color 240ms ease;
+}
+.cf-photo-framed {
+  min-height: 0 !important;
+  line-height: 0 !important;
+}
+.cf-profile-frame {
+  position: relative;
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+  margin: 64px 0 36px;
+  vertical-align: middle;
+  line-height: 0;
+  animation: cf-frame-in 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 240ms ease;
+}
+.cf-profile-frame.is-leaving {
+  opacity: 0;
+}
+.cf-profile-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.cf-profile-frame > .cf-frame-pair {
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+}
+.cf-photo-framed > img:not(.cf-profile-photo) {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-frame-pair,
+  .cf-profile-frame {
+    transition: none;
+    animation: none;
+  }
+}

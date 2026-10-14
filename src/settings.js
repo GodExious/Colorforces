@@ -142,6 +142,8 @@ function readSettings(stored) {
   const avatar = part(user, 'avatar');
   takeFlags(settings.user.avatar, avatar);
   takeScale(settings.user.avatar, avatar, 'size');
+  take(settings.user.avatar, avatar, 'rankFrame', oneOf('off', 'current', 'max'));
+  take(settings.user.avatar, avatar, 'frameMotion', oneOf('off', 'hover', 'on'));
   // 数据分析：缓存用户数只接受非负整数，图表开关只接受已知项。
   const analytics = part(user, 'analytics');
   takeFlags(settings.user.analytics, analytics);
