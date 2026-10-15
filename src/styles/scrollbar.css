@@ -1,0 +1,36 @@
+/*
+ * 插件界面里能滚动的地方统一用的滚动条：一条细的圆头滑块，没有槽，两头也没有三角；鼠标移上去变粗、颜色加深。
+ * 用法：能滚动的元素加上 cf-scrollbar。底色深、或者要跟主题色的，在元素上改 --cf-scrollbar-thumb（平时）
+ * 和 --cf-scrollbar-thumb-hover（悬停）。
+ * 这些元素上不能写 scrollbar-width / scrollbar-color：Chrome 见到这两项就改用系统的滚动条（Windows 上两头带三角），
+ * 下面几条就不生效了。只有不认 ::-webkit-scrollbar 的浏览器（火狐）才用这两项，见最后。
+ */
+.cf-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.cf-scrollbar::-webkit-scrollbar-track,
+.cf-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+.cf-scrollbar::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: var(--cf-scrollbar-thumb, #c3cce2) padding-box;
+}
+.cf-scrollbar::-webkit-scrollbar-thumb:vertical {
+  min-height: 36px;
+}
+.cf-scrollbar::-webkit-scrollbar-thumb:horizontal {
+  min-width: 36px;
+}
+.cf-scrollbar::-webkit-scrollbar-thumb:hover {
+  border-width: 2px;
+  background-color: var(--cf-scrollbar-thumb-hover, #a3b0d4);
+}
+@supports not selector(::-webkit-scrollbar) {
+  .cf-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--cf-scrollbar-thumb, #c3cce2) transparent;
+  }
+}

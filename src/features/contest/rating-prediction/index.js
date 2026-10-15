@@ -11,7 +11,12 @@ import {
 } from './standings/render.js';
 import { readScores, patchScores } from './standings/page-scores.js';
 import { fetchUserRating } from '../../../api/codeforces.js';
-import { newcomerStanding, actualBefore, displayedAfter } from './algorithm/newcomer.js';
+import {
+  newcomerStanding,
+  actualBefore,
+  displayedAfter,
+  withFirstBonus,
+} from './algorithm/newcomer.js';
 import { subscribeStorageChanges } from '../../storage/cleanup.js';
 import { fetchStandingsTable, applyStandingsTable } from './standings/table-sync.js';
 import { enhancePageNow } from '../../page/observer.js';
@@ -190,9 +195,10 @@ async function loadNewcomer(handle) {
       if (snapshot.phase === 'final' && Number.isFinite(participant.officialDelta))
         current = { rank, rating: before + participant.officialDelta };
       else if (actualBefore(participant.reportedRating, standing) === participant.rating) {
-        // 模型里用的已经是实际评级（首场账号），榜单上算出的涨跌就是按实际评级算的。
-        if (Number.isFinite(result.delta))
-          current = { rank, rating: displayedAfter(participant.rating + result.delta, standing) };
+        // 模型里用的已经是实际评级（首场账号），模型算出的涨跌就是按实际评级算的（榜单上显示的补过分，用 modelDelta）。
+        const delta = result.modelDelta ?? result.delta;
+        if (Number.isFinite(delta))
+          current = { rank, rating: displayedAfter(participant.rating + delta, standing) };
       } else if (!snapshot.warnings.includes('predictionIncompleteData')) {
         try {
           const own = await newcomerRunner.run({
@@ -395,6 +401,8 @@ async function calculate(snapshot, token) {
   if (!snapshot.warnings.includes('predictionIncompleteData') && rowsFor(snapshot).length)
     results = await baseRunner.run({ type: 'predict', rows: rowsFor(snapshot) });
   if (token !== generation) return;
+  // 首场新号的涨跌补上第一场的补分，和原站出分时显示的一样。
+  results = withFirstBonus(results, snapshot.participants, contestId);
   if (snapshot.phase === 'final')
     for (const p of snapshot.participants)
       if (Number.isFinite(p.officialDelta))

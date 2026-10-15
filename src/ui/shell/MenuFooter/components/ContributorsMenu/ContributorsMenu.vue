@@ -118,7 +118,7 @@ onBeforeUnmount(() => {
           <strong>{{ t('footerContributors') }}</strong>
           <span>{{ t('footerContributorsNote') }}</span>
         </div>
-        <ul class="cf-contributors-list">
+        <ul class="cf-contributors-list cf-scrollbar">
           <li v-for="person in contributors" :key="person.name">
             <a
               class="cf-contributor-link"
@@ -279,8 +279,9 @@ onBeforeUnmount(() => {
   max-height: 280px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--cf-gray-300) transparent;
+  /* 滚动条用公共的 cf-scrollbar（styles/scrollbar.css），颜色照原来的灰。 */
+  --cf-scrollbar-thumb: var(--cf-gray-300);
+  --cf-scrollbar-thumb-hover: var(--cf-gray-400);
   margin: 6px 0 0;
   padding: 0;
   list-style: none;

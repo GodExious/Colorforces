@@ -37,6 +37,16 @@ const GHOST_CLASS = 'cf-language-ghost';
 const PLACEHOLDER = 'input[placeholder], textarea[placeholder]';
 const PLACEHOLDER_HIDDEN = 'cf-language-placeholder-hidden';
 const PLACEHOLDER_FADE = 'cf-language-placeholder-fade';
+// 头像框不是文字，不跟着过渡：照片里不带它（复制出来的图片会把动画从头播一遍），新内容淡入时也不碰装着它的那一格
+// （跟着淡出淡入会重画，看着像动画被打断），这一格的字直接换；大小过渡时也不裁，免得伸出去的装饰被切一下。
+const FRAMES = '.cf-avatar-frame, .cf-frame-pair';
+const holdsFrame = (element) => element.matches(FRAMES) || !!element.querySelector(FRAMES);
+// 照片里装着头像框的那几格整格藏起来（旧字也藏，新字在原处直接显示），头像框的图片拿掉。
+function stripFrames(ghost) {
+  for (const child of ghost.children) if (holdsFrame(child)) child.style.visibility = 'hidden';
+  for (const node of ghost.querySelectorAll(FRAMES)) node.remove();
+  return ghost;
+}
 
 // 各段的时长（毫秒）：旧内容淡出、新内容淡入、大小和位置的过渡。
 const OUT = 80;
@@ -189,7 +199,11 @@ function capture() {
         path: pathOf(unit, surface),
         text: unit.textContent,
         rect: unit.getBoundingClientRect(),
-        ghost: unit.cloneNode(true),
+        ghost: stripFrames(unit.cloneNode(true)),
+        // 装着头像框的那几格原来在哪：它们不淡出淡入，别的字变宽变窄把它们挤开时要滑过去，见 start。
+        framed: [...unit.children]
+          .filter(holdsFrame)
+          .map((child) => ({ child, rect: child.getBoundingClientRect() })),
       });
     }
   }
@@ -297,7 +311,8 @@ function start(shots) {
       width && single(shot.rect) && single(next)
         ? { whiteSpace: 'nowrap', flexWrap: 'nowrap' }
         : {};
-    const frame = (rect) => ({ ...sizeFrame(rect, width, height), ...oneLine });
+    const framed = shot.unit.querySelector(FRAMES) ? { overflow: 'visible' } : {};
+    const frame = (rect) => ({ ...sizeFrame(rect, width, height), ...oneLine, ...framed });
     const timing = moveTiming(next.height - shot.rect.height, delays.get(shot));
     settled.set(
       shot.surface,
@@ -368,9 +383,25 @@ function start(shots) {
       }),
     );
     const enter = { duration: IN, delay: delay + OUT, easing: 'ease-out', fill: 'backwards' };
-    // 只写起点：终点是它本来的样子（有的内容本来就是半透明的）。
+    // 只写起点：终点是它本来的样子（有的内容本来就是半透明的）。装着头像框的那一格不淡出淡入。
     for (const child of children)
-      animations.push(child.animate([{ opacity: 0, offset: 0 }], enter));
+      if (!holdsFrame(child)) animations.push(child.animate([{ opacity: 0, offset: 0 }], enter));
+    // 装着头像框的那一格被旁边换了字的东西挤到了别处：轮到这一项之前停在原处，轮到时滑过去。
+    for (const { child, rect } of shot.framed || []) {
+      if (child.parentElement !== unit) continue;
+      const now = child.getBoundingClientRect();
+      const x = rect.left - now.left;
+      const y = rect.top - now.top;
+      if (Math.abs(x) < 0.5 && Math.abs(y) < 0.5) continue;
+      animations.push(
+        child.animate([{ translate: `${x}px ${y}px` }, { translate: '0px 0px' }], {
+          duration: MOVE,
+          delay,
+          easing: EASE,
+          fill: 'backwards',
+        }),
+      );
+    }
     if (loose) animations.push(unit.animate([{ color: 'transparent', offset: 0 }], enter));
   }
   let cleared = false;

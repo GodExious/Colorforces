@@ -98,11 +98,13 @@ export function connectSettingsEffects() {
       style: true,
     },
     {
-      // 头像框：段位头像框的设置、分组开关（分组的头像框）变了，页面上的头像全部重新看一遍。
+      // 头像框：段位头像框的设置、显示位置、自己戴的头像框、分组开关（分组的头像框）变了，页面上的头像全部重新看一遍。
       // 动效的三档只换根元素上的类（style），不用重新标。
       read: () => [
         appSettings.user.avatar.frames,
+        { ...appSettings.user.avatar.frameAt },
         appSettings.user.avatar.rankFrame,
+        appSettings.user.avatar.wornFrame,
         appSettings.groups.enabled,
         appSettings.user.avatar.frameMotion,
       ],

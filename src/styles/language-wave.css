@@ -25,6 +25,10 @@
   counter-reset: none !important;
   counter-set: none !important;
   contain: style !important;
+  /* 照片已经贴在这一项的滚动条里面了，自己不能再留滚动条的位置：表头那种为滚动条预留了一条（scrollbar-gutter）的，
+     照片也跟着留，里面的列整体往左挪一条滚动条宽，旧字就在偏左的地方淡出，看着像先往左晃了一下。 */
+  scrollbar-gutter: auto !important;
+  scrollbar-width: none !important;
 }
 
 /* 换语言时空着的输入框里的提示文字：先藏起来，再带着过渡显示出来（见 utils/language-wave.js 的 PLACEHOLDER）。 */

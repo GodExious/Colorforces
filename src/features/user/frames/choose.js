@@ -1,5 +1,5 @@
 // 一个人戴哪个头像框。只做判断，不碰页面和存储，页面、菜单里各处都按这里的结果画。
-// 先看分组：这个人所在的分组里，按分组的先后第一个设了头像框的（分组设头像框在头像框库里做）；
+// 先看自己从头像框库里戴的（只有自己的头像有这一项）；再看分组：这个人所在的分组里，按分组的先后第一个设了头像框的；
 // 都没有时看段位头像框的设置：不使用、按现在的段位、按到过的最高段位。管理员不按段位，戴管理员的那个。
 
 // 原站的段位名（接口里的 rank、maxRank，小写）→ 头像框。4000 分以上的两位有自己的段位名。
@@ -44,14 +44,24 @@ export function rankFromTitle(title, handle) {
 }
 
 // 这个人戴哪个头像框，不戴时是空串。
+//   worn     自己从头像框库里戴的（这个人是自己、而且戴了的时候才有，别人是空串）
 //   group    所在分组里排最前的那个头像框（没有时是空串）
 //   rank     现在的段位名；还不知道（资料还没读到）时是 undefined，这时不按段位戴
 //   maxRank  到过的最高段位名；旧的缓存里没记这一项（undefined）或者是空的，这时按现在的段位算
 //   admin    是不是管理员（页面上名字的样子是管理员的）
 //   mode     段位头像框的设置：'off'、'current'、'max'
 //   known    有哪些头像框（catalog 里的），不认识的头像框当作没有
-export function chooseFrame({ group = '', rank, maxRank, admin = false, mode = 'off', known }) {
+export function chooseFrame({
+  worn = '',
+  group = '',
+  rank,
+  maxRank,
+  admin = false,
+  mode = 'off',
+  known,
+}) {
   const has = (id) => Boolean(id) && (!known || known.has(id));
+  if (has(worn)) return worn;
   if (has(group)) return group;
   if (mode !== 'current' && mode !== 'max') return '';
   if (admin) return has('headquarters') ? 'headquarters' : '';

@@ -26,7 +26,7 @@ import AnalyticsSettings from './components/AnalyticsSettings/AnalyticsSettings.
           <RangeSlider
             v-model="appSettings.user.avatar.size"
             :min="0.8"
-            :max="3"
+            :max="5"
             :step="0.1"
             data-control="avatarSizeInput"
             @change="saveSettings()"

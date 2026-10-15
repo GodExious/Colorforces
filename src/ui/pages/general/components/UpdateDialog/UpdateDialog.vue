@@ -72,7 +72,7 @@ function installUpdate(event) {
                每个分类（新增、优化、修复）左边一条它自己颜色的竖条，分类名后面带条数。 -->
           <div class="cf-update-notes" v-if="notes.length">
             <div class="cf-update-notes-title" v-text="t('updateModalNotes')"></div>
-            <div class="cf-update-notes-list">
+            <div class="cf-update-notes-list cf-scrollbar">
               <div class="cf-update-note" v-for="note in notes" :key="note.version">
                 <div class="cf-update-note-head">
                   <span class="cf-update-note-version">v{{ note.version }}</span>
@@ -240,8 +240,7 @@ function installUpdate(event) {
   padding: 2px 6px 2px 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: #c3cbe2 transparent;
+  /* 滚动条用公共的 cf-scrollbar（styles/scrollbar.css）。 */
 }
 
 /* 一个版本：左边一栏版本号和日期，右边内容。 */

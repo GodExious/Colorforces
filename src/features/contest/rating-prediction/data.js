@@ -211,15 +211,29 @@ export function classifyParticipant(row, contest, rating, submitted, officialHan
  * 统计只有从这场的第一条提交记起才是全的。上一次留下的记录里没有 tally（旧版本存的，那时只记了谁交过题）时，
  * 自动刷新不为了补上它重扫整场：这一场照旧只接着记谁交过题，不算成绩，也不存 tally。
  * 用户自己点了「刷新预测」（rebuild 为真）才从头扫一遍、开始记；这场的缓存没了（被挤掉或清空）之后也一样。
+ *
+ * 比赛结束以后另有一条：接着扫只读得到新的提交，已经扫过的提交后来改了结果读不到——判抄袭作废（SKIPPED）、
+ * 被 hack、没过系统测试，这些人就一直按当时的「通过」算，排到真正计分的人前面（Edu 195 实测，计分第 1 显示成第 2）。
+ * 所以结束之后每隔 RESCAN_AFTER_END 从头重扫一次（restart 为真），中间照旧接着扫。
  */
-async function submissions(contest, previous, signal, progress, tallyKind = null, rebuild = false) {
+async function submissions(
+  contest,
+  previous,
+  signal,
+  progress,
+  tallyKind = null,
+  rebuild = false,
+  restart = false,
+) {
   // 这一场要不要记逐题的统计、按哪种赛制记。上一次留下的统计不是这种赛制的（不该出现）就当没有。
   const wantTally = Boolean(tallyKind);
   const apply = tallyKind === 'CF' ? applyScoredSubmission : applySubmission;
   if (previous?.tally && (previous.tallyKind || 'ICPC') !== tallyKind)
     previous = { ...previous, tally: undefined };
   const stale = wantTally && Boolean(previous?.complete) && !previous.tally;
-  const resume = previous?.complete && !(stale && rebuild) ? previous : null;
+  const resume = previous?.complete && !(stale && rebuild) && !restart ? previous : null;
+  // 上一次从头重扫是什么时候（比赛结束后才记）；这一次从头扫了就换成现在。
+  const rescannedAt = restart ? Date.now() : previous?.rescannedAt || 0;
   const tallying = wantTally && (!resume || Boolean(resume.tally));
   const handles = new Set(resume ? resume.handles : []);
   const unofficial = new Set(resume ? resume.unofficial || [] : []);
@@ -265,7 +279,12 @@ async function submissions(contest, previous, signal, progress, tallyKind = null
     scanned += list.length;
     progress(scanned);
     if (reached || list.length < 10000) {
-      const activity = { complete: true, handles: [...handles], unofficial: [...unofficial] };
+      const activity = {
+        complete: true,
+        handles: [...handles],
+        unofficial: [...unofficial],
+        ...(rescannedAt ? { rescannedAt } : {}),
+      };
       if (!tallying) return { activity: { ...activity, lastId }, view: null };
       const { settledId, tally, view } = settleTally(
         resume?.tally,
@@ -278,6 +297,10 @@ async function submissions(contest, previous, signal, progress, tallyKind = null
   }
   throw new Error('predictionIncompleteData');
 }
+
+// 比赛结束以后，不可信参赛者的统计隔多久从头重扫一次。一场 Educational 五六万条提交，从头扫是六七次请求，
+// 和「等待出分」时自动刷新的间隔一样长，不多花请求。
+const RESCAN_AFTER_END = PREDICTION_PENDING_REFRESH;
 
 // 保存少量比赛快照，评级来源独立存储；禁止增长成无上限的历史数据库。
 function saveSnapshot(snapshot) {
@@ -435,6 +458,15 @@ export async function loadSnapshot(
           true,
         );
         stage('submissions');
+        // 比赛结束以后，隔一段时间从头重扫一次，读到后来改了的结果（见 submissions 的说明）。
+        const ended =
+          Number.isFinite(contest.startTimeSeconds) &&
+          Number.isFinite(contest.durationSeconds) &&
+          Date.now() >= (contest.startTimeSeconds + contest.durationSeconds) * 1000;
+        const restart =
+          Boolean(wantTally) &&
+          ended &&
+          Date.now() - (previous?.activity?.rescannedAt || 0) >= RESCAN_AFTER_END;
         const scan = await submissions(
           contest,
           previous?.activity,
@@ -442,6 +474,7 @@ export async function loadSnapshot(
           progress,
           wantTally,
           force,
+          restart,
         );
         activity = scan.activity;
         tallyView = scan.view;

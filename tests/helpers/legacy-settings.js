@@ -211,8 +211,14 @@ export const ADDED_LATER = {
   'contest.prediction.syncStandings': true,
   'user.analytics.typesMode': 'submissions',
   'user.avatar.frames': true,
+  'user.avatar.frameAt.tables': true,
+  'user.avatar.frameAt.profile': true,
+  'user.avatar.frameAt.others': true,
+  'user.avatar.frameAt.menus': true,
+  'user.avatar.frameAt.groups': true,
   'user.avatar.rankFrame': 'current',
   'user.avatar.frameMotion': 'on',
+  'user.avatar.wornFrame': '',
   'groups.enabled': true,
   'groups.showTags': true,
   'groups.tagStyle': 'name',
@@ -220,6 +226,9 @@ export const ADDED_LATER = {
   'shortcuts.hideVerdictTests': 'Shift+N',
   'shortcuts.groupsEnabled': 'Shift+G',
   'shortcuts.avatarFrames': 'Shift+K',
+  'shortcuts.frameLibrary': 'Shift+W',
+  'shortcuts.groupTags': 'Shift+Q',
+  'shortcuts.groupsManage': 'Shift+Z',
 };
 // 旧设置载入之后应有的样子：迁移的结果，加上后来才有的那些项的默认值。
 export const loadedSettings = {
@@ -250,8 +259,10 @@ export const loadedSettings = {
     avatar: {
       ...upgradedSettings.user.avatar,
       frames: true,
+      frameAt: { tables: true, profile: true, others: true, menus: true, groups: true },
       rankFrame: 'current',
       frameMotion: 'on',
+      wornFrame: '',
     },
     analytics: { ...upgradedSettings.user.analytics, typesMode: 'submissions' },
   },
@@ -266,5 +277,8 @@ export const loadedSettings = {
     hideVerdictTests: 'Shift+N',
     groupsEnabled: 'Shift+G',
     avatarFrames: 'Shift+K',
+    frameLibrary: 'Shift+W',
+    groupTags: 'Shift+Q',
+    groupsManage: 'Shift+Z',
   },
 };

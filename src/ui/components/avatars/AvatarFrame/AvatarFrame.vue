@@ -1,31 +1,29 @@
 <script setup>
 import { computed } from 'vue';
 import { appSettings } from '../../../../settings.js';
-import { chooseFrame } from '../../../../features/user/frames/choose.js';
-import { KNOWN_FRAMES, frameImage } from '../../../../features/user/frames/catalog.js';
+import { frameImage } from '../../../../features/user/frames/catalog.js';
+import { profileFrame, watchChosenFrames } from '../../../../features/user/frames/chosen.js';
 // 插件界面里（分组页、管理弹窗、右键菜单）头像上套的头像框。放在头像那个圆形的元素里面，
 // 那个元素要是定位过的方块（position: relative），头像框按它的大小摆：边长 2 倍，头像在正中。
 // 和页面上一样是两张图片，显示哪张看根元素上的动效设置（样式在 styles/codeforces/user/frames.css）；
 // 鼠标停在哪里算「移到了这个人上面」，由用它的地方在外面加 cf-frame-host。
 // profile 是这个人的资料（见 features/user/groups/profiles.js），还没读到时不戴；关掉了「显示头像框」也不戴。
-// frame 给了就直接戴它（设置里预览整套段位头像框用），不看资料和设置。
+// 戴哪个按 choose.js：自己从头像框库里戴的、所在分组的、段位的（见 chosen.js）。
+// frame 给了就直接戴它（设置里预览头像框用），不看资料和设置。
 // admin 为真表示这个人是管理员（页面上认出来的），戴管理员的头像框。
+// place 是这个头像所在的地方（设置里「显示位置」的一项，比如 'menus' 是右键菜单，'groups' 是分组管理），那一项关掉时不戴；不给时不看。
 const props = defineProps({
   profile: { type: Object, default: null },
   frame: { type: String, default: '' },
   admin: Boolean,
+  place: { type: String, default: '' },
 });
-const frame = computed(() =>
-  props.frame || (appSettings.user.avatar.frames && props.profile && !props.profile.missing)
-    ? chooseFrame({
-        rank: props.profile.rank,
-        maxRank: props.profile.maxRank,
-        admin: props.admin,
-        mode: appSettings.user.avatar.rankFrame,
-        known: KNOWN_FRAMES,
-      })
-    : '',
-);
+watchChosenFrames();
+const frame = computed(() => {
+  if (props.frame) return props.frame;
+  if (props.place && appSettings.user.avatar.frameAt[props.place] === false) return '';
+  return profileFrame(props.profile, props.admin);
+});
 </script>
 <template>
   <!-- 换了头像框（改了设置、读到了资料）：旧的淡出，新的长出来。 -->

@@ -15,6 +15,15 @@ import userMenuQuillIcon from './icons/user-menu/quill.svg?raw';
 import userMenuOpenIcon from './icons/user-menu/open.svg?raw';
 import userMenuCopyIcon from './icons/user-menu/copy.svg?raw';
 import userMenuLinkIcon from './icons/user-menu/link.svg?raw';
+import userMenuManageIcon from './icons/user-menu/manage.svg?raw';
+import frameIconAll from './icons/frames/all.svg?raw';
+import frameIconDecor from './icons/frames/decor.svg?raw';
+import frameIconImported from './icons/frames/imported.svg?raw';
+import frameIconAchieve from './icons/frames/achieve.svg?raw';
+import frameIconShop from './icons/frames/shop.svg?raw';
+import frameIconRanks from './icons/frames/ranks.svg?raw';
+import frameIconSpecial from './icons/frames/special.svg?raw';
+import frameIconLock from './icons/frames/lock.svg?raw';
 import sectionFunctionIcon from './icons/sections/function.svg?raw';
 import sectionStyleIcon from './icons/sections/style.svg?raw';
 import codeforcesIcon from './icons/storage/cf.svg?raw';
@@ -132,6 +141,18 @@ export const USER_MENU_ICONS = {
   open: userMenuOpenIcon,
   copy: userMenuCopyIcon,
   link: userMenuLinkIcon,
+  manage: userMenuManageIcon,
+};
+// 头像框库左栏的分类，和戴不了时理由前面的小锁。
+export const FRAME_ICONS = {
+  all: frameIconAll,
+  decor: frameIconDecor,
+  imported: frameIconImported,
+  achieve: frameIconAchieve,
+  shop: frameIconShop,
+  ranks: frameIconRanks,
+  special: frameIconSpecial,
+  lock: frameIconLock,
 };
 export const STORAGE_ICONS = {
   user: storageAvatarIcon,

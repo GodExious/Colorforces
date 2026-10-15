@@ -2,8 +2,14 @@
 import { shallowRef } from 'vue';
 const request = shallowRef(null);
 // 打开分组管理。groupId 给了就先停在那个分组上，没给停在「好友」上。弹窗始终只有一个。
-export function showGroupsDialog(groupId = '') {
-  request.value = { groupId };
+// handle 给了（从右键菜单打开时）：成员表里这个人那一行滚到看得见的地方，闪一下。
+export function showGroupsDialog(groupId = '', handle = '') {
+  request.value = { groupId, handle };
+}
+// 快捷键用（见 App.vue）：开着没有、关上。
+export const groupsDialogShown = () => Boolean(request.value);
+export function closeGroupsDialog() {
+  request.value = null;
 }
 </script>
 <script setup>
@@ -14,6 +20,7 @@ import { appSettings, saveSettings } from '../../../../../settings.js';
 import { FONT_SIZE } from '../../../../../config/defaults.js';
 import { menuTabColor, PETAL_COLORS } from '../../../../../utils/petal-palette.js';
 import { preventScrollChaining } from '../../../../../utils/scroll.js';
+import { isTruncated } from '../../../../../utils/text-overflow.js';
 import InlineSvg from '../../../../components/icons/InlineSvg/InlineSvg.vue';
 import DialogTransition from '../../../../components/transitions/DialogTransition/DialogTransition.vue';
 import ExpandTransition from '../../../../components/transitions/ExpandTransition/ExpandTransition.vue';
@@ -30,6 +37,10 @@ import {
 } from '../../../../../features/user/groups/data.js';
 import { profileOf, subscribeProfiles } from '../../../../../features/user/groups/profiles.js';
 import GroupMark from '../GroupMark/GroupMark.vue';
+import AvatarFrame from '../../../../components/avatars/AvatarFrame/AvatarFrame.vue';
+import { showFrameDialog } from '../../../user/components/FrameDialog/FrameDialog.vue';
+import { KNOWN_FRAMES } from '../../../../../features/user/frames/catalog.js';
+import { arrangeGroups, stepOrder } from '../../../../../features/user/groups/reorder.js';
 import ColorPanel from '../ColorPanel/ColorPanel.vue';
 import MemberName, {
   compareByName,
@@ -56,6 +67,7 @@ import {
   membersOf,
   memoOf,
   removeGroup,
+  moveGroup,
   setMemo,
   shownMark,
 } from '../../../../../features/user/groups/store.js';
@@ -76,9 +88,14 @@ const reload = () => {
 // 别的标签页和页面上的标签都会跟着重算，写回来的又会和手上的打架、颜色来回跳），
 // 只在这里把当前分组的颜色换成它：左边的分组、成员表里的分组标签当场跟着变，松手才存。
 const draftColor = ref('');
+// 左栏正拖着调整先后时，自建分组眼下的先后（一串 id），和正拖着的那一个；没在拖时是 null、空串。见下面「左栏拖动调整先后」。
+const sideOrder = ref(null),
+  sideDragging = ref('');
 const groups = computed(() => {
   if (!account.value) return [{ id: FRIENDS_GROUP, builtin: true, frame: '', count: 0 }];
-  const list = listGroups(account.value);
+  const arranged = listGroups(account.value);
+  // 左栏正拖着调整先后时，按拖动中的先后排（见下面「左栏拖动调整先后」）。
+  const list = sideOrder.value ? arrangeGroups(arranged, sideOrder.value) : arranged;
   if (!draftColor.value) return list;
   return list.map((group) =>
     group.id === selected.value ? { ...group, color: draftColor.value } : group,
@@ -415,7 +432,7 @@ function sizeMotion(element, done, entering) {
     element.style.overflow = '';
     done();
   };
-  if (element.classList.contains('cf-groups-side-row')) followSideMark(performance.now() + 240);
+  if (element.classList.contains('cf-groups-side-entry')) followSideMark(performance.now() + 240);
 }
 // 左边选中的那一块：量出选中的分组在这一栏里的位置和高度，滑过去。打开弹窗时直接到位，不滑。
 // 分组在长出来、收回去的时候（新建、删掉），选中的那个会跟着挪，这期间每一帧都跟上。
@@ -432,7 +449,13 @@ function placeSideMark(animate = true) {
     sideSpot = null;
     return;
   }
-  const spot = { top: row.offsetTop, height: row.offsetHeight };
+  // 按看得见的位置量：拖着的那一行、换位置时滑着的行都带着位移，offsetTop 量不到。
+  const box = side.value.getBoundingClientRect();
+  const rect = row.getBoundingClientRect();
+  const spot = {
+    top: Math.round(rect.top - box.top + side.value.scrollTop),
+    height: Math.round(rect.height),
+  };
   if (sideSpot && sideSpot.top === spot.top && sideSpot.height === spot.height) return;
   const moving =
     animate && sideSpot !== null && !matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -544,13 +567,118 @@ function submitCreate() {
   requestAnimationFrame(() => (rejected.value = true));
 }
 
+/*
+ * 左栏拖动调整先后：按住自建分组左边的把手上下拖，和分组页一样（做法的说明见 GroupsPage.vue 的「拖动调整先后」）。
+ * 每一项分两层：外面一层（entry）是它在这一栏里占的位置，换先后时滑过去；里面一层（按钮）是看得见的内容，拖的时候贴着鼠标。
+ * 拖的过程中只记在这里（sideOrder），松手才存一次。选中的那一块跟着看得见的位置每一帧挪。
+ */
+let sideDrag = null,
+  sideShield = null;
+function placeSideBody() {
+  const { entry, body, grab, height, y } = sideDrag;
+  const rows = entry.parentElement;
+  // 最上面不超过「好友」那一行的下边，最下面不超过这一栏分组的下边。
+  const floor = rows.firstElementChild.getBoundingClientRect().bottom;
+  const ceiling = rows.getBoundingClientRect().bottom - height;
+  const top = Math.min(Math.max(y - grab, floor), Math.max(floor, ceiling));
+  body.style.transform = `translateY(${Math.round(top - entry.getBoundingClientRect().top)}px)`;
+  return { top, bottom: top + height };
+}
+function startSideDrag(event, group) {
+  if (event.pointerType === 'mouse' && event.button !== 0) return;
+  const entry = event.currentTarget.closest('.cf-groups-side-entry');
+  const body = entry?.querySelector('.cf-groups-side-row');
+  if (!body || sideDrag) return;
+  event.preventDefault();
+  tooltip.hide();
+  const box = entry.getBoundingClientRect();
+  sideDrag = { id: group.id, entry, body, grab: event.clientY - box.top, height: box.height };
+  sideDragging.value = group.id;
+  sideOrder.value = groups.value.filter((item) => !item.builtin).map((item) => item.id);
+  // 拖的过程中盖住整个窗口的透明挡板（样式在分组页里）：别的东西不出悬停、不弹提示，鼠标一直是「抓着」。
+  sideShield = document.createElement('div');
+  sideShield.id = 'cf-groups-drag-shield';
+  document.body.appendChild(sideShield);
+  window.addEventListener('pointermove', moveSideDrag);
+  window.addEventListener('pointerup', endSideDrag);
+  window.addEventListener('pointercancel', endSideDrag);
+  followSideMark(Infinity);
+}
+function moveSideDrag(event) {
+  if (!sideDrag) return;
+  sideDrag.y = event.clientY;
+  const { top, bottom } = placeSideBody();
+  const order = sideOrder.value;
+  const rows = sideDrag.entry.parentElement;
+  const rowsTop = rows.getBoundingClientRect().top;
+  const middleOf = (id) => {
+    const row = rows.querySelector(`[data-group="${CSS.escape(id)}"]`);
+    return row ? rowsTop + row.offsetTop + row.offsetHeight / 2 : NaN;
+  };
+  const next = stepOrder(order, sideDrag.id, top, bottom, middleOf);
+  if (next === order) return;
+  sideOrder.value = next;
+  nextTick(() => sideDrag && placeSideBody());
+}
+function endSideDrag() {
+  if (!sideDrag) return;
+  const { id, body } = sideDrag;
+  const order = sideOrder.value;
+  sideDrag = null;
+  window.removeEventListener('pointermove', moveSideDrag);
+  window.removeEventListener('pointerup', endSideDrag);
+  window.removeEventListener('pointercancel', endSideDrag);
+  sideShield?.remove();
+  sideShield = null;
+  const settle = () => {
+    body.style.transition = '';
+    if (sideDragging.value === id) sideDragging.value = '';
+  };
+  body.style.transition = 'transform 180ms cubic-bezier(0.22, 1, 0.36, 1)';
+  body.style.transform = '';
+  body.addEventListener('transitionend', settle, { once: true });
+  setTimeout(settle, 260);
+  if (order?.includes(id)) change((own) => moveGroup(own, id, order.indexOf(id)));
+  sideOrder.value = null;
+  // 选中的那一块再跟一会儿，等松手后的滑动走完。
+  followSideMark(performance.now() + 320);
+}
+
+// 分组的头像框：编辑行里一个小格子（和分组页那一行的一样），点了打开头像框库，「给谁戴」选好这个分组。
+// 不认识的（比如导入的头像框后来删了）当作没设。
+const frameOfGroup = (group) => (KNOWN_FRAMES.has(group?.frame) ? group.frame : '');
+// 头像框关着（关了头像也算）时，小格子灰掉、点不了（样式和分组页那一行的共用）。
+const framesOn = computed(() => appSettings.user.avatar.enabled && appSettings.user.avatar.frames);
+
+// 名字太长被省略时，鼠标移上去提示全名。
+function showCut(event, text) {
+  if (isTruncated(event.currentTarget)) tooltip.show(event.currentTarget, text);
+}
+
 // 只有右上角的 × 和下面的「完成」能关：这个弹窗里要点的东西多，点到框外面、按到 Esc 就关掉太容易误触。
 function close() {
+  endSideDrag();
   request.value = null;
 }
 let stop, stopProfiles;
+// 从右键菜单打开时要闪一下的那一行（小写账号名），闪完清掉。
+const flash = ref('');
+let flashTimer = 0;
+function flashRow(handle) {
+  clearTimeout(flashTimer);
+  flash.value = handle ? handle.toLowerCase() : '';
+  if (!flash.value) return;
+  // 右边那一块换成这个分组要淡入一下，等它出来再滚过去。
+  setTimeout(() => {
+    overlay.value
+      ?.querySelector('.cf-groups-table-row.is-flash')
+      ?.scrollIntoView({ block: 'nearest' });
+  }, 260);
+  flashTimer = setTimeout(() => (flash.value = ''), 1900);
+}
 watch(request, (value) => {
-  if (!value) return;
+  // 被快捷键关上时侧栏可能正拖着：放下。
+  if (!value) return endSideDrag();
   owner.value = getCurrentUserHandle() || '';
   selected.value = value.groupId || FRIENDS_GROUP;
   sortKey.value = 'name';
@@ -558,11 +686,16 @@ watch(request, (value) => {
   checked.value = [];
   notes.value = [];
   adding.value = '';
+  // 上次开着的自定义颜色、复制菜单、没松手的颜色都不带过来：每次打开都是收着的。
+  customOpen.value = false;
+  copyOpen.value = false;
+  draftColor.value = '';
   cancelCreate();
   reload();
   sideSpot = null;
   showPreview.value = false;
   nextTick(() => placeSideMark(false));
+  flashRow(value.handle);
 });
 watch(overlay, (node) => {
   if (node) preventScrollChaining(node);
@@ -602,24 +735,63 @@ onBeforeUnmount(() => {
             </button>
           </div>
           <div class="cf-groups-dialog-body">
-            <div ref="side" class="cf-groups-side">
+            <div ref="side" class="cf-groups-side cf-scrollbar">
               <!-- 选中的那个分组底下垫的一块，换分组时滑过去（和菜单左边的页签一样）。 -->
               <span ref="sideMark" class="cf-groups-side-mark" aria-hidden="true"></span>
-              <TransitionGroup :css="false" @enter="growIn" @leave="growOut">
-                <button
+              <!-- 每一项外面一层是它占的位置（换先后时滑过去），里面的按钮是看得见的内容（拖的时候贴着鼠标）。 -->
+              <TransitionGroup
+                :css="false"
+                tag="div"
+                class="cf-groups-side-rows"
+                move-class="cf-groups-side-move"
+                @enter="growIn"
+                @leave="growOut"
+              >
+                <div
                   v-for="group in groups"
                   :key="group.id"
-                  type="button"
-                  class="cf-groups-side-row"
-                  :class="{ active: group.id === selected, 'has-conflict': conflict === group.id }"
-                  @click="select(group.id)"
+                  class="cf-groups-side-entry"
+                  :class="{ 'is-dragging': sideDragging === group.id }"
+                  :data-group="group.id"
                 >
-                  <GroupMark :group="group" />
-                  <span class="cf-groups-side-name">{{ nameOf(group) }}</span>
-                  <span class="cf-groups-side-count"
-                    ><SmoothText :text="String(group.count)"
-                  /></span>
-                </button>
+                  <button
+                    type="button"
+                    class="cf-groups-side-row"
+                    :class="{
+                      active: group.id === selected,
+                      'has-conflict': conflict === group.id,
+                    }"
+                    @click="select(group.id)"
+                  >
+                    <!-- 「好友」固定在最前，是一枚图钉；别的分组按住六个点的把手拖。 -->
+                    <span
+                      v-if="group.builtin"
+                      class="cf-groups-grip is-pinned"
+                      :data-tooltip="t('groupsPinnedHint')"
+                      ><svg viewBox="0 0 12 12" aria-hidden="true">
+                        <path d="M4.2 1.3h3.6l-.5 3 1.8 2.3H2.9l1.8-2.3z" />
+                        <path d="M6 6.6v4.2" /></svg
+                    ></span>
+                    <span
+                      v-else
+                      class="cf-groups-grip"
+                      :data-tooltip="t('groupsDragHint')"
+                      @pointerdown="startSideDrag($event, group)"
+                      @click.stop
+                      ><i></i><i></i><i></i><i></i><i></i><i></i
+                    ></span>
+                    <GroupMark :group="group" />
+                    <span
+                      class="cf-groups-side-name"
+                      @mouseenter="showCut($event, nameOf(group))"
+                      @mouseleave="tooltip.hide()"
+                      >{{ nameOf(group) }}</span
+                    >
+                    <span class="cf-groups-side-count"
+                      ><SmoothText :text="String(group.count)"
+                    /></span>
+                  </button>
+                </div>
               </TransitionGroup>
               <form
                 v-if="creating"
@@ -670,10 +842,15 @@ onBeforeUnmount(() => {
                         >{{ markLength(markDraft) }}/{{ MARK_LIMIT }}</span
                       >
                     </label>
-                    <!-- 「好友」的名字是固定的，跟着菜单的语言。 -->
-                    <span v-if="current.builtin" class="cf-groups-editor-name is-fixed">{{
-                      nameOf(current)
-                    }}</span>
+                    <!-- 「好友」的名字是固定的（跟着菜单的语言），一个改不了的输入框，和别的分组对齐。 -->
+                    <label v-if="current.builtin" class="cf-groups-field is-name">
+                      <input
+                        class="cf-groups-input cf-groups-editor-name"
+                        type="text"
+                        :value="nameOf(current)"
+                        disabled
+                      />
+                    </label>
                     <label v-else class="cf-groups-field is-name">
                       <input
                         v-model="renaming"
@@ -722,6 +899,24 @@ onBeforeUnmount(() => {
                         @click="toggleCustom"
                       ></button>
                     </div>
+                    <!-- 这个分组的头像框：点一下打开头像框库。换了的时候旧的淡出，新的淡入。头像框关着时灰掉。 -->
+                    <button
+                      type="button"
+                      class="cf-groups-frame-chip cf-frame-host"
+                      :disabled="!framesOn"
+                      :data-tooltip="t(framesOn ? 'groupsFrameChip' : 'groupsFrameChipOff')"
+                      @click="showFrameDialog(current.id)"
+                    >
+                      <Transition name="cf-groups-swap" mode="out-in">
+                        <span
+                          v-if="frameOfGroup(current)"
+                          :key="frameOfGroup(current)"
+                          class="cf-groups-frame-face"
+                          ><AvatarFrame :frame="frameOfGroup(current)"
+                        /></span>
+                        <span v-else key=":none" class="cf-groups-frame-empty"></span>
+                      </Transition>
+                    </button>
                     <!-- 眼睛：展开、收起下面的预览。 -->
                     <button
                       type="button"
@@ -734,10 +929,11 @@ onBeforeUnmount(() => {
                     >
                       <InlineSvg :source="assets.previewEyeIcon" />
                     </button>
+                    <!-- 「好友」跟着原站，不能删：按钮在、灰着，和别的分组对齐。 -->
                     <button
-                      v-if="!current.builtin"
                       type="button"
                       class="cf-groups-delete"
+                      :disabled="current.builtin"
                       @click="requestRemoveGroup"
                     >
                       {{ t('groupsDelete') }}
@@ -837,7 +1033,7 @@ onBeforeUnmount(() => {
                         ></i>
                       </button>
                       <Transition name="cf-groups-pop">
-                        <div v-if="copyOpen" class="cf-groups-copy-menu">
+                        <div v-if="copyOpen" class="cf-groups-copy-menu cf-scrollbar">
                           <button
                             v-for="group in copyTargets"
                             :key="group.id"
@@ -874,7 +1070,7 @@ onBeforeUnmount(() => {
                   <ExpandTransition :show="Boolean(feedback)">
                     <p class="cf-groups-feedback">{{ feedback }}</p>
                   </ExpandTransition>
-                  <div class="cf-groups-table-row is-head">
+                  <div class="cf-groups-table-row is-head cf-scrollbar">
                     <button
                       type="button"
                       class="cf-groups-check"
@@ -904,9 +1100,14 @@ onBeforeUnmount(() => {
                     ><span>{{ t('groupsColMemo') }}</span
                     ><span></span>
                   </div>
-                  <div class="cf-groups-table">
+                  <div class="cf-groups-table cf-scrollbar">
                     <TransitionGroup name="cf-groups-list">
-                      <div v-for="row in rows" :key="row.handle" class="cf-groups-table-row">
+                      <div
+                        v-for="row in rows"
+                        :key="row.handle"
+                        class="cf-groups-table-row"
+                        :class="{ 'is-flash': flash === row.handle.toLowerCase() }"
+                      >
                         <button
                           type="button"
                           class="cf-groups-check"
@@ -1018,39 +1219,7 @@ onBeforeUnmount(() => {
   border-right: 1px solid var(--cf-surface-border);
   overflow-y: auto;
 }
-/* 滚动条：一条细的圆头滑块，没有槽；颜色取弹窗的淡蓝灰，鼠标移上去变粗、加深。
-   表头不滚动，但要留出和下面一样宽的位置，所以也在这里。 */
-.cf-groups-side::-webkit-scrollbar,
-.cf-groups-table::-webkit-scrollbar,
-.cf-groups-table-row.is-head::-webkit-scrollbar {
-  width: 10px;
-}
-.cf-groups-side::-webkit-scrollbar-track,
-.cf-groups-table::-webkit-scrollbar-track,
-.cf-groups-table-row.is-head::-webkit-scrollbar-track {
-  background: transparent;
-}
-.cf-groups-side::-webkit-scrollbar-thumb,
-.cf-groups-table::-webkit-scrollbar-thumb {
-  min-height: 36px;
-  border: 3px solid transparent;
-  border-radius: 999px;
-  background: #c3cce2 padding-box;
-}
-.cf-groups-side::-webkit-scrollbar-thumb:hover,
-.cf-groups-table::-webkit-scrollbar-thumb:hover {
-  border-width: 2px;
-  background-color: #a3b0d4;
-}
-/* 不认上面那种写法的浏览器（火狐）：用标准的细滚动条，同样的颜色。认的浏览器不能写这两项，写了上面的就不生效。 */
-@supports not selector(::-webkit-scrollbar) {
-  .cf-groups-side,
-  .cf-groups-table,
-  .cf-groups-table-row.is-head {
-    scrollbar-width: thin;
-    scrollbar-color: #c3cce2 transparent;
-  }
-}
+/* 滚动条用公共的 cf-scrollbar（styles/scrollbar.css）。表头不滚动，但也挂着它，留出和下面一样宽的位置。 */
 .cf-groups-side-row {
   display: flex;
   align-items: center;
@@ -1070,12 +1239,47 @@ onBeforeUnmount(() => {
     box-shadow var(--cf-duration-fast) ease,
     color var(--cf-duration-fast) ease;
 }
+/* 悬停：垫一层半透明的主题色。不用实色的 --cf-card-hover：弹窗左上角的底色本来就偏蓝，实色的那层在上半截几乎看不出来。 */
 .cf-groups-side-row:hover {
-  background: var(--cf-card-hover);
+  background: color-mix(in srgb, var(--cf-menu-accent) 12%, transparent);
 }
 /* 选中的那一块垫在分组底下；选中的分组自己不再画底色，悬停时也不画（不然盖在这一块上面）。 */
 .cf-groups-side {
   position: relative;
+}
+/* 左栏的分组：一列，彼此隔 2px；换先后时滑到新位置。 */
+.cf-groups-side-rows {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cf-groups-side-move {
+  transition: transform var(--cf-duration-moderate) var(--cf-ease-out);
+}
+/* 正在拖的那一项：占的位置一格一格地换，不带滑动；内容那一层浮起来一点，贴着鼠标。 */
+.cf-groups-side-entry.is-dragging {
+  position: relative;
+  z-index: 2;
+  transition: none !important;
+}
+.cf-groups-side-entry.is-dragging .cf-groups-side-row {
+  background: var(--cf-content-surface);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cf-menu-accent) 34%, var(--cf-surface-border)),
+    0 8px 20px -8px color-mix(in srgb, var(--cf-menu-accent) 55%, transparent);
+}
+.cf-groups-side-entry.is-dragging .cf-groups-grip {
+  cursor: grabbing;
+}
+/* 按钮放在位置那一层里面，不会自己撑满一行（按钮的宽度默认按内容算），要明说占满：不然长名字会把这一栏撑出横向滚动条，而不是省略。 */
+.cf-groups-side-entry > .cf-groups-side-row {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.cf-groups-side-row > .cf-groups-grip {
+  margin-right: -2px;
 }
 .cf-groups-side-mark {
   position: absolute;
@@ -1197,12 +1401,37 @@ onBeforeUnmount(() => {
   flex: 1;
   font-weight: var(--cf-font-weight-semibold);
 }
-.cf-groups-editor-name.is-fixed {
-  padding: 0 8px;
-  color: var(--cf-control-ink);
-}
 .cf-groups-editor .cf-groups-input,
 .cf-groups-add-bar .cf-groups-input {
+  height: 30px;
+}
+/* 编辑行的两个输入框（图标、名字）平时是很浅的灰底、没有边框，不抢眼；鼠标移上去灰一点；
+   点进去写字时变成白底加主题色的边（写在悬停后面：鼠标停在框上写字时也是这个样子）。 */
+.cf-groups-editor .cf-groups-input {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--cf-gray-500) 7%, transparent);
+  box-shadow: none;
+}
+.cf-groups-editor .cf-groups-input:hover {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--cf-gray-500) 11%, transparent);
+}
+.cf-groups-editor .cf-groups-input:focus,
+.cf-groups-editor .cf-groups-input:focus:hover {
+  border-color: color-mix(in srgb, var(--cf-menu-accent) 72%, var(--cf-surface-border));
+  background: #fff;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cf-menu-accent) 18%, transparent);
+}
+/* 「好友」的名字：改不了。和能改的框分开：没有底色，一圈虚线，字更浅。 */
+.cf-groups-editor .cf-groups-input:disabled,
+.cf-groups-editor .cf-groups-input:disabled:hover {
+  border: 1px dashed var(--cf-gray-300);
+  background: transparent;
+  color: var(--cf-gray-400);
+  cursor: not-allowed;
+}
+/* 编辑行里的头像框小格子和旁边的眼睛一样高。 */
+.cf-groups-editor .cf-groups-frame-chip {
   height: 30px;
 }
 .cf-groups-swatches {
@@ -1330,6 +1559,13 @@ onBeforeUnmount(() => {
 }
 .cf-groups-delete:hover {
   background: #c7474714;
+}
+/* 「好友」不能删：按钮灰着。 */
+.cf-groups-delete:disabled,
+.cf-groups-delete:disabled:hover {
+  background: none;
+  color: var(--cf-gray-400);
+  cursor: not-allowed;
 }
 /* 编辑行下面：这个分组在页面上的样子，标签、小标各一张小卡片。卡片的底是输入框那种半透明的白；
    页面上现在用的那张描一圈主题色。名字照原站表格里用户名的字，标签用的是页面上的样式。
@@ -1468,7 +1704,6 @@ onBeforeUnmount(() => {
   box-shadow: 0 10px 28px #2634531f;
   box-sizing: border-box;
   overflow-y: auto;
-  scrollbar-width: thin;
 }
 .cf-groups-copy-item {
   display: flex;
@@ -1538,6 +1773,24 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
+}
+/* 从右键菜单打开时，那个人的那一行闪一下：垫一层主题色，慢慢褪掉。 */
+.cf-groups-table-row.is-flash {
+  animation: cf-groups-row-flash 1800ms ease-out 200ms backwards;
+}
+@keyframes cf-groups-row-flash {
+  0%,
+  30% {
+    background: color-mix(in srgb, var(--cf-menu-accent) 24%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-groups-table-row.is-flash {
+    animation: none;
+  }
 }
 .cf-groups-table-row {
   display: grid;

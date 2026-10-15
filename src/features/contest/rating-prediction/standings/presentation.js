@@ -1,7 +1,7 @@
 import { appSettings } from '../../../../settings.js';
 import { translate as t } from '../../../../i18n/index.js';
 import { applyRatingStyle } from '../../../ratings/cells/style.js';
-import { rankForRating, rankProgress } from '../algorithm/ranks.js';
+import { rankForRating, rankProgress, shownRating } from '../algorithm/ranks.js';
 import { getRatingTagStyle, getRatingBgColor } from '../../../ratings/rules.js';
 import upIcon from '../../../../assets/icons/prediction/rank-up.svg?raw';
 import downIcon from '../../../../assets/icons/prediction/rank-down.svg?raw';
@@ -140,7 +140,8 @@ function measureRankContent(cell) {
 export function renderRankProgress(cell, record, result, phase) {
   const progress = rankProgress(record, result?.delta, phase);
   // 以实际分数作渐变端点；分数持平时两端同色，照样有底色。只有缺值时保留原站斑马纹。
-  const before = progress?.final ? progress.before : record?.rating;
+  // 赛时的赛前分按原站显示的评级（新号是 0，灰色），不按算分用的 1400。
+  const before = progress?.final ? progress.before : shownRating(record);
   const after = progress?.final
     ? progress.after
     : Number.isFinite(result?.delta)

@@ -6,7 +6,8 @@
  * 所以参赛不满六场的账号：
  * - 显示评级比实际评级低，低的就是还没补的那部分（hidden）。评级公式用的是实际评级。
  * - 这一场显示出来的涨跌 = 按实际评级算出的涨跌 + 这一场的补分（bonus）。
- * 插件平时只拿得到显示评级，不知道每个人打过几场，整张榜单上没法修正；
+ * 插件平时只拿得到显示评级，不知道每个人打过几场，整张榜单上没法修正；只有首场账号（还没有评级的）例外：
+ * 一场都没打过，这一场的补分一定是 500，榜单上直接补上（withFirstBonus）。
  * 单用户评分分析只看一个人，查一次他的评级记录就知道，可以按这里的规则算准。
  * 拿一个已经打了 32 场的账号回看过他的前六场：不修正时差 70～523 分，修正后差 17～35 分（和普通账号的误差一个量级）。
  */
@@ -35,6 +36,28 @@ export function newcomerStanding(history, contestId, startSeconds = Infinity) {
     bonus: NEWCOMER_BONUS[played],
     hidden: NEWCOMER_BONUS.slice(played).reduce((sum, bonus) => sum + bonus, 0),
   };
+}
+
+/*
+ * 榜单上的涨跌换成原站会显示的：首场账号（initial）在模型里按实际评级 1400 算，算出来的是实际评级的涨跌，
+ * 原站显示的还要加上第一场的补分。results 是模型的结果（按账号），participants 是参赛者；返回补过的一份，不改原来的。
+ * 补过的那一项另外记着 modelDelta（模型算出来的），单用户分析要用它换算。已经有官方涨跌的不补（官方的就是显示的）。
+ */
+export function withFirstBonus(results, participants, contestId) {
+  const first = newcomerStanding([], contestId);
+  if (!first) return results;
+  const next = { ...results };
+  for (const participant of participants) {
+    const result = next[participant.handle];
+    if (!participant.initial || Number.isFinite(participant.officialDelta)) continue;
+    if (!Number.isFinite(result?.delta)) continue;
+    next[participant.handle] = {
+      ...result,
+      modelDelta: result.delta,
+      delta: result.delta + first.bonus,
+    };
+  }
+  return next;
 }
 
 // 赛前：显示评级 → 实际评级（没有显示评级的首场账号按 0 算，实际就是 1400）。

@@ -5,6 +5,7 @@ import {
   actualBefore,
   displayedAfter,
   actualAfter,
+  withFirstBonus,
 } from '../../../../../src/features/contest/rating-prediction/algorithm/newcomer.js';
 
 // 一个真实账号前几场的记录（比赛编号、当时的显示评级）。
@@ -63,4 +64,26 @@ test('显示评级和实际评级互相换算', () => {
   const first = newcomerStanding(history, 2161);
   assert.equal(actualBefore(null, first), 1400);
   assert.equal(displayedAfter(1400 - 100, first), 400);
+});
+
+test('榜单上首场新号的涨跌补上第一场的 500 分，模型的涨跌另存；有官方涨跌的、不是新号的、老比赛不补', () => {
+  const results = {
+    fresh: { delta: 17, rank: 3 },
+    done: { delta: 40 },
+    old: { delta: -5 },
+    none: {},
+  };
+  const participants = [
+    { handle: 'fresh', initial: true },
+    { handle: 'done', initial: true, officialDelta: 540 },
+    { handle: 'old', initial: false },
+    { handle: 'none', initial: true },
+  ];
+  const next = withFirstBonus(results, participants, 2160);
+  assert.deepEqual(next.fresh, { delta: 517, modelDelta: 17, rank: 3 });
+  assert.deepEqual(next.done, { delta: 40 });
+  assert.deepEqual(next.old, { delta: -5 });
+  assert.deepEqual(next.none, {});
+  assert.equal(results.fresh.delta, 17, '不改原来的');
+  assert.equal(withFirstBonus(results, participants, 1300), results, '新号规则之前的比赛不补');
 });

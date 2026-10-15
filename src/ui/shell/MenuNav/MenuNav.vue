@@ -90,7 +90,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-  <div class="cf-sidebar-nav" ref="root">
+  <div class="cf-sidebar-nav cf-scrollbar" ref="root">
     <div ref="indicator" class="cf-nav-indicator"></div>
     <button
       v-for="tab in tabs"
@@ -126,8 +126,9 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
   overflow-y: auto;
   overflow-y: overlay;
-  scrollbar-width: thin;
-  scrollbar-color: var(--cf-gray-300) transparent;
+  /* 滚动条用公共的 cf-scrollbar（styles/scrollbar.css），颜色照原来的灰。 */
+  --cf-scrollbar-thumb: var(--cf-gray-300);
+  --cf-scrollbar-thumb-hover: var(--cf-gray-400);
   overscroll-behavior: contain;
   position: relative;
 }
@@ -137,23 +138,6 @@ onBeforeUnmount(() => {
   .cf-sidebar-nav {
     background: color-mix(in srgb, var(--cf-paint-accent) 11%, #f5f8fc);
   }
-}
-
-.cf-sidebar-nav::-webkit-scrollbar {
-  width: 4px;
-}
-
-.cf-sidebar-nav::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.cf-sidebar-nav::-webkit-scrollbar-thumb {
-  background: var(--cf-gray-300);
-  border-radius: var(--cf-radius-xs);
-}
-
-.cf-sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: var(--cf-gray-400);
 }
 
 .cf-nav-indicator {

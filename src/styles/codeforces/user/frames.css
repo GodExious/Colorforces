@@ -150,7 +150,9 @@
 /* 个人主页：标题照片换成圆形的大头像，套上头像框，照片外面原站画的那个灰色方框也去掉（奖牌照旧）。
    原来的照片藏起来，它自己的样式里写着 display，所以要压过它；关掉头像时换回来。
    方框的位置和宽度不动（页面靠它排版），只是边线淡掉；里面那一层原来定着 200px 的最小高度和行高，换成按头像框的大小来。
-   头像 150px，头像框 300px 正好是方框的宽度；上面留得多一点（帽子、皇冠伸得高），下面只留绶带的位置。 */
+   头像 200px（头像框 400px），靠右放：头像框的右边贴着方框的右边（方框有 12.5px 的内边距，头像框比头像两边各宽出 100px），
+   往左伸进名字、评分和照片之间那片空白。上下只留这个头像框实际伸出去的那么多（page.js 量出来写在两个变量上），
+   还没量好或者量不了时按伸得最高的那种留。 */
 .cf-photo-box-framed {
   border-color: transparent !important;
   transition: border-color 240ms ease;
@@ -158,17 +160,20 @@
 .cf-photo-framed {
   min-height: 0 !important;
   line-height: 0 !important;
+  text-align: right !important;
 }
 .cf-profile-frame {
   position: relative;
   display: inline-block;
-  width: 150px;
-  height: 150px;
-  margin: 64px 0 36px;
+  width: 200px;
+  height: 200px;
+  margin: var(--cf-frame-top, 85px) 87px var(--cf-frame-bottom, 48px) 0;
   vertical-align: middle;
   line-height: 0;
   animation: cf-frame-in 300ms cubic-bezier(0.22, 1, 0.36, 1);
-  transition: opacity 240ms ease;
+  transition:
+    opacity 240ms ease,
+    margin 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .cf-profile-frame.is-leaving {
   opacity: 0;

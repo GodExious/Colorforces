@@ -95,10 +95,15 @@ export const DEFAULT_SETTINGS = {
       size: 1.6,
       // 显示头像框：头像框的总开关。
       frames: true,
+      // 头像框显示在哪：个人主页的大头像、表格里（榜单、提交记录等）、右键菜单的名片、
+      // 分组管理（分组页、管理弹窗里成员的头像）、其他页面上的头像。头像框库、设置里的预览照常显示。
+      frameAt: { profile: true, tables: true, menus: true, groups: true, others: true },
       // 段位头像框：'off' 不使用，'current' 按现在的段位，'max' 按到过的最高段位。
       rankFrame: 'current',
       // 头像框的动效：'off' 关闭（显示静止的头像框），'hover' 鼠标移上去时才播放，'on' 一直播放。
       frameMotion: 'on',
+      // 自己从头像框库里戴的头像框（名字），空的是没戴。只换自己的头像框，别人看不到。
+      wornFrame: '',
     },
     formatTeams: true,
     // 用户数据图表分析。charts 里每项对应个人主页上的一块内容。
@@ -176,7 +181,10 @@ export const DEFAULT_SETTINGS = {
     predictionEnabled: 'Shift+P', // Prediction：比赛评分预测总开关。
     userAvatar: 'Shift+A',
     avatarFrames: 'Shift+K', // 框（kuàng）：显示头像框；Shift+F 已经给了难度分的显示样式。
+    frameLibrary: 'Shift+W', // Wardrobe（衣柜）：打开、关上头像框库。
     userAnalytics: 'Shift+D', // Data：用户数据分析总开关。
     groupsEnabled: 'Shift+G', // Groups：用户分组总开关。
+    groupTags: 'Shift+Q', // 签（qiān）：用户名后面的分组标签；Shift+T、Shift+B、Shift+L 都已经有了。
+    groupsManage: 'Shift+Z', // 组（zǔ）：打开、关上分组管理；Shift+G 已经给了用户分组总开关。
   },
 };

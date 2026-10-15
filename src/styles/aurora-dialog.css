@@ -178,6 +178,24 @@
   --cf-aurora-btn-to: #dd9248;
   --cf-aurora-btn-edge: #d5934c;
 }
+/* 淡色按钮：比主按钮低一级的操作。同一个弹窗里已经有一个主按钮（比如底下的「完成」）时，
+   别处要突出的操作用它：主按钮那道蓝紫渐变的淡版（很浅的蓝到很浅的紫），顶上一道白高光，底下一点淡投影，深一些的蓝紫字。
+   悬停时渐变深一点、投影大一点（渐变不能过渡，所以底色一下换过去，边框和投影带着过渡）。 */
+.cf-aurora-btn--soft {
+  border-color: #c3caee;
+  background: linear-gradient(135deg, #eef1fd, #f3eefc);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 5px 12px -8px #8590cf;
+  color: #4e5aa8;
+}
+.cf-aurora-btn--soft:hover {
+  border-color: #aeb8ea;
+  background: linear-gradient(135deg, #e5e9fc, #ece5fa);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 7px 16px -9px #8590cf;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .cf-aurora-close,

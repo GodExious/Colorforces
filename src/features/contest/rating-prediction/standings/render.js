@@ -381,9 +381,13 @@ function renderRow(cell, record, result, columns, state, analyze, members = 0, p
       const rank = result?.rank;
       text(output, Number.isInteger(rank) ? `(${rank})` : 'N/A');
       output.classList.toggle('cf-prediction-unavailable', !Number.isInteger(rank));
-      output.dataset.tooltip = Number.isInteger(rank)
-        ? t('predictionRatedRank')
-        : t('predictionNotApplicable');
+      if (Number.isInteger(rank)) {
+        output.dataset.tooltip = ratedRankTip(state.snapshot?.phase);
+        output.dataset.tooltipVariant = 'lines';
+      } else {
+        output.dataset.tooltip = t('predictionNotApplicable');
+        delete output.dataset.tooltipVariant;
+      }
       continue;
     }
     if (key === 'rank') {
@@ -453,6 +457,9 @@ function analysisButton(box, color, handle, analyze) {
   button.setAttribute('aria-label', t('predictionAnalyze') + ' ' + handle);
   button.onclick = () => analyze(handle);
 }
+// 「#」（计评级名次）那一列的提示，表头和每一格一样：是什么、并列时取哪一名；比赛进行中再说一句会有延迟。
+const ratedRankTip = (phase) =>
+  t('predictionRatedRankHint') + (phase === 'live' ? '\n' + t('predictionRatedRankDelay') : '');
 // 操作独立成列，不挤占昵称和参与状态的位置。
 function renderAnalysisAction(output, record, result, state, analyze) {
   // 队伍整支没有分析入口：面板里的赛前评级是对一个人说的。队伍排成一人一行时按成员各给一个（见 renderMemberActions）。
@@ -629,7 +636,7 @@ export function renderPrediction(state, actions) {
         ratedMark.textContent = 'R';
         el.append(ratedMark);
         // 表头的提示里说明并列时取哪一名：这一列和原站的名次一列取法不同，数字会差出一截。说明另起一行。
-        el.dataset.tooltip = t('predictionRatedRankHint');
+        el.dataset.tooltip = ratedRankTip(state.snapshot?.phase);
         el.dataset.tooltipVariant = 'lines';
       } else {
         text(el, key === 'delta' ? 'Δ' : 'Π');

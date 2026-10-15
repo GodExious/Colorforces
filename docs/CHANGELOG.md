@@ -9,14 +9,24 @@ All notable changes to this project will be documented in this file.
 ---
 
 ### v1.9.0
-`2026-10-14 20:21 UTC+8`
+`2026-10-15 12:16 UTC+8`
 
 **Added**
-1. Added user groups: put any user into groups you create and attach notes; the friends group follows Codeforces and lets you follow or unfollow users, and a group tag or mark is shown after user names. Right-click a user name to add them to groups, write a note or follow them. Manage groups on the new Groups page of the menu; Shift+G turns the feature on or off.
-2. Added rank avatar frames: avatars wear a frame drawn for the user’s rank (from Unrated up to tourist and jiangly, plus Headquarters), and the profile photo becomes a framed avatar. Frames follow the current or the highest rank, and their animation can be off, play on hover, or always play; the settings are under avatars on the User page, and Shift+K turns frames on or off.
+1. Added user groups: put any user into groups you create and attach notes. The friends group follows Codeforces and lets you follow or unfollow users, and a group tag or mark is shown after user names. Right-click a user name to add them to groups, write a note or follow them. Manage groups on the new Groups page of the menu. Shift+G turns the feature on or off, Shift+Q turns the tags alone on or off, and Shift+Z opens group management.
+2. Added avatar frames: avatars wear a frame drawn for the user’s rank (from Unrated up to tourist and jiangly, plus Headquarters), following the current or the highest rank, and you can choose whether to show them on profile pages, in tables, in the right-click menu, in group management and on other pages. The frame library previews every frame, and the decorative frames can be worn by you or set for a group so that its members wear it. The profile photo becomes a framed avatar. Frame animation can be off, play on hover, or always play. The settings are under avatars on the User page, Shift+K turns frames on or off, and Shift+W opens the frame library.
+
+**Optimized**
+1. The background of the rank-change cell on standings now blends from left to right, so it no longer looks slanted in taller rows.
+2. Predicted rating changes of first-contest accounts on standings now include the 500-point bonus of the first contest, matching what Codeforces shows.
+3. The tooltips of the rated-rank (#) column on standings now read the same everywhere, and during a contest they note a possible delay of 1–2 minutes.
+4. Scrollbars in the menu and dialogs now share one slim style, without the arrow buttons at both ends.
+5. The maximum avatar size is raised from 3x to 5x.
 
 **Fixed**
 1. Fixed the Hide Test Numbers option showing its Chinese name in the English menu.
+2. Fixed the time zone picker in the analytics panel not responding to the up and down keys after being clicked.
+3. Fixed new accounts (rated 0) being treated as 1400 during a contest: they were shown as 200 points away from Expert (they are 1200 points away from Pupil), and the rank-change cell took the Specialist colour.
+4. Fixed submissions of participants outside the official standings that were later skipped, hacked or failed system tests still counting as accepted after the contest and before ratings came out, which pushed rated ranks down.
 
 ---
 

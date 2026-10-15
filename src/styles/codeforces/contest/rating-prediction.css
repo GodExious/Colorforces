@@ -264,9 +264,10 @@ table.standings .cf-prediction-cell[data-cf-rank-mode],
   box-sizing: border-box;
   border: 1px solid transparent;
   border-radius: 0;
+  /* 从左到右过渡（水平）：斜的渐变会随行高变斜、变散，头像框把行撑高后很明显。 */
   background:
-    linear-gradient(115deg, var(--cf-rank-from), var(--cf-rank-to)) padding-box,
-    linear-gradient(115deg, var(--cf-rank-border-from), var(--cf-rank-border-to)) border-box;
+    linear-gradient(90deg, var(--cf-rank-from), var(--cf-rank-to)) padding-box,
+    linear-gradient(90deg, var(--cf-rank-border-from), var(--cf-rank-border-to)) border-box;
   opacity: 1;
   transition:
     opacity 280ms ease,

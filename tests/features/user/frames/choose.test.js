@@ -28,13 +28,14 @@ test('原站的段位名对上头像框：大小写、首尾空白不影响；�
   assert.equal(rankFrame('headquarters'), '');
 });
 
-test('画稿按种类分文件夹：段位的在 ranks，管理员在 special，头像框库的常规款在 decor；各文件夹里不重名', () => {
+test('画稿按种类分文件夹：段位的在 ranks，4000 分以上的两位和管理员在 special，常规款在 decor；各文件夹里不重名', () => {
   const count = [...readdirSync(ART_DIR)].reduce(
     (sum, kind) => sum + readdirSync(ART_DIR + kind).filter((item) => item.endsWith('.svg')).length,
     0,
   );
   assert.equal(count, known.size, '有重名的画稿');
-  assert.equal(files.get('headquarters'), 'special/headquarters.svg');
+  for (const id of ['tourist', 'jiangly', 'headquarters'])
+    assert.equal(files.get(id), `special/${id}.svg`);
   for (const id of ['wheat', 'pig', 'bow']) assert.equal(files.get(id), `decor/${id}.svg`);
 });
 
@@ -54,7 +55,7 @@ test('每个段位都有画好的头像框，另有管理员和头像框库里�
     'tourist',
     'jiangly',
   ])
-    assert.equal(files.get(rankFrame(rank)), `ranks/${rankFrame(rank)}.svg`, rank || '(没有段位)');
+    assert.ok(files.has(rankFrame(rank)), rank || '(没有段位)');
   assert.ok(known.has('headquarters'));
 });
 
@@ -74,6 +75,15 @@ test('分组的头像框优先，其次按设置看段位；管理员戴管理�
   assert.equal(chooseFrame({ ...base, mode: 'max' }), 'master');
   assert.equal(chooseFrame({ ...base, mode: 'current', admin: true }), 'headquarters');
   assert.equal(chooseFrame({ ...base, mode: 'off', admin: true }), '');
+});
+
+test('自己从头像框库里戴的最先，比分组的、段位的、管理员的都先；戴着不认识的头像框当作没戴', () => {
+  const base = { rank: 'expert', mode: 'current', known };
+  assert.equal(chooseFrame({ ...base, worn: 'bow', group: 'pig' }), 'bow');
+  assert.equal(chooseFrame({ ...base, worn: 'bow', admin: true }), 'bow');
+  assert.equal(chooseFrame({ ...base, worn: 'wheat', mode: 'off' }), 'wheat');
+  assert.equal(chooseFrame({ ...base, worn: 'nope', group: 'pig' }), 'pig');
+  assert.equal(chooseFrame({ ...base, worn: 'nope' }), 'expert');
 });
 
 test('资料还没读到时不按段位戴；旧缓存里没有最高段位（或者是空的）时按现在的段位；没参加过计分比赛的是 unrated', () => {

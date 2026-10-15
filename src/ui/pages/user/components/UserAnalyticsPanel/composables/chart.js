@@ -83,6 +83,8 @@ function createTip(
   const lead = document.createElement('strong');
   const text = document.createElement('span');
   const list = document.createElement('ul');
+  // 列表长了在提示框里滚动，滚动条用插件统一的那种（styles/scrollbar.css）。
+  list.className = 'cf-scrollbar';
   head.append(lead, text);
   panel.append(head, list);
   tip.appendChild(panel);

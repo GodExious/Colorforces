@@ -83,7 +83,7 @@ const attrs = computed(() =>
           alt=""
           loading="lazy"
           @error="failed < sources.length - 1 && failed++"
-        /><AvatarFrame :profile="profile" />
+        /><AvatarFrame :profile="profile" place="groups" />
       </span>
     </Transition>
     <span

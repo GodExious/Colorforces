@@ -16,96 +16,51 @@ const groups = [
   {
     id: 'general',
     labelKey: 'tabGeneral',
-    items: [
-      {
-        key: 'menuLanguage',
-        titleKey: 'shortcutMenuLanguageTitle',
-        descKey: 'shortcutMenuLanguageDesc',
-      },
-    ],
+    items: [{ key: 'menuLanguage', titleKey: 'shortcutMenuLanguageTitle' }],
   },
   {
     id: 'appearance',
     labelKey: 'tabAppearance',
     items: [
-      { key: 'hideTags', titleKey: 'shortcutHideTagsTitle', descKey: 'shortcutHideTagsDesc' },
-      {
-        key: 'hideVerdictTests',
-        titleKey: 'shortcutHideVerdictTestsTitle',
-        descKey: 'shortcutHideVerdictTestsDesc',
-      },
-      {
-        key: 'acHighlight',
-        titleKey: 'shortcutAcHighlightTitle',
-        descKey: 'shortcutAcHighlightDesc',
-      },
-      { key: 'langIcon', titleKey: 'shortcutLangIconTitle', descKey: 'shortcutLangIconDesc' },
-      {
-        key: 'shortVerdict',
-        titleKey: 'shortcutShortVerdictTitle',
-        descKey: 'shortcutShortVerdictDesc',
-      },
-      { key: 'timeFormat', titleKey: 'shortcutTimeFormatTitle', descKey: 'shortcutTimeFormatDesc' },
+      { key: 'hideTags', titleKey: 'shortcutHideTagsTitle' },
+      { key: 'hideVerdictTests', titleKey: 'shortcutHideVerdictTestsTitle' },
+      { key: 'acHighlight', titleKey: 'shortcutAcHighlightTitle' },
+      { key: 'langIcon', titleKey: 'shortcutLangIconTitle' },
+      { key: 'shortVerdict', titleKey: 'shortcutShortVerdictTitle' },
+      { key: 'timeFormat', titleKey: 'shortcutTimeFormatTitle' },
     ],
   },
   {
     id: 'ratings',
     labelKey: 'tabRatings',
     items: [
-      {
-        key: 'clistEnabled',
-        titleKey: 'shortcutClistEnabledTitle',
-        descKey: 'shortcutClistEnabledDesc',
-      },
-      {
-        key: 'colorRatings',
-        titleKey: 'shortcutColorRatingsTitle',
-        descKey: 'shortcutColorRatingsDesc',
-      },
-      {
-        key: 'displayStyle',
-        titleKey: 'shortcutDisplayStyleTitle',
-        descKey: 'shortcutDisplayStyleDesc',
-      },
+      { key: 'clistEnabled', titleKey: 'shortcutClistEnabledTitle' },
+      { key: 'colorRatings', titleKey: 'shortcutColorRatingsTitle' },
+      { key: 'displayStyle', titleKey: 'shortcutDisplayStyleTitle' },
     ],
   },
   {
     id: 'prediction',
     labelKey: 'tabPrediction',
-    items: [
-      {
-        key: 'predictionEnabled',
-        titleKey: 'shortcutPredictionEnabledTitle',
-        descKey: 'shortcutPredictionEnabledDesc',
-      },
-    ],
+    items: [{ key: 'predictionEnabled', titleKey: 'shortcutPredictionEnabledTitle' }],
   },
   {
     id: 'user',
     labelKey: 'tabUser',
     items: [
-      { key: 'userAvatar', titleKey: 'shortcutUserAvatarTitle', descKey: 'shortcutUserAvatarDesc' },
-      {
-        key: 'avatarFrames',
-        titleKey: 'shortcutAvatarFramesTitle',
-        descKey: 'shortcutAvatarFramesDesc',
-      },
-      {
-        key: 'userAnalytics',
-        titleKey: 'shortcutUserAnalyticsTitle',
-        descKey: 'shortcutUserAnalyticsDesc',
-      },
+      { key: 'userAvatar', titleKey: 'shortcutUserAvatarTitle' },
+      { key: 'avatarFrames', titleKey: 'shortcutAvatarFramesTitle' },
+      { key: 'frameLibrary', titleKey: 'shortcutFrameLibraryTitle' },
+      { key: 'userAnalytics', titleKey: 'shortcutUserAnalyticsTitle' },
     ],
   },
   {
     id: 'groups',
     labelKey: 'tabGroups',
     items: [
-      {
-        key: 'groupsEnabled',
-        titleKey: 'shortcutGroupsEnabledTitle',
-        descKey: 'shortcutGroupsEnabledDesc',
-      },
+      { key: 'groupsEnabled', titleKey: 'shortcutGroupsEnabledTitle' },
+      { key: 'groupTags', titleKey: 'shortcutGroupTagsTitle' },
+      { key: 'groupsManage', titleKey: 'shortcutGroupsManageTitle' },
     ],
   },
 ];

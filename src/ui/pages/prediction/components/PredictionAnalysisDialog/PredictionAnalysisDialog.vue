@@ -142,15 +142,12 @@ const before = computed(() =>
 const current = computed(() => {
   if (member.value) return member.value.current;
   if (newcomer.value) return newcomer.value.current;
+  // 这里的赛前评级是模型里的，加的也要是模型算出的涨跌（首场新号在榜单上显示的补过分，见 withFirstBonus）。
   const result = state.results?.[handle.value];
-  if (
-    !result ||
-    before.value == null ||
-    !Number.isInteger(result.rank) ||
-    !Number.isFinite(result.delta)
-  )
+  const delta = result?.modelDelta ?? result?.delta;
+  if (!result || before.value == null || !Number.isInteger(result.rank) || !Number.isFinite(delta))
     return null;
-  return { rank: result.rank, rating: before.value + result.delta };
+  return { rank: result.rank, rating: before.value + delta };
 });
 // 只有取样曲线到位后才估算；零散的几个精确点不足以插值。
 const points = computed(() =>

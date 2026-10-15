@@ -13,6 +13,9 @@ defineProps({
   summary: { type: String, default: '' },
   // 摘要要不要显得灰一些（一项都没选的时候）。
   muted: { type: Boolean, default: false },
+  // 下面的选项放在一块浅色底板里，不缩进、不画竖线：这一段本身已经在缩进的子选项里时用（比如「用户」页头像框的「显示位置」），
+  // 免得再套一层竖线成了第四层。
+  plate: { type: Boolean, default: false },
 });
 const open = ref(false);
 </script>
@@ -38,9 +41,9 @@ const open = ref(false);
       <span class="cf-setting-sublabel">{{ title }}</span>
     </div>
     <ExpandTransition v-if="foldable" :show="open">
-      <div class="cf-nested-options"><slot /></div>
+      <div :class="plate ? 'cf-setting-plate' : 'cf-nested-options'"><slot /></div>
     </ExpandTransition>
-    <div v-else class="cf-nested-options"><slot /></div>
+    <div v-else :class="plate ? 'cf-setting-plate' : 'cf-nested-options'"><slot /></div>
   </div>
 </template>
 
@@ -50,6 +53,18 @@ const open = ref(false);
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+/* 浅色底板（plate）：选项和标题左边对齐、不画竖线，放在一块很浅的主题色圆角底板里。 */
+.cf-setting-plate {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 12px;
+  border-radius: var(--cf-radius-lg);
+  background: color-mix(in srgb, var(--cf-menu-accent) 7%, transparent);
+}
+.cf-setting-plate .cf-setting-item {
+  min-height: 28px;
 }
 /* 标题行和下面的选项行一样高（28px）。 */
 .cf-setting-item.cf-setting-section-head {

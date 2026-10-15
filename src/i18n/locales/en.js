@@ -7,12 +7,14 @@ export default {
   predictionRankChange: 'Rank changes and promotion analysis',
   predictionRatedRank: 'Rated-field rank',
   predictionRatedRankHint:
-    'Rated-field rank\nTies take the last place of their group, as the rating formula does',
+    'Rated-field rank:\nTies take the last place of their group, as the rating formula does.',
+  predictionRatedRankDelay:
+    'Data refreshes once a minute and the API lags behind, so this may be about 1–2 minutes late.',
   predictionFollowStyle: 'Follow problem-rating style',
   predictionSyncStandings: 'Refresh the standings along with predictions',
   predictionCacheContests: 'Cached contests',
   predictionCacheContestsHint:
-    'Up to 25 contests. Predictions refresh automatically while the standings page is open: every 60 seconds during a contest; every 15 minutes after it ends and before official ratings are out; once official ratings are out, the result is kept for 24 hours without refreshing.',
+    'Up to 25 contests. Predictions refresh automatically while the standings page is open. During a contest they refresh every 60 seconds, and after it ends, every 15 minutes until official ratings are out. Once official ratings are out, the result is kept for 24 hours without refreshing.',
   predictionFinalDelta: 'Final rating change',
   predictionLiveDelta: 'Predicted rating change',
   predictionNotApplicable: 'N/A: not applicable or reliable data unavailable',
@@ -24,7 +26,7 @@ export default {
   predictionTopRank: 'Already in the highest rating tier',
   predictionAnalyze: 'Single-user rating analysis',
   predictionActions: 'Analyze',
-  predictionFinalMarker: 'Final · Official rating results; performance remains calculated',
+  predictionFinalMarker: 'Final · Official rating results (performance is still calculated)',
   predictionSettingsHint:
     'Official participation only. Use the flower button in the Analyze column to simulate a target rank or target rating. Classic colors are used when problem-rating colors are disabled.',
   // The three sections a feature's options are split into, and the summary shown on the Content section.
@@ -56,7 +58,7 @@ export default {
     'Virtual participation: does not affect Rating, and no rating prediction is generated.',
   participationIdentityUntrusted: 'untrusted',
   participationIdentityUntrustedDesc:
-    'Untrusted participation: rated in this round but left out of the official standings, which list only “trusted participants”. The result and prediction are worked out from submissions; where the contest format does not allow that, only the tag is shown.',
+    'Untrusted participation: rated in this round but left out of the official standings, which list only “trusted participants”. The result and prediction are worked out from submissions. Where the contest format does not allow that, only the tag is shown.',
   participationIdentityPractice: 'practice',
   participationIdentityPracticeDesc:
     'Practice: submitted after the contest ended, not part of its standings, and does not affect Rating.',
@@ -80,7 +82,7 @@ export default {
       : `Refreshes automatically every ${seconds} seconds`,
   predictionAutoRefreshOff: 'The result is final and no longer refreshes automatically',
   predictionAutoRefreshIdle:
-    'The contest is not running, so nothing refreshes automatically; press Refresh prediction to update',
+    'The contest is not running, so nothing refreshes automatically. Press Refresh prediction to update.',
   predictionDataTime: 'Standings snapshot',
   predictionPhaselive: 'Live prediction',
   predictionPhasebefore: 'Contest has not started · awaiting standings',
@@ -94,14 +96,14 @@ export default {
   predictionReasonunofficial: 'Unofficial, virtual or practice participation',
   predictionReasonvirtual: 'Virtual participation: no official rating change or prediction',
   predictionReasonuntrusted:
-    'Rated in this round but outside the official standings; the result is worked out from submissions',
+    'Rated in this round but outside the official standings, so the result is worked out from submissions',
   predictionReasonuntrustedNoResult:
     'Rated in this round but outside the official standings. This round was cached by an older version, so no result or prediction is available until you press Refresh prediction',
   predictionReasonuntrustedUnsupported:
     'Rated in this round but outside the official standings. Their result and prediction cannot be worked out for this contest format yet',
   predictionReasonpractice: 'Practice after the contest: not ranked and does not affect Rating',
   predictionReasonghost:
-    'Ghost team: onsite results imported into the standings; not an online participant and not rated',
+    'Ghost team: onsite results imported into the standings. It is not an online participant and is not rated',
   predictionReasonoutOfCompetition:
     'Out-of-competition participation: no official rating change or prediction',
   predictionReasonunratedContest: 'This contest does not affect Rating',
@@ -119,7 +121,7 @@ export default {
   predictionLeaseLost: 'Another tab took over the request. Please retry later.',
   predictionComputeError: 'Calculation did not finish. Please try again.',
   predictionMissingUser: 'No calculable record for this user in the snapshot',
-  predictionInvalidInput: 'Enter a valid integer; rank must be within the participant count.',
+  predictionInvalidInput: 'Enter a valid integer. The rank must be within the participant count.',
   predictionTargetOutOfRange: 'The target is outside this user’s reachable range for the contest.',
   predictionBoundaryUncertain:
     'Integer adjustments make this boundary unstable. No exact conclusion is shown.',
@@ -139,7 +141,7 @@ export default {
   predictionTeamMember: (n) => `Team-rated · ${n} members`,
   predictionTeamRating: (rating) => `Team rating ${rating}`,
   predictionTeamMemberTip:
-    "In a team-rated contest a team takes part with its team rating, and every member gets the same rank and rating change.\nThe what-if here is shared by the whole team; the ratings shown are this member's own.",
+    "In a team-rated contest a team takes part with its team rating, and every member gets the same rank and rating change.\nThe what-if here is shared by the whole team, while the ratings shown are this member's own.",
   predictionNewcomerTip:
     'Accounts with fewer than 6 rated contests get a new-account bonus.\nOn top of the normal change, the first six contests add 500, 350, 250, 150, 100 and 50.',
   predictionQuickCurrent: 'Back to current standings',
@@ -150,9 +152,9 @@ export default {
   predictionInputHint: 'Drag a slider or enter a value to explore a scenario under this snapshot',
   predictionTips: 'Tips',
   predictionBiasHint:
-    'For accounts in their 2nd–6th rated contest, the shown rating is lower than the one Codeforces actually uses, and only the shown rating is available here. In rounds with many such accounts (e.g. Div. 2, Div. 3), most predictions run low, by about 10–25 points in our tests; long-standing accounts near the top may run slightly high, by under 10 points.',
+    'For accounts in their 2nd–6th rated contest, the shown rating is lower than the one Codeforces actually uses, and only the shown rating is available here. In rounds with many such accounts (e.g. Div. 2, Div. 3), most predictions run low, by about 10–25 points in our tests. Long-standing accounts near the top may run slightly high, by under 10 points.',
   predictionScenarioHint:
-    'Ranks include rated participants only and may differ from the visible standings. All adjustments are recalculated; this is not a guaranteed final result or attainable rank.',
+    'Ranks include rated participants only and may differ from the visible standings. All adjustments are recalculated. This is not a guaranteed final result or attainable rank.',
   storageUserTitle: 'CF user data',
   storageUserDesc:
     'Manage avatars, solved-problem records and analytics caches together, with separate views.',
@@ -161,10 +163,10 @@ export default {
     'Clear avatars, solved-problem data and analytics caches for all cached accounts? User settings will be preserved.',
   storagePredictionTitle: 'Contest prediction data',
   storagePredictionDesc:
-    'Contest snapshots (only the most recently predicted contests are kept; the number can be changed in settings), rating sources and request coordination. Disabling the feature preserves these caches.',
+    'Contest snapshots (only the most recently predicted contests are kept, and the number can be changed in settings), rating sources and request coordination. Disabling the feature preserves these caches.',
   storagePredictionClearBtn: 'Clear Cache',
   storagePredictionClearConfirm:
-    'Clear contest and rating caches and cancel current calculations? Settings are preserved; later refreshes will fetch data again.',
+    'Clear contest and rating caches and cancel current calculations? Settings are kept, and later refreshes will fetch the data again.',
   storageCategoryCount: (n) => `${n} categories`,
   storageContestCount: (n) => `${n} contests`,
   storageKeyRatings: 'Ratings & Titles',
@@ -214,7 +216,7 @@ export default {
   menuPositionX: 'Horizontal Position',
   menuPositionY: 'Vertical Position',
   menuPositionHint:
-    'Drag the button or panel header to anchor that element; the other moves around it. Position percentages use the current anchor.',
+    'Drag the button or panel header to anchor that element. The other one moves around it. Position percentages use the current anchor.',
   langZhName: '简体中文',
   langEnName: 'English',
   locHideTags: 'Hide Algorithm Tags',
@@ -244,42 +246,23 @@ export default {
   shortcutsSectionNote:
     'If you do not wish to use a shortcut for a feature, simply clear its shortcut key.',
   shortcutMenuLanguageTitle: 'Switch Menu Language',
-  shortcutMenuLanguageDesc:
-    'Switch between Chinese and English menus. Default: Shift+M (Menu language).',
   shortcutHideTagsTitle: 'Toggle Problem Tags',
-  shortcutHideTagsDesc: 'Quickly toggle visibility of algorithm tags on problem pages.',
   shortcutHideVerdictTestsTitle: 'Toggle Test Numbers',
-  shortcutHideVerdictTestsDesc:
-    'Show or hide the test number in verdicts (such as "on test 3"). Default: Shift+N (Number).',
   shortcutAcHighlightTitle: 'Toggle Attempted Row Highlighting',
-  shortcutAcHighlightDesc:
-    'Toggle full-row backgrounds for attempted problems. Default: Shift+B (Background).',
   shortcutLangIconTitle: 'Toggle Language Icons',
-  shortcutLangIconDesc: 'Toggle display of programming language icons in submission lists.',
   shortcutShortVerdictTitle: 'Toggle Verdict Abbreviations',
-  shortcutShortVerdictDesc: 'Switch between full verdict text and compact abbreviations (AC / WA).',
   shortcutTimeFormatTitle: 'Toggle Time Formatting',
-  shortcutTimeFormatDesc: 'Quickly toggle custom formatting of dates and times across the site.',
   shortcutClistEnabledTitle: 'Toggle CList Ratings',
-  shortcutClistEnabledDesc: 'Quickly turn on or off CList fine-grained difficulty ratings.',
   shortcutColorRatingsTitle: 'Toggle Colored Ratings',
-  shortcutColorRatingsDesc:
-    'Master switch to toggle rank-color difficulty styling across the site.',
   shortcutDisplayStyleTitle: 'Toggle Ratings Display Format',
-  shortcutDisplayStyleDesc: 'Switch between Block and Tag difficulty rating display formats.',
   shortcutPredictionEnabledTitle: 'Toggle Contest Rating Prediction',
-  shortcutPredictionEnabledDesc:
-    'Turn the rating prediction columns on standings on or off. Default: Shift+P (Prediction).',
   shortcutUserAvatarTitle: 'Toggle User Avatars',
-  shortcutUserAvatarDesc: 'Toggle visibility of user avatars in standings and status tables.',
   shortcutUserAnalyticsTitle: 'Toggle User Data Analytics',
-  shortcutUserAnalyticsDesc:
-    'Turn the analytics panel on profile pages on or off. Default: Shift+D (Data).',
   shortcutAvatarFramesTitle: 'Toggle Avatar Frames',
-  shortcutAvatarFramesDesc: 'Toggle the frames around user avatars.',
+  shortcutFrameLibraryTitle: 'Toggle Frame Library',
   shortcutGroupsEnabledTitle: 'Toggle User Groups',
-  shortcutGroupsEnabledDesc:
-    'Turn user groups on or off; group tags after user names show or hide with it. Default: Shift+G (Groups).',
+  shortcutGroupTagsTitle: 'Toggle Group Tags',
+  shortcutGroupsManageTitle: 'Toggle Group Management',
   shortcutRecording: 'Press keys...',
   shortcutEditTooltip: 'Click to edit shortcut',
   shortcutEmpty: 'Not set',
@@ -310,12 +293,70 @@ export default {
   locAvatarFrames: 'Show Avatar Frames',
   locRankFrame: 'Rank Frames',
   locRankFrameHint:
-    'Frames follow the rank: the current one or the highest one reached. Members of a group with a frame wear the group’s frame first; Headquarters wear their own.',
+    'Frames follow the rank: the current one or the highest one reached. Members of a group with a frame wear the group’s frame first, Headquarters wear their own, and if you wear a frame from the library, you wear that one.',
   locFrameAdmin: 'Headquarters',
   locFrameWorn: 'Wearing',
+  locFrameNote:
+    'Avatar frames are decorations shown only in your own browser: others cannot see the frame you wear, and you cannot see the frames other users set with this plugin.',
+  locFrameNone: 'None',
+  locFrameNoneIntro:
+    'Nothing picked from the library. With rank frames on, you wear the frame of your rank.',
+  locFrameKindRank: 'Rank',
+  locFrameKindSpecial: 'Special',
+  locFrameKindBuiltin: 'Built-in',
+  frameDialogTitle: 'Frame Library',
+  frameMine: 'My Frame',
+  frameOpenLibrary: 'Open Frame Library',
+  frameTargetLabel: 'Wear for',
+  frameTargetMe: 'Myself',
+  frameTargetGroups: 'Groups',
+  frameCategoryLabel: 'Categories',
+  frameCatAll: 'All',
+  frameCatDecor: 'Standard',
+  frameCatImported: 'Imported',
+  frameCatAchieve: 'Achievements',
+  frameCatShop: 'Exchange',
+  frameCatRanks: 'Ranks',
+  frameCatSpecial: 'Special',
+  frameCatDecorNote: 'Built-in frames anyone can wear or set for a group.',
+  frameCatImportedNote: 'Frames you import: an SVG image or a frame package.',
+  frameCatRanksNote:
+    'These follow the rank: you can look at them, but not wear them by hand or set them for a group.',
+  frameCatSpecialNote:
+    'The two users above 4000 and Headquarters. These follow the rank too and are for viewing only.',
+  frameSoonTitle: 'Coming soon',
+  frameSoonAchieve: 'Frames unlocked by reaching goals.',
+  frameSoonShop:
+    'Earn points by finishing local tasks in the plugin and building up your solving record, then exchange them for frames.\nTo be clear, this plugin will never charge for anything, in any form. Points are just for a bit of fun and are kept only in your own browser.\n(Still being planned. If you would rather not collect points, you can also edit the plugin data directly.)',
+  frameSearch: 'Search frames',
+  frameNoMatch: 'No matches.',
+  frameImport: 'Import',
+  frameImportedEmpty: 'No imported frames yet.',
+  frameCurrent: 'Current',
+  frameWear: 'Wear',
+  frameSetGroup: 'Set for group',
+  frameTakeOff: 'Take off',
+  frameWhyNothing: 'No frame picked',
+  frameWhyRank: 'Follows the rank and cannot be worn by hand',
+  frameWhyGroupRank: 'Follows the rank and cannot be set for a group',
+  frameWhyWornRank: 'Wearing: follows your rank',
+  frameWhyWornGroup: 'Wearing: a group you are in wears it',
+  frameWhyGroupUsing: 'In use by this group',
+  frameNoneIntroGroup:
+    'This group sets no frame. Its members fall through to the next group, and rank frames come last.',
+  frameNowMe: 'I am wearing',
+  frameNowGroup: (name) => `Members of ${name} wear`,
+  frameNowByRank: ' (by rank)',
+  frameNowByGroup: ' (by group)',
   locRankFrameOff: 'Off',
   locRankFrameCurrent: 'Current',
   locRankFrameMax: 'Highest',
+  frameAtTitle: 'Where to show',
+  frameAtTables: 'Tables (standings, submissions, etc.)',
+  frameAtProfile: 'Profile page',
+  frameAtOthers: 'Other pages',
+  frameAtMenus: 'Right-click menu',
+  frameAtGroups: 'Group management',
   locFrameMotion: 'Animation',
   locFrameMotionOff: 'Off',
   locFrameMotionHover: 'On Hover',
@@ -325,7 +366,7 @@ export default {
   analyticsAutoLoad: 'Load automatically on profile pages',
   analyticsCollapse: 'Collapse long tables',
   analyticsCollapseHint:
-    'For tables with many entries, such as tag distribution, tag weak spots and unsolved problems: when on, only the first entries are listed by default; when off, everything is listed by default. Either way, the bar below a table expands or collapses it.',
+    'Applies to tables with many entries, such as tag distribution, tag weak spots and unsolved problems. When on, only the first entries are listed by default. When off, everything is listed by default. Either way, the bar below a table expands or collapses it.',
   analyticsFollowSource: 'Follow the rating source',
   analyticsFollowSourceHint:
     'Uses the source chosen on the Ratings page: official Codeforces ratings or CList ratings. When off, only official ratings are used.',
@@ -333,7 +374,7 @@ export default {
   analyticsIncludeTeams: 'Count team submissions',
   analyticsCacheUsers: 'Cached users',
   analyticsCacheUsersHint:
-    'A cache stays valid for 15 minutes; reopening the same profile within that time sends no request. After it expires, the data refreshes when you enter the profile if automatic loading is on, or when you click the load or refresh button otherwise. Your own account is always kept and does not take a slot.',
+    'A cache stays valid for 15 minutes, so reopening the same profile within that time sends no request. After it expires, the data refreshes when you enter the profile if automatic loading is on, or when you click the load or refresh button otherwise. Your own account is always kept and does not take a slot.',
   analyticsRecentCount: 'Problems in the recent average',
   analyticsChartSummary: 'Summary',
   analyticsChartHeatmap: 'Rating heatmap',
@@ -354,7 +395,7 @@ export default {
   analyticsChartLanguages: 'Languages',
   analyticsTitle: 'Analytics',
   analyticsLoadButton: 'Load analytics',
-  analyticsLoadNote: "Requests all of this user's submissions; it usually takes a few seconds.",
+  analyticsLoadNote: "Requests all of this user's submissions, which usually takes a few seconds.",
   analyticsRefresh: 'Refresh',
   analyticsRefreshHint: (minutes) =>
     `Data is cached for ${minutes} minutes by default and refreshes automatically when a profile is opened after that. Click to refresh now.`,
@@ -369,8 +410,8 @@ export default {
   analyticsStageReceive: 'Receiving',
   analyticsStageCompute: 'Processing',
   analyticsDetailStart: 'Preparing the request…',
-  analyticsDetailQueue: (seconds) => `Too soon after the previous request; sending in ${seconds} s`,
-  analyticsDetailServer: 'Request sent; waiting for Codeforces to respond…',
+  analyticsDetailQueue: (seconds) => `Too soon after the previous request. Sending in ${seconds} s`,
+  analyticsDetailServer: 'Request sent. Waiting for Codeforces to respond…',
   analyticsDetailReceive: (size) => `${size} received`,
   analyticsDetailCompute: 'Processing submissions…',
   analyticsUpdating: 'showing the previous data for now',
@@ -585,7 +626,7 @@ export default {
   verdictGuideCloseBtn: 'Got it',
   verdictGuideTipTitle: 'Notice:',
   verdictGuideTipDesc:
-    'Only the verdict keywords are abbreviated; test case details (such as "on test 3") are preserved.',
+    'Only the verdict keywords are abbreviated, and test case details (such as "on test 3") are kept.',
   verdictAcMeaning: 'Passed / Accepted',
   verdictWaMeaning: 'Wrong Answer',
   verdictTleMeaning: 'Time Limit Exceeded',
@@ -663,7 +704,7 @@ export default {
   guideStep3Title:
     'Step 3: Left-click "here" at the top of the documentation and copy the Request Header',
   guideStep3Desc:
-    'In the Authentication block at the top, click the blue "here"; after a moment it turns into your key and a popover opens below it:',
+    'In the Authentication block at the top, click the blue "here". After a moment it turns into your key, and a popover opens below it:',
   guidePhaseClick: 'Click "here"',
   guidePhaseCopy: 'Copy this whole line',
   guideNoteLabel: 'Note:',
@@ -710,7 +751,7 @@ export default {
   syncLabelPulled: 'Fetched',
   syncLabelEta: 'Estimated Time',
   syncNoticeTip:
-    '💡 Requests are spaced 8 seconds apart. You can sync in the background; keep this page open.',
+    '💡 Requests are spaced 8 seconds apart. You can sync in the background as long as this page stays open.',
   syncBtnBackground: 'Run in Background',
   syncBtnDone: 'Done',
   syncBtnClose: 'Close',
@@ -835,7 +876,7 @@ export default {
   ackStandingsTitle: 'atcoder-standings-difficulty-analyzer',
   ackStandingsBadge: 'Contest Analysis Reference',
   ackStandingsDesc:
-    '<p>atcoder-standings-difficulty-analyzer is a userscript for AtCoder standings that estimates the difficulty of each problem while a contest is running, with charts of difficulty over time, accepted counts and last accepted times by score.</p><p>Thanks to atcoder-standings-difficulty-analyzer for the algorithm reference for in-depth contest analysis; Colorforces plans to further strengthen its built-in contest analysis.</p>',
+    '<p>atcoder-standings-difficulty-analyzer is a userscript for AtCoder standings that estimates the difficulty of each problem while a contest is running, with charts of difficulty over time, accepted counts and last accepted times by score.</p><p>Thanks to atcoder-standings-difficulty-analyzer for the algorithm reference for in-depth contest analysis. Colorforces plans to strengthen its built-in contest analysis further.</p>',
   ackStandingsLinkText: 'Visit GitHub Repository',
   ackAnalyticsTitle: 'CF Analytics Pro Max',
   ackAnalyticsBadge: 'Analytics Reference',
@@ -871,6 +912,10 @@ export default {
   groupsCreate: 'New group',
   groupsCreateConfirm: 'Create',
   groupsManageMembers: 'Manage members',
+  groupsFrameChip: 'This group’s frame. Click to open the frame library.',
+  groupsFrameChipOff: 'Avatar frames are off. Turn them on to set a frame for a group.',
+  groupsFrameOrder:
+    'Users in several groups wear the frame of the topmost group that has one, and rank frames come last.',
   groupsSyncFriends: 'Sync friends',
   groupsSyncing: 'Syncing',
   groupsSyncDone: (n) => `Synced ${n}`,
@@ -878,7 +923,7 @@ export default {
   groupsSyncFailed: 'Sync failed',
   groupsShowTags: 'Show group tags after user names',
   groupsShowTagsHint:
-    'Only one group is shown per user: of the groups you created, the one highest in the list; a user in none of them who is a friend shows Friends. Drag groups to change their order.',
+    'Only one group is shown per user: the highest in the list among the groups you created. A friend who is in none of them shows Friends. Drag groups to change their order.',
   groupsTagStyle: 'Group tag display',
   groupsTagStyleName: 'Tag',
   groupsTagStyleInUse: 'In use',
@@ -943,9 +988,10 @@ export default {
   groupsMenuSelf: 'You',
   groupsMenuFailed: 'Failed',
   groupsMenuMemo: 'Note',
-  groupsMenuOpen: 'Open in New Tab',
+  groupsMenuOpen: 'Open Profile',
   groupsMenuCopyName: 'Copy Handle',
-  groupsMenuCopyLink: 'Copy Profile Link',
+  groupsMenuCopyLink: 'Copy Link',
+  groupsMenuManage: 'Manage Groups',
   storageGroupsTitle: 'User groups',
   storageGroupsDesc:
     'Groups, members, notes and friend lists of each signed-in account. This is data you organized, not a cache.',

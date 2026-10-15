@@ -916,7 +916,7 @@ const panel = ref(null);
   max-height: 194px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
+  /* 滚动条用公共的 cf-scrollbar（styles/scrollbar.css），类名在 composables/chart.js 里加。 */
 }
 .cf-analytics-tip li,
 .cf-analytics-tip li a {

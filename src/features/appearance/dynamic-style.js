@@ -59,7 +59,7 @@ export function updateDynamicStyle() {
     'cf-hide-standings': !isRatingsActive || !ratings.show.standings,
     'cf-hide-userAvatar': !user.avatar.enabled,
     // 头像框（见 features/user/frames/）：有没有可能戴，和动效的三档。
-    'cf-frames-on': user.avatar.enabled && user.avatar.frames && user.avatar.rankFrame !== 'off',
+    'cf-frames-on': user.avatar.enabled && user.avatar.frames,
     'cf-frame-motion-off': user.avatar.frameMotion === 'off',
     'cf-frame-motion-hover': user.avatar.frameMotion === 'hover',
     'cf-frame-motion-on': user.avatar.frameMotion !== 'off' && user.avatar.frameMotion !== 'hover',

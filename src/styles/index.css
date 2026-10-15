@@ -16,6 +16,9 @@
 /* 弹窗主题 */
 @import './aurora-dialog.css';
 
+/* 插件界面的滚动条 */
+@import './scrollbar.css';
+
 /* 换语言时的过渡 */
 @import './language-wave.css';
 

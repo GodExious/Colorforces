@@ -34,6 +34,9 @@ import {
   moveGroup,
 } from '../../../features/user/groups/store.js';
 import { arrangeGroups, stepOrder } from '../../../features/user/groups/reorder.js';
+import { KNOWN_FRAMES } from '../../../features/user/frames/catalog.js';
+import AvatarFrame from '../../components/avatars/AvatarFrame/AvatarFrame.vue';
+import { showFrameDialog } from '../user/components/FrameDialog/FrameDialog.vue';
 import { showGroupsDialog } from './components/GroupsDialog/GroupsDialog.vue';
 import GroupMark from './components/GroupMark/GroupMark.vue';
 import MemberName, {
@@ -112,6 +115,13 @@ function toggle(id) {
     setTimeout(() => (flowing.value = [...flowing.value, id]), SETTLED),
   );
 }
+
+// 分组的头像框：一行右边的小格子显示它，点了打开头像框库，「给谁戴」选好这个分组。
+// 这个分组的成员戴它，一个人在好几个分组里时按分组的先后取第一个设了的，最后才是段位头像框（见 choose.js）。
+// 不认识的（比如导入的头像框后来删了）当作没设。
+const frameOfGroup = (group) => (KNOWN_FRAMES.has(group.frame) ? group.frame : '');
+// 头像框关着（关了头像也算）时，小格子灰掉、点不了。
+const framesOn = computed(() => appSettings.user.avatar.enabled && appSettings.user.avatar.frames);
 
 // 新建分组：点「新建分组」换成一个输入框，回车建好，名字是空的或重名时输入框晃一下。
 const creating = ref(false),
@@ -397,6 +407,26 @@ watch(
                     <span class="cf-groups-name">{{ nameOf(group) }}</span>
                     <span v-if="group.builtin" class="cf-groups-tag">{{ t('groupsSynced') }}</span>
                     <span class="cf-groups-meta">{{ t('groupsMemberCount', group.count) }}</span>
+                    <!-- 这个分组的头像框：点一下打开头像框库。换了的时候旧的淡出，新的淡入。头像框关着时灰掉。 -->
+                    <button
+                      type="button"
+                      class="cf-groups-frame-chip cf-frame-host"
+                      :disabled="!framesOn"
+                      :data-tooltip="t(framesOn ? 'groupsFrameChip' : 'groupsFrameChipOff')"
+                      @click.stop="showFrameDialog(group.id)"
+                      @keydown.enter.stop
+                      @keydown.space.stop
+                    >
+                      <Transition name="cf-groups-swap" mode="out-in">
+                        <span
+                          v-if="frameOfGroup(group)"
+                          :key="frameOfGroup(group)"
+                          class="cf-groups-frame-face"
+                          ><AvatarFrame :frame="frameOfGroup(group)"
+                        /></span>
+                        <span v-else key=":none" class="cf-groups-frame-empty"></span>
+                      </Transition>
+                    </button>
                     <span class="cf-groups-chevron" aria-hidden="true"></span>
                   </div>
                   <ExpandTransition :show="opened.includes(group.id)">
@@ -530,7 +560,8 @@ watch(
   background: var(--cf-card-surface);
   overflow: hidden;
 }
-/* 上下留出边距：头像开大时也不贴着上下两条边。 */
+/* 上下留出边距：头像开大时也不贴着上下两条边。
+   这一行是整张列表的表头：垫一层和鼠标停在分组上时一样的主题色，下面的线比分组之间的重一点。 */
 .cf-groups-head {
   display: flex;
   justify-content: space-between;
@@ -538,8 +569,14 @@ watch(
   min-height: 30px;
   padding: 6px 10px;
   box-sizing: border-box;
+  border-bottom: 1px solid color-mix(in srgb, var(--cf-menu-accent) 30%, var(--cf-surface-border));
+  background: color-mix(in srgb, var(--cf-menu-accent) 9%, transparent);
   color: var(--cf-gray-500);
   font-size: var(--cf-font-size-xs);
+}
+/* 表头下面已经有一道线，第一个分组上面的那道不要。 */
+.cf-groups-head + .cf-groups-rows > .cf-groups-entry:first-child {
+  border-top: 0;
 }
 .cf-groups-owner {
   display: inline-flex;
@@ -719,6 +756,54 @@ watch(
 .cf-groups-row.is-open .cf-groups-chevron {
   transform: rotate(45deg);
 }
+/* 分组的头像框：箭头前面一个可以点的小格子，设了的显示那个头像框（套在一个灰色的小圆上），没设的是一个虚线圆。 */
+.cf-groups-frame-chip {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 34px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--cf-radius-md);
+  background: none;
+  cursor: pointer;
+  transition:
+    border-color var(--cf-duration-fast) ease,
+    background-color var(--cf-duration-fast) ease,
+    opacity var(--cf-duration-fast) ease;
+}
+.cf-groups-frame-chip:hover {
+  border-color: color-mix(in srgb, var(--cf-menu-accent) 55%, var(--cf-surface-border));
+  background: var(--cf-control-active);
+}
+/* 头像框关着：灰掉，悬停不变。 */
+.cf-groups-frame-chip:disabled,
+.cf-groups-frame-chip:disabled:hover {
+  border-color: transparent;
+  background: none;
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.cf-groups-frame-chip:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--cf-menu-accent) 40%, transparent);
+  outline-offset: -2px;
+}
+.cf-groups-frame-face {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--cf-gray-200);
+}
+.cf-groups-frame-empty {
+  width: 20px;
+  height: 20px;
+  border: 1px dashed var(--cf-gray-300);
+  border-radius: 50%;
+  box-sizing: border-box;
+}
 /* 一行下面展开的成员。 */
 .cf-groups-members {
   display: flex;
@@ -751,6 +836,23 @@ watch(
 .cf-groups-member .cf-groups-avatar.cf-groups-avatar-enter-from,
 .cf-groups-member .cf-groups-avatar.cf-groups-avatar-leave-to {
   margin-left: 0;
+}
+/* 菜单页里戴着头像框的头像不另外让出边距（MemberName.vue 里那一圈是给弹窗和右键菜单的），框直接伸到外面；
+   成员胶囊里的头像照旧贴着左边的圆角。 */
+.cf-groups-settings .cf-groups-who .cf-groups-avatar:has(> .cf-avatar-frame) {
+  margin: 0;
+}
+/* 列表顶上「xxx 的分组」那一行只有一个头像，让出一小圈（头像直径的 0.25 倍），框不贴着卡片的边、名字不挤着框。 */
+.cf-groups-owner .cf-groups-who .cf-groups-avatar:has(> .cf-avatar-frame) {
+  margin: calc(var(--cf-avatar-px, 21px) * var(--cf-font-scale, 1) * 0.25);
+}
+.cf-groups-member
+  .cf-groups-who
+  .cf-groups-avatar:has(> .cf-avatar-frame):not(
+    .cf-groups-avatar-enter-from,
+    .cf-groups-avatar-leave-to
+  ) {
+  margin-left: -6px;
 }
 /* 成员后面的评分：和名字同色、同样的字（字的写法在 MemberName.vue 里）；Unrated 这类说明用浅色的细字。 */
 .cf-groups-rating {

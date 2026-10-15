@@ -1,18 +1,25 @@
 import { appSettings, saveSettings } from '../../settings.js';
 import { matchesShortcut, startModifierTracking } from '../../utils/shortcuts.js';
-let cycleMenuLanguage;
-// 由菜单提供带动画的语言切换入口，快捷键不重复维护界面状态。
-export function configureLanguageShortcut(handler) {
-  cycleMenuLanguage = handler;
+// 由界面提供的几个动作：带动画的换语言、打开和关上头像框库、分组管理。快捷键不重复维护界面状态，也不改设置。
+const uiActions = new Map();
+const UI_KEYS = ['menuLanguage', 'frameLibrary', 'groupsManage'];
+function configureUiAction(key, handler) {
+  uiActions.set(key, handler);
   return () => {
-    if (cycleMenuLanguage === handler) cycleMenuLanguage = null;
+    if (uiActions.get(key) === handler) uiActions.delete(key);
   };
 }
+export const configureLanguageShortcut = (handler) => configureUiAction('menuLanguage', handler);
+export const configureFrameLibraryShortcut = (handler) =>
+  configureUiAction('frameLibrary', handler);
+export const configureGroupsManageShortcut = (handler) =>
+  configureUiAction('groupsManage', handler);
 // 快捷键只修改设置；原生增强与 Vue 菜单分别订阅同一状态。
 export function startShortcuts() {
   startModifierTracking();
   const actions = {
-    menuLanguage: () => cycleMenuLanguage?.(),
+    menuLanguage: () => uiActions.get('menuLanguage')?.(),
+    frameLibrary: () => uiActions.get('frameLibrary')?.(),
     hideTags: () => {
       const tags = appSettings.appearance.tags;
       tags.hide = !tags.hide;
@@ -64,6 +71,10 @@ export function startShortcuts() {
     groupsEnabled: () => {
       appSettings.groups.enabled = !appSettings.groups.enabled;
     },
+    groupTags: () => {
+      appSettings.groups.showTags = !appSettings.groups.showTags;
+    },
+    groupsManage: () => uiActions.get('groupsManage')?.(),
   };
   const keydown = (event) => {
     const active = document.activeElement;
@@ -75,8 +86,8 @@ export function startShortcuts() {
     for (const [key, action] of Object.entries(actions)) {
       if (!matchesShortcut(event, appSettings.shortcuts[key])) continue;
       event.preventDefault();
-      // 语言动画完成文案切换时自行保存；长按不反复启动切换。
-      if (key === 'menuLanguage') {
+      // 界面的动作不改设置（换语言在动画换完文案时自行保存）；长按不反复触发。
+      if (UI_KEYS.includes(key)) {
         if (!event.repeat) action();
         return;
       }

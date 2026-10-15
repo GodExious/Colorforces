@@ -10,6 +10,8 @@ const pending = shallowRef(null);
 export function showConfirmPop(options) {
   pending.value = options;
 }
+// 确认提示开着没有（开着时快捷键不换掉下面的弹窗，见 App.vue）。
+export const confirmShown = () => Boolean(pending.value);
 const read = (value) => (typeof value === 'function' ? value() : value) || '';
 // 按提示类型决定图标、语气和按钮组合；配色由样式按语气处理。
 function buildAppearance(options = {}) {

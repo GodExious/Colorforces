@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { appSettings, saveSettings, setSetting } from '../../../../../settings.js';
 import { translate as t } from '../../../../../i18n/index.js';
+import { toggleFromRow } from '../../../../../utils/row-toggle.js';
 import { getCurrentUserHandle } from '../../../../../features/page/account.js';
 import {
   profileOf,
@@ -9,48 +10,64 @@ import {
   subscribeProfiles,
 } from '../../../../../features/user/groups/profiles.js';
 import { chooseFrame } from '../../../../../features/user/frames/choose.js';
-import { KNOWN_FRAMES } from '../../../../../features/user/frames/catalog.js';
+import {
+  KNOWN_FRAMES,
+  frameIntro,
+  wearableFrame,
+} from '../../../../../features/user/frames/catalog.js';
+import { chosenFrames, watchChosenFrames } from '../../../../../features/user/frames/chosen.js';
 import ToggleSwitch from '../../../../components/forms/ToggleSwitch/ToggleSwitch.vue';
 import SegmentedSwitch from '../../../../components/forms/SegmentedSwitch/SegmentedSwitch.vue';
+import ActionButton from '../../../../components/forms/ActionButton/ActionButton.vue';
 import ExpandTransition from '../../../../components/transitions/ExpandTransition/ExpandTransition.vue';
+import SmoothText from '../../../../components/transitions/SmoothText/SmoothText.vue';
 import InfoHint from '../../../../components/tooltips/InfoHint/InfoHint.vue';
 import AvatarFrame from '../../../../components/avatars/AvatarFrame/AvatarFrame.vue';
+import SettingSection from '../../../../components/settings/SettingSection/SettingSection.vue';
+import { showFrameDialog } from '../FrameDialog/FrameDialog.vue';
+// 显示位置：个人主页、表格里、右键菜单、分组管理、其他页面，各一个开关（头像框库、设置里的预览照常显示）。
+const PLACES = [
+  ['profile', 'frameAtProfile'],
+  ['tables', 'frameAtTables'],
+  ['menus', 'frameAtMenus'],
+  ['groups', 'frameAtGroups'],
+  ['others', 'frameAtOthers'],
+];
+const placesOn = computed(
+  () => PLACES.filter(([key]) => appSettings.user.avatar.frameAt[key]).length,
+);
 
-// 「显示用户头像」下面的头像框：总开关「显示头像框」，打开后是动效、段位头像框，以及整套段位头像框的预览。
-// 预览里每一格是一个段位的头像框，套在自己的头像上；自己现在戴的那一格带「佩戴中」。
-// 段位头像框跟着段位走，不能在这里单独摘下或换戴（头像框库在后面做）。
-const RANK_TILES = [
-  ['unrated', 'Unrated'],
-  ['newbie', 'Newbie'],
-  ['pupil', 'Pupil'],
-  ['specialist', 'Specialist'],
-  ['expert', 'Expert'],
-  ['cm', 'CM'],
-  ['master', 'Master'],
-  ['im', 'IM'],
-  ['gm', 'GM'],
-  ['igm', 'IGM'],
-  ['lgm', 'LGM'],
-  ['tourist', 'tourist'],
-  ['jiangly', 'jiangly'],
-  ['headquarters', ''],
-].filter(([id]) => KNOWN_FRAMES.has(id));
-
-// 自己的资料：头像（格子里套框用）和段位（哪一格是「佩戴中」）。没登录时格子里是空的圆。
+// 「显示用户头像」下面的头像框：总开关「显示头像框」，打开后是动效、段位头像框，
+// 和「我的头像框」一行：现在戴着哪个，旁边一个按钮打开头像框库（预览、佩戴都在那里）。
 const owner = getCurrentUserHandle() || '';
 const profilesSeen = ref(0);
 const me = computed(() => (profilesSeen.value >= 0 && owner ? profileOf(owner) : null));
 const picture = computed(() => me.value?.fallback || me.value?.avatar || '');
-const wearing = computed(() =>
-  me.value && !me.value.missing
-    ? chooseFrame({
-        rank: me.value.rank,
-        maxRank: me.value.maxRank,
-        mode: appSettings.user.avatar.rankFrame,
-        known: KNOWN_FRAMES,
-      })
-    : '',
-);
+watchChosenFrames();
+// 自己现在实际戴着哪个：库里戴的、分组的、段位的，按 choose.js 的先后。
+const wearing = computed(() => {
+  const worn = wearableFrame(appSettings.user.avatar.wornFrame)
+    ? appSettings.user.avatar.wornFrame
+    : '';
+  if (!owner) return worn;
+  const profile = me.value && !me.value.missing ? me.value : null;
+  return chooseFrame({
+    ...chosenFrames(owner),
+    rank: profile?.rank,
+    maxRank: profile?.maxRank,
+    mode: appSettings.user.avatar.rankFrame,
+    known: KNOWN_FRAMES,
+  });
+});
+// 名字后面写上是不是跟着段位、分组（没从库里挑的时候）。
+const wearingName = computed(() => {
+  const id = wearing.value;
+  if (!id) return t('locFrameNone');
+  const name = frameIntro(id, appSettings.general.lang)[0];
+  if (id === appSettings.user.avatar.wornFrame) return name;
+  return name + t(wearableFrame(id) ? 'frameNowByGroup' : 'frameNowByRank');
+});
+
 let stop;
 onMounted(() => {
   stop = subscribeProfiles(() => profilesSeen.value++);
@@ -60,14 +77,22 @@ onBeforeUnmount(() => stop?.());
 </script>
 <template>
   <div class="cf-frame-settings">
-    <label class="cf-setting-item cf-frame-settings-master"
-      ><span class="cf-setting-sublabel" v-text="t('locAvatarFrames')"></span
-      ><ToggleSwitch
-        as="div"
+    <!-- 这一行里有个 i（按钮），整行不能是 label：label 会把点击交给里面的第一个按钮，开关就点不动了。
+         所以照分组页的写法：只有文字是 label，空白处的点击由 toggleFromRow 转给开关。
+         后面的 i：头像框只在自己这边显示，别人看不到。 -->
+    <div class="cf-setting-item cf-frame-settings-master" @click="toggleFromRow">
+      <span class="cf-setting-sublabel"
+        ><label for="cf-frame-control-frames" v-text="t('locAvatarFrames')"></label
+        ><InfoHint :text="t('locFrameNote')"
+      /></span>
+      <ToggleSwitch
+        as="label"
+        input-id="cf-frame-control-frames"
         v-model="appSettings.user.avatar.frames"
         data-control="avatarFrames"
         @change="saveSettings()"
-    /></label>
+      />
+    </div>
     <ExpandTransition :show="appSettings.user.avatar.frames">
       <div class="cf-nested-options cf-frame-settings-body">
         <div class="cf-setting-item">
@@ -100,23 +125,36 @@ onBeforeUnmount(() => stop?.());
             @update:model-value="setSetting('user.avatar.rankFrame', $event)"
           />
         </div>
-        <!-- 整套段位头像框：段位头像框不使用时收起来。 -->
-        <ExpandTransition :show="appSettings.user.avatar.rankFrame !== 'off'">
-          <div class="cf-frame-tiles">
-            <div
-              v-for="[id, label] in RANK_TILES"
-              :key="id"
-              class="cf-frame-tile cf-frame-host"
-              :class="{ 'is-worn': wearing === id }"
-            >
-              <span class="cf-frame-tile-face"
-                ><img v-if="picture" :src="picture" alt="" /><AvatarFrame :frame="id"
-              /></span>
-              <span class="cf-frame-tile-name">{{ label || t('locFrameAdmin') }}</span>
-              <span class="cf-frame-tile-worn" v-text="t('locFrameWorn')"></span>
-            </div>
-          </div>
-        </ExpandTransition>
+        <!-- 我的头像框：现在戴着哪个，点按钮打开头像框库。 -->
+        <div class="cf-setting-item">
+          <span class="cf-setting-sublabel" v-text="t('frameMine')"></span>
+          <span class="cf-frame-mine">
+            <span class="cf-frame-mine-face cf-frame-host"
+              ><img v-if="picture" :src="picture" alt="" /><AvatarFrame :frame="wearing"
+            /></span>
+            <span class="cf-frame-mine-name"><SmoothText :text="wearingName" /></span>
+            <ActionButton data-control="openFrameLibrary" @click="showFrameDialog()">{{
+              t('frameOpenLibrary')
+            }}</ActionButton>
+          </span>
+        </div>
+        <!-- 显示位置放在这一块的最后：展开的底板在最下面，不把「我的头像框」往下挤。 -->
+        <SettingSection
+          :title="t('frameAtTitle')"
+          foldable
+          plate
+          :summary="t('settingSelected', placesOn, PLACES.length)"
+          :muted="placesOn === 0"
+        >
+          <label v-for="[key, label] in PLACES" :key="key" class="cf-setting-item">
+            <span class="cf-setting-sublabel" v-text="t(label)"></span>
+            <ToggleSwitch
+              as="div"
+              v-model="appSettings.user.avatar.frameAt[key]"
+              @change="saveSettings()"
+            />
+          </label>
+        </SettingSection>
       </div>
     </ExpandTransition>
   </div>
@@ -125,79 +163,32 @@ onBeforeUnmount(() => stop?.());
 .cf-frame-settings-body {
   margin-top: 8px;
 }
-/* 整套段位头像框：一格一个，上面是套着框的头像，下面是段位名。 */
-.cf-frame-tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: 4px;
-  padding-top: 4px;
-}
-.cf-frame-tile {
-  position: relative;
-  display: flex;
-  flex-direction: column;
+.cf-frame-mine {
+  display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 6px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: var(--cf-radius-md);
-  color: var(--cf-gray-600);
-  font-size: var(--cf-font-size-xs);
-  line-height: 16px;
-  transition:
-    border-color var(--cf-duration-fast) ease,
-    background-color var(--cf-duration-fast) ease;
+  gap: 10px;
+  min-width: 0;
 }
-.cf-frame-tile:hover {
-  border-color: var(--cf-surface-border);
-  background: var(--cf-card-surface);
-}
-/* 头像占格子正中的一半，框是头像的两倍大，正好占满 52px 的方块。 */
-.cf-frame-tile-face {
+/* 头像 22px，头像框是它的两倍，四周让出框多出来的那一圈。 */
+.cf-frame-mine-face {
   position: relative;
-  width: 26px;
-  height: 26px;
-  margin: 13px;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 11px;
   border-radius: 50%;
   background: var(--cf-gray-100);
 }
-.cf-frame-tile-face > img {
+.cf-frame-mine-face > img {
   display: block;
   width: 100%;
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
 }
-.cf-frame-tile-name {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.cf-frame-mine-name {
+  color: var(--cf-gray-600);
+  font-size: var(--cf-font-size-base);
   white-space: nowrap;
-}
-/* 「佩戴中」的小牌子：自己现在戴的那一格才显示。 */
-.cf-frame-tile-worn {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  padding: 0 4px;
-  border-radius: var(--cf-radius-xs);
-  background: var(--cf-menu-accent);
-  color: var(--cf-white-ink);
-  font-size: var(--cf-font-size-2xs);
-  line-height: 14px;
-  opacity: 0;
-  transform: scale(0.8);
-  transition:
-    opacity var(--cf-duration-base) ease,
-    transform var(--cf-duration-base) ease;
-}
-.cf-frame-tile.is-worn .cf-frame-tile-worn {
-  opacity: 1;
-  transform: scale(1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .cf-frame-tile-worn {
-    transition: none;
-  }
 }
 </style>

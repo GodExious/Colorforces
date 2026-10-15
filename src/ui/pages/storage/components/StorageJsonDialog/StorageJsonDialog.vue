@@ -185,7 +185,11 @@ onBeforeUnmount(() => {
               </button>
             </div>
             <div class="cf-storage-json-view">
-              <pre class="cf-storage-json-pre" v-html="preview.highlightedHtml" ref="pre"></pre>
+              <pre
+                class="cf-storage-json-pre cf-scrollbar"
+                v-html="preview.highlightedHtml"
+                ref="pre"
+              ></pre>
             </div>
           </div>
           <div class="cf-clist-modal-footer cf-storage-json-footer">
@@ -345,27 +349,9 @@ onBeforeUnmount(() => {
   line-height: 1.5;
   white-space: pre;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: #5a6390 transparent;
-}
-
-.cf-storage-json-pre::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
-}
-
-.cf-storage-json-pre::-webkit-scrollbar-track,
-.cf-storage-json-pre::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-.cf-storage-json-pre::-webkit-scrollbar-thumb {
-  border-radius: var(--cf-radius-xs);
-  background: #5a6390;
-}
-
-.cf-storage-json-pre::-webkit-scrollbar-thumb:hover {
-  background: #6d77a8;
+  /* 滚动条用公共的 cf-scrollbar（styles/scrollbar.css），深靛蓝底上换深一点的滑块。 */
+  --cf-scrollbar-thumb: #5a6390;
+  --cf-scrollbar-thumb-hover: #6d77a8;
 }
 
 /* 语法着色取与幻彩底色相称的粉彩，在深靛蓝底上保持可读。 */

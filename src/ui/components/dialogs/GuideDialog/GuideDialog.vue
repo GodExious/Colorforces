@@ -51,8 +51,8 @@ watch(overlay, (node) => {
             </button>
           </div>
           <!-- 新的说明内容用插槽写成正常模板；尚未改写的仍传入拼好的 HTML。 -->
-          <div v-if="$slots.default" class="cf-clist-modal-body"><slot /></div>
-          <div v-else class="cf-clist-modal-body" v-html="options.bodyHtml"></div>
+          <div v-if="$slots.default" class="cf-clist-modal-body cf-scrollbar"><slot /></div>
+          <div v-else class="cf-clist-modal-body cf-scrollbar" v-html="options.bodyHtml"></div>
           <div class="cf-clist-modal-footer">
             <ActionButton
               type="button"
@@ -134,8 +134,7 @@ watch(overlay, (node) => {
   line-height: 1.6;
   color: var(--cf-aurora-text, var(--cf-gray-700));
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: #c3cce2 transparent;
+  /* 滚动条用公共的 cf-scrollbar（styles/scrollbar.css）。 */
 }
 
 .cf-clist-modal-footer {

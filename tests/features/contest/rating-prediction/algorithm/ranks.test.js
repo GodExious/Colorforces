@@ -4,6 +4,7 @@ import {
   RATING_RANKS,
   rankForRating,
   rankProgress,
+  shownRating,
 } from '../../../../../src/features/contest/rating-prediction/algorithm/ranks.js';
 
 test('档位边界：下限含、上限不含', () => {
@@ -61,6 +62,46 @@ test('实时比赛只提示距下一档的差距', () => {
   assert.equal(result.next.name, 'Expert');
   assert.equal(result.needed, 10);
   assert.equal(result.final, false);
+});
+
+test('实时比赛：新号按显示的 0 分算距下一档的差距，不按算分用的 1400', () => {
+  const fresh = rankProgress({ status: 'rated', reportedRating: 0, rating: 1400 }, 500, 'live');
+  assert.equal(fresh.next.name, 'Pupil');
+  assert.equal(fresh.needed, 1200);
+  // 比赛进行中还没有评级的新号：读到的显示评级是 null，也按 0 分算。
+  const unseen = rankProgress(
+    { status: 'rated', reportedRating: null, rating: 1400, initial: true },
+    500,
+    'live',
+  );
+  assert.equal(unseen.next.name, 'Pupil');
+  assert.equal(unseen.needed, 1200);
+  // 不是新号、又读不到显示的评级：用算分的起点。
+  const other = rankProgress({ status: 'rated', reportedRating: null, rating: 1500 }, 5, 'live');
+  assert.equal(other.next.name, 'Expert');
+  assert.equal(other.needed, 100);
+});
+
+test('赛前显示的评级：有就用它；没有评级的新号是 0；别的读不到时用算分的起点', () => {
+  assert.equal(shownRating({ reportedRating: 1534, rating: 1534 }), 1534);
+  assert.equal(shownRating({ reportedRating: null, rating: 1400, initial: true }), 0);
+  assert.equal(shownRating({ reportedRating: null, rating: 1500 }), 1500);
+});
+
+test('出分前的首场新号：从显示的 0 分算起，补过分的涨跌直接加上去', () => {
+  const result = rankProgress(
+    { status: 'rated', reportedRating: null, initial: true, rating: 1400 },
+    1250,
+    'final',
+  );
+  assert.equal(result.current.name, 'Newbie');
+  assert.equal(result.next.name, 'Pupil');
+  assert.equal(result.before, 0);
+  assert.equal(result.after, 1250);
+  assert.equal(
+    rankProgress({ status: 'rated', reportedRating: null, rating: 1500 }, 10, 'final'),
+    null,
+  );
 });
 
 test('实时比赛：最高档没有下一档，缺少评级不提示', () => {

@@ -4,14 +4,18 @@ import { CURRENT_VERSION } from '../config/runtime.js';
 import { appSettings, setSetting } from '../settings.js';
 import { translate as t } from '../i18n/index.js';
 import { languages } from '../i18n/languages.js';
-import { configureLanguageShortcut } from '../features/shortcuts/index.js';
+import {
+  configureLanguageShortcut,
+  configureFrameLibraryShortcut,
+  configureGroupsManageShortcut,
+} from '../features/shortcuts/index.js';
 import { bindGroupTagTips } from './pages/groups/tag-tips.js';
 import * as assets from '../assets/index.js';
 import InlineSvg from './components/icons/InlineSvg/InlineSvg.vue';
 import FloatingTooltip, {
   tooltip,
 } from './components/tooltips/FloatingTooltip/FloatingTooltip.vue';
-import ConfirmDialog from './components/dialogs/ConfirmDialog/ConfirmDialog.vue';
+import ConfirmDialog, { confirmShown } from './components/dialogs/ConfirmDialog/ConfirmDialog.vue';
 import { preventScrollChaining } from '../utils/scroll.js';
 import { runLanguageWave, finishLanguageWave } from '../utils/language-wave.js';
 import { PLUGIN_UI_SELECTOR } from '../features/page/plugin-ui.js';
@@ -31,7 +35,16 @@ import RatingsPage from './pages/ratings/RatingsPage.vue';
 import PredictionPage from './pages/prediction/PredictionPage.vue';
 import UserPage from './pages/user/UserPage.vue';
 import GroupsPage from './pages/groups/GroupsPage.vue';
-import GroupsDialog from './pages/groups/components/GroupsDialog/GroupsDialog.vue';
+import GroupsDialog, {
+  showGroupsDialog,
+  groupsDialogShown,
+  closeGroupsDialog,
+} from './pages/groups/components/GroupsDialog/GroupsDialog.vue';
+import FrameDialog, {
+  showFrameDialog,
+  frameDialogShown,
+  closeFrameDialog,
+} from './pages/user/components/FrameDialog/FrameDialog.vue';
 import UserMenu from './pages/groups/components/UserMenu/UserMenu.vue';
 import PredictionAnalysisDialog from './pages/prediction/components/PredictionAnalysisDialog/PredictionAnalysisDialog.vue';
 import UserAnalyticsPanel from './pages/user/components/UserAnalyticsPanel/UserAnalyticsPanel.vue';
@@ -149,7 +162,30 @@ function cycleMenuLanguage() {
   const next = languages[(index + 1) % languages.length];
   if (next) changeLanguage(next.code);
 }
+// 快捷键开关的两个弹窗（头像框库、分组管理）：开着就关上，关着就打开。用快捷键打开一个时先关上另一个，
+// 来回按只是在两个之间换，不会一层叠一层。确认提示开着时不理这两个快捷键，不在提示底下换弹窗。
+function toggleFramesByKey() {
+  if (confirmShown()) return;
+  // 从分组管理里打开的头像框库关上后回到分组管理。
+  if (frameDialogShown()) return closeFrameDialog();
+  closeGroupsDialog();
+  showFrameDialog();
+}
+function toggleGroupsByKey() {
+  if (confirmShown()) return;
+  if (groupsDialogShown()) {
+    // 连同从分组管理里打开的头像框库一起关上。
+    closeFrameDialog();
+    return closeGroupsDialog();
+  }
+  // 用户分组关着时菜单里也没有「管理成员」，快捷键同样不打开。
+  if (!appSettings.groups.enabled) return;
+  closeFrameDialog();
+  showGroupsDialog();
+}
 let releaseLanguageShortcut;
+let releaseFrameLibraryShortcut;
+let releaseGroupsManageShortcut;
 let releaseGroupTagTips;
 // 捕获正在播放的视觉状态，让快速切页从当前画面续接而不是跳回起点。
 function readPanelFrame(panel) {
@@ -311,11 +347,11 @@ function syncMenuVisibility() {
 // 用鼠标点过的控件不留焦点。留着的话，之后一按键盘（比如按住 Shift 准备用快捷键），
 // 浏览器就认为是在用键盘操作，给还握着焦点的那个控件画出焦点框，看起来像凭空多了一圈边。
 // 菜单、弹窗、数据分析面板都这样处理。用键盘触发的点击（点击次数为 0）不管，Tab 键操作时焦点框照常显示；
-// 输入文字的框也不管，点进去就是要打字的。
+// 输入文字的框也不管，点进去就是要打字的；点了之后要接着按上下键调的（数据分析面板的时区选择）也不管。
 // 哪些地方的控件点过之后要放掉焦点：插件自己的界面、弹窗，以及画在原站页面上的控件（榜单里的小花按钮、刷新预测）。
 const OWN_CONTROLS = PLUGIN_UI_SELECTOR + ', .cf-aurora-dialog, [data-cf-prediction]';
 const TYPING =
-  'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="color"]), textarea, select, [contenteditable]';
+  'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="color"]), textarea, select, [contenteditable], [role="spinbutton"]';
 function releasePointerFocus(event) {
   if (event.type === 'click' && !event.detail) return;
   const active = document.activeElement;
@@ -334,6 +370,8 @@ onMounted(() => {
   document.addEventListener('pointerdown', releasePressFocus);
   document.addEventListener('visibilitychange', syncMenuVisibility);
   releaseLanguageShortcut = configureLanguageShortcut(cycleMenuLanguage);
+  releaseFrameLibraryShortcut = configureFrameLibraryShortcut(toggleFramesByKey);
+  releaseGroupsManageShortcut = configureGroupsManageShortcut(toggleGroupsByKey);
   releaseGroupTagTips = bindGroupTagTips();
   panelHost.value.children[0].classList.add('active');
   preventScrollChaining(modal.value);
@@ -343,6 +381,8 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', releasePressFocus);
   document.removeEventListener('visibilitychange', syncMenuVisibility);
   releaseLanguageShortcut?.();
+  releaseFrameLibraryShortcut?.();
+  releaseGroupsManageShortcut?.();
   releaseGroupTagTips?.();
   cleanup?.();
   finishLanguageChange();
@@ -468,7 +508,7 @@ onBeforeUnmount(() => {
   </div>
   <PredictionAnalysisDialog />
   <UserAnalyticsPanel />
-  <FloatingTooltip /><ConfirmDialog /><UpdateDialog /><ClistSyncDialog /><ClistKeyGuide /><ClistSyncGuide /><TimeFormatGuide /><VerdictGuide /><StorageJsonDialog /><GroupsDialog /><UserMenu />
+  <FloatingTooltip /><ConfirmDialog /><UpdateDialog /><ClistSyncDialog /><ClistKeyGuide /><ClistSyncGuide /><TimeFormatGuide /><VerdictGuide /><StorageJsonDialog /><GroupsDialog /><FrameDialog /><UserMenu />
 </template>
 <style>
 @property --cf-menu-accent {
