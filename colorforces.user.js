@@ -2,7 +2,7 @@
 // @name               Colorforces
 // @name:zh-CN         Colorforces 算法竞赛视觉增强
 // @namespace          https://github.com/GodExious/Colorforces
-// @version            1.9.0
+// @version            1.9.1
 // @author             GodExious & Antigravity & Codex & ClaudeCode
 // @description        Enhance Codeforces with user data analytics, contest rating predictions, CF/CList problem ratings, user groups, avatar frames, verdict abbreviations, avatars, custom time formats, tag visibility controls, keyboard shortcuts, and an animated settings menu. Led by GodExious with AI-assisted development by Antigravity, Codex, and ClaudeCode.
 // @description:zh-CN  增强 Codeforces 视觉与使用体验，支持用户数据分析、比赛评分预测、CF/CList 难度分、用户分组、头像框、判题状态缩写、头像、自定义时间格式、标签显示控制、快捷键及动态设置菜单。由 GodExious 主导，Antigravity、Codex 与 ClaudeCode 协助开发。
@@ -5713,7 +5713,7 @@ SOFTWARE.
 		if (isString$2(container)) return document.querySelector(container);
 		return container;
 	}
-	var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info && GM_info.script && GM_info.script.version ? GM_info.script.version : "1.9.0";
+	var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info && GM_info.script && GM_info.script.version ? GM_info.script.version : "1.9.1";
 	var writeListeners = new Set();
 	var noticeQueued = false;
 	function notifyStorageWrites() {
@@ -8549,11 +8549,24 @@ SOFTWARE.
 			isShiftPhysicallyDown = false;
 		});
 	}
+	function getCurrentUserHandle() {
+		const userLink = document.querySelector("#header .lang-chooser a[href^=\"/profile/\"], #header a[href^=\"/profile/\"]");
+		return userLink ? userLink.textContent.trim() : null;
+	}
+	function getCsrfToken() {
+		return document.querySelector("meta[name=\"X-Csrf-Token\"]")?.content || document.querySelector(".csrf-token")?.dataset.csrf || "";
+	}
 	var uiActions = new Map();
 	var UI_KEYS = [
 		"menuLanguage",
 		"frameLibrary",
 		"groupsManage"
+	];
+	var GROUP_KEYS = [
+		"groupsEnabled",
+		"groupTags",
+		"groupsManage",
+		"menuCard"
 	];
 	function configureUiAction(key, handler) {
 		uiActions.set(key, handler);
@@ -8634,6 +8647,7 @@ SOFTWARE.
 			if (event.defaultPrevented || active && (["INPUT", "TEXTAREA"].includes(active.tagName) || active.isContentEditable)) return;
 			for (const [key, action] of Object.entries(actions)) {
 				if (!matchesShortcut(event, appSettings.shortcuts[key])) continue;
+				if (GROUP_KEYS.includes(key) && !getCurrentUserHandle()) return;
 				event.preventDefault();
 				if (UI_KEYS.includes(key)) {
 					if (!event.repeat) action();
@@ -9370,13 +9384,6 @@ SOFTWARE.
 			b * scale
 		]);
 	}
-	function getCurrentUserHandle() {
-		const userLink = document.querySelector("#header .lang-chooser a[href^=\"/profile/\"], #header a[href^=\"/profile/\"]");
-		return userLink ? userLink.textContent.trim() : null;
-	}
-	function getCsrfToken() {
-		return document.querySelector("meta[name=\"X-Csrf-Token\"]")?.content || document.querySelector(".csrf-token")?.dataset.csrf || "";
-	}
 	function fetchContestList() {
 		return fetch("https://codeforces.com/api/contest.list?gym=false&lang=en");
 	}
@@ -9985,6 +9992,7 @@ SOFTWARE.
 		return owner ? loadStore$2().accounts[userId$1(owner)] || null : null;
 	}
 	function changeAccount(owner, change) {
+		if (!owner) return false;
 		const store = loadStore$2();
 		const result = change(accountOf(store, owner), store);
 		if (result !== false) {
@@ -74304,6 +74312,7 @@ SOFTWARE.
 		}
 	};
 	var en_default$1 = {
+		"v 1.9.1:0": ["Fixed the group shortcuts still working when signed out, including opening group management."],
 		"v 1.9.0:0": [
 			"Added user groups: group any user and add notes, follow or unfollow friends directly, and right-click a user name to see their profile at a glance. Shortcuts are provided.",
 			"Added avatar frames to decorate user groups or yourself, with deep customization. Shortcuts are provided.",
@@ -74490,6 +74499,7 @@ SOFTWARE.
 		"v 1.3.5:1": ["Fetches problem data via the official Codeforces API and updates locally only once per day, avoiding excessive network requests."]
 	};
 	var zh_default$1 = {
+		"v 1.9.1:0": ["修复未登录时分组功能的快捷键仍然生效、能打开分组管理的问题。"],
 		"v 1.9.0:0": [
 			"新增用户分组功能，可以对任意用户进行分组并备注，好友可以直接关注和取消关注，右键用户名一键查看用户信息。提供了相关快捷键。",
 			"新增头像框功能，可以对用户分组或自己进行装饰，支持高度自定义。提供了相关快捷键。",
@@ -74676,6 +74686,14 @@ SOFTWARE.
 		"v 1.3.5:1": ["题目分数数据通过 Codeforces 官方 API 获取，每天仅在本地更新一次缓存，避免发送过多的网络请求。"]
 	};
 	var data_default$1 = [
+		{
+			version: "v 1.9.1",
+			time: 179218278e4,
+			sections: [{
+				type: "fixed",
+				contentKey: "v 1.9.1:0"
+			}]
+		},
 		{
 			version: "v 1.9.0",
 			time: 17921817e5,

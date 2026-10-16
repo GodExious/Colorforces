@@ -40,7 +40,9 @@ export function readAccount(owner) {
 
 // 改某个登录账号的分组：change 收到这个账号的分组（还没有就先建一份空的）和整份数据，直接在上面改；
 // 它返回 false 表示什么都没改、不用写回去，返回别的值会原样交还给调用的地方。
+// 没登录（owner 是空的）时什么都不写，当作没改：不能把分组记到一个空名字的账号下面。
 export function changeAccount(owner, change) {
+  if (!owner) return false;
   const store = loadStore();
   const result = change(accountOf(store, owner), store);
   if (result !== false) {

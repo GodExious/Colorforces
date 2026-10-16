@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="CHANGELOG_zh.md">
-    <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-1.9.0-d77c9d?style=flat&amp;logo=github&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="版本 1.9.0">
+    <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-1.9.1-d77c9d?style=flat&amp;logo=github&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="版本 1.9.1">
   </a>
   <a href="https://github.com/GodExious/Colorforces/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/%E8%AE%B8%E5%8F%AF%E8%AF%81-MIT-c5ab77?style=flat&amp;logo=opensourceinitiative&amp;logoColor=white&amp;labelColor=343b49" height="22" alt="MIT 许可证">

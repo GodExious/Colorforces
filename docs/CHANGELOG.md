@@ -8,6 +8,14 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+### v1.9.1
+`2026-10-17 04:33 UTC+8`
+
+**Fixed**
+1. Fixed the group shortcuts still working when signed out, including opening group management.
+
+---
+
 ### v1.9.0
 `2026-10-17 04:15 UTC+8`
 

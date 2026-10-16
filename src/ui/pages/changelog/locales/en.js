@@ -1,4 +1,7 @@
 export default {
+  'v 1.9.1:0': [
+    'Fixed the group shortcuts still working when signed out, including opening group management.',
+  ],
   'v 1.9.0:0': [
     'Added user groups: group any user and add notes, follow or unfollow friends directly, and right-click a user name to see their profile at a glance. Shortcuts are provided.',
     'Added avatar frames to decorate user groups or yourself, with deep customization. Shortcuts are provided.',
