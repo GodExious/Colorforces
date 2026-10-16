@@ -13,6 +13,8 @@ import {
   RUNTIME_DATA_KEY,
   ANALYTICS_KEY,
   USER_GROUPS_KEY,
+  CUSTOM_FRAMES_KEY,
+  CUSTOM_FRAME_ART_KEY,
   LEGACY_LOCAL_KEYS,
 } from '../../storage/keys.js';
 import { migrateDatasets } from '../user/analytics/data.js';
@@ -68,6 +70,8 @@ export const ACTIVE_STORAGE_KEYS = [
   RUNTIME_DATA_KEY,
   ANALYTICS_KEY,
   USER_GROUPS_KEY,
+  CUSTOM_FRAMES_KEY,
+  CUSTOM_FRAME_ART_KEY,
 ];
 // 把统计里费时间的部分拆成一小步一小步：每一步只量一个键，或者只数一次预测缓存。
 // 菜单打开后趁页面空闲时逐步做完（见 StoragePage），之后打开存储页就都是现成的。
@@ -283,6 +287,17 @@ export function readStorageOverview() {
     count: Object.keys(readGroups(appStorage.getJSON(USER_GROUPS_KEY, null)).accounts).length,
     keys: groupsKeys,
     countKey: 'storageAccountCount',
+  };
+  // 自定义头像框：目录和全部代码两个键，项数是头像框的个数（目录里记着先后，数它就行，不用解析代码）。没做过时不列出键。
+  const frameKeys = [CUSTOM_FRAMES_KEY, CUSTOM_FRAME_ART_KEY].filter(
+    (key) => appStorage.getItem(key) != null,
+  );
+  const catalog = appStorage.getJSON(CUSTOM_FRAMES_KEY, null);
+  items.frames = {
+    bytes: frameKeys.reduce((sum, key) => sum + getStorageItemBytes(key), 0),
+    count: Array.isArray(catalog?.order) ? catalog.order.length : 0,
+    keys: frameKeys,
+    countKey: 'storageFrameCount',
   };
   const predictionKeys = PREDICTION_STORAGE_KEYS.filter((key) => appStorage.getItem(key) != null);
   items.prediction = {

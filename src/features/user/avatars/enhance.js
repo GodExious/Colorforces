@@ -3,12 +3,13 @@ import { appSettings } from '../../../settings.js';
 import { appStorage } from '../../../storage/gm.js';
 import { AVATAR_CACHE_KEY } from '../../../storage/keys.js';
 import { CACHE_EXPIRY } from '../../../config/cache-policy.js';
-import { normalizeAvatarUrl, DEFAULT_AVATAR_URL } from './data.js';
+import { avatarEntry, normalizeAvatarUrl, DEFAULT_AVATAR_URL } from './data.js';
 import { syncSecondLevelMenuLava } from '../../page/navigation.js';
 import { isTeamCell } from './structure.js';
 import { rankClass, rankTitle } from './team-members.js';
 import { applyGroupTags } from '../groups/tags.js';
 import { applyFrames } from '../frames/page.js';
+import { avatarShownAt, pagePlaceOf } from './places.js';
 
 // 队伍里补出来的成员（原站折叠掉的那几个，见 team-members.js）页面上没有名字的颜色，
 // 查到头衔后按原站的写法补上类名和提示。rank 为 undefined 表示不知道（旧缓存里没记），不动。
@@ -42,6 +43,9 @@ export async function applyUserAvatars() {
     // Skip if it's a comment author (comments already have native CF avatar box on the left)
     // Mentions inside the text body (.ttypography) and topic authors should receive avatars.
     if (link.closest('.comment') && !link.closest('.ttypography')) return;
+
+    // 这一处（表格里、其他页面）设成不显示头像：先不加，也不标成处理过，打开那一处时再补上。
+    if (!avatarShownAt(pagePlaceOf(link))) return;
 
     const href = link.getAttribute('href');
     if (!href) return;
@@ -78,6 +82,9 @@ export async function applyUserAvatars() {
         handle,
       );
       paintExtraMembers(handleToElements[handle.toLowerCase()], cachedData.rank, handle);
+      // 旧的条目里还没有右键菜单名片上的四项资料（见 data.js 的 avatarEntry）：头像照用缓存，
+      // 同一次请求里顺带把这个人再查一遍，补上这几项（查不成也不碍事，右键菜单打开时会再单独补）。
+      if (!cachedData.missing && !('contribution' in cachedData)) missingHandles.push(handle);
     } else {
       missingHandles.push(handle);
     }
@@ -94,28 +101,17 @@ export async function applyUserAvatars() {
         if (data.status === 'OK') {
           for (const user of data.result) {
             const handle = user.handle;
-            const avatarUrl = normalizeAvatarUrl(user.avatar);
-            const titlePhotoUrl = normalizeAvatarUrl(user.titlePhoto);
-            // 头衔跟着头像一起记下（未评级的记成空字符串），给队伍里补出来的成员上色用；
-            // 评分也记下（未评级的记成 null），分组的成员名单用（见 groups/profiles.js）。
-            // 到过的最高段位也记下，「最高段位」的头像框用（见 frames/）。
-            const rank = user.rank || '';
-            const rating = Number.isFinite(user.rating) ? user.rating : null;
-            avatarCache[handle] = {
-              url: avatarUrl,
-              fallbackUrl: titlePhotoUrl,
-              time: now,
-              rank,
-              maxRank: user.maxRank || '',
-              rating,
-            };
+            // 头像连同头衔（给队伍里补出来的成员上色）、评分（分组的成员名单）、到过的最高段位（「最高段位」的头像框）、
+            // 右键菜单名片上的四项资料一起记下，见 avatars/data.js 的 avatarEntry。
+            const entry = avatarEntry(user, now);
+            avatarCache[handle] = entry;
             injectAvatar(
               handleToElements[handle.toLowerCase()] || [],
-              avatarUrl,
-              titlePhotoUrl,
+              entry.url,
+              entry.fallbackUrl,
               handle,
             );
-            paintExtraMembers(handleToElements[handle.toLowerCase()], rank, handle);
+            paintExtraMembers(handleToElements[handle.toLowerCase()], entry.rank, handle);
           }
           appStorage.setJSON(AVATAR_CACHE_KEY, avatarCache);
           break;

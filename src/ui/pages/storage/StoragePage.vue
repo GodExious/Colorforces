@@ -20,6 +20,8 @@ import {
   RUNTIME_DATA_KEY,
   ANALYTICS_KEY,
   USER_GROUPS_KEY,
+  CUSTOM_FRAMES_KEY,
+  CUSTOM_FRAME_ART_KEY,
 } from '../../../storage/keys.js';
 import { showConfirmPop } from '../../components/dialogs/ConfirmDialog/ConfirmDialog.vue';
 import { readStore, previewStore } from '../../../features/user/analytics/store.js';
@@ -79,6 +81,14 @@ const groups = [
     bar: 'storageGroupsTitle',
   },
   {
+    id: 'frames',
+    title: 'storageFramesTitle',
+    description: 'storageFramesDesc',
+    action: 'storageFramesClearBtn',
+    confirm: 'storageFramesClearConfirm',
+    bar: 'storageFramesTitle',
+  },
+  {
     id: 'prediction',
     title: 'storagePredictionTitle',
     description: 'storagePredictionDesc',
@@ -105,6 +115,8 @@ const KEY_LABELS = {
   [AVATAR_CACHE_KEY]: 'storageAvatarTitle',
   [ANALYTICS_KEY]: 'storageAnalyticsTitle',
   [USER_GROUPS_KEY]: 'storageGroupsTitle',
+  [CUSTOM_FRAMES_KEY]: 'storageKeyFrameCatalog',
+  [CUSTOM_FRAME_ART_KEY]: 'storageKeyFrameArt',
   [PREDICTION_CACHE_KEY]: 'storageKeySnapshots',
   [PREDICTION_RATINGS_KEY]: 'storageKeyRatingSources',
   [PREDICTION_LOCK_KEY]: 'storageKeyRequestLease',
@@ -161,7 +173,25 @@ function requestClear(id) {
 }
 // 数据分析的缓存里是各个账号的全部提交记录，账号一多就很大。查看时只列出前面若干个账号、
 // 每个账号各项数据的开头几条，项数写的是缓存了多少个账号；复制的仍是完整数据。
+// 自定义头像框的代码：每段 SVG 都很长、写成一行，原样显示时第一段就把预览的字数用完了，后面截在半中间，外面的括号也收不上。
+// 查看时列出前几个，每段只留开头一截（后面写「…」），最后一个后面写「已截取」的说明，外面的括号照常收好；复制的仍是完整数据。
+const ART_PREVIEW_ITEMS = 6;
+// 每段留的字数：连着前面的编号，一行在弹窗里大致放得下，不用横着滚。
+const ART_PREVIEW_CHARS = 64;
+function previewArt(content) {
+  const entries = content && typeof content === 'object' ? Object.entries(content) : [];
+  let cut = entries.length > ART_PREVIEW_ITEMS;
+  const shown = entries.slice(0, ART_PREVIEW_ITEMS).map(([id, code]) => {
+    if (typeof code !== 'string' || code.length <= ART_PREVIEW_CHARS) return [id, code];
+    cut = true;
+    return [id, code.slice(0, ART_PREVIEW_CHARS) + '…'];
+  });
+  const preview = Object.fromEntries(shown);
+  if (cut) preview[TRUNCATE_MARKER] = true;
+  return { content: preview, count: entries.length };
+}
 function previewOf(key, content) {
+  if (key === CUSTOM_FRAME_ART_KEY) return previewArt(content);
   if (key !== ANALYTICS_KEY) return null;
   const store = readStore(content);
   return {
@@ -443,6 +473,10 @@ watch(
 
 .cf-storage-icon-box.icon-groups {
   --cf-storage-tone: #3f9a7d;
+}
+
+.cf-storage-icon-box.icon-frames {
+  --cf-storage-tone: #b0619f;
 }
 
 .cf-storage-icon-box.icon-solved,

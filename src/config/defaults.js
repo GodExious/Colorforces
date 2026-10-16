@@ -92,14 +92,17 @@ export const DEFAULT_SETTINGS = {
   user: {
     avatar: {
       enabled: true,
-      size: 1.6,
+      size: 2.4,
+      // 头像显示在哪：表格里（榜单、提交记录等）、右键菜单的名片、分组管理（分组页、管理弹窗里成员的头像）、
+      // 其他页面上的头像。个人主页本来就有大照片，不在这里。头像框库、设置里的预览照常显示。
+      showAt: { tables: true, menus: true, groups: true, others: true },
       // 显示头像框：头像框的总开关。
       frames: true,
       // 头像框显示在哪：个人主页的大头像、表格里（榜单、提交记录等）、右键菜单的名片、
       // 分组管理（分组页、管理弹窗里成员的头像）、其他页面上的头像。头像框库、设置里的预览照常显示。
       frameAt: { profile: true, tables: true, menus: true, groups: true, others: true },
       // 段位头像框：'off' 不使用，'current' 按现在的段位，'max' 按到过的最高段位。
-      rankFrame: 'current',
+      rankFrame: 'max',
       // 头像框的动效：'off' 关闭（显示静止的头像框），'hover' 鼠标移上去时才播放，'on' 一直播放。
       frameMotion: 'on',
       // 自己从头像框库里戴的头像框（名字），空的是没戴。只换自己的头像框，别人看不到。
@@ -161,7 +164,9 @@ export const DEFAULT_SETTINGS = {
     enabled: true,
     showTags: true,
     // 标签的样子：'name' 写分组名，'mark' 只画分组的小标（图标）。
-    tagStyle: 'name',
+    tagStyle: 'mark',
+    // 右键菜单的名片：'vertical' 纵向（头像、资料在菜单项上面），'horizontal' 横向（左边一栏是名片，右边是菜单项）。
+    menuCard: 'vertical',
     // 自定义分组颜色时用哪种调法：'board' 一块色板加一条色相，'sliders' 三条滑杆。记着上次用的。
     colorMode: 'board',
   },
@@ -186,5 +191,6 @@ export const DEFAULT_SETTINGS = {
     groupsEnabled: 'Shift+G', // Groups：用户分组总开关。
     groupTags: 'Shift+Q', // 签（qiān）：用户名后面的分组标签；Shift+T、Shift+B、Shift+L 都已经有了。
     groupsManage: 'Shift+Z', // 组（zǔ）：打开、关上分组管理；Shift+G 已经给了用户分组总开关。
+    menuCard: 'Shift+O', // Orientation：右键菜单的资料卡在纵向、横向之间换；Shift+C、Shift+K 都已经有了。
   },
 };

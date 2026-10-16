@@ -26,12 +26,17 @@
     width 180ms ease,
     height 180ms ease;
 }
+/* 收起：关掉了头像，或者这一处（表格里、其他页面）设成不显示（见 features/user/avatars/places.js）。 */
 :root.cf-hide-userAvatar .cf-avatar-slot,
+:root.cf-hide-avatar-tables table .cf-avatar-slot,
+:root.cf-hide-avatar-others .cf-avatar-slot:not(table *),
 .cf-avatar-slot.cf-avatar-loading {
   width: 0;
   pointer-events: none;
 }
 :root.cf-hide-userAvatar .cf-avatar-slot img,
+:root.cf-hide-avatar-tables table .cf-avatar-slot img,
+:root.cf-hide-avatar-others .cf-avatar-slot:not(table *) img,
 .cf-avatar-loading img.cf-user-avatar {
   transform: translateX(-110%);
 }

@@ -10,6 +10,7 @@ import {
   readHex,
 } from '../../../../../utils/color-models.js';
 import SegmentedSwitch from '../../../../components/forms/SegmentedSwitch/SegmentedSwitch.vue';
+import { keepWithinLimit } from '../../../../../utils/input-limit.js';
 
 // 自定义分组颜色：什么颜色都能选。两种调法，右上角的开关切换，记在设置里（groups.colorMode）：
 //   滑杆（sliders）：三条滑杆，色相、鲜艳（饱和度）、深浅（亮度），按 HSL 算；
@@ -234,6 +235,7 @@ async function chooseMode(next) {
         :class="{ 'has-conflict': badHex }"
         type="text"
         maxlength="7"
+        @beforeinput="keepWithinLimit"
         spellcheck="false"
         :value="typed"
         :aria-label="t('groupsColorCustom')"

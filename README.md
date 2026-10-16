@@ -27,12 +27,39 @@ Colorforces is a userscript that makes Codeforces problem ratings, submissions, 
 
 - Problem ratings from Codeforces and CList, shown as colored blocks or tags
 - User data analytics on profile pages: a summary, rating heatmap, rating and rank curve comparison, and a dozen more charts
+- User groups with notes and direct follow or unfollow for friends, plus a profile card on right-clicking any user name
+- Avatar frames by rank or group, with a built-in frame library and custom frames you can make with AI
 - Contest rating prediction with single-user rating analysis
 - Participant tags, user avatars, language icons, short verdicts, and custom time formats
 - Shortcuts, storage management, and a bilingual (English / Chinese) menu
 
 ## 📸 Screenshots
 
+<p align="center">
+  <img src="imgs/user-analyze-en.png" alt="User Data Analytics">
+  <br>
+  <em>User data analytics on profile pages: a summary, rating heatmap, rating and rank curve comparison, and a dozen more charts</em>
+</p>
+<p align="center">
+  <img src="imgs/user-menu-en.png" alt="User Profile Card">
+  <br>
+  <em>Right-click any user name for a profile card with rating progress, stats, groups, and a private note</em>
+</p>
+<p align="center">
+  <img src="imgs/user-group-manager-en.png" alt="Manage Groups">
+  <br>
+  <em>Group any users and give each group a mark, a color, and an avatar frame, with notes visible only to you</em>
+</p>
+<p align="center">
+  <img src="imgs/user-profile.png" alt="Avatar Frame on Profile">
+  <br>
+  <em>Avatar frames on profile pages, such as the special frame for tourist</em>
+</p>
+<p align="center">
+  <img src="imgs/frame-lib-en.png" alt="Frame Library">
+  <br>
+  <em>The frame library: rank frames, built-in frames to wear or set for a group, and custom frames you can make with AI</em>
+</p>
 <p align="center">
   <img src="imgs/settings.png" alt="Colorforces settings on Codeforces">
   <br>
@@ -72,11 +99,6 @@ Colorforces is a userscript that makes Codeforces problem ratings, submissions, 
   <img src="imgs/blogs.png" alt="Blogs">
   <br>
   <em>User avatar display on the Blogs content page</em>
-</p>
-<p align="center">
-  <img src="imgs/user-analyze-en.png" alt="User Data Analytics">
-  <br>
-  <em>User data analytics on profile pages: a summary, rating heatmap, rating and rank curve comparison, and a dozen more charts</em>
 </p>
 
 ## 🚀 Installation

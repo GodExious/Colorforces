@@ -25,6 +25,11 @@ export const LEGACY_ANALYTICS_PREFIX = 'cf_user_analytics_v1_';
 // 用户分组：各个登录账号的分组、成员、备注和好友名单合存在这一个键里，结构见 features/user/groups/store.js。
 export const USER_GROUPS_KEY = 'cf_user_groups_v1';
 
+// 自定义头像框：目录（先后、名字、时间、「新」「改」标记）和全部代码分两个键存，结构见 features/user/frames/custom/store.js。
+// 代码大、目录小：点开一个头像框去掉标记时只写目录。
+export const CUSTOM_FRAMES_KEY = 'cf_custom_frames_v1';
+export const CUSTOM_FRAME_ART_KEY = 'cf_custom_frame_art_v1';
+
 // 设置：按菜单页签归档的结构存在这个键里。
 export const SETTINGS_KEY = 'cf_plugin_settings';
 // 1.8.0 之前的设置键，各项平铺在第一层。新键还没有时从这里读一次迁过去，之后不读也不写：

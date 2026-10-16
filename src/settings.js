@@ -141,11 +141,12 @@ function readSettings(stored) {
   takeFlags(settings.user, user);
   const avatar = part(user, 'avatar');
   takeFlags(settings.user.avatar, avatar);
+  takeFlags(settings.user.avatar.showAt, part(avatar, 'showAt'));
   takeFlags(settings.user.avatar.frameAt, part(avatar, 'frameAt'));
   takeScale(settings.user.avatar, avatar, 'size');
   take(settings.user.avatar, avatar, 'rankFrame', oneOf('off', 'current', 'max'));
   take(settings.user.avatar, avatar, 'frameMotion', oneOf('off', 'hover', 'on'));
-  // 头像框的名字：现在认不认识都留着（导入的头像框可能后来才有），用的时候不认识就当作没戴。
+  // 头像框的名字：现在认不认识都留着（自定义的头像框在别的标签页里刚做、还没读到时也认不出），用的时候不认识就当作没戴。
   take(
     settings.user.avatar,
     avatar,
@@ -187,6 +188,7 @@ function readSettings(stored) {
   const groups = part(stored, 'groups');
   takeFlags(settings.groups, groups);
   take(settings.groups, groups, 'tagStyle', oneOf('name', 'mark'));
+  take(settings.groups, groups, 'menuCard', oneOf('vertical', 'horizontal'));
   take(settings.groups, groups, 'colorMode', oneOf('board', 'sliders'));
 
   readShortcuts(settings.shortcuts, part(stored, 'shortcuts'));

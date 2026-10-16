@@ -168,20 +168,19 @@ function toggleFramesByKey() {
   if (confirmShown()) return;
   // 从分组管理里打开的头像框库关上后回到分组管理。
   if (frameDialogShown()) return closeFrameDialog();
+  // 显示用户头像或显示头像框关着时，设置里打开头像框库的按钮藏着、分组的头像框按钮灰掉，快捷键同样不打开。
+  if (!appSettings.user.avatar.enabled || !appSettings.user.avatar.frames) return;
   closeGroupsDialog();
   showFrameDialog();
 }
 function toggleGroupsByKey() {
   if (confirmShown()) return;
-  if (groupsDialogShown()) {
-    // 连同从分组管理里打开的头像框库一起关上。
-    closeFrameDialog();
-    return closeGroupsDialog();
-  }
+  // 头像框库的编辑区里有没保存的内容时，关头像框库会先问一下；取消就都不动（见 closeFrameDialog）。
+  // 连同从分组管理里打开的头像框库一起关上。
+  if (groupsDialogShown()) return closeFrameDialog(closeGroupsDialog);
   // 用户分组关着时菜单里也没有「管理成员」，快捷键同样不打开。
   if (!appSettings.groups.enabled) return;
-  closeFrameDialog();
-  showGroupsDialog();
+  closeFrameDialog(showGroupsDialog);
 }
 let releaseLanguageShortcut;
 let releaseFrameLibraryShortcut;

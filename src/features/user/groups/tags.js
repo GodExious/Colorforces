@@ -125,14 +125,19 @@ function write(host, tag) {
 const shows = (host, tag) =>
   host.getAttribute(ATTRIBUTE) === tag.name && (host.getAttribute(KIND) || 'name') === tag.kind;
 
-// 正收起来、等着换的元素 → 要换成的标签。
+// 正收起来、等着换的元素 → 要换成的标签；null 是收好了就去掉（人不在任何分组里了）。
 const swapping = new Map();
 function finishSwaps() {
-  for (const [host, tag] of swapping) {
+  const done = [...swapping];
+  swapping.clear();
+  for (const [host, tag] of done) {
+    if (!tag) {
+      clear(host);
+      continue;
+    }
     write(host, tag);
     host.removeAttribute(LEAVING);
   }
-  swapping.clear();
 }
 function swap(host, tag) {
   if (!swapping.size) setTimeout(finishSwaps, SWAP_TIME);
@@ -210,10 +215,17 @@ export function applyGroupTags() {
       hosts.add(host);
       mark(host, tag);
     }
-  // 不该再有标签的：人不在分组里了，或者链接后来被包进了头像那一行、标签挪到了那一层上。
-  // 插件自己界面里的（分组弹窗里的预览）由界面自己管，不动。
-  for (const host of document.querySelectorAll(`[${ATTRIBUTE}]`))
-    if (!hosts.has(host) && !host.closest(PLUGIN_UI_SELECTOR)) clear(host);
+  // 不该再有标签的。插件自己界面里的（分组弹窗里的预览）由界面自己管，不动。
+  // 链接后来被包进了头像那一行、标签挪到了那一层上：人还有标签，旧的这处直接去掉，新的那处会展开。
+  // 人不在任何分组里了：先收起来，收好了再去掉（和换文字时收起的样子一样）。收起的这段时间里又被加回分组的，换成新的标签展开。
+  for (const host of document.querySelectorAll(`[${ATTRIBUTE}]`)) {
+    if (hosts.has(host) || host.closest(PLUGIN_UI_SELECTOR)) continue;
+    const link = host.matches(USER_LINK)
+      ? host
+      : host.querySelector(`${USER_LINK}:not(.cf-avatar-container)`);
+    if (link && tagFor(link)) clear(host);
+    else if (swapping.get(host) !== null) swap(host, null);
+  }
 }
 
 // 分组、设置或语言变了：按新的重新标一遍。

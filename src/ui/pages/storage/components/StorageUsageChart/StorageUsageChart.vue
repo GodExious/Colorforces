@@ -22,6 +22,7 @@ const categories = [
   ['cf', '#a8d5c2'],
   ['user', '#c4b5e4'],
   ['groups', '#a9dcc9'],
+  ['frames', '#e3b9e0'],
   ['prediction', '#f1c3a9'],
   ['settings', '#e9b5cc'],
   ['runtime', '#ebd59f'],

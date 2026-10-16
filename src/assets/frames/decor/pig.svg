@@ -1,1 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 160 160">
+<metadata><![CDATA[
+{
+  "format": "colorforces-frame",
+  "version": 1,
+  "name": {
+    "zh": "嘟嘟猪",
+    "en": "Piggy"
+  },
+  "intro": {
+    "zh": "嘟嘟噜噜，变！中了可爱咒语的人，会长出猪耳朵和猪鼻子。",
+    "en": "Abracadabra, oink! Whoever is hit by the cute spell grows pig ears and a pig snout."
+  },
+  "author": "Claude Opus 5.5",
+  "revisions": 1
+}
+]]></metadata>
+<style>
+@keyframes cf-frame-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.35);
+  }
+}
+@keyframes cf-frame-ear {
+  0%,
+  78%,
+  100% {
+    transform: rotate(0deg);
+  }
+  85% {
+    transform: rotate(-14deg);
+  }
+  92% {
+    transform: rotate(6deg);
+  }
+}
+@keyframes cf-frame-wag {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+@keyframes cf-frame-sniff {
+  0%,
+  70%,
+  100% {
+    transform: scale(1);
+  }
+  78% {
+    transform: scale(1.08, 0.94);
+  }
+  86% {
+    transform: scale(0.96, 1.05);
+  }
+}
+@keyframes cf-frame-float {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  60% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  61% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+.twinkle {
+  animation: cf-frame-twinkle 2.4s ease-in-out infinite;
+}
+.pig-ear {
+  animation: cf-frame-ear 2.8s ease-in-out infinite;
+}
+.pig-tail {
+  animation: cf-frame-wag 1.2s ease-in-out infinite;
+}
+.pig-nose {
+  animation: cf-frame-sniff 2.8s ease-in-out infinite;
+}
+.float {
+  animation: cf-frame-float 3s ease-in infinite;
+}
+</style>
 <g class="pig-tail" style="transform-origin: 102px 88px"><path d="M101 89c8 2 13.5-3 12-8s-10-4-9.5 1s8 4 8-.5" fill="none" stroke="#9c2f66" stroke-width="5.6" stroke-linecap="round"/><path d="M101 89c8 2 13.5-3 12-8s-10-4-9.5 1s8 4 8-.5" fill="none" stroke="#ff9fc4" stroke-width="2.6" stroke-linecap="round"/></g><g class="pig-ear" style="transform-origin: 33px 27px"><path d="M19.5 33.5C13.5 21 18 9 30 6.5C40 8.5 45.5 17 44.5 24.5Z" fill="#ff9fc4" stroke="#9c2f66" stroke-width="2" stroke-linejoin="round"/><path d="M24.5 28.5C21.5 20.5 24 14 30.5 12C36 14 39 18.5 39 23Z" fill="#ff6fa8"/></g><g transform="translate(120 0) scale(-1 1)"><g class="pig-ear" style="transform-origin: 33px 27px"><path d="M19.5 33.5C13.5 21 18 9 30 6.5C40 8.5 45.5 17 44.5 24.5Z" fill="#ff9fc4" stroke="#9c2f66" stroke-width="2" stroke-linejoin="round"/><path d="M24.5 28.5C21.5 20.5 24 14 30.5 12C36 14 39 18.5 39 23Z" fill="#ff6fa8"/></g></g><circle cx="60" cy="60" r="42" fill="none" stroke="#9c2f66" stroke-width="11"/><circle cx="60" cy="60" r="42" fill="none" stroke="#ff9fc4" stroke-width="8"/><path d="M96.8 73.4A39.2 39.2 0 0 1 26.1 79.6" fill="none" stroke="#f0679f" stroke-width="2.2" stroke-linecap="round"/><path d="M17.3 48.6A44.2 44.2 0 0 1 71.4 17.3" fill="none" stroke="#ffe0ee" stroke-width="2" stroke-linecap="round"/><path d="M79.4 20.3A44.2 44.2 0 0 1 84.7 23.4" fill="none" stroke="#ffe0ee" stroke-width="2" stroke-linecap="round"/><ellipse cx="36" cy="72" rx="6.5" ry="4" fill="#ff6fa8" fill-opacity="0.55"/><ellipse cx="84" cy="72" rx="6.5" ry="4" fill="#ff6fa8" fill-opacity="0.55"/><g class="pig-nose" style="transform-origin: 60px 81px"><ellipse cx="60" cy="81" rx="14.5" ry="10.5" fill="#ffb7d3" stroke="#9c2f66" stroke-width="2"/><path d="M50 76.5C54 73.5 62 73 67 74.5" fill="none" stroke="#ffe3ef" stroke-width="1.7" stroke-linecap="round"/><ellipse cx="54.8" cy="82" rx="2.6" ry="3.7" fill="#9c2f66"/><ellipse cx="65.2" cy="82" rx="2.6" ry="3.7" fill="#9c2f66"/></g><path class="float" style="transform-origin: 109px 30px" d="M109 35C103 30.5 103.5 25 107 25C108.2 25 109 26 109 27C109 26 109.8 25 111 25C114.5 25 115 30.5 109 35Z" fill="#ff6fa8" stroke="#9c2f66" stroke-width="1.2" stroke-linejoin="round"/><path class="twinkle" d="M23 45.8Q23 49 26.2 49Q23 49 23 52.2Q23 49 19.8 49Q23 49 23 45.8Z" fill="#fff" style="transform-origin: 23px 49px"/>
+</svg>

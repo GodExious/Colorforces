@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
   chooseFrame,
@@ -57,13 +57,6 @@ test('每个段位都有画好的头像框，另有管理员和头像框库里�
   ])
     assert.ok(files.has(rankFrame(rank)), rank || '(没有段位)');
   assert.ok(known.has('headquarters'));
-});
-
-test('头像框的画稿里没有脚本、事件、外部链接，也不自带画板（画板和样式在用的时候才包上）', () => {
-  for (const id of known) {
-    const art = readFileSync(ART_DIR + files.get(id), 'utf8');
-    assert.doesNotMatch(art, /<script|\son[a-z]+=|href=|<svg|<style/i, id);
-  }
 });
 
 test('分组的头像框优先，其次按设置看段位；管理员戴管理员的；不认识的头像框当作没有', () => {

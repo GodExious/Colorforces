@@ -1,9 +1,8 @@
 <script>
 import { translate as translateText } from '../../../../../i18n/index.js';
-import { rankForRating } from '../../../../../features/contest/rating-prediction/algorithm/ranks.js';
-// 名字和评分用的颜色：有评分的按段位；未评级的、查不到的、还没读到的不上色，跟着周围的字色。
-export const rankInk = (profile) =>
-  Number.isFinite(profile?.rating) ? rankForRating(profile.rating).color : null;
+import { blackFirstLetter, nameInk } from '../../../../../features/user/groups/progress.js';
+// 名字和评分用的颜色：有评分的按段位（4000 分以上全黑，见 progress.js）；未评级的、查不到的、还没读到的不上色，跟着周围的字色。
+export const rankInk = (profile) => nameInk(profile?.rating);
 // 评分那里写什么：评分；未评级的写 Unrated；账号不存在的写「查无此人」；还没读到时是空的。
 export function ratingLabel(profile) {
   if (!profile) return '';
@@ -32,8 +31,8 @@ export function compareByRating(a, b, descending = true) {
 </script>
 <script setup>
 import { computed, ref, watch } from 'vue';
-import { appSettings } from '../../../../../settings.js';
 import { DEFAULT_AVATAR_URL } from '../../../../../features/user/avatars/data.js';
+import { avatarShownAt } from '../../../../../features/user/avatars/places.js';
 import AvatarFrame from '../../../../components/avatars/AvatarFrame/AvatarFrame.vue';
 // 一个成员：头像（「显示用户头像」开着时）和按段位上色的名字。
 // profile 是读到的资料（见 features/user/groups/profiles.js），还没读到时是 null。link 为真时名字是主页链接。
@@ -45,9 +44,7 @@ const props = defineProps({
 // 读到资料后用原站的大小写。
 const name = computed(() => props.profile?.handle || props.handle);
 const ink = computed(() => rankInk(props.profile));
-const legendary = computed(
-  () => Number.isFinite(props.profile?.rating) && rankForRating(props.profile.rating).legendary,
-);
+const legendary = computed(() => blackFirstLetter(props.profile?.rating));
 // 头像的地址依次试：头像、主页大图、原站的默认图。前一个加载不出来换下一个。
 const sources = computed(() => {
   if (!props.profile) return [];
@@ -76,7 +73,7 @@ const attrs = computed(() =>
   <component :is="link ? 'a' : 'span'" class="cf-groups-who cf-frame-host" v-bind="attrs">
     <!-- 「显示用户头像」开关切换时（比如按快捷键），头像缩进去、展开来，名字跟着滑。 -->
     <Transition name="cf-groups-avatar">
-      <span v-if="appSettings.user.avatar.enabled" class="cf-groups-avatar">
+      <span v-if="avatarShownAt('groups')" class="cf-groups-avatar">
         <img
           v-if="source"
           :src="source"

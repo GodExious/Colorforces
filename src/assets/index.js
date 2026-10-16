@@ -18,12 +18,22 @@ import userMenuLinkIcon from './icons/user-menu/link.svg?raw';
 import userMenuManageIcon from './icons/user-menu/manage.svg?raw';
 import frameIconAll from './icons/frames/all.svg?raw';
 import frameIconDecor from './icons/frames/decor.svg?raw';
-import frameIconImported from './icons/frames/imported.svg?raw';
+import frameIconCustom from './icons/frames/custom.svg?raw';
 import frameIconAchieve from './icons/frames/achieve.svg?raw';
 import frameIconShop from './icons/frames/shop.svg?raw';
 import frameIconRanks from './icons/frames/ranks.svg?raw';
 import frameIconSpecial from './icons/frames/special.svg?raw';
 import frameIconLock from './icons/frames/lock.svg?raw';
+import frameEditorBackIcon from './icons/frame-editor/back.svg?raw';
+import frameEditorCheckIcon from './icons/frame-editor/check.svg?raw';
+import frameEditorSelectAllIcon from './icons/frame-editor/select-all.svg?raw';
+import frameEditorSelectNoneIcon from './icons/frame-editor/select-none.svg?raw';
+import frameEditorExitIcon from './icons/frame-editor/exit.svg?raw';
+import frameEditorWarnIcon from './icons/frame-editor/warn.svg?raw';
+import frameEditorBadIcon from './icons/frame-editor/bad.svg?raw';
+import frameEditorSuccessIcon from './icons/frame-editor/success.svg?raw';
+import frameEditorMotionIcon from './icons/frame-editor/motion.svg?raw';
+import frameEditorResetIcon from './icons/frame-editor/reset.svg?raw';
 import sectionFunctionIcon from './icons/sections/function.svg?raw';
 import sectionStyleIcon from './icons/sections/style.svg?raw';
 import codeforcesIcon from './icons/storage/cf.svg?raw';
@@ -147,16 +157,30 @@ export const USER_MENU_ICONS = {
 export const FRAME_ICONS = {
   all: frameIconAll,
   decor: frameIconDecor,
-  imported: frameIconImported,
+  custom: frameIconCustom,
   achieve: frameIconAchieve,
   shop: frameIconShop,
   ranks: frameIconRanks,
   special: frameIconSpecial,
   lock: frameIconLock,
 };
+// 自定义头像框：编辑区左上角的返回、复制后的勾、选择时的全选 / 取消全选 / 退出、读代码的提醒（黄的、红的）、「已复制提示词」。
+export const FRAME_EDITOR_ICONS = {
+  back: frameEditorBackIcon,
+  check: frameEditorCheckIcon,
+  selectAll: frameEditorSelectAllIcon,
+  selectNone: frameEditorSelectNoneIcon,
+  exit: frameEditorExitIcon,
+  warn: frameEditorWarnIcon,
+  bad: frameEditorBadIcon,
+  success: frameEditorSuccessIcon,
+  motion: frameEditorMotionIcon,
+  reset: frameEditorResetIcon,
+};
 export const STORAGE_ICONS = {
   user: storageAvatarIcon,
   groups: menuGroupsIcon,
+  frames: frameIconCustom,
   prediction: menuPredictionIcon,
   settings: storageSettingsIcon,
   runtime: storageRuntimeIcon,

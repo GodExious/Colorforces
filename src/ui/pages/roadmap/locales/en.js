@@ -25,11 +25,15 @@ export default {
   },
   'friend-groups': {
     title: 'Friends Custom Tagging & Grouping',
-    desc: 'Allow custom category tagging, nicknames, color markers, group icons or images, and even custom avatar frames for friends.',
+    desc: 'Create groups for users and set avatar frames for them.',
   },
   'problem-filter': {
     title: 'Multi-criteria Problem Filtering',
     desc: 'Filter and search problems by combining multiple conditions.',
+  },
+  achievements: {
+    title: 'Achievements & Points',
+    desc: 'Unlock achievements and earn points to redeem avatar frames and more for free.',
   },
   'cf-official-data': {
     title: 'Codeforces Official Problem Data Integration',

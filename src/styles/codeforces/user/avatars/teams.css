@@ -102,9 +102,13 @@ img.cf-user-avatar {
   object-fit: cover !important;
 }
 
-:root:not(.cf-hide-userAvatar) .cf-author-icon-hidden,
-:root:not(.cf-hide-userAvatar) .right-meta li > a:has(> img[src*='user_16x16']),
-:root:not(.cf-hide-userAvatar) .right-meta li > a > img[src*='user_16x16'] {
+/* 下面这些（博客的作者栏、原站导航栏里的头像）都算「其他页面」：其他页面上不显示头像时，和关掉头像一样换回原站的排法。 */
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .cf-author-icon-hidden,
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others)
+  .right-meta
+  li
+  > a:has(> img[src*='user_16x16']),
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .right-meta li > a > img[src*='user_16x16'] {
   display: none !important;
 }
 
@@ -115,46 +119,46 @@ img.cf-user-avatar {
   line-height: 1 !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .meta {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .meta {
   display: flow-root !important;
   height: auto !important;
   min-height: 2.5em !important;
   box-sizing: border-box !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .meta br[style*='clear'] {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .meta br[style*='clear'] {
   display: none !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .left-meta {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .left-meta {
   float: left !important;
   display: flex !important;
   align-items: center !important;
   min-height: 2.5em !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .left-meta ul {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .left-meta ul {
   display: flex !important;
   align-items: center !important;
   margin: 0.35em 0.75em !important;
   padding: 0 !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .right-meta {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .right-meta {
   float: right !important;
   display: flex !important;
   align-items: center !important;
   min-height: 2.5em !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .right-meta ul {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .right-meta ul {
   display: flex !important;
   align-items: center !important;
   margin: 0.35em 0.75em !important;
   padding: 0 !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .right-meta ul li {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .right-meta ul li {
   display: inline-flex !important;
   align-items: center !important;
   float: none !important;
@@ -162,14 +166,14 @@ img.cf-user-avatar {
   line-height: 1 !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .right-meta ul li > a {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .right-meta ul li > a {
   display: inline-flex !important;
   align-items: center !important;
   vertical-align: middle !important;
   line-height: 1 !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .right-meta img.cf-user-avatar {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .right-meta img.cf-user-avatar {
   width: var(--cf-avatar-size) !important;
   height: var(--cf-avatar-size) !important;
   aspect-ratio: 1 / 1 !important;
@@ -179,32 +183,41 @@ img.cf-user-avatar {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
-:root:not(.cf-hide-userAvatar) .topic .right-meta ul li > img,
-:root:not(.cf-hide-userAvatar) .topic .right-meta ul li > a > img:not(.cf-user-avatar) {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .right-meta ul li > img,
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others)
+  .topic
+  .right-meta
+  ul
+  li
+  > a
+  > img:not(.cf-user-avatar) {
   vertical-align: middle !important;
   position: relative !important;
   top: 0 !important;
   margin-right: 4px !important;
 }
 
-:root:not(.cf-hide-userAvatar) .topic .info a.cf-avatar-inline-user {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .topic .info a.cf-avatar-inline-user {
   display: inline-flex !important;
   align-items: center !important;
   vertical-align: middle !important;
   line-height: 1 !important;
 }
 
-:root:not(.cf-hide-userAvatar) .second-level-menu-list {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others) .second-level-menu-list {
   overflow: visible !important;
 }
 
-:root:not(.cf-hide-userAvatar) .second-level-menu-list li a.cf-avatar-inline-user {
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others)
+  .second-level-menu-list
+  li
+  a.cf-avatar-inline-user {
   overflow: visible !important;
   display: inline-flex !important;
   align-items: center !important;
 }
 
-:root:not(.cf-hide-userAvatar)
+:root:not(.cf-hide-userAvatar, .cf-hide-avatar-others)
   .second-level-menu-list
   li
   a.cf-avatar-inline-user
@@ -252,6 +265,19 @@ img.cf-user-avatar {
   font-size: 9px !important;
   line-height: 1.1 !important;
   padding-top: 1px !important;
+}
+
+/* 头像那一行（inline-flex，各项按竖着的中线对齐）里的小记号，比如虚拟参赛的 #：跟在名字后面，在名字的右上角。
+   按中线往上挪一点，不贴整行的顶：戴了头像框时头像上下让出了一圈，这一行高了很多，贴着行顶会飘得很高。
+   排在名字后面（order）：不管原站把它写在名字前面还是后面；分组标签（这一行的 ::after）再排在它后面。 */
+.cf-avatar-line-wrapper > sup {
+  position: relative !important;
+  top: -5px !important;
+  align-self: center !important;
+  order: 1 !important;
+}
+.cf-avatar-line-wrapper[data-cf-group]::after {
+  order: 2;
 }
 
 .status-party-cell sup a,

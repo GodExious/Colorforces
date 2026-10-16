@@ -210,18 +210,23 @@ export const ADDED_LATER = {
   'contest.participationTags.ghost': true,
   'contest.prediction.syncStandings': true,
   'user.analytics.typesMode': 'submissions',
+  'user.avatar.showAt.tables': true,
+  'user.avatar.showAt.menus': true,
+  'user.avatar.showAt.groups': true,
+  'user.avatar.showAt.others': true,
   'user.avatar.frames': true,
   'user.avatar.frameAt.tables': true,
   'user.avatar.frameAt.profile': true,
   'user.avatar.frameAt.others': true,
   'user.avatar.frameAt.menus': true,
   'user.avatar.frameAt.groups': true,
-  'user.avatar.rankFrame': 'current',
+  'user.avatar.rankFrame': 'max',
   'user.avatar.frameMotion': 'on',
   'user.avatar.wornFrame': '',
   'groups.enabled': true,
   'groups.showTags': true,
-  'groups.tagStyle': 'name',
+  'groups.tagStyle': 'mark',
+  'groups.menuCard': 'vertical',
   'groups.colorMode': 'board',
   'shortcuts.hideVerdictTests': 'Shift+N',
   'shortcuts.groupsEnabled': 'Shift+G',
@@ -229,6 +234,7 @@ export const ADDED_LATER = {
   'shortcuts.frameLibrary': 'Shift+W',
   'shortcuts.groupTags': 'Shift+Q',
   'shortcuts.groupsManage': 'Shift+Z',
+  'shortcuts.menuCard': 'Shift+O',
 };
 // 旧设置载入之后应有的样子：迁移的结果，加上后来才有的那些项的默认值。
 export const loadedSettings = {
@@ -258,9 +264,10 @@ export const loadedSettings = {
     ...upgradedSettings.user,
     avatar: {
       ...upgradedSettings.user.avatar,
+      showAt: { tables: true, menus: true, groups: true, others: true },
       frames: true,
       frameAt: { tables: true, profile: true, others: true, menus: true, groups: true },
-      rankFrame: 'current',
+      rankFrame: 'max',
       frameMotion: 'on',
       wornFrame: '',
     },
@@ -269,7 +276,8 @@ export const loadedSettings = {
   groups: {
     enabled: true,
     showTags: true,
-    tagStyle: 'name',
+    tagStyle: 'mark',
+    menuCard: 'vertical',
     colorMode: 'board',
   },
   shortcuts: {
@@ -280,5 +288,6 @@ export const loadedSettings = {
     frameLibrary: 'Shift+W',
     groupTags: 'Shift+Q',
     groupsManage: 'Shift+Z',
+    menuCard: 'Shift+O',
   },
 };

@@ -5,7 +5,20 @@ import { translate as t } from '../../../i18n/index.js';
 import * as assets from '../../../assets/index.js';
 import InlineSvg from '../../components/icons/InlineSvg/InlineSvg.vue';
 import items from './data.js';
+import changelog from '../changelog/data.js';
+import { customFormatTime, utcOffsetLabel } from '../../../utils/time.js';
 const languageFiles = import.meta.glob('./locales/*.js', { eager: true, import: 'default' });
+// 时间线上的日期：只到日。存的是时间戳，这里按查看者的本地时间换成日期，每组标题旁边标一次本机时区（和更新日志一样）。
+// 已实现的取完成它的那一版的发布时间（更新日志里的时间戳），计划中的取预计完成的时间戳，没有时是空的（显示「待定」）。
+const ZONE = utcOffsetLabel(-new Date().getTimezoneOffset());
+const released = new Map(changelog.map((entry) => [entry.version, entry.time]));
+const localDate = (time) => customFormatTime(new Date(time), 'YYYY-MM-DD');
+function dateOf(item) {
+  const time = item.completed ? released.get(item.version) : item.eta;
+  return Number.isFinite(time) ? localDate(time) : '';
+}
+const planned = items.filter((item) => item.completed === false);
+const completed = items.filter((item) => item.completed === true);
 const messages = computed(
   () =>
     languageFiles['./locales/' + appSettings.general.lang + '.js'] ||
@@ -50,31 +63,36 @@ const messages = computed(
         <div class="cf-roadmap-group-header">
           <div class="cf-roadmap-group-title">
             <inline-svg v-bind:source="assets.roadmapPlannedHeaderIcon"></inline-svg
-            ><span>{{ t('roadmapStatusPlanned') }}</span>
+            ><span>{{ t('roadmapStatusPlanned') }}</span
+            ><span class="cf-roadmap-zone">{{ t('roadmapZone', ZONE) }}</span>
           </div>
           <span
             class="cf-roadmap-group-badge planned"
-            v-text="t('roadmapItemCount', items.filter(item =&gt; item.completed === false).length)"
+            v-text="t('roadmapItemCount', planned.length)"
           ></span>
         </div>
-        <div class="cf-roadmap-list">
-          <div
-            class="cf-roadmap-card planned"
-            v-for="item in items.filter(item =&gt; item.completed === false)"
-            v-bind:key="item.id"
-          >
-            <div class="cf-roadmap-card-header">
-              <div class="cf-roadmap-card-title-wrap">
-                <div class="cf-roadmap-status-icon planned">
-                  <inline-svg v-bind:source="assets.roadmapPlannedIcon"></inline-svg>
+        <div class="cf-roadmap-rail planned">
+          <div class="cf-roadmap-rail-row" v-for="item in planned" v-bind:key="item.id">
+            <span class="cf-roadmap-rail-date"
+              ><template v-if="dateOf(item)"
+                >{{ dateOf(item).slice(0, 4) }}<b>{{ dateOf(item).slice(5) }}</b></template
+              ><b v-else>{{ t('roadmapDateTbd') }}</b></span
+            >
+            <span class="cf-roadmap-rail-dot"></span>
+            <div class="cf-roadmap-card planned">
+              <div class="cf-roadmap-card-header">
+                <div class="cf-roadmap-card-title-wrap">
+                  <div class="cf-roadmap-status-icon planned">
+                    <inline-svg v-bind:source="assets.roadmapPlannedIcon"></inline-svg>
+                  </div>
+                  <span class="cf-roadmap-item-title-text" v-text="messages[item.id]?.title"></span>
                 </div>
-                <span class="cf-roadmap-item-title-text" v-text="messages[item.id]?.title"></span>
+                <span class="cf-roadmap-tag planned">{{ t('roadmapStatusPlanned') }}</span>
               </div>
-              <span class="cf-roadmap-tag planned">{{ t('roadmapStatusPlanned') }}</span>
+              <p class="cf-roadmap-item-desc">
+                <span>{{ messages[item.id]?.desc }}</span>
+              </p>
             </div>
-            <p class="cf-roadmap-item-desc">
-              <span>{{ messages[item.id]?.desc }}</span>
-            </p>
           </div>
         </div>
       </div>
@@ -82,31 +100,36 @@ const messages = computed(
         <div class="cf-roadmap-group-header">
           <div class="cf-roadmap-group-title">
             <inline-svg v-bind:source="assets.roadmapCompletedHeaderIcon"></inline-svg
-            ><span>{{ t('roadmapSectionCompleted') }}</span>
+            ><span>{{ t('roadmapSectionCompleted') }}</span
+            ><span class="cf-roadmap-zone">{{ t('roadmapZone', ZONE) }}</span>
           </div>
           <span
             class="cf-roadmap-group-badge completed"
-            v-text="t('roadmapItemCount', items.filter(item =&gt; item.completed === true).length)"
+            v-text="t('roadmapItemCount', completed.length)"
           ></span>
         </div>
-        <div class="cf-roadmap-list">
-          <div
-            class="cf-roadmap-card completed"
-            v-for="item in items.filter(item =&gt; item.completed === true)"
-            v-bind:key="item.id"
-          >
-            <div class="cf-roadmap-card-header">
-              <div class="cf-roadmap-card-title-wrap">
-                <div class="cf-roadmap-status-icon completed">
-                  <inline-svg v-bind:source="assets.roadmapCompletedIcon"></inline-svg>
+        <div class="cf-roadmap-rail completed">
+          <div class="cf-roadmap-rail-row" v-for="item in completed" v-bind:key="item.id">
+            <span class="cf-roadmap-rail-date"
+              ><template v-if="dateOf(item)"
+                >{{ dateOf(item).slice(0, 4) }}<b>{{ dateOf(item).slice(5) }}</b></template
+              ><b v-else>{{ t('roadmapDateTbd') }}</b></span
+            >
+            <span class="cf-roadmap-rail-dot"></span>
+            <div class="cf-roadmap-card completed">
+              <div class="cf-roadmap-card-header">
+                <div class="cf-roadmap-card-title-wrap">
+                  <div class="cf-roadmap-status-icon completed">
+                    <inline-svg v-bind:source="assets.roadmapCompletedIcon"></inline-svg>
+                  </div>
+                  <span class="cf-roadmap-item-title-text" v-text="messages[item.id]?.title"></span>
                 </div>
-                <span class="cf-roadmap-item-title-text" v-text="messages[item.id]?.title"></span>
+                <span class="cf-roadmap-tag completed">{{ t('syncBtnDone') }}</span>
               </div>
-              <span class="cf-roadmap-tag completed">{{ t('syncBtnDone') }}</span>
+              <p class="cf-roadmap-item-desc">
+                <span>{{ messages[item.id]?.desc }}</span>
+              </p>
             </div>
-            <p class="cf-roadmap-item-desc">
-              <span>{{ messages[item.id]?.desc }}</span>
-            </p>
           </div>
         </div>
       </div>
@@ -188,12 +211,6 @@ const messages = computed(
   background: #ecfdf5;
   color: #059669;
   border: 1px solid #a7f3d0;
-}
-
-.cf-roadmap-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 .cf-roadmap-card {
@@ -429,5 +446,69 @@ const messages = computed(
   line-height: 1.55;
   padding-left: 30px;
   opacity: 0.9;
+}
+
+/* —— 时间线：每张卡片左边一列写日期（年小、月日大），日期和卡片之间一条竖线，每张卡片在标题那一行有一个点。
+   已实现的是实线、实心绿点；计划中的是虚线、空心蓝点。时区在每组标题旁边写一次。 —— */
+.cf-roadmap-zone {
+  margin-left: 2px;
+  color: var(--cf-gray-400);
+  font-size: var(--cf-font-size-2xs);
+  font-weight: normal;
+}
+.cf-roadmap-rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cf-roadmap-rail::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 61px;
+  border-left: 2px solid color-mix(in srgb, var(--cf-roadmap-done) 40%, transparent);
+}
+.cf-roadmap-rail.planned::before {
+  border-left: 2px dashed color-mix(in srgb, var(--cf-roadmap-planned) 45%, transparent);
+}
+.cf-roadmap-rail-row {
+  display: grid;
+  grid-template-columns: 54px 16px minmax(0, 1fr);
+  align-items: start;
+}
+.cf-roadmap-rail-date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 8px 6px 0 0;
+  color: var(--cf-gray-400);
+  font-size: var(--cf-font-size-2xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 12px;
+}
+.cf-roadmap-rail-date b {
+  color: var(--cf-gray-600);
+  font-size: var(--cf-font-size-base);
+  line-height: 16px;
+}
+.cf-roadmap-rail.planned .cf-roadmap-rail-date b {
+  color: var(--cf-roadmap-planned-ink);
+}
+.cf-roadmap-rail-dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  margin-top: 14px;
+  border-radius: 50%;
+  background: var(--cf-roadmap-done);
+  box-shadow: 0 0 0 3px var(--cf-content-surface);
+}
+.cf-roadmap-rail.planned .cf-roadmap-rail-dot {
+  background: var(--cf-content-surface);
+  box-shadow:
+    inset 0 0 0 2px var(--cf-roadmap-planned),
+    0 0 0 3px var(--cf-content-surface);
 }
 </style>

@@ -71,6 +71,7 @@ import {
   setMemo,
   shownMark,
 } from '../../../../../features/user/groups/store.js';
+import { keepWithinLimit } from '../../../../../utils/input-limit.js';
 
 const overlay = ref(null);
 // 打开时登录着的账号；弹窗开着的这段时间里按它读写。
@@ -402,11 +403,12 @@ function fitGroups(list) {
   return shown;
 }
 // 一项出现、消失时从零长出来、收回去：成员表「所在分组」里的分组标签横着长（连同它和下一个之间的间隔），
-// 左边的分组竖着长。按量好的确切大小过渡，不用最大宽度、最大高度的办法（那样前大半段看不出变化，最后一下子没了）。
+// 左边的分组、右边表格里的成员竖着长。按量好的确切大小过渡，不用最大宽度、最大高度的办法（那样前大半段看不出变化，最后一下子没了）。
+// 成员那一行有最小高度（跟着头像大小）和底下的分隔线，最小高度和线也一起收，不然收到最小高度就停住，删掉时下面的行一下子跳上来。
 const growing = (element) =>
   element.classList.contains('cf-groups-chip')
     ? ['width', 'paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth', 'marginRight']
-    : ['height', 'minHeight', 'paddingTop', 'paddingBottom'];
+    : ['height', 'minHeight', 'paddingTop', 'paddingBottom', 'borderBottomWidth'];
 function sizeFrames(element) {
   const style = getComputedStyle(element);
   const rect = element.getBoundingClientRect();
@@ -800,17 +802,24 @@ onBeforeUnmount(() => {
                 @submit.prevent="submitCreate"
                 @animationend="rejected = false"
               >
-                <input
-                  ref="draftInput"
-                  v-model="draft"
-                  class="cf-groups-input"
-                  :class="{ 'has-conflict': conflict }"
-                  type="text"
-                  :maxlength="NAME_LIMIT"
-                  :placeholder="t('groupsNamePlaceholder')"
-                  @keydown.esc.stop="cancelCreate"
-                  @blur="draft.trim() || cancelCreate()"
-                />
+                <!-- 和右边改名字的输入框一样，里面最右边一直写着已经写了几个字、最多几个。 -->
+                <label class="cf-groups-field is-name">
+                  <input
+                    ref="draftInput"
+                    v-model="draft"
+                    class="cf-groups-input"
+                    :class="{ 'has-conflict': conflict }"
+                    type="text"
+                    :maxlength="NAME_LIMIT"
+                    @beforeinput="keepWithinLimit"
+                    :placeholder="t('groupsNamePlaceholder')"
+                    @keydown.esc.stop="cancelCreate"
+                    @blur="draft.trim() || cancelCreate()"
+                  />
+                  <span class="cf-groups-count" :class="{ 'is-full': draft.length >= NAME_LIMIT }"
+                    >{{ draft.length }}/{{ NAME_LIMIT }}</span
+                  >
+                </label>
               </form>
               <button v-else type="button" class="cf-groups-side-row is-add" @click="startCreate">
                 <span aria-hidden="true">+</span>{{ t('groupsCreate') }}
@@ -857,6 +866,7 @@ onBeforeUnmount(() => {
                         class="cf-groups-input cf-groups-editor-name"
                         type="text"
                         :maxlength="NAME_LIMIT"
+                        @beforeinput="keepWithinLimit"
                         @blur="commitName"
                         @keydown.enter="$event.target.blur()"
                       />
@@ -1101,7 +1111,12 @@ onBeforeUnmount(() => {
                     ><span></span>
                   </div>
                   <div class="cf-groups-table cf-scrollbar">
-                    <TransitionGroup name="cf-groups-list">
+                    <TransitionGroup
+                      name="cf-groups-list"
+                      :css="false"
+                      @enter="growIn"
+                      @leave="growOut"
+                    >
                       <div
                         v-for="row in rows"
                         :key="row.handle"
@@ -1156,6 +1171,7 @@ onBeforeUnmount(() => {
                           type="text"
                           :value="row.memo"
                           :maxlength="MEMO_LIMIT"
+                          @beforeinput="keepWithinLimit"
                           :placeholder="t('groupsMemoPlaceholder')"
                           @change="saveMemo(row.handle, $event)"
                           @keydown.enter="$event.target.blur()"
@@ -1334,6 +1350,11 @@ onBeforeUnmount(() => {
 }
 .cf-groups-side-form .cf-groups-input {
   width: 100%;
+  padding-right: 42px;
+}
+/* 重名时字数也跟着标红。 */
+.cf-groups-input.has-conflict + .cf-groups-count {
+  color: #bd2542;
 }
 .cf-groups-side-form.is-rejected {
   animation: cf-groups-shake 0.3s ease;
@@ -1761,7 +1782,7 @@ onBeforeUnmount(() => {
     transition: none;
   }
 }
-.cf-groups-add-bar .cf-aurora-btn:disabled,
+/* 幻彩弹窗的按钮灰掉时的样子统一写在 styles/aurora-dialog.css。 */
 .cf-groups-remove:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -1850,23 +1871,9 @@ onBeforeUnmount(() => {
 .cf-groups-sort.is-down i {
   transform: rotate(180deg);
 }
-/* 换先后时滑到新位置；加进来的行从零高度展开，移出去的收起，下面的行跟着补上来。 */
+/* 换先后时滑到新位置。加进来的行从零高度展开、移出去的收起，下面的行跟着补上来：由脚本按量好的高度做（growIn、growOut）。 */
 .cf-groups-list-move {
   transition: transform var(--cf-duration-moderate) var(--cf-ease-out);
-}
-.cf-groups-list-enter-active,
-.cf-groups-list-leave-active {
-  overflow: hidden;
-  transition:
-    height var(--cf-duration-base) ease,
-    opacity var(--cf-duration-base) ease,
-    border-color var(--cf-duration-base) ease;
-}
-.cf-groups-list-enter-from,
-.cf-groups-list-leave-to {
-  height: 0;
-  border-color: transparent;
-  opacity: 0;
 }
 .cf-groups-table .cf-groups-who {
   color: var(--cf-control-ink);
@@ -2023,9 +2030,7 @@ onBeforeUnmount(() => {
   .cf-groups-side-form.is-rejected {
     animation: none;
   }
-  .cf-groups-list-move,
-  .cf-groups-list-enter-active,
-  .cf-groups-list-leave-active {
+  .cf-groups-list-move {
     transition: none;
   }
 }

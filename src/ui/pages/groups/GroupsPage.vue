@@ -44,6 +44,7 @@ import MemberName, {
   rankInk,
   ratingLabel,
 } from './components/MemberName/MemberName.vue';
+import { keepWithinLimit } from '../../../utils/input-limit.js';
 // active：这一页正显示着。owner：登录着的账号，没登录时是空的。
 const props = defineProps({ active: Boolean, owner: String });
 
@@ -253,6 +254,11 @@ function chooseTagStyle(value) {
   appSettings.groups.tagStyle = value;
   saveSettings();
 }
+// 右键菜单的名片：纵向、横向。下次打开右键菜单时换成新的样子。
+function chooseMenuCard(value) {
+  appSettings.groups.menuCard = value;
+  saveSettings();
+}
 
 // 同步好友：按钮在请求时转圈，结束后短暂显示结果。
 const syncing = ref(false),
@@ -320,6 +326,18 @@ watch(
       <ExpandTransition :show="appSettings.groups.enabled">
         <div class="cf-groups-body">
           <SettingNote class="cf-groups-tip" :label="t('groupsTipLabel')" :text="t('groupsTip')" />
+          <div class="cf-setting-item">
+            <span class="cf-setting-sublabel">{{ t('groupsMenuCard') }}</span>
+            <SegmentedSwitch
+              style="width: 120px"
+              :model-value="appSettings.groups.menuCard"
+              :options="[
+                { value: 'vertical', label: t('groupsMenuCardVertical') },
+                { value: 'horizontal', label: t('groupsMenuCardHorizontal') },
+              ]"
+              @update:model-value="chooseMenuCard"
+            />
+          </div>
           <div class="cf-setting-item" @click="toggleFromRow">
             <span class="cf-setting-sublabel"
               ><label for="cf-groups-control-tags">{{ t('groupsShowTags') }}</label
@@ -502,6 +520,7 @@ watch(
                     :class="{ 'has-conflict': conflict }"
                     type="text"
                     :maxlength="NAME_LIMIT"
+                    @beforeinput="keepWithinLimit"
                     :placeholder="t('groupsNamePlaceholder')"
                     @keydown.esc.stop="cancelCreate"
                   />

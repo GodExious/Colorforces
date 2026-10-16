@@ -1,1 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 160 160">
+<metadata><![CDATA[
+{
+  "format": "colorforces-frame",
+  "version": 1,
+  "name": {
+    "zh": "行星",
+    "en": "Ringed Planet"
+  },
+  "intro": {
+    "zh": "头像成了一颗套着光环的行星，小火箭绕着它慢慢飞。",
+    "en": "The avatar becomes a ringed planet, with a little rocket slowly circling it."
+  },
+  "author": "Claude Opus 5.5",
+  "revisions": 0
+}
+]]></metadata>
+<style>
+@keyframes cf-frame-nb-blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.76); } }
+@keyframes cf-frame-nb-flame { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(0.72, 0.88); } }
+@keyframes cf-frame-nb-hover { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes cf-frame-nb-orbit {
+  0% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
+  1.389% { transform: translate(1.7px, -2.6px) rotate(-7.1deg) scale(0.992); }
+  2.778% { transform: translate(3px, -5.2px) rotate(-15.3deg) scale(0.984); }
+  4.167% { transform: translate(3.7px, -7.7px) rotate(-24.9deg) scale(0.976); }
+  5.556% { transform: translate(4px, -10.2px) rotate(-35.5deg) scale(0.968); }
+  6.944% { transform: translate(3.9px, -12.7px) rotate(-46.8deg) scale(0.959); }
+  8.333% { transform: translate(3.2px, -15.1px) rotate(-58.1deg) scale(0.951); }
+  9.722% { transform: translate(2px, -17.3px) rotate(-68.8deg) scale(0.943); }
+  11.111% { transform: translate(0.4px, -19.5px) rotate(-78.3deg) scale(0.935); }
+  12.5% { transform: translate(-1.6px, -21.5px) rotate(-86.6deg) scale(0.927); }
+  13.889% { transform: translate(-4.1px, -23.3px) rotate(-93.7deg) scale(0.919); }
+  15.278% { transform: translate(-7px, -25px) rotate(-99.7deg) scale(0.911); }
+  16.667% { transform: translate(-10.3px, -26.5px) rotate(-104.8deg) scale(0.904); }
+  18.056% { transform: translate(-14px, -27.8px) rotate(-109.3deg) scale(0.898); }
+  19.444% { transform: translate(-18px, -28.9px) rotate(-113.2deg) scale(0.892); }
+  20.833% { transform: translate(-22.4px, -29.8px) rotate(-116.7deg) scale(0.886); }
+  22.222% { transform: translate(-27px, -30.5px) rotate(-119.8deg) scale(0.881); }
+  23.611% { transform: translate(-31.9px, -31px) rotate(-122.6deg) scale(0.876); }
+  25% { transform: translate(-36.9px, -31.3px) rotate(-125.3deg) scale(0.872); }
+  26.389% { transform: translate(-42.2px, -31.3px) rotate(-127.8deg) scale(0.869); }
+  27.778% { transform: translate(-47.6px, -31.1px) rotate(-130.1deg) scale(0.867); }
+  29.167% { transform: translate(-53px, -30.7px) rotate(-132.4deg) scale(0.865); }
+  30.556% { transform: translate(-58.5px, -30px) rotate(-134.6deg) scale(0.864); }
+  31.944% { transform: translate(-64px, -29.2px) rotate(-136.8deg) scale(0.864); }
+  33.333% { transform: translate(-69.5px, -28.1px) rotate(-139deg) scale(0.864); }
+  34.722% { transform: translate(-74.9px, -26.8px) rotate(-141.2deg) scale(0.865); }
+  36.111% { transform: translate(-80.2px, -25.3px) rotate(-143.5deg) scale(0.867); }
+  37.5% { transform: translate(-85.3px, -23.7px) rotate(-145.9deg) scale(0.869); }
+  38.889% { transform: translate(-90.2px, -21.9px) rotate(-148.4deg) scale(0.872); }
+  40.278% { transform: translate(-94.9px, -19.9px) rotate(-151deg) scale(0.876); }
+  41.667% { transform: translate(-99.3px, -17.8px) rotate(-153.9deg) scale(0.881); }
+  43.056% { transform: translate(-103.4px, -15.6px) rotate(-157deg) scale(0.886); }
+  44.444% { transform: translate(-107.2px, -13.2px) rotate(-160.5deg) scale(0.892); }
+  45.833% { transform: translate(-110.6px, -10.8px) rotate(-164.4deg) scale(0.898); }
+  47.222% { transform: translate(-113.6px, -8.3px) rotate(-168.8deg) scale(0.904); }
+  48.611% { transform: translate(-116.2px, -5.7px) rotate(-174deg) scale(0.911); }
+  50% { transform: translate(-118.4px, -3.2px) rotate(-180deg) scale(0.919); }
+  51.389% { transform: translate(-120.1px, -0.6px) rotate(-187.1deg) scale(0.927); }
+  52.778% { transform: translate(-121.3px, 2px) rotate(-195.3deg) scale(0.935); }
+  54.167% { transform: translate(-122.1px, 4.6px) rotate(-204.9deg) scale(0.943); }
+  55.556% { transform: translate(-122.4px, 7.1px) rotate(-215.5deg) scale(0.951); }
+  56.944% { transform: translate(-122.2px, 9.5px) rotate(-226.8deg) scale(0.959); }
+  58.333% { transform: translate(-121.5px, 11.9px) rotate(-238.1deg) scale(0.968); }
+  59.722% { transform: translate(-120.4px, 14.2px) rotate(-248.8deg) scale(0.976); }
+  61.111% { transform: translate(-118.8px, 16.3px) rotate(-258.3deg) scale(0.984); }
+  62.5% { transform: translate(-116.7px, 18.3px) rotate(-266.6deg) scale(0.992); }
+  63.889% { transform: translate(-114.2px, 20.1px) rotate(-273.7deg) scale(1); }
+  65.278% { transform: translate(-111.3px, 21.8px) rotate(-279.7deg) scale(1.007); }
+  66.667% { transform: translate(-108px, 23.3px) rotate(-284.8deg) scale(1.014); }
+  68.056% { transform: translate(-104.3px, 24.7px) rotate(-289.3deg) scale(1.021); }
+  69.444% { transform: translate(-100.3px, 25.8px) rotate(-293.2deg) scale(1.027); }
+  70.833% { transform: translate(-96px, 26.7px) rotate(-296.7deg) scale(1.033); }
+  72.222% { transform: translate(-91.3px, 27.4px) rotate(-299.8deg) scale(1.038); }
+  73.611% { transform: translate(-86.5px, 27.9px) rotate(-302.6deg) scale(1.043); }
+  75% { transform: translate(-81.4px, 28.1px) rotate(-305.3deg) scale(1.046); }
+  76.389% { transform: translate(-76.2px, 28.1px) rotate(-307.8deg) scale(1.05); }
+  77.778% { transform: translate(-70.8px, 27.9px) rotate(-310.1deg) scale(1.052); }
+  79.167% { transform: translate(-65.3px, 27.5px) rotate(-312.4deg) scale(1.054); }
+  80.556% { transform: translate(-59.8px, 26.9px) rotate(-314.6deg) scale(1.055); }
+  81.944% { transform: translate(-54.3px, 26px) rotate(-316.8deg) scale(1.055); }
+  83.333% { transform: translate(-48.8px, 24.9px) rotate(-319deg) scale(1.055); }
+  84.722% { transform: translate(-43.4px, 23.6px) rotate(-321.2deg) scale(1.054); }
+  86.111% { transform: translate(-38.2px, 22.2px) rotate(-323.5deg) scale(1.052); }
+  87.5% { transform: translate(-33.1px, 20.5px) rotate(-325.9deg) scale(1.05); }
+  88.889% { transform: translate(-28.1px, 18.7px) rotate(-328.4deg) scale(1.046); }
+  90.278% { transform: translate(-23.5px, 16.7px) rotate(-331deg) scale(1.043); }
+  91.667% { transform: translate(-19px, 14.6px) rotate(-333.9deg) scale(1.038); }
+  93.056% { transform: translate(-14.9px, 12.4px) rotate(-337deg) scale(1.033); }
+  94.444% { transform: translate(-11.2px, 10.1px) rotate(-340.5deg) scale(1.027); }
+  95.833% { transform: translate(-7.8px, 7.6px) rotate(-344.4deg) scale(1.021); }
+  97.222% { transform: translate(-4.8px, 5.1px) rotate(-348.8deg) scale(1.014); }
+  98.611% { transform: translate(-2.2px, 2.6px) rotate(-354deg) scale(1.007); }
+  100% { transform: translate(0px, 0px) rotate(-360deg) scale(1); }
+}
+@keyframes cf-frame-nb-front { 0%, 6.964% { opacity: 1; } 6.984%, 56.924% { opacity: 0; } 56.944%, 100% { opacity: 1; } }
+@keyframes cf-frame-nb-back { 0%, 6.924% { opacity: 0; } 6.944%, 56.964% { opacity: 1; } 56.984%, 100% { opacity: 0; } }
+.nb-blink { animation: cf-frame-nb-blink 4s ease-in-out infinite; }
+.nb-flame { animation: cf-frame-nb-flame 0.8s ease-in-out infinite; }
+.nb-hover { animation: cf-frame-nb-hover 6s ease-in-out infinite; }
+.nb-orbit { animation: cf-frame-nb-orbit 16s linear infinite; }
+.nb-front { animation: cf-frame-nb-front 16s linear infinite; }
+.nb-back { animation: cf-frame-nb-back 16s linear infinite; }
+.nb-l1 { animation-delay: 1s; }
+.nb-l2 { animation-delay: 2s; }
+.nb-l3 { animation-delay: 3s; }
+</style>
 <clipPath id="cf-nb-behind"><path clip-rule="evenodd" d="M-20 -20H140V140H-20ZM60 19A41 41 0 1 0 60 101A41 41 0 1 0 60 19Z"/></clipPath><g clip-path="url(#cf-nb-behind)"><ellipse cx="60" cy="78" rx="64" ry="28" transform="rotate(-10 60 78)" fill="none" stroke="#2b2350" stroke-width="8.4"/><ellipse cx="60" cy="78" rx="64" ry="28" transform="rotate(-10 60 78)" fill="none" stroke="#f7b267" stroke-width="5.8"/><ellipse cx="60" cy="78" rx="65.5" ry="28.7" transform="rotate(-10 60 78)" fill="none" stroke="#fde2b6" stroke-width="1.6"/><ellipse cx="60" cy="78" rx="62.6" ry="27.4" transform="rotate(-10 60 78)" fill="none" stroke="#c4703c" stroke-width="0.8"/><g class="nb-back" opacity="0"><g class="nb-orbit" style="transform-origin: 119.2px 79.6px"><g transform="translate(119.2 79.6) rotate(-53.2) scale(0.8)"><g class="nb-flame" style="transform-origin: -9px 0px"><path d="M-9 -2.8C-13 -3 -17.6 -1.4 -20 0C-17.6 1.4 -13 3 -9 2.8Z" fill="#ff9a3c" stroke="#b4441a" stroke-width="0.9" stroke-linejoin="round" stroke-linecap="round"/><path d="M-9 -1.5C-11.6 -1.5 -14 -0.7 -15.4 0C-14 0.7 -11.6 1.5 -9 1.5Z" fill="#ffe36e"/></g><path d="M-3.6 -4.4L-9.6 -9.2Q-11 -9.6 -10.8 -8.2L-9.4 -3.2Z" fill="#e8453c" stroke="#2b2350" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/><path d="M-3.6 4.4L-9.6 9.2Q-11 9.6 -10.8 8.2L-9.4 3.2Z" fill="#e8453c" stroke="#2b2350" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/><path d="M11 0C8 -4.4 3 -5.2 -4 -5L-9 -4Q-10 0 -9 4L-4 5C3 5.2 8 4.4 11 0Z" fill="#fbf7f2" stroke="#2b2350" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M11 0C9.2 -2.6 7.4 -3.8 5.4 -4.5Q4 0 5.4 4.5C7.4 3.8 9.2 2.6 11 0Z" fill="#e8453c" stroke="#2b2350" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M-6.6 -4.6L-9 -4Q-10 0 -9 4L-6.6 4.6Q-7.6 0 -6.6 -4.6Z" fill="#c9cfdc" stroke="#2b2350" stroke-width="0.9" stroke-linejoin="round" stroke-linecap="round"/><path d="M-3.4 3.6C1 4.2 5 3.6 8 1.8" fill="none" stroke="#dcd6ea" stroke-width="1.1" stroke-linecap="round"/><circle cx="0.4" cy="0" r="2.6" fill="#5ec8f2" stroke="#2b2350" stroke-width="1.1"/><circle cx="0.4" cy="0" r="1.7" fill="none" stroke="#bfe9fb" stroke-width="0.5"/><circle cx="-0.4" cy="-0.8" r="0.7" fill="#fff"/></g></g></g></g><circle cx="60" cy="60" r="42" fill="none" stroke="#2b2350" stroke-width="11"/><circle cx="60" cy="60" r="42" fill="none" stroke="#8a78de" stroke-width="8"/><path d="M96.8 73.4A39.2 39.2 0 0 1 26.1 79.6" fill="none" stroke="#6553c0" stroke-width="2.2" stroke-linecap="round"/><path d="M17.3 48.6A44.2 44.2 0 0 1 71.4 17.3" fill="none" stroke="#ddd6fd" stroke-width="2" stroke-linecap="round"/><path d="M79.4 20.3A44.2 44.2 0 0 1 84.7 23.4" fill="none" stroke="#ddd6fd" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="60" r="37.6" fill="none" stroke="#f3efff" stroke-width="0.9"/><path d="M82.1 21.7A44.2 44.2 0 0 1 101.5 44.9" fill="none" stroke="#fff" stroke-opacity="0.6" stroke-width="1.2" stroke-linecap="round"/><path d="M120.6 61.4A64 28 -10 1 1 -2.7 83.1" fill="none" stroke="#2b2350" stroke-width="8.4"/><path d="M120.6 61.4A64 28 -10 1 1 -2.7 83.1" fill="none" stroke="#f7b267" stroke-width="5.8"/><path d="M122.1 61A65.5 28.7 -10 1 1 -4.1 83.2" fill="none" stroke="#fde2b6" stroke-width="1.6"/><path d="M119.3 61.8A62.6 27.4 -10 1 1 -1.3 83" fill="none" stroke="#c4703c" stroke-width="0.8"/><circle cx="121.2" cy="64.3" r="0.75" fill="#fff"/><circle cx="121.4" cy="78" r="0.55" fill="#fff"/><circle cx="105.1" cy="90.9" r="0.55" fill="#fff"/><circle cx="82.5" cy="101.9" r="0.75" fill="#fff"/><circle cx="49.6" cy="107" r="0.55" fill="#fff"/><circle cx="20.7" cy="106.4" r="0.55" fill="#fff"/><circle cx="4.3" cy="98.3" r="0.75" fill="#fff"/><circle cx="-4.4" cy="86.3" r="0.55" fill="#fff"/><g class="nb-front" opacity="1"><g class="nb-orbit" style="transform-origin: 119.2px 79.6px"><g transform="translate(119.2 79.6) rotate(-53.2) scale(0.8)"><g class="nb-flame" style="transform-origin: -9px 0px"><path d="M-9 -2.8C-13 -3 -17.6 -1.4 -20 0C-17.6 1.4 -13 3 -9 2.8Z" fill="#ff9a3c" stroke="#b4441a" stroke-width="0.9" stroke-linejoin="round" stroke-linecap="round"/><path d="M-9 -1.5C-11.6 -1.5 -14 -0.7 -15.4 0C-14 0.7 -11.6 1.5 -9 1.5Z" fill="#ffe36e"/></g><path d="M-3.6 -4.4L-9.6 -9.2Q-11 -9.6 -10.8 -8.2L-9.4 -3.2Z" fill="#e8453c" stroke="#2b2350" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/><path d="M-3.6 4.4L-9.6 9.2Q-11 9.6 -10.8 8.2L-9.4 3.2Z" fill="#e8453c" stroke="#2b2350" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/><path d="M11 0C8 -4.4 3 -5.2 -4 -5L-9 -4Q-10 0 -9 4L-4 5C3 5.2 8 4.4 11 0Z" fill="#fbf7f2" stroke="#2b2350" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M11 0C9.2 -2.6 7.4 -3.8 5.4 -4.5Q4 0 5.4 4.5C7.4 3.8 9.2 2.6 11 0Z" fill="#e8453c" stroke="#2b2350" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M-6.6 -4.6L-9 -4Q-10 0 -9 4L-6.6 4.6Q-7.6 0 -6.6 -4.6Z" fill="#c9cfdc" stroke="#2b2350" stroke-width="0.9" stroke-linejoin="round" stroke-linecap="round"/><path d="M-3.4 3.6C1 4.2 5 3.6 8 1.8" fill="none" stroke="#dcd6ea" stroke-width="1.1" stroke-linecap="round"/><circle cx="0.4" cy="0" r="2.6" fill="#5ec8f2" stroke="#2b2350" stroke-width="1.1"/><circle cx="0.4" cy="0" r="1.7" fill="none" stroke="#bfe9fb" stroke-width="0.5"/><circle cx="-0.4" cy="-0.8" r="0.7" fill="#fff"/></g></g></g><g class="nb-hover" style="transform-origin: 12px 10px"><g transform="translate(12 10) rotate(-24)"><path d="M-4.4 0H4.4" stroke="#2b2350" stroke-width="1.8"/><path d="M-4.4 0H4.4" stroke="#c9cfdc" stroke-width="0.8"/><rect x="-14.6" y="-3.4" width="10" height="6.8" rx="0.8" fill="#4f7fd9" stroke="#2b2350" stroke-width="1"/><path d="M-11.3 -3V3M-7.9 -3V3M-14 0H-5.2" stroke="#a9c4f5" stroke-width="0.6"/><path d="M-13.6 -2.4H-12" stroke="#fff" stroke-width="0.7" stroke-linecap="round"/><rect x="4.6" y="-3.4" width="10" height="6.8" rx="0.8" fill="#4f7fd9" stroke="#2b2350" stroke-width="1"/><path d="M7.9 -3V3M11.3 -3V3M5.2 0H14" stroke="#a9c4f5" stroke-width="0.6"/><path d="M5.6 -2.4H7.2" stroke="#fff" stroke-width="0.7" stroke-linecap="round"/><path d="M0 -4.6V-8.6" stroke="#2b2350" stroke-width="0.9"/><circle cx="0" cy="-9.2" r="0.9" fill="#e8453c" stroke="#2b2350" stroke-width="0.5"/><rect x="-3.6" y="-4.6" width="7.2" height="9.2" rx="1.6" fill="#ffcf4d" stroke="#2b2350" stroke-width="1.1"/><path d="M-2.2 -2.6H2.2M-2.2 0H2.2M-2.2 2.6H2.2" stroke="#c98a00" stroke-width="0.6" stroke-linecap="round"/><path d="M-1.4 -4.8C-3.6 -5.4 -4.4 -7.6 -3.4 -9.2L1.8 -6Z" fill="#eef0f7" stroke="#2b2350" stroke-width="0.9" stroke-linejoin="round"/></g></g><g class="nb-blink" style="transform-origin: 104px 6px"><path d="M104 1Q105 5 109 6Q105 7 104 11Q103 7 99 6Q103 5 104 1Z" fill="#ffd75e" stroke="#7a5200" stroke-width="0.7" stroke-linejoin="round"/></g><g class="nb-blink nb-l2" style="transform-origin: 121px 30px"><path d="M121 26.4Q121.7 29.3 124.6 30Q121.7 30.7 121 33.6Q120.3 30.7 117.4 30Q120.3 29.3 121 26.4Z" fill="#ffd75e" stroke="#7a5200" stroke-width="0.5" stroke-linejoin="round"/></g><g class="nb-blink nb-l3" style="transform-origin: 40px -12px"><path d="M40 -15.2Q40.6 -12.6 43.2 -12Q40.6 -11.4 40 -8.8Q39.4 -11.4 36.8 -12Q39.4 -12.6 40 -15.2Z" fill="#ffd75e" stroke="#7a5200" stroke-width="0.5" stroke-linejoin="round"/></g><g class="nb-blink nb-l1" style="transform-origin: -10px 42px"><path d="M-10 39.2Q-9.4 41.4 -7.2 42Q-9.4 42.6 -10 44.8Q-10.6 42.6 -12.8 42Q-10.6 41.4 -10 39.2Z" fill="#fff3c4" stroke="#7a5200" stroke-width="0.5" stroke-linejoin="round"/></g><g class="nb-blink nb-l2" style="transform-origin: 84px -12px"><path d="M84 -14.4Q84.5 -12.5 86.4 -12Q84.5 -11.5 84 -9.6Q83.5 -11.5 81.6 -12Q83.5 -12.5 84 -14.4Z" fill="#fff3c4" stroke="#7a5200" stroke-width="0.5" stroke-linejoin="round"/></g><circle cx="126" cy="8" r="0.9" fill="#ffd75e" stroke="#7a5200" stroke-width="0.4"/><circle cx="-8" cy="22" r="0.9" fill="#ffd75e" stroke="#7a5200" stroke-width="0.4"/><circle cx="64" cy="-16" r="0.8" fill="#ffd75e" stroke="#7a5200" stroke-width="0.4"/>
+</svg>

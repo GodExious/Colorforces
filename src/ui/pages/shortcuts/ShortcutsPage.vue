@@ -61,6 +61,7 @@ const groups = [
       { key: 'groupsEnabled', titleKey: 'shortcutGroupsEnabledTitle' },
       { key: 'groupTags', titleKey: 'shortcutGroupTagsTitle' },
       { key: 'groupsManage', titleKey: 'shortcutGroupsManageTitle' },
+      { key: 'menuCard', titleKey: 'shortcutMenuCardTitle' },
     ],
   },
 ];

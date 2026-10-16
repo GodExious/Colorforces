@@ -3,6 +3,7 @@ import { applyUserAvatars } from './enhance.js';
 import { captureTeamLayout, animateTeamLayout } from './layout-motion.js';
 import { getProfileLinks, isTeamCell } from './structure.js';
 import { hiddenMembers, isMoreMark, parseGhostTeam } from './team-members.js';
+import { avatarShownAt } from './places.js';
 
 // 把原站折叠成「...」的成员补成主页链接，接在已有的成员后面；「...」本身去掉。返回补出来的链接。
 // 提示有可能已经被插件的提示功能接管（鼠标正停在上面时原来的 title 会挪到 data-cf-native-tooltip 里），两处都看。
@@ -67,7 +68,8 @@ export function formatStandingsCells() {
       !isTeamCell(cell) && getProfileLinks(cell).length === 1,
     );
   });
-  if (!appSettings.user.avatar.enabled) return;
+  // 榜单、提交记录都是表格：表格里不显示头像时，队伍也不整理（和关掉头像一样）。
+  if (!avatarShownAt('tables')) return;
   const formatTeams = appSettings.user.formatTeams !== false;
   // 这一趟里有没有把哪个格子的头像清掉：有的话最后让头像功能重新补一遍。
   let reinject = false;
@@ -235,7 +237,7 @@ export function refreshUserAvatarsAndStandings() {
   cells.forEach((cell) => {
     // 普通用户保留头像和姓名节点，开关只改变头像槽宽度，不重建单元格。
     if (!isTeamCell(cell)) return;
-    const formatted = appSettings.user.avatar.enabled && appSettings.user.formatTeams !== false;
+    const formatted = avatarShownAt('tables') && appSettings.user.formatTeams !== false;
     if (
       cell.classList.contains('cf-team-formatted') === formatted &&
       cell.classList.contains('cf-avatar-processed-cell')

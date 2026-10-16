@@ -3,7 +3,7 @@ import { startPredictionFeature } from './contest/rating-prediction/index.js';
 import { startAnalyticsFeature } from './user/analytics/index.js';
 import { startUserGroups } from './user/groups/index.js';
 import { applyGroupTags, refreshGroupTags } from './user/groups/tags.js';
-import { applyFrames, refreshFrames } from './user/frames/page.js';
+import { applyFrames, refreshFrames, watchCustomFrames } from './user/frames/page.js';
 import { updateDynamicStyle } from './appearance/dynamic-style.js';
 import {
   refreshVerdicts,
@@ -74,7 +74,12 @@ export function connectSettingsEffects() {
       apply: refreshRatingsOnPage,
     },
     {
-      read: () => [appSettings.user.avatar.enabled, appSettings.user.formatTeams],
+      // 显示位置变了也一样：刚打开的那一处补上头像，刚关掉的那一处由样式收起，头像框跟着重看。
+      read: () => [
+        appSettings.user.avatar.enabled,
+        { ...appSettings.user.avatar.showAt },
+        appSettings.user.formatTeams,
+      ],
       selector: '.status-party-cell, table.standings .contestant-cell, a[href*="/profile/"]',
       // 队伍的格子会按原站的内容重排一遍，里面的链接是重排前的样子，分组标签、头像框跟着补一遍。
       apply: () => {
@@ -181,4 +186,5 @@ export async function startFeatures() {
   setTimeout(applyTimeFormatting, 500);
   setupObserver(ratings);
   startUserGroups();
+  watchCustomFrames();
 }

@@ -560,7 +560,9 @@ const panel = ref(null);
     max(6px, calc(var(--cf-avatar-size, 1.6em) * 0.375)) calc(var(--cf-avatar-size, 1.6em) * 0.375)
     calc(var(--cf-avatar-size, 1.6em) * 0.375);
 }
-:root.cf-hide-userAvatar .cf-analytics-avatar {
+/* 关掉了头像，或者其他页面上不显示头像（面板里的头像算其他页面，个人主页的大照片才是「个人主页」）。 */
+:root.cf-hide-userAvatar .cf-analytics-avatar,
+:root.cf-hide-avatar-others .cf-analytics-avatar {
   width: 0;
   margin: 0;
   border-width: 0;

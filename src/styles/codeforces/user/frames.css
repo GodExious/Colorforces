@@ -1,5 +1,7 @@
 /* 页面上的头像框，见 features/user/frames/page.js。
-   头像框是叠在头像上的一层（.cf-frame-pair），里面两张图片（.cf-frame）：静止的（is-still）和会动的（is-live）。图片的边长是头像直径的 2 倍，
+   头像框是叠在头像上的一层（.cf-frame-pair），里面两层图（.cf-frame）：静止的（is-still）和会动的（is-live）。
+   每层是一个空元素，图片是它的背景，写在 catalog.js 加的那张样式表里（按图片一条规则，类名 cf-frame-art-N），
+   同一种头像框只有一份动画、步调一致。图的边长是头像直径的 2 倍，
    头像在正中（画板四周比头像多出来的是环和装饰，见 catalog.js）。显示哪张看根元素上的动效设置：
    关闭只显示静止的，始终只显示会动的，悬停时平时显示静止的、鼠标移到这个人上面（.cf-frame-host）时换成会动的。
    没显示的那张不画，里面的动画也不跑。 */
@@ -21,6 +23,12 @@
   margin: calc(var(--cf-avatar-size, 1.6em) * 0.375)
     max(0px, calc(var(--cf-avatar-size, 1.6em) * 0.375 - 5px))
     calc(var(--cf-avatar-size, 1.6em) * 0.375) calc(var(--cf-avatar-size, 1.6em) * 0.375) !important;
+}
+/* 这一处设成不显示头像（表格里、其他页面，见 features/user/avatars/places.js）：和关掉头像一样不让。
+   要写在上一条后面：「其他页面」这一条和上一条一样具体，靠后写的那条算数。 */
+:root.cf-hide-avatar-tables table .cf-avatar-slot.cf-frame-space:not(.cf-avatar-loading),
+:root.cf-hide-avatar-others .cf-avatar-slot.cf-frame-space:not(.cf-avatar-loading, table *) {
+  margin: 0 !important;
 }
 /* 原站的导航栏（个人主页、比赛页那一排页签）：一行的高度是定的，灰色的滑块按页签的大小画，上下不让，左右照让。 */
 :root:not(.cf-hide-userAvatar)
@@ -63,12 +71,14 @@
    关掉、打开头像时，戴着框的头像和框不跟着滑：关的时候头像和框先在原处淡掉，再收起位置和边距；
    开的时候先让出位置和边距，头像和框再淡入。 */
 .cf-avatar-loading .cf-frame-pair,
-:root.cf-hide-userAvatar .cf-frame-pair {
+:root.cf-hide-userAvatar .cf-frame-pair,
+:root.cf-hide-avatar-tables table .cf-frame-pair,
+:root.cf-hide-avatar-others .cf-frame-pair:not(table *) {
   opacity: 0;
   transition-delay: 0s;
 }
 
-/* 两张图片铺满外壳。换动效设置（或者鼠标移上、移开）时，要换上去的那张马上显示，要换下来的那张多留一小会儿（150ms）再藏，
+/* 两层图铺满外壳，图片铺满这一层（图片本身由 catalog.js 的规则给，那条更具体，盖过这里的 none）。换动效设置（或者鼠标移上、移开）时，要换上去的那张马上显示，要换下来的那张多留一小会儿（150ms）再藏，
    中间两张叠着（画的是同一个头像框，看不出来）。直接换的话，刚显示出来的那张要等下一帧才画好，头像框会空一下。
    会动的那张藏起来用 display: none（不画，里面的动画也不跑）；静止的那张用 visibility（它不动，留着排好的版不费什么，
    换回来时马上就能画）。 */
@@ -82,7 +92,7 @@
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
-  background: none !important;
+  background: transparent none no-repeat 0 0 / 100% 100% !important;
   pointer-events: none;
   user-select: none;
 }
@@ -103,12 +113,6 @@
   display: block;
   transition: display 0s 0s allow-discrete;
 }
-/* 头像功能收起头像时把头像那一格里的图片往左滑出去（avatars.css 里写的是「格子里的 img」），
-   头像框的两张图片也是 img，会被一起挪走、在左边淡掉。头像框不挪，就在原处淡掉。 */
-:root.cf-hide-userAvatar .cf-avatar-slot img.cf-frame,
-.cf-avatar-loading img.cf-frame {
-  transform: none;
-}
 .cf-avatar-slot.cf-has-frame img.cf-user-avatar {
   transition:
     transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -116,12 +120,16 @@
     height 180ms ease,
     opacity 200ms ease 220ms;
 }
-:root.cf-hide-userAvatar .cf-avatar-slot.cf-has-frame img.cf-user-avatar {
+:root.cf-hide-userAvatar .cf-avatar-slot.cf-has-frame img.cf-user-avatar,
+:root.cf-hide-avatar-tables table .cf-avatar-slot.cf-has-frame img.cf-user-avatar,
+:root.cf-hide-avatar-others .cf-avatar-slot.cf-has-frame:not(table *) img.cf-user-avatar {
   transform: none;
   opacity: 0;
   transition-delay: 0s;
 }
-:root.cf-hide-userAvatar .cf-avatar-slot.cf-has-frame {
+:root.cf-hide-userAvatar .cf-avatar-slot.cf-has-frame,
+:root.cf-hide-avatar-tables table .cf-avatar-slot.cf-has-frame,
+:root.cf-hide-avatar-others .cf-avatar-slot.cf-has-frame:not(table *) {
   transition:
     width 260ms cubic-bezier(0.22, 1, 0.36, 1) 200ms,
     height 180ms ease 200ms,

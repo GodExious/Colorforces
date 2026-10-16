@@ -37,6 +37,7 @@ import {
 } from '../../../../../features/user/avatars/data.js';
 import { appStorage } from '../../../../../storage/gm.js';
 import { AVATAR_CACHE_KEY } from '../../../../../storage/keys.js';
+import { avatarShownAt } from '../../../../../features/user/avatars/places.js';
 import { backdropClose } from '../../../../../utils/backdrop.js';
 // 名次滑杆的刻度数：名次按对数换算成 0 到这个数之间的位置。
 const SLIDER_STEPS = 1000;
@@ -667,7 +668,8 @@ watch(
   },
 );
 // 优先复用页面头像，缺失时读取缓存；打开弹窗不增加头像请求。
-watch([handle, () => appSettings.user.avatar.enabled], ([name, enabled]) => {
+// 弹窗标题旁的头像算「其他页面」：那一处不显示头像时换成图标。
+watch([handle, () => avatarShownAt('others')], ([name, enabled]) => {
   avatar.value = '';
   if (!enabled || !name) return;
   const link = [...document.querySelectorAll('td.contestant-cell a[href]')].find((link) => {

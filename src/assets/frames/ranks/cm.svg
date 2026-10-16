@@ -1,1 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 160 160">
+<metadata><![CDATA[
+{
+  "format": "colorforces-frame",
+  "version": 1,
+  "name": {
+    "zh": "Candidate Master",
+    "en": "Candidate Master"
+  },
+  "intro": {
+    "zh": "猫头鹰守着一束微光，在夜色里静静翻着书页。",
+    "en": "An owl keeps watch by a small light, quietly turning the pages through the night."
+  },
+  "author": "Claude Opus 5.5",
+  "revisions": 7
+}
+]]></metadata>
+<style>
+@keyframes cf-frame-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.35);
+  }
+}
+@keyframes cf-frame-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-7deg);
+  }
+  75% {
+    transform: rotate(7deg);
+  }
+}
+@keyframes cf-frame-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+@keyframes cf-frame-float {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  60% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  61% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+@keyframes cf-frame-flicker {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.95, 1.08);
+  }
+  70% {
+    transform: scale(1.04, 0.95);
+  }
+}
+.twinkle {
+  animation: cf-frame-twinkle 2.4s ease-in-out infinite;
+}
+.sway {
+  animation: cf-frame-sway 3s ease-in-out infinite;
+}
+.bob,
+.crown {
+  animation: cf-frame-bob 2.6s ease-in-out infinite;
+}
+.float {
+  animation: cf-frame-float 3s ease-in infinite;
+}
+.flicker {
+  animation: cf-frame-flicker 1.3s ease-in-out infinite;
+}
+.s2 {
+  animation-duration: 4.2s;
+}
+.b2 {
+  animation-delay: 1.2s;
+}
+</style>
 <circle cx="60" cy="60" r="42" fill="none" stroke="#4a0a4a" stroke-width="10"/><circle cx="60" cy="60" r="42" fill="none" stroke="#b92eb9" stroke-width="7"/><path d="M97.3 73.6A39.7 39.7 0 0 1 25.6 79.9" fill="none" stroke="#902490" stroke-width="2.2" stroke-linecap="round"/><path d="M17.8 48.7A43.7 43.7 0 0 1 71.3 17.8" fill="none" stroke="#e0a1e0" stroke-width="2" stroke-linecap="round"/><path d="M79.2 20.7A43.7 43.7 0 0 1 84.4 23.8" fill="none" stroke="#e0a1e0" stroke-width="2" stroke-linecap="round"/><g transform="rotate(-6 10 72)"><g transform="translate(-4 74) rotate(0)"><path d="M0 0H26V-7H0Z" fill="#8e24aa" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 -5.4H25V-1.6H2Z" fill="#fff8ec"/><path d="M2 -3.5H25" stroke="#d8c9b0" stroke-width="0.7"/><path d="M0 0H26V-7H0Z" fill="none" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M3.9 -7V0" stroke="#c187d0" stroke-width="1.2"/></g><g transform="translate(-1 67) rotate(0)"><path d="M0 0H22V-6.4H0Z" fill="#26a69a" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 -4.800000000000001H21V-1.6H2Z" fill="#fff8ec"/><path d="M2 -3.2H21" stroke="#d8c9b0" stroke-width="0.7"/><path d="M0 0H22V-6.4H0Z" fill="none" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M3.3 -6.4V0" stroke="#88cec7" stroke-width="1.2"/></g><g transform="translate(-5 60.6) rotate(0)"><path d="M0 0H25V-6.4H0Z" fill="#ef6c00" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 -4.800000000000001H24V-1.6H2Z" fill="#fff8ec"/><path d="M2 -3.2H24" stroke="#d8c9b0" stroke-width="0.7"/><path d="M0 0H25V-6.4H0Z" fill="none" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M3.8 -6.4V0" stroke="#f6ae73" stroke-width="1.2"/></g><g transform="translate(-2 54.2) rotate(0)"><path d="M0 0H21V-6H0Z" fill="#5c6bc0" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 -4.4H20V-1.6H2Z" fill="#fff8ec"/><path d="M2 -3H20" stroke="#d8c9b0" stroke-width="0.7"/><path d="M0 0H21V-6H0Z" fill="none" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M3.2 -6V0" stroke="#a5aedc" stroke-width="1.2"/></g></g><path d="M2 51C2 48 16 48 16 51Z" fill="#ffca28" stroke="#8a6400" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M16 49.6C20 49.6 20 46 17 46" fill="none" stroke="#8a6400" stroke-width="1.2"/><path d="M6 49V40H12V49Z" fill="#fff8e1" stroke="#4a0a4a" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M6 40C6 43 7.6 43 7.6 41C7.6 44 9.4 44 9.4 40Z" fill="#fff"/><path d="M9 40V38.4" stroke="#333" stroke-width="0.9"/><g class="flicker" style="transform-origin: 9px 39px"><ellipse cx="9" cy="35" rx="6" ry="7" fill="#ffe082" fill-opacity="0.35"/><path d="M9 39C6 38 6.4 34 9 30.4C11.6 34 12 38 9 39Z" fill="#ffb300" stroke="#c43e00" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M9 38.4C7.6 37.6 7.8 35.4 9 34C10.2 35.4 10.4 37.6 9 38.4Z" fill="#fff8e1"/></g><g transform="translate(-1 -7)"><ellipse cx="106" cy="50.4" rx="9" ry="2.2" fill="#ede7f6" stroke="#4a0a4a" stroke-width="1.2"/><ellipse cx="114.6" cy="43.6" rx="2.8" ry="3" fill="none" stroke="#4a0a4a" stroke-width="2.6"/><ellipse cx="114.6" cy="43.6" rx="2.8" ry="3" fill="none" stroke="#9575cd" stroke-width="1.2"/><path d="M99 40H113C113 46 110 49.6 106 49.6C102 49.6 99 46 99 40Z" fill="#9575cd" stroke="#4a0a4a" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M99.6 43.4H112.4" stroke="#ffca28" stroke-width="1.2"/><ellipse cx="106" cy="40" rx="7" ry="1.7" fill="#a1887f" stroke="#4a0a4a" stroke-width="1.1"/><path d="M101.4 44.8C102 46.6 103.2 47.8 104.6 48.2" fill="none" stroke="#d1c4e9" stroke-width="1" stroke-linecap="round"/><g class="float" style="transform-origin: 103.6px 33px"><path d="M103.6 37C102 34 105 32 103.6 29" fill="none" stroke="#b39ddb" stroke-width="1.3" stroke-linecap="round"/></g><g class="float b2" style="transform-origin: 108.4px 33px"><path d="M108.4 37C110 34 107 32 108.4 28" fill="none" stroke="#b39ddb" stroke-width="1.3" stroke-linecap="round"/></g></g><path d="M94 92C93 88 94 84 96 83H104C106 84 107 88 106 92Z" fill="#311b92" stroke="#4a0a4a" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M95.4 83V81H104.6V83Z" fill="#ffca28" stroke="#8a6400" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M96 86C96 89 97 90 98 90" fill="none" stroke="#9575cd" stroke-width="1" stroke-linecap="round"/><g class="sway s2" style="transform-origin: 101px 82px"><path d="M101 82C104 74 109 66 115 62C114 70 109 77 102 82Z" fill="#fff" stroke="#4a0a4a" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M101.4 81.6L113 65M106 76L109 75M108 72L111 71" stroke="#b39ddb" stroke-width="0.8" stroke-linecap="round"/></g><path d="M60 15C53.2 12.6 47.8 13 42 14.6L43 1.8C49.8 0.8 55.9 1.8 60 3.8C64.1 1.8 70.2 0.8 77 1.8L78 14.6C72.2 13 66.8 12.6 60 15Z" fill="#6a1b9a" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M60 13C53.2 11 48.4 11 44.4 12.4L45 2.8C49.8 1.4 55.9 2.4 60 4.4Z" fill="#fffaf0" stroke="#4a0a4a" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/><path d="M60 13C66.8 11 71.6 11 75.6 12.4L75 2.8C70.2 1.4 64.1 2.4 60 4.4Z" fill="#fffaf0" stroke="#4a0a4a" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/><path d="M47.1 6.7H56.6M47.1 9.7H55.9M63.4 6.7H72.9M64.1 9.7H70.9" stroke="#b39ddb" stroke-width="0.8" stroke-linecap="round"/><g class="bob" style="transform-origin: 60px 9px"><g transform="translate(60 9) scale(0.78)"><path d="M-10 -21L-13 -31L-4.6 -25Z" fill="#7e57c2" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M10 -21L13 -31L4.6 -25Z" fill="#7e57c2" stroke="#4a0a4a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M-12 -4C-14.6 -14 -12.6 -26.6 0 -27.4C12.6 -26.6 14.6 -14 12 -4C10 0 5 1 0 1C-5 1 -10 0 -12 -4Z" fill="#7e57c2" stroke="#4a0a4a" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><ellipse cx="0" cy="-7.6" rx="7.6" ry="6.6" fill="#d9cdf2"/><path d="M-4.6 -10Q-3.2 -8.4 -1.8 -10M1.8 -10Q3.2 -8.4 4.6 -10M-3 -6Q-1.6 -4.4 0 -6M0 -6Q1.6 -4.4 3 -6" fill="none" stroke="#9575cd" stroke-width="0.9" stroke-linecap="round"/><circle cx="-5" cy="-19" r="6.4" fill="#f3eefc"/><circle cx="5" cy="-19" r="6.4" fill="#f3eefc"/><circle cx="-5" cy="-19" r="4.4" fill="#fff" stroke="#4a0a4a" stroke-width="1.2"/><g><circle cx="-4.5" cy="-18.6" r="2.2" fill="#311b92"/><circle cx="-3.9" cy="-19.4" r="0.8" fill="#fff"/></g><circle cx="5" cy="-19" r="4.4" fill="#fff" stroke="#4a0a4a" stroke-width="1.2"/><g><circle cx="5.5" cy="-18.6" r="2.2" fill="#311b92"/><circle cx="6.1" cy="-19.4" r="0.8" fill="#fff"/></g><path d="M-1.5 -15.6L0 -12.4L1.5 -15.6Z" fill="#ffb300" stroke="#8a5a00" stroke-width="0.9" stroke-linejoin="round" stroke-linecap="round"/><path d="M-12 -16C-16.4 -10 -15.4 -3 -10 -1C-10 -6 -10 -11 -12 -16Z" fill="#5e35b1" stroke="#4a0a4a" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M12 -16C16.4 -10 15.4 -3 10 -1C10 -6 10 -11 12 -16Z" fill="#5e35b1" stroke="#4a0a4a" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M-5 0.6v2.4M-3 0.6v2.4M3 0.6v2.4M5 0.6v2.4" stroke="#ffb300" stroke-width="1.5" stroke-linecap="round"/><circle cx="-5" cy="-19" r="5.2" fill="none" stroke="#ffca28" stroke-width="1.2"/><circle cx="5" cy="-19" r="5.2" fill="none" stroke="#ffca28" stroke-width="1.2"/><path d="M-0.2 -19.6Q0 -20.6 0.2 -19.6" stroke="#ffca28" stroke-width="1.2"/></g></g><path class="twinkle" d="M84 -2.4Q84 0 86.4 0Q84 0 84 2.4Q84 0 81.6 0Q84 0 84 -2.4Z" fill="#f3d6ff" style="transform-origin: 84px 0px"/><path d="M37.2 98.5L23.2 98.5L27.2 106L23.2 113.5L37.2 113.5Z" fill="#d073d0" stroke="#440044" stroke-width="1.6" stroke-linejoin="round"/><path d="M82.8 98.5L96.8 98.5L92.8 106L96.8 113.5L82.8 113.5Z" fill="#d073d0" stroke="#440044" stroke-width="1.6" stroke-linejoin="round"/><path d="M32.2 94.5Q60 98.5 87.8 94.5L87.8 109.5Q60 113.5 32.2 109.5Z" fill="#fffaf0" stroke="#440044" stroke-width="1.8" stroke-linejoin="round"/><path d="M35.2 97.7Q60 101.3 84.8 97.7" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><text x="60" y="93.5" text-anchor="middle" font-family="'Arial Black', 'Segoe UI Black', 'Segoe UI', sans-serif" font-size="6.8" font-weight="800" letter-spacing="0.4" fill="#fff" stroke="#440044" stroke-width="2.2" stroke-linejoin="round" paint-order="stroke">Candidate</text><text x="60" y="107.3" text-anchor="middle" font-family="'Kaushan Script', 'Segoe Script', cursive" font-size="12.5" font-weight="400" letter-spacing="0" fill="#990099" stroke="#fff" stroke-width="1.4" stroke-linejoin="round" paint-order="stroke">Master</text>
+</svg>

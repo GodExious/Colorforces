@@ -27,12 +27,39 @@ Colorforces 是一个 Codeforces 页面增强油猴脚本，让题目难度、�
 
 - 题目难度分着色：支持 CF 官方与 CList 数据，色块、标签两种样式
 - 用户数据分析：在个人主页展示统计摘要、难度热力图、评级与排名曲线对比等十余种图表
+- 用户分组：给任意用户分组、写备注，直接关注或取消关注好友，右键用户名查看资料卡
+- 头像框：按段位或分组佩戴，有内置的头像框库，也能借助 AI 自制
 - 比赛评分预测与单用户评级分析
 - 选手参赛类型标签、用户头像、语言图标、判题缩写与自定义时间格式
 - 快捷键、存储管理与中英双语菜单
 
 ## 📸 效果预览
 
+<p align="center">
+  <img src="../imgs/user-analyze-zh.png" alt="User Data Analytics">
+  <br>
+  <em>个人主页的用户数据分析：统计摘要、难度热力图、评级与排名曲线对比等十余种图表</em>
+</p>
+<p align="center">
+  <img src="../imgs/user-menu-zh.png" alt="User Profile Card">
+  <br>
+  <em>右键任意用户名打开资料卡：经验条、主页资料、所在分组与只有自己看得到的备注</em>
+</p>
+<p align="center">
+  <img src="../imgs/user-group-manager-zh.png" alt="Manage Groups">
+  <br>
+  <em>给任意用户分组，每个分组可设标记、颜色与头像框，备注只有自己看得到</em>
+</p>
+<p align="center">
+  <img src="../imgs/user-profile.png" alt="Avatar Frame on Profile">
+  <br>
+  <em>个人主页的头像框，例如 tourist 的特别头像框</em>
+</p>
+<p align="center">
+  <img src="../imgs/frame-lib-zh.png" alt="Frame Library">
+  <br>
+  <em>头像框库：段位头像框、可佩戴或设给分组的内置头像框，还能借助 AI 自制</em>
+</p>
 <p align="center">
   <img src="../imgs/settings.png" alt="Codeforces 网页中的 Colorforces 设置菜单">
   <br>
@@ -72,11 +99,6 @@ Colorforces 是一个 Codeforces 页面增强油猴脚本，让题目难度、�
   <img src="../imgs/blogs.png" alt="Blogs">
   <br>
   <em>博客内容页面的用户头像展示</em>
-</p>
-<p align="center">
-  <img src="../imgs/user-analyze-zh.png" alt="User Data Analytics">
-  <br>
-  <em>个人主页的用户数据分析：统计摘要、难度热力图、评级与排名曲线对比等十余种图表</em>
 </p>
 
 ## 🚀 安装说明

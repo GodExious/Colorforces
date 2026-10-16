@@ -10,6 +10,7 @@ import {
   subscribeProfiles,
 } from '../../../../../features/user/groups/profiles.js';
 import { chooseFrame } from '../../../../../features/user/frames/choose.js';
+import { avatarShownAt } from '../../../../../features/user/avatars/places.js';
 import {
   KNOWN_FRAMES,
   frameIntro,
@@ -27,11 +28,11 @@ import SettingSection from '../../../../components/settings/SettingSection/Setti
 import { showFrameDialog } from '../FrameDialog/FrameDialog.vue';
 // 显示位置：个人主页、表格里、右键菜单、分组管理、其他页面，各一个开关（头像框库、设置里的预览照常显示）。
 const PLACES = [
-  ['profile', 'frameAtProfile'],
-  ['tables', 'frameAtTables'],
-  ['menus', 'frameAtMenus'],
-  ['groups', 'frameAtGroups'],
-  ['others', 'frameAtOthers'],
+  ['profile', 'placeProfile'],
+  ['tables', 'placeTables'],
+  ['menus', 'placeMenus'],
+  ['groups', 'placeGroups'],
+  ['others', 'placeOthers'],
 ];
 const placesOn = computed(
   () => PLACES.filter(([key]) => appSettings.user.avatar.frameAt[key]).length,
@@ -63,7 +64,7 @@ const wearing = computed(() => {
 const wearingName = computed(() => {
   const id = wearing.value;
   if (!id) return t('locFrameNone');
-  const name = frameIntro(id, appSettings.general.lang)[0];
+  const name = frameIntro(id, appSettings.general.lang)[0] || t('frameUnnamed');
   if (id === appSettings.user.avatar.wornFrame) return name;
   return name + t(wearableFrame(id) ? 'frameNowByGroup' : 'frameNowByRank');
 });
@@ -140,13 +141,19 @@ onBeforeUnmount(() => stop?.());
         </div>
         <!-- 显示位置放在这一块的最后：展开的底板在最下面，不把「我的头像框」往下挤。 -->
         <SettingSection
-          :title="t('frameAtTitle')"
+          :title="t('showAtTitle')"
           foldable
           plate
           :summary="t('settingSelected', placesOn, PLACES.length)"
           :muted="placesOn === 0"
         >
-          <label v-for="[key, label] in PLACES" :key="key" class="cf-setting-item">
+          <!-- 头像在那一处不显示时，头像框也戴不上：那一行淡一些（开关照样能拨，头像显示出来后就按它）。 -->
+          <label
+            v-for="[key, label] in PLACES"
+            :key="key"
+            class="cf-setting-item cf-frame-place"
+            :class="{ 'is-off': key !== 'profile' && !avatarShownAt(key) }"
+          >
             <span class="cf-setting-sublabel" v-text="t(label)"></span>
             <ToggleSwitch
               as="div"
@@ -162,6 +169,17 @@ onBeforeUnmount(() => stop?.());
 <style>
 .cf-frame-settings-body {
   margin-top: 8px;
+}
+.cf-frame-place {
+  transition: opacity var(--cf-duration-base) ease;
+}
+.cf-frame-place.is-off {
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-frame-place {
+    transition: none;
+  }
 }
 .cf-frame-mine {
   display: inline-flex;

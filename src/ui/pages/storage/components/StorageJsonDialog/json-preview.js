@@ -108,17 +108,20 @@ export function buildPreview(targetKey, getContentForKeyFn, previewOf) {
   // 缩略版里有没有省掉东西，看里面有没有占位的标记。
   const isTruncated = previewJsonStr.includes(TRUNCATE_MARKER);
   // 省掉的地方可能有很多处（每一层都可能截），各写成一个省略号；完整的说明由着色那一步在末尾写一次。
+  // 只有一处时，说明直接写在那一处，末尾不再写。
+  let tipAtEnd = false;
   if (isTruncated) {
-    previewJsonStr = previewJsonStr.replace(
-      /([ \t]*)"__CF_PREVIEW_TRUNCATED_MARKER__"(?:\s*:\s*true)?/g,
-      '$1// ...',
-    );
+    const marker = /([ \t]*)"__CF_PREVIEW_TRUNCATED_MARKER__"(?:\s*:\s*true)?/g;
+    const single = previewJsonStr.match(marker).length === 1;
+    const note = single ? `// ... [${t('storageTruncatedTip')}] ...` : '// ...';
+    previewJsonStr = previewJsonStr.replace(marker, (_, indent) => indent + note);
+    tipAtEnd = !single;
   }
   if (!storageBytes || storageBytes <= 0) {
     storageBytes = new Blob([previewJsonStr]).size;
   }
 
-  const highlightedHtml = formatJsonSyntaxHighlight(previewJsonStr, isTruncated);
+  const highlightedHtml = formatJsonSyntaxHighlight(previewJsonStr, tipAtEnd);
 
   return {
     content,

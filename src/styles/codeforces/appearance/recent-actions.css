@@ -50,15 +50,24 @@
 }
 /* 作者前面有头像时，标题缩进一个头像的位置，和作者名的左边对齐。头像占的宽度见 user/avatars/avatars.css。
    两种情况不缩进，标题从这一条的最左边起：设置里选了标题不缩进（根元素带 cf-recent-actions-flush）；
-   头像被整个隐藏了（根元素带 cf-hide-userAvatar）。两个条件直接写在这条规则里，不另写规则去盖它。 */
-:root.cf-format-recent-actions:not(.cf-recent-actions-flush, .cf-hide-userAvatar)
+   头像被整个隐藏了（根元素带 cf-hide-userAvatar），或者其他页面上不显示头像（cf-hide-avatar-others，侧栏算其他页面）。
+   这几个条件直接写在这条规则里，不另写规则去盖它。 */
+:root.cf-format-recent-actions:not(
+    .cf-recent-actions-flush,
+    .cf-hide-userAvatar,
+    .cf-hide-avatar-others
+  )
   .cf-recent-action:has(.cf-avatar-slot:not(.cf-avatar-loading))
   .cf-recent-action-title {
   padding-left: calc(var(--cf-avatar-size, 1.6em) + 5px);
 }
 /* 头像戴着头像框时，头像四周还让出了一圈（见 user/frames.css）：左边让 0.375 个头像，右边让 0.375 个头像减去原有的 5px。
    标题跟着多缩进这么多，还是和作者名的左边对齐。 */
-:root.cf-format-recent-actions:not(.cf-recent-actions-flush, .cf-hide-userAvatar)
+:root.cf-format-recent-actions:not(
+    .cf-recent-actions-flush,
+    .cf-hide-userAvatar,
+    .cf-hide-avatar-others
+  )
   .cf-recent-action:has(.cf-avatar-slot.cf-frame-space:not(.cf-avatar-loading))
   .cf-recent-action-title {
   padding-left: calc(
@@ -66,7 +75,7 @@
   );
 }
 /* 关掉头像时，戴着框的头像先在原处淡掉、过一会儿才收起位置（见 user/frames.css），标题等它一起挪。 */
-:root.cf-format-recent-actions.cf-hide-userAvatar
+:root.cf-format-recent-actions:is(.cf-hide-userAvatar, .cf-hide-avatar-others)
   .cf-recent-action:has(.cf-avatar-slot.cf-has-frame)
   .cf-recent-action-title {
   transition-delay: 200ms;

@@ -1,1 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 160 160">
+<metadata><![CDATA[
+{
+  "format": "colorforces-frame",
+  "version": 1,
+  "name": {
+    "zh": "Headquarters",
+    "en": "Headquarters"
+  },
+  "intro": {
+    "zh": [
+      "管理员的头像框。",
+      "每年新年，MikeMirzayanov 都会发一篇博客给大家送「礼物」，其中每年都有的一件是开放改名，所以 Codeforces 标志的三根柱子变成了三个礼物盒，最高的那个挂着 handle 标签。旁边飞着的几架小纸飞机代表 Telegram：它从 2014 年起赞助了 Codeforces 多年，2026 年 9 月又一次成为赞助商。"
+    ],
+    "en": [
+      "The frame for Headquarters.",
+      "Every New Year, MikeMirzayanov posts a blog of gifts, and every year one of them is a handle change, so the three bars of the Codeforces logo become three gift boxes, the tallest with a handle tag. The small paper planes stand for Telegram, which sponsored Codeforces for years from 2014 and became its sponsor again in September 2026."
+    ]
+  },
+  "author": "Claude Opus 5.5",
+  "revisions": 2
+}
+]]></metadata>
+<style>
+@keyframes cf-frame-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes cf-frame-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.35);
+  }
+}
+@keyframes cf-frame-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-7deg);
+  }
+  75% {
+    transform: rotate(7deg);
+  }
+}
+@keyframes cf-frame-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+.twinkle {
+  animation: cf-frame-twinkle 2.4s ease-in-out infinite;
+}
+.sway {
+  animation: cf-frame-sway 3s ease-in-out infinite;
+}
+.bob,
+.crown {
+  animation: cf-frame-bob 2.6s ease-in-out infinite;
+}
+.orbit {
+  animation: cf-frame-spin 9s linear infinite;
+}
+.t2 {
+  animation-delay: 0.8s;
+}
+.d2 {
+  animation-direction: reverse;
+}
+.s2 {
+  animation-duration: 4.2s;
+}
+.slow {
+  animation-duration: 24s;
+}
+</style>
 <g class="orbit slow" style="transform-origin: 60px 60px"><g transform="translate(7.4 40.8) rotate(290) scale(0.62)"><path d="M0 0L-26 -10L-18 1Z" fill="#ffffff" stroke="#0d4a6e" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 0L-18 1L-22 9Z" fill="#2aabee" stroke="#0d4a6e" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 0L-18 1L-15 5.4Z" fill="#1c7fb8" stroke="#0d4a6e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 0L-18 1" stroke="#0d4a6e" stroke-width="0.9"/><path d="M-4 -1.6L-20 -7.6" stroke="#cfeefe" stroke-width="1" stroke-linecap="round"/></g></g><g class="orbit slow d2" style="transform-origin: 60px 60px"><g transform="translate(106.8 33) rotate(240) scale(0.54 -0.54)"><path d="M0 0L-26 -10L-18 1Z" fill="#ffffff" stroke="#0d4a6e" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 0L-18 1L-22 9Z" fill="#2aabee" stroke="#0d4a6e" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 0L-18 1L-15 5.4Z" fill="#1c7fb8" stroke="#0d4a6e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 0L-18 1" stroke="#0d4a6e" stroke-width="0.9"/><path d="M-4 -1.6L-20 -7.6" stroke="#cfeefe" stroke-width="1" stroke-linecap="round"/></g></g><g class="orbit slow" style="transform-origin: 60px 60px"><g transform="translate(113.6 79.5) rotate(110) scale(0.48)"><path d="M0 0L-26 -10L-18 1Z" fill="#ffffff" stroke="#0d4a6e" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 0L-18 1L-22 9Z" fill="#2aabee" stroke="#0d4a6e" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 0L-18 1L-15 5.4Z" fill="#1c7fb8" stroke="#0d4a6e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 0L-18 1" stroke="#0d4a6e" stroke-width="0.9"/><path d="M-4 -1.6L-20 -7.6" stroke="#cfeefe" stroke-width="1" stroke-linecap="round"/></g></g><g class="bob" style="transform-origin: 60px 20px"><path d="M36 6.6H50V22H36Z" fill="#f5c211" stroke="#1a1a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M34.8 3H51.2V7H34.8Z" fill="#e0a800" stroke="#1a1a1a" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M41.4 3H44.6V22H41.4Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round"/><path d="M38 9V20" stroke="#fff" stroke-opacity="0.35" stroke-width="1.4" stroke-linecap="round"/><path d="M43 3C40 -2 35 -2.4000000000000004 35 0.6000000000000001C35 3 40 3 43 3Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M43 3C46 -2 51 -2.4000000000000004 51 0.6000000000000001C51 3 46 3 43 3Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><circle cx="43" cy="2.6" r="1.6" fill="#ffffff" stroke="#9e9e9e" stroke-width="0.8"/><path d="M70 1.6H84V22H70Z" fill="#c62828" stroke="#1a1a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M68.8 -2H85.2V2H68.8Z" fill="#a31515" stroke="#1a1a1a" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M75.4 -2H78.6V22H75.4Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round"/><path d="M72 4V20" stroke="#fff" stroke-opacity="0.35" stroke-width="1.4" stroke-linecap="round"/><path d="M77 -2C74 -7 69 -7.4 69 -4.4C69 -2 74 -2 77 -2Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M77 -2C80 -7 85 -7.4 85 -4.4C85 -2 80 -2 77 -2Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><circle cx="77" cy="-2.4" r="1.6" fill="#ffffff" stroke="#9e9e9e" stroke-width="0.8"/><path d="M53 -4.4H67V22H53Z" fill="#1f8acb" stroke="#1a1a1a" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M51.8 -8H68.2V-4H51.8Z" fill="#176ea3" stroke="#1a1a1a" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/><path d="M58.4 -8H61.6V22H58.4Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round"/><path d="M55 -2V20" stroke="#fff" stroke-opacity="0.35" stroke-width="1.4" stroke-linecap="round"/><path d="M60 -8C57 -13 52 -13.4 52 -10.4C52 -8 57 -8 60 -8Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><path d="M60 -8C63 -13 68 -13.4 68 -10.4C68 -8 63 -8 60 -8Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/><circle cx="60" cy="-8.4" r="1.6" fill="#ffffff" stroke="#9e9e9e" stroke-width="0.8"/></g><circle cx="60" cy="60" r="42" fill="none" stroke="#000" stroke-width="11"/><circle cx="60" cy="60" r="42" fill="none" stroke="#2b2b30" stroke-width="8"/><path d="M96.8 73.4A39.2 39.2 0 0 1 26.1 79.6" fill="none" stroke="#0d0d0d" stroke-width="2.2" stroke-linecap="round"/><path d="M17.3 48.6A44.2 44.2 0 0 1 71.4 17.3" fill="none" stroke="#8a8a96" stroke-width="2" stroke-linecap="round"/><path d="M79.4 20.3A44.2 44.2 0 0 1 84.7 23.4" fill="none" stroke="#8a8a96" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="60" r="46.3" fill="none" stroke="#ffd34d" stroke-width="1.2"/><circle cx="60" cy="60" r="37.8" fill="none" stroke="#ffd34d" stroke-width="1.1"/><g class="sway s2" style="transform-origin: 63px -8.4px"><path d="M63 -8.4C74 -7.4 87 -17.4 88 -14.4" fill="none" stroke="#8d6e63" stroke-width="0.9"/><path d="M85 -14.4H107L108.6 -6H86.6Z" fill="#fff8e1" stroke="#6d4c41" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/><circle cx="88" cy="-10.2" r="0.9" fill="#6d4c41"/><text x="97.6" y="-8.2" text-anchor="middle" font-family="Consolas, monospace" font-size="5" font-weight="700" fill="#b31212">handle</text></g><path class="twinkle" d="M30 19.6Q30 22 32.4 22Q30 22 30 24.4Q30 22 27.6 22Q30 22 30 19.6Z" fill="#ffe9a3" style="transform-origin: 30px 22px"/><path class="twinkle t2" d="M92 23.8Q92 26 94.2 26Q92 26 92 28.2Q92 26 89.8 26Q92 26 92 23.8Z" fill="#fff" style="transform-origin: 92px 26px"/><path d="M23 98.5L9 98.5L13 106L9 113.5L23 113.5Z" fill="#bdbdbd" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/><path d="M97 98.5L111 98.5L107 106L111 113.5L97 113.5Z" fill="#bdbdbd" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/><path d="M18 94.5Q60 98.5 102 94.5L102 109.5Q60 113.5 18 109.5Z" fill="#fff" stroke="#000" stroke-width="1.8" stroke-linejoin="round"/><path d="M21 97.7Q60 101.3 99 97.7" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/><text x="60" y="107.3" text-anchor="middle" font-family="'Kaushan Script', 'Segoe Script', cursive" font-size="11" font-weight="400" letter-spacing="0" fill="#111" stroke="#fff" stroke-width="1.4" stroke-linejoin="round" paint-order="stroke">Headquarters</text>
+</svg>

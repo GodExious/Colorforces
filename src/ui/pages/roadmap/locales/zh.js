@@ -25,11 +25,15 @@ export default {
   },
   'friend-groups': {
     title: '好友分组标注功能',
-    desc: '支持为关注的好友创建自定义分组、添加备注与色彩标签，或者是分组图标、分组图片，甚至是分组头像框。',
+    desc: '支持为用户创建分组，还能设置头像框。',
   },
   'problem-filter': {
     title: '题目多维筛选',
     desc: '可以根据多种条件组合筛选搜索题目。',
+  },
+  achievements: {
+    title: '成就与点数系统',
+    desc: '解锁成就、积攒点数，免费兑换头像框等装扮。',
   },
   'cf-official-data': {
     title: 'CF 官方题目数据集成',

@@ -58,6 +58,9 @@ export function updateDynamicStyle() {
     'cf-hide-contestProblems': !isRatingsActive || !ratings.show.contestProblems,
     'cf-hide-standings': !isRatingsActive || !ratings.show.standings,
     'cf-hide-userAvatar': !user.avatar.enabled,
+    // 头像开着、但某一处不显示（见 features/user/avatars/places.js）：表格里的、其他页面上的。
+    'cf-hide-avatar-tables': user.avatar.enabled && user.avatar.showAt.tables === false,
+    'cf-hide-avatar-others': user.avatar.enabled && user.avatar.showAt.others === false,
     // 头像框（见 features/user/frames/）：有没有可能戴，和动效的三档。
     'cf-frames-on': user.avatar.enabled && user.avatar.frames,
     'cf-frame-motion-off': user.avatar.frameMotion === 'off',

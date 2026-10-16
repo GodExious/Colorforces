@@ -7,6 +7,7 @@ import ExpandTransition from '../../../../../../../components/transitions/Expand
 import ChartHint from '../../parts/ChartHint/ChartHint.vue';
 import { COMPARE_MAX } from '../../../composables/compare-accounts.js';
 import { compareGrid } from '../../../composables/compare-chart.js';
+import { keepWithinLimit } from '../../../../../../../../utils/input-limit.js';
 
 // 对比曲线的卡片外壳：标题、对比中的账号名单（开头是添加账号的输入框和「和我对比」），下面是图表（默认插槽）和一行说明。
 // 「评级曲线对比」和「参赛排名曲线对比」都用它；两张图的账号名单是同一份，在哪一张上增减都一样。
@@ -65,6 +66,7 @@ const STATUS_TEXT = {
             v-model="draft"
             type="text"
             maxlength="24"
+            @beforeinput="keepWithinLimit"
             spellcheck="false"
             autocomplete="off"
             :placeholder="t('analyticsComparePlaceholder')"

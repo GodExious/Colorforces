@@ -13,7 +13,16 @@ import { requestProfiles } from '../groups/profiles.js';
 import { frameOf, profileHandle, userId } from '../groups/store.js';
 import { chooseFrame, rankFromTitle } from './choose.js';
 import { pageAdmins } from './admins.js';
-import { KNOWN_FRAMES, frameImage, frameReach, measuredReach, wearableFrame } from './catalog.js';
+import {
+  KNOWN_FRAMES,
+  frameArt,
+  frameImage,
+  frameReach,
+  measuredReach,
+  wearableFrame,
+} from './catalog.js';
+import { subscribeCustomFrames } from './custom/data.js';
+import { avatarShownAt, pagePlaceOf } from '../avatars/places.js';
 
 // 旧的头像框淡出要多久，到时候从页面上拿掉。
 const LEAVE_TIME = 240;
@@ -21,21 +30,17 @@ const LEAVE_TIME = 240;
 const SPACE_TIME = 260;
 const USER_LINK = 'a[href*="/profile/"]';
 
-// 一个头像框：一层外壳，里面两张图片（静止的、会动的）。刚放上去时外壳淡入一下（is-entering，淡入完就去掉）；
-// afterSpace 为真时等四周的边距让出来了再淡入（is-after-space）。
+// 一个头像框：一层外壳，里面叠着静止的、会动的两层，各是一个带着图片类的空元素（见 catalog.js 的 frameArt）。
+// 刚放上去时外壳淡入一下（is-entering，淡入完就去掉）；afterSpace 为真时等四周的边距让出来了再淡入（is-after-space）。
 function frameNodes(id, afterSpace) {
   const pair = document.createElement('span');
   pair.className = `cf-frame-pair is-entering${afterSpace ? ' is-after-space' : ''}`;
   pair.setAttribute('aria-hidden', 'true');
   pair.addEventListener('animationend', () => pair.classList.remove('is-entering'), { once: true });
   for (const moving of [false, true]) {
-    const img = document.createElement('img');
-    img.className = `cf-frame ${moving ? 'is-live' : 'is-still'}`;
-    img.alt = '';
-    img.draggable = false;
-    img.decoding = 'async';
-    img.src = frameImage(id, moving);
-    pair.appendChild(img);
+    const art = document.createElement('span');
+    art.className = `cf-frame ${moving ? 'is-live' : 'is-still'} ${frameArt(id, moving)}`;
+    pair.appendChild(art);
   }
   return pair;
 }
@@ -43,10 +48,13 @@ function frameNodes(id, afterSpace) {
 // 头像四周的那一圈边距（cf-frame-space，见样式）和框分两步走，框不跟着头像滑：
 // 戴上时先让出边距、头像挪到位，框再淡入；摘掉时框先在原处淡掉，再收回边距。换成另一个框时边距不变，直接换。
 // cf-has-frame 是「框可以伸到头像外面」，摘掉时等边距收完再去掉。
+// 自定义的头像框改了代码时编号不变、图片换了（cfFrameArt 记着用的是哪张），也按换成另一个框处理。
 function wearFrame(box, id) {
   const before = box.dataset.cfFrame ?? '';
-  if (before === id) return;
+  const art = id ? frameImage(id, false) : '';
+  if (before === id && (box.dataset.cfFrameArt ?? '') === art) return;
   box.dataset.cfFrame = id;
+  box.dataset.cfFrameArt = art;
   clearTimeout(Number(box.dataset.cfFrameTimer));
   for (const old of box.querySelectorAll(':scope > .cf-frame-pair:not(.is-leaving)')) {
     old.classList.add('is-leaving');
@@ -169,8 +177,9 @@ function ownerOf(slot) {
 
 // 显示位置（设置里的「显示位置」）：在表格里的头像（榜单、提交记录这些表格）算 tables，别处的算 others；
 // 个人主页的大头像是 profile，见 applyProfilePhoto。关掉的地方不戴，头像照旧。
-const shownAt = (place) => appSettings.user.avatar.frameAt[place] !== false;
-const placeOf = (slot) => (slot.closest('table') ? 'tables' : 'others');
+// 头像本身在那一处不显示时也不戴（见 avatars/places.js），收起的头像上不留会动的图。
+const shownAt = (place) =>
+  appSettings.user.avatar.frameAt[place] !== false && (place === 'profile' || avatarShownAt(place));
 
 // 个人主页的大头像上下留多少：这个头像框实际伸出去的那么多再多 6px（大头像 200px，一个单位 2.5px）。
 // 写在大头像的两个变量上，换头像框时边距滑过去（样式里有过渡）。还没量好时不动，量不了时用样式里的默认值（按伸得最高的留）。
@@ -187,8 +196,7 @@ function fitProfileFrame(box, reach) {
 let profileAsked = '';
 function applyProfilePhoto(ctx) {
   const handle = profileHandle(location.pathname);
-  const photo =
-    handle && document.querySelector('.title-photo img:not(.cf-frame, .cf-profile-photo)');
+  const photo = handle && document.querySelector('.title-photo img:not(.cf-profile-photo)');
   if (!photo || photo.closest('.badge')) return;
   const holder = photo.parentElement;
   holder.dataset.cfProfileChecked = '';
@@ -241,9 +249,13 @@ function applyProfilePhoto(ctx) {
       holder.closest('.title-photo > div')?.classList.add('cf-photo-box-framed');
     });
   }
-  // 换了头像框：量好新的再挪边距（已经量过的马上挪）。
-  if (box.dataset.cfFrame !== id)
-    frameReach(id).then((reach) => box.dataset.cfFrame === id && fitProfileFrame(box, reach));
+  // 换了头像框（或者自定义的改了画）：量好新的再挪边距（已经量过的马上挪）。
+  const art = frameImage(id, false);
+  if (box.dataset.cfFrame !== id || box.dataset.cfFrameArt !== art)
+    frameReach(id).then(
+      (reach) =>
+        box.dataset.cfFrame === id && box.dataset.cfFrameArt === art && fitProfileFrame(box, reach),
+    );
   wearFrame(box, id);
 }
 
@@ -267,7 +279,7 @@ export function applyFrames(all = false) {
   const missing = new Map();
   for (const slot of slots) {
     const owner = ownerOf(slot);
-    if (!owner?.handle || !shownAt(placeOf(slot))) {
+    if (!owner?.handle || !shownAt(pagePlaceOf(slot))) {
       wearFrame(slot, '');
       continue;
     }
@@ -280,3 +292,5 @@ export function applyFrames(all = false) {
 }
 // 设置、分组变了：全部重新看一遍。
 export const refreshFrames = () => applyFrames(true);
+// 自定义头像框变了（新做的、改了的、删了的，这一页的或别的标签页的）：也全部重新看一遍。页面加载好之后调用一次。
+export const watchCustomFrames = () => subscribeCustomFrames(refreshFrames);

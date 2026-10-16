@@ -75,6 +75,10 @@ export function startShortcuts() {
       appSettings.groups.showTags = !appSettings.groups.showTags;
     },
     groupsManage: () => uiActions.get('groupsManage')?.(),
+    menuCard: () => {
+      const groups = appSettings.groups;
+      groups.menuCard = groups.menuCard === 'horizontal' ? 'vertical' : 'horizontal';
+    },
   };
   const keydown = (event) => {
     const active = document.activeElement;
